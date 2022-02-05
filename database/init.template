@@ -1,0 +1,2 @@
+USE jhj;
+CREATE SCHEMA ${DB_SCHEMA};

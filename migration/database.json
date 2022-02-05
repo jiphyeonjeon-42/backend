@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "driver": "mysql",
+    "user": { "ENV": "MYSQL_USER" },
+    "password": { "ENV": "MYSQL_PASSWORD" },
+    "host": "database",
+    "database": { "ENV": "MYSQL_DATABASE" },
+    "port": 3306,
+    "schema": { "ENV": "DB_SCHEMA" }
+  }
+}
