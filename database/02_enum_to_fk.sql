@@ -60,3 +60,4 @@ END $$
 
 DELIMITER ;
 
+CALL category_reseting;
