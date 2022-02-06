@@ -1,5 +1,5 @@
 #/bin/bash
 
 export $(cat .env)
-envsubst <./database/init.template >./database/init.sql
+envsubst <./database/init.template >./database/00init.sql
 docker-compose $@
