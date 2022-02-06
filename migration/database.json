@@ -5,7 +5,6 @@
     "password": { "ENV": "MYSQL_PASSWORD" },
     "host": "database",
     "database": { "ENV": "MYSQL_DATABASE" },
-    "port": 3306,
-    "schema": { "ENV": "DB_SCHEMA" }
+    "port": 3306
   }
 }
