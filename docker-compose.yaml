@@ -14,7 +14,7 @@ services:
       - 3306:3306
     volumes:
       - ./database:/docker-entrypoint-initdb.d:ro
-      - db_data:/var/lib/mysql
+      - ./database/data:/var/lib/mysql
 
   migration:
     container_name: migration
