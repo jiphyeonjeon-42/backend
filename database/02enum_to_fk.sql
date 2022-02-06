@@ -4,7 +4,7 @@ ALTER TABLE `book_info`
 
 CREATE TABLE `category` (
   `id` int NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-  `categoryName` varchar(255) NOT NULL UNIQUE
+  `name` varchar(255) NOT NULL UNIQUE
 );
 
 ALTER TABLE `book_info`
@@ -27,19 +27,17 @@ BEGIN
   SELECT COUNT(*) FROM `book_info` INTO n;
   SET i = 0;
   WHILE i < n DO
-    WITH `cid` AS (
-      SELECT `id`
-        FROM `category`
+    SELECT `id`
+      FROM `category`
       WHERE
-        `categoryName` = (
+        `name` = (
           SELECT `categoryEnum`
             FROM `book_info`
           WHERE `id` = i
         )
-    )
-    SELECT IF((SELECT COUNT(*) FROM `cid`) = 1, `cid`.`id`, -1) INTO cateId;
+      INTO cateId;
     IF cateId = -1 THEN
-      INSERT INTO `category`(`categoryName`)
+      INSERT INTO `category`(`name`)
         VALUES (
           (
             SELECT `categoryEnum`
@@ -56,7 +54,9 @@ BEGIN
         WHERE `id` = i;
     END IF;
   SET i = i + 1;
+  SET cateId = -1;
   END WHILE;
 END $$
 
 DELIMITER ;
+
