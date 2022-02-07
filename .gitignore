@@ -103,6 +103,13 @@ dist
 # TernJS port file
 .tern-port
 
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+
+# OS
+.DS_Store
+
 ################################################################################
 init.sql
 database/data/
