@@ -27,5 +27,14 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+    volumes:
+      - ./backend/src:/src
+    command: ${MODE}
+    ports:
+      - 3000:3000
 volumes:
   db_data:

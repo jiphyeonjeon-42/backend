@@ -24,7 +24,7 @@ BEGIN
   DECLARE n int DEFAULT 0;
   DECLARE i int DEFAULT 0;
   DECLARE cateId int DEFAULT -1;
-  SELECT COUNT(*) FROM `book_info` INTO n;
+  SELECT MAX(`id`) FROM `book_info` INTO n;
   SET i = 0;
   WHILE i < n DO
     SELECT `id`
@@ -60,3 +60,4 @@ END $$
 
 DELIMITER ;
 
+CALL category_reseting;
