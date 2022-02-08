@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { router } from './routes';
 
-const app = express();
+const app: express.Application = express();
 
 app.get('/welcome', (req: Request, res: Response) => {
   res.send('welcome!');
@@ -43,12 +44,6 @@ app.use(
   swaggerUi.setup(specs, { explorer: true })
 );
 
+app.use('/api', router);
 // ------------
-
-app.listen('3000', () => {
-  console.log(`
-################################################
-🛡️  Server listening on port: 3000🛡️
-################################################
-  `);
-});
+export default app;
