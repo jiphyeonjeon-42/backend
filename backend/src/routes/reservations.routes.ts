@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { postRouter, getRouter } from '../reservations/reservations.controller';
+import { create, search } from '../reservations/reservations.controller';
 
 export const path = '/reservations';
 export const router = Router();
 
-router.post('/', postRouter).get('/', getRouter);
+router.post('/', create).get('/search', search);
