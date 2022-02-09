@@ -1,12 +1,25 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
+import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import * as auth from './auth/auth.route';
 
 const app = express();
+
+app.use(passport.initialize());
 
 app.get('/welcome', (req: Request, res: Response) => {
   res.send('welcome!');
 });
+
+// ----------- set routers
+
+const router = Router();
+router.use(auth.path, auth.router);
+
+app.use('/api', router);
+
+// ----------- set swagger-ui options
 
 const swaggerOptions = {
   definition: {
@@ -40,7 +53,7 @@ const specs = swaggerJsdoc(swaggerOptions);
 app.use(
   '/swagger',
   swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true })
+  swaggerUi.setup(specs, { explorer: true }),
 );
 
 // ------------
