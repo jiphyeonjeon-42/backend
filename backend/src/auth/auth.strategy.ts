@@ -1,7 +1,8 @@
 import { Strategy as FortyTwoStrategy } from 'passport-42';
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import config from '../config';
 
-const FtStrategy = new FortyTwoStrategy(
+export const FtStrategy = new FortyTwoStrategy(
   {
     clientID: config.client.id,
     clientSecret: config.client.secret,
@@ -21,4 +22,19 @@ const FtStrategy = new FortyTwoStrategy(
   },
 );
 
-export default FtStrategy;
+export const JwtStrategy = new JWTStrategy(
+  {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: config.jwt.secret,
+    issuer: 'server.42library.kr',
+    audience: '42library.kr',
+  },
+  (payload, done) => {
+    const user = {
+      id: payload.id,
+      login: payload.login,
+      image: payload.image,
+    };
+    done(null, user);
+  },
+);

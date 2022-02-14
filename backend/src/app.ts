@@ -2,10 +2,14 @@ import express, { Request, Response, Router } from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 import * as auth from './auth/auth.route';
+import usersTest from './test/users.test';
+import { queryTest } from './mysql';
 
 const app = express();
 
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.get('/welcome', (req: Request, res: Response) => {
@@ -65,3 +69,5 @@ app.listen('3000', () => {
 ################################################
   `);
 });
+
+queryTest();

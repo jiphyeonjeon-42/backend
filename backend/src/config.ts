@@ -4,7 +4,7 @@ dotenv.config();
 
 const config = {
   database: {
-    host: process.env.MODE ? 'database' : 'localhost',
+    host: process.env.MODE !== 'local' ? 'database' : 'localhost',
     port: 3306,
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
@@ -14,6 +14,9 @@ const config = {
     id: process.env.CLIENT_ID,
     secret: process.env.CLIENT_SECRET,
     redirectURL: process.env.REDIRECT_URL,
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
   },
 };
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { getOAuth, getToken } from './auth.controller';
-import FtStrategy from './auth.strategy';
+import { FtStrategy } from './auth.strategy';
 
 export const path = '/auth';
 export const router = Router();

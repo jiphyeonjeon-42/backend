@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { send } from 'process';
 import config from '../config';
 import { ftTypes } from './auth.service';
 import clientValidator from './auth.validator';
+import * as UsersService from '../users/users.service';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
@@ -15,7 +15,7 @@ export const getOAuth = (req: Request, res: Response) => {
   res.status(302).redirect(oauthUrl);
 };
 
-export const getToken = (req: Request, res: Response): void => {
+export const getToken = async (req: Request, res: Response): Promise<void> => {
   const clientURL = clientValidator(req.query.client_url);
   if (!req.user) res.status(401).redirect(config.client.redirectURL as string);
   res.send(req.user);
@@ -29,7 +29,7 @@ export const getToken = (req: Request, res: Response): void => {
   };
 
   // TODOs
-  // let user = await this.userService.userFind(ftUserInfo.login);
+  const user = await UsersService.identifyOneByLogin(ftUserInfo.login);
   // if (!user) {
   //   user = await this.userService.userSave(ftUserInfo);
   // }

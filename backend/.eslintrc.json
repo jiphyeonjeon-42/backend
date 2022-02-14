@@ -19,12 +19,12 @@
         "ts": "never",
         "json": "never"
       }
-    ]
+    ],
+    "linebreak-style": "off"
   },
   "settings": {
     "import/resolver": {
       "node": { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     }
-  },
-  "linebreak-style": ["error", "windows"]
+  }
 }
