@@ -70,4 +70,5 @@ app.listen('3000', () => {
   `);
 });
 
-queryTest();
+// queryTest();
+usersTest();

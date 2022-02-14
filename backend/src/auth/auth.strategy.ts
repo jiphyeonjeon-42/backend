@@ -26,7 +26,7 @@ export const JwtStrategy = new JWTStrategy(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: config.jwt.secret,
-    issuer: 'server.42library.kr',
+    issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
     audience: '42library.kr',
   },
   (payload, done) => {

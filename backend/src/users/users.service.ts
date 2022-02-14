@@ -1,40 +1,61 @@
-import { ftTypes } from '../auth/auth.service';
+import { FtTypes } from '../auth/auth.service';
 import { dbConnect } from '../mysql';
 
-export const identifyOneByLogin = async (login: string) => {
+export interface User {
+  id: number,
+  login: string,
+  intra: number,
+  slack?: string,
+  penaltyAt?: Date,
+  librarian?: number,
+  createdAt?: Date,
+  updatedAt?: Date,
+  imageURL?: string,
+}
+
+export const identifyUserByLogin = async (login: string) => {
   const connection = await dbConnect();
-  const rows = await connection.query(`
+  const rows = (await connection.query(`
     SELECT *
       FROM user
     WHERE
       login = ?
-  `, [login]);
-  console.log(rows);
-  return rows;
+  `, [login]))[0] as unknown as User[];
+  return rows[0];
 };
 
-export const identifyOneById = async (id: number) => {
+export const identifyUserById = async (id: number): Promise<User> => {
   const connection = await dbConnect();
-  const rows = await connection.query(`
+  const result = (await connection.query(`
     SELECT *
       FROM user
     WHERE
       id = ?
     LIMIT 1;
-  `, [id]);
-  return rows[0];
+  `, [id]))[0] as unknown as User[];
+  return result[0];
 };
 
-export const createUser = async (ftUserInfo: ftTypes) => {
+export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
   const connection = await dbConnect();
   await connection.query(`
     INSERT INTO user(
-      login, intra,
+      login, intra
     )
     VALUES (
       ?, ?
-    )
+    );
   `, [ftUserInfo.login, ftUserInfo.intra]);
+  const result = (await connection.query(`
+    SELECT *
+      FROM user
+    WHERE
+      login = ?
+    ;
+  `, [ftUserInfo.login]))[0] as unknown as User[];
+  const user = result[0];
+  user.imageURL = ftUserInfo.imageURL;
+  return user;
 };
 
 // export const searchByLogin = async (login: string, page: number, limit: number) => {};

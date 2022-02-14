@@ -38,6 +38,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "http-errors": "^2.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",
     "passport": "^0.5.2",
     "passport-42": "^1.2.6",
