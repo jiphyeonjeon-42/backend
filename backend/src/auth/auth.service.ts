@@ -10,7 +10,7 @@ export interface FtTypes {
 
 export const issueJwt = (user: User) => {
   const { login, id, imageURL } = user;
-  const exp = new Date(Date.now() + 15 * 1000 * 60 * 60 * 24);
+  const exp = Date.now() + 15 * 1000 * 60 * 60 * 24;
   const token = sign({
     login,
     id,
