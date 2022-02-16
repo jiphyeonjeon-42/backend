@@ -4,13 +4,15 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import * as auth from './auth/auth.route';
-import usersTest from './test/users.test';
-import { queryTest } from './mysql';
+import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
 
 const app = express();
 
 app.use(cookieParser());
 app.use(passport.initialize());
+
+passport.use('42', FtStrategy);
+passport.use('jwt', JwtStrategy);
 
 app.get('/welcome', (req: Request, res: Response) => {
   res.send('welcome!');
@@ -49,7 +51,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [],
+  apis: ['./src/**/*.controller.ts'],
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
@@ -71,4 +73,4 @@ app.listen('3000', () => {
 });
 
 // queryTest();
-usersTest();
+// usersTest();
