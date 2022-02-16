@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import * as createError from 'http-errors';
 import config from '../config';
 import { FtTypes } from './auth.service';
 import clientValidator from './auth.validator';
@@ -16,8 +17,11 @@ export const getOAuth = (req: Request, res: Response) => {
   res.status(302).redirect(oauthUrl);
 };
 
-export const getToken = async (req: Request, res: Response): Promise<void> => {
+export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const clientURL = clientValidator(req.query.state);
+  if (clientURL === false) {
+    next(new createError.BadRequest('Invalid client url'));
+  }
   if (!req.user) res.status(401).redirect(config.client.redirectURL);
   // 아래 실행되지 않음
 
@@ -69,3 +73,9 @@ export const getToken = async (req: Request, res: Response): Promise<void> => {
  *                    description: 인트라넷 프로필 이미지 주소
  *                    type: string
  */
+
+/**
+ *
+ */
+
+export const getMe = () => {};
