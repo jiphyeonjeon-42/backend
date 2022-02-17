@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { Strategy as FortyTwoStrategy } from 'passport-42';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import config from '../config';
@@ -24,10 +25,13 @@ export const FtStrategy = new FortyTwoStrategy(
 
 export const JwtStrategy = new JWTStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    jwtFromRequest: ExtractJwt.fromExtractors([
+      (req: Request) => req?.cookies?.access_token,
+    ]),
     secretOrKey: config.jwt.secret,
-    issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
-    audience: '42library.kr',
+    ignoreExpiration: false,
+    // issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
+    // audience: '42library.kr',
   },
   (payload, done) => {
     const user = {

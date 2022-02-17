@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 import { FtTypes } from '../auth/auth.service';
 import { createUser, identifyUserById } from '../users/users.service';
 
@@ -7,7 +8,7 @@ const usersTest = async () => {
   const ftUserInfo: FtTypes = {
     intra: 44444,
     login: 'test',
-    image: 'http://localhost:3000/img',
+    imageURL: 'http://localhost:3000/img',
   };
   console.log(await createUser(ftUserInfo));
 };

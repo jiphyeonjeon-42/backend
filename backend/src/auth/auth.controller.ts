@@ -18,12 +18,12 @@ export const getOAuth = (req: Request, res: Response) => {
 };
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // clientURL을 검사
   const clientURL = clientValidator(req.query.state);
   if (clientURL === false) {
     next(new createError.BadRequest('Invalid client url'));
   }
   if (!req.user) res.status(401).redirect(config.client.redirectURL);
-  // 아래 실행되지 않음
 
   const { intra, login, imageURL } = req.user as any;
   const ftUserInfo: FtTypes = {
@@ -32,20 +32,24 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     imageURL,
   };
 
-  // TODOs
-  let user: usersService.User = await usersService.identifyUserByLogin(ftUserInfo.login);
-  if (!user) {
-    user = await usersService.createUser(ftUserInfo);
-  }
-  const jwtInfo = authService.issueJwt(user);
+  try {
+    let user: usersService.User = await usersService.identifyUserByLogin(ftUserInfo.login);
+    // user가 없으면 생성
+    if (!user) {
+      user = await usersService.createUser(ftUserInfo);
+    }
+    const jwtInfo = authService.issueJwt(user);
 
-  res.cookie('access_token', jwtInfo.token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
-    expires: new Date(jwtInfo.exp),
-  });
-  return res.status(302).redirect(`${clientURL}/auth`);
+    res.cookie('access_token', jwtInfo.token, {
+      httpOnly: true,
+      // secure: true, ANCHOR https 연결시에는 true로 설정해주어야함.
+      sameSite: 'none',
+      expires: new Date(jwtInfo.exp),
+    });
+    res.redirect(302, `${clientURL}/api/auth/me`);
+  } catch (e: any) {
+    next(new createError.InternalServerError(e));
+  }
 };
 
 export const getMe = async (req: Request, res: Response) => {
