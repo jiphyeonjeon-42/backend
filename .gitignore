@@ -114,3 +114,6 @@ dist
 init.sql
 database/data/
 _*
+
+.vscode
+package-lock.json

@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+  MODIFY COLUMN `intra` int NOT NULL UNIQUE;

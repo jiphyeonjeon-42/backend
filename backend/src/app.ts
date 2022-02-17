@@ -1,12 +1,31 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
+import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
+import * as auth from './auth/auth.route';
+import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
 
 const app = express();
+
+app.use(cookieParser());
+app.use(passport.initialize());
+
+passport.use('42', FtStrategy);
+passport.use('jwt', JwtStrategy);
 
 app.get('/welcome', (req: Request, res: Response) => {
   res.send('welcome!');
 });
+
+// ----------- set routers
+
+const router = Router();
+router.use(auth.path, auth.router);
+
+app.use('/api', router);
+
+// ----------- set swagger-ui options
 
 const swaggerOptions = {
   definition: {
@@ -32,7 +51,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [],
+  apis: ['./src/**/*.route.ts'],
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
@@ -40,7 +59,7 @@ const specs = swaggerJsdoc(swaggerOptions);
 app.use(
   '/swagger',
   swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true })
+  swaggerUi.setup(specs, { explorer: true }),
 );
 
 // ------------
@@ -52,3 +71,6 @@ app.listen('3000', () => {
 ################################################
   `);
 });
+
+// queryTest();
+// usersTest();
