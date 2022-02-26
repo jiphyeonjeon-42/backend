@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const config = {
+const configs = {
   database: {
     host: process.env.MODE ? 'database' : 'localhost',
     port:  process.env.MYSQL_PORT,
@@ -17,4 +17,4 @@ const config = {
   },
 };
 
-export default config;
+export { configs };

@@ -1,13 +1,11 @@
-import mysql from 'mysql2';
-import config from './config';
+import mysql from 'mysql2/promise';
+import { configs } from './config';
 
-const connection = mysql.createConnection({
-  host: config.database.host,
-  user: config.database.username,
-  password: config.database.password,
-  database: config.database.dbName,
+const pool = mysql.createPool({
+  host: configs.database.host,
+  user: configs.database.username,
+  password: configs.database.password,
+  database: configs.database.dbName,
 });
 
-connection.connect();
-
-export default connection;
+export { pool };

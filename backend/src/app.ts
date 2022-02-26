@@ -12,7 +12,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('welcome!');
 });
 
-
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
 app.use(
