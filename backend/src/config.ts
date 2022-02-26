@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const configs = {
+const config = {
   mode: process.env.MODE,
   database: {
     host: process.env.MODE === 'local' ? 'localhost' : 'database',
@@ -21,4 +21,4 @@ const configs = {
   },
 };
 
-export default configs;
+export default config;
