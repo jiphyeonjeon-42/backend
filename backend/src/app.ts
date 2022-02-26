@@ -20,41 +20,7 @@ app.get('/welcome', (req: Request, res: Response) => {
   res.send('welcome!');
 });
 
-// ----------- set routers
-
-const router = Router();
-router.use(auth.path, auth.router);
-
 app.use('/api', router);
-
-// ----------- set swagger-ui options
-
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: '42-jiphyoenjeon web service API',
-      version: '0.1.0',
-      description:
-        "42-jiphyeonjeon web service, that is, 42library's APIs with Express and documented with Swagger",
-      license: {
-        name: 'MIT',
-        url: 'https://spdx.org/licenses/MIT.html',
-      },
-      contact: {
-        name: 'jolim',
-        url: 'https://github.com/evelon/',
-        email: 'ezemango@gmail.com',
-      },
-    },
-    servers: [
-      {
-        url: 'http://localhost:3000/',
-      },
-    ],
-  },
-  apis: ['./src/**/*.route.ts'],
-};
 
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
