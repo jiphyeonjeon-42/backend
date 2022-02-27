@@ -7,10 +7,10 @@
   "author": "jolim, chanykim, tkim, jimin, wocho",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "build": "tsc -p .",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts",
-    "prod": "tsc -p . && node dist/app.js"
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
+    "prod": "tsc -p . && node dist/server.js"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
@@ -41,6 +41,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "http-errors": "^2.0.0",
+    "http-status": "^1.5.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
