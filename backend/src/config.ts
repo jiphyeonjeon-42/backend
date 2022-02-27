@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
+  nodeEnv: process.env.NODE_ENV,
   mode: process.env.MODE,
   database: {
     host: process.env.MODE === 'local' ? 'localhost' : 'database',
