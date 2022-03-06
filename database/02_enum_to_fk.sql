@@ -1,5 +1,6 @@
 ALTER TABLE `book_info`
-  RENAME COLUMN `category` TO `categoryEnum`,
+  RENAME COLUMN `category` TO `categoryEnum`;
+ALTER TABLE `book_info`
   MODIFY COLUMN `categoryEnum` varchar(255);
 
 CREATE TABLE `category` (
@@ -24,17 +25,22 @@ BEGIN
   DECLARE n int DEFAULT 0;
   DECLARE i int DEFAULT 0;
   DECLARE cateId int DEFAULT -1;
+  DECLARE cateName varchar(255) DEFAULT '';
   SELECT MAX(`id`) FROM `book_info` INTO n;
   SET i = 0;
-  WHILE i < n DO
+  loop_0: WHILE i < n DO
+    SELECT `categoryEnum`
+      FROM `book_info`
+      WHERE `id` = i
+      INTO cateName;
+    IF cateName = '' THEN
+      SET i = i + 1;
+      ITERATE loop_0;
+    END IF;
     SELECT `id`
       FROM `category`
       WHERE
-        `name` = (
-          SELECT `categoryEnum`
-            FROM `book_info`
-          WHERE `id` = i
-        )
+        `name` = cateName
       INTO cateId;
     IF cateId = -1 THEN
       INSERT INTO `category`(`name`)
@@ -55,6 +61,7 @@ BEGIN
     END IF;
   SET i = i + 1;
   SET cateId = -1;
+  SET cateName = '';
   END WHILE;
 END $$
 

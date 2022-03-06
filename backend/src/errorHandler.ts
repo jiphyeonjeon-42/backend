@@ -17,5 +17,4 @@ export default function errorHandler(
     );
   } else error = err as ErrorResponse;
   res.status(error.status).json(error.message);
-  return;
 }
