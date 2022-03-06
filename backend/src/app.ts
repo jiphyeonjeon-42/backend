@@ -5,9 +5,11 @@ import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import * as auth from './auth/auth.route';
 import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
+import { morganMiddleware } from './utils/logger';
 
 const app = express();
 
+app.use(morganMiddleware);
 app.use(cookieParser());
 app.use(passport.initialize());
 
