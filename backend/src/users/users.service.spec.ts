@@ -1,8 +1,13 @@
 /* eslint no-console: "off" */
 import { FtTypes } from '../auth/auth.service';
+import { pool } from '../mysql';
 import * as UsersService from './users.service';
 
 describe('UsersService', () => {
+  afterAll(() => {
+    pool.end();
+  });
+
   it('User 3 is', async () => {
     expect(await UsersService.identifyUserById(3)).toStrictEqual({
       id: 3,
@@ -22,6 +27,7 @@ describe('UsersService', () => {
       login: 'test',
       imageURL: 'http://localhost:3000/img',
     };
+    expect(await UsersService.deleteUserByIntra(ftUserInfo.intra)).toBe(false);
     expect(await UsersService.createUser(ftUserInfo)).toEqual(
       expect.objectContaining({
         login: 'test',

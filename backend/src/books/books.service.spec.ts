@@ -1,6 +1,11 @@
+import { pool } from '../mysql';
 import * as BooksService from './books.service';
 
 describe('BooksService', () => {
+  afterAll(() => {
+    pool.end();
+  });
+
   it('A book is added and deleted', async () => {
     const book: BooksService.Book = {
       title: 'test',
@@ -14,5 +19,18 @@ describe('BooksService', () => {
     };
     await BooksService.createBook(book);
     expect(await BooksService.deleteBook(book)).toBe(true);
+  });
+
+  it('Search books by name, author, or isbn', async () => {
+    const query = 'C언어';
+    const sort = '';
+    const page = 0;
+    const limit = 3;
+    expect(await BooksService.searchInfo(query, sort, page, limit, null)).toEqual(
+      expect.objectContaining({
+        categories: expect.any(Array),
+        items: expect.any(Array),
+      }),
+    );
   });
 });
