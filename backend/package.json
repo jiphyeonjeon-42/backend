@@ -9,8 +9,8 @@
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc -p .",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts",
-    "prod": "tsc -p . && node dist/app.js",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
+    "prod": "tsc -p . && node dist/server.js",
     "test": "jest"
   },
   "devDependencies": {

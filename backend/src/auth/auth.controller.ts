@@ -61,5 +61,5 @@ export const getMe = async (req: Request, res: Response) => {
     librarian: user.librarian,
     imageUrl: imageURL,
   };
-  res.status(200).send(ftUserInfo);
+  res.status(200).json(ftUserInfo);
 };

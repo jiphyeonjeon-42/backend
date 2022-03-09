@@ -155,9 +155,9 @@ export const searchInfo = async (
     case 'title':
       ordering = 'ORDER BY book_info.title';
       break;
-    case 'popular':
-      ordering = 'ORDER BY count(lending.id) DESC';
-      break;
+      // case 'popular':
+      //   ordering = 'ORDER BY count(lending.id) DESC';
+      // break;
     case 'new':
       ordering = 'ORDER BY book_info.publishedAt DESC';
       break;
@@ -165,26 +165,25 @@ export const searchInfo = async (
       ordering = 'ORDER BY book_info.createdAt DESC';
   }
   const connection = await dbConnect();
-  const [[categoryName]]: [StringRows[], FieldPacket[]] = await connection.query(`
+  const [categoryResult]: [StringRows[], FieldPacket[]] = await connection.query(`
     SELECT name
     FROM category
     WHERE name = ?
   `, [category]);
-  const categoryWhere = `category.name = ${categoryName}`;
+  const categoryName = categoryResult?.[0]?.name;
+  const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const [categoryList]: [categoryCount[], FieldPacket[]] = await connection.query(`
     SELECT
       category.name AS name,
       count(name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
-    LEFT JOIN book ON book.infoId = book_info.id
     WHERE (
-      book.callSign LIKE ?
-      OR book_info.title LIKE ?
+      book_info.title LIKE ?
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
       ) AND (
-        ${categoryName ? categoryWhere : 'TRUE'}
+        ${categoryWhere}
       )
     GROUP BY name;
   `, [`%${query}%`,
@@ -192,8 +191,10 @@ export const searchInfo = async (
     `%${query}%`,
     `%${query}%`,
   ]);
-  const [BookList]: [BookInfo[], FieldPacket[]] = await connection.query(`
+  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
+  const [bookList]: [BookInfo[], FieldPacket[]] = await connection.query(`
     SELECT
+      book_info.id AS id,
       book_info.title AS title,
       book_info.author AS author,
       book_info.publisher AS publisher,
@@ -208,15 +209,12 @@ export const searchInfo = async (
       book_info.createdAt as createdAt,
       book_info.updatedAt as updatedAt
     FROM book_info
-    LEFT JOIN book ON book.infoId = book_info.id
     WHERE (
-      book.callSign like ?
-      OR book_info.title like ?
+      book_info.title like ?
       OR book_info.author like ?
       OR book_info.isbn like ?
-      ) AND (
-        ${categoryName ? categoryWhere : 'TRUE'}
       )
+    HAVING ${categoryHaving}
     ${ordering}
     LIMIT 3
     OFFSET 0;
@@ -227,5 +225,5 @@ export const searchInfo = async (
     limit,
     page * limit,
   ]);
-  return { items: BookList, categories: categoryList };
+  return { items: bookList, categories: categoryList };
 };

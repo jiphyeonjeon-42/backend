@@ -1,11 +1,11 @@
-import express, { Request, Response, Router } from 'express';
+import express, { Request, Response } from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { router } from './routes';
-import { swaggerOptions } from './swagger/swagger';
-import errorHandler from './errorHandler';
 import cookieParser from 'cookie-parser';
+import router from './routes';
+import swaggerOptions from './swagger/swagger';
+import errorHandler from './errorHandler';
 import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
 import { morganMiddleware } from './utils/logger';
 
@@ -33,6 +33,6 @@ app.use(
 // dev route
 app.use('/api', router);
 
-//에러 핸들러
+// 에러 핸들러
 app.use(errorHandler);
 export default app;
