@@ -1,5 +1,7 @@
 import mysql from 'mysql2/promise';
+import { FieldPacket } from 'mysql2';
 import config from './config';
+import { logger } from './utils/logger';
 
 export const pool = mysql.createPool({
   host: config.database.host,
@@ -9,9 +11,15 @@ export const pool = mysql.createPool({
   database: config.database.dbName,
 });
 
-export const dbConnect = async () => {
+export const executeQuery = async (queryText: string, values: any[] = []): Promise<any> => {
   const connection = await pool.getConnection();
-  return connection;
+  logger.debug(`Executing query: ${queryText} (${values})`);
+  const [result]: [
+    any,
+    FieldPacket[]
+  ] = await connection.query(queryText, values);
+  connection.release();
+  return result;
 };
 
 type lending = {

@@ -1,5 +1,5 @@
-import { FieldPacket, RowDataPacket } from 'mysql2';
-import { dbConnect } from '../mysql';
+import { RowDataPacket } from 'mysql2';
+import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 
 export interface BookInfo extends RowDataPacket {
@@ -43,13 +43,12 @@ interface categoryCount extends RowDataPacket {
 }
 
 export const createBook = async (book: Book): Promise<void> => {
-  const connection = await dbConnect();
-  const [result]: [StringRows[], FieldPacket[]] = (await connection.query(`
+  const result = (await executeQuery(`
     SELECT
       isbn
     FROM book_info
     WHERE isbn = ?
-  `, [book.isbn]));
+  `, [book.isbn])) as StringRows[];
   if (result.length === 0) {
     let image = null;
     if (!book.image) {
@@ -57,7 +56,7 @@ export const createBook = async (book: Book): Promise<void> => {
         -3,
       )}/x${book.isbn}.jpg`;
     }
-    await connection.query(`
+    await executeQuery(`
     INSERT INTO book_info(
       title,
       author,
@@ -89,7 +88,7 @@ export const createBook = async (book: Book): Promise<void> => {
       book.publishedAt,
     ]);
   }
-  await connection.query(`
+  await executeQuery(`
     INSERT INTO book(
       donator,
       donatorId,
@@ -121,21 +120,20 @@ export const createBook = async (book: Book): Promise<void> => {
 };
 
 export const deleteBook = async (book: Book): Promise<boolean> => {
-  const connection = await dbConnect();
-  const [result]: [BookEach[], FieldPacket[]] = (await connection.query(`
+  const result = (await executeQuery(`
     SELECT *
     FROM book
     WHERE callSign = ?
-  `, [book.callSign]));
+  `, [book.callSign])) as BookEach[];
   if (result.length === 0) {
     return false;
   }
-  await connection.query(`
+  await executeQuery(`
     DELETE FROM book
     WHERE callSign = ?
   `, [book.callSign]);
   if (result.length === 1) {
-    await connection.query(`
+    await executeQuery(`
       DELETE FROM book_info
       WHERE id = ?
     `, [result[0].infoId]);
@@ -164,15 +162,14 @@ export const searchInfo = async (
     default:
       ordering = 'ORDER BY book_info.createdAt DESC';
   }
-  const connection = await dbConnect();
-  const [categoryResult]: [StringRows[], FieldPacket[]] = await connection.query(`
+  const categoryResult = await executeQuery(`
     SELECT name
     FROM category
     WHERE name = ?
-  `, [category]);
+  `, [category]) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
   const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
-  const [categoryList]: [categoryCount[], FieldPacket[]] = await connection.query(`
+  const categoryList = await executeQuery(`
     SELECT
       category.name AS name,
       count(name) AS count
@@ -190,9 +187,9 @@ export const searchInfo = async (
     `%${query}%`,
     `%${query}%`,
     `%${query}%`,
-  ]);
+  ]) as categoryCount[];
   const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
-  const [bookList]: [BookInfo[], FieldPacket[]] = await connection.query(`
+  const bookList = await executeQuery(`
     SELECT
       book_info.id AS id,
       book_info.title AS title,
@@ -224,6 +221,6 @@ export const searchInfo = async (
     `%${query}%`,
     limit,
     page * limit,
-  ]);
+  ]) as BookInfo[];
   return { items: bookList, categories: categoryList };
 };
