@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { getMe, getOAuth, getToken } from './auth.controller';
+import { getMe, getOAuth, getToken } from '../auth/auth.controller';
 
 export const path = '/auth';
 export const router = Router();
@@ -19,6 +19,7 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *          content:
  *            application/json:
  *              schema:
+ *                type: object
  *                properties:
  *                  id:
  *                    description: 집현전 웹서비스에서의 유저 아이디

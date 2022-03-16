@@ -58,4 +58,19 @@ export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
   return user;
 };
 
+export const deleteUserByIntra = async (intra: number): Promise<boolean> => {
+  const connection = await dbConnect();
+  const result = (await connection.query(`
+    SELECT *
+    FROM user
+    WHERE intra = ?
+  `, [intra]))[0] as unknown as User[];
+  if (result.length === 0) return false;
+  connection.query(`
+    DELETE FROM user
+    WHERE intra = ?
+  `, [intra]);
+  return true;
+};
+
 // export const searchByLogin = async (login: string, page: number, limit: number) => {};

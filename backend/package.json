@@ -7,10 +7,10 @@
   "author": "jolim, chanykim, tkim, jimin, wocho",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "build": "tsc -p .",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts",
-    "prod": "tsc -p . && node dist/app.js",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
+    "prod": "tsc -p . && node dist/server.js",
     "test": "jest"
   },
   "devDependencies": {
@@ -18,7 +18,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/http-errors": "^1.8.2",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^27.4.1",
     "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.15",
     "@types/passport": "^1.0.7",
@@ -43,6 +43,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "http-errors": "^2.0.0",
+    "http-status": "^1.5.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
