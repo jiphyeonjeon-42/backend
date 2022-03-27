@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as Status from 'http-status';
 import ErrorResponse from './errorResponse';
 import { logger } from './utils/logger';
@@ -7,6 +7,7 @@ export default function errorHandler(
   err: Error | ErrorResponse,
   req: Request,
   res: Response,
+  next: NextFunction,
 ) {
   let error: ErrorResponse;
   if (!(err instanceof ErrorResponse)) {
