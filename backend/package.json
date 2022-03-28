@@ -2,7 +2,7 @@
   "name": "42-jiphyeonjeon-backend-3rd",
   "version": "1.0.0",
   "description": "3rd of 42-jiphyeonjeon web service backend",
-  "main": "index.js",
+  "main": "./dist/server.js",
   "repository": "https://github.com/jiphyeonjeon-42/backend-express.git",
   "author": "jolim, chanykim, tkim, jimin, wocho",
   "license": "MIT",

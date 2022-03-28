@@ -1,5 +1,5 @@
 import { FtTypes } from '../auth/auth.service';
-import { dbConnect } from '../mysql';
+import { executeQuery, pool } from '../mysql';
 
 export interface User {
   id: number,
@@ -14,31 +14,28 @@ export interface User {
 }
 
 export const identifyUserByLogin = async (login: string) => {
-  const connection = await dbConnect();
-  const rows = (await connection.query(`
+  const rows = (await executeQuery(`
     SELECT *
       FROM user
     WHERE
       login = ?
-  `, [login]))[0] as unknown as User[];
+  `, [login])) as User[];
   return rows[0];
 };
 
 export const identifyUserById = async (id: number): Promise<User> => {
-  const connection = await dbConnect();
-  const result = (await connection.query(`
+  const result = (await executeQuery(`
     SELECT *
       FROM user
     WHERE
       id = ?
     LIMIT 1;
-  `, [id]))[0] as unknown as User[];
+  `, [id])) as User[];
   return result[0];
 };
 
 export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
-  const connection = await dbConnect();
-  await connection.query(`
+  await executeQuery(`
     INSERT INTO user(
       login, intra
     )
@@ -46,27 +43,26 @@ export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
       ?, ?
     );
   `, [ftUserInfo.login, ftUserInfo.intra]);
-  const result = (await connection.query(`
+  const result = (await executeQuery(`
     SELECT *
       FROM user
     WHERE
       login = ?
     ;
-  `, [ftUserInfo.login]))[0] as unknown as User[];
+  `, [ftUserInfo.login])) as User[];
   const user = result[0];
   user.imageURL = ftUserInfo.imageURL;
   return user;
 };
 
 export const deleteUserByIntra = async (intra: number): Promise<boolean> => {
-  const connection = await dbConnect();
-  const result = (await connection.query(`
+  const result = (await executeQuery(`
     SELECT *
     FROM user
     WHERE intra = ?
-  `, [intra]))[0] as unknown as User[];
-  if (result.length === 0) return false;
-  connection.query(`
+  `, [intra])) as User[];
+  if (result?.length === 0) return false;
+  await executeQuery(`
     DELETE FROM user
     WHERE intra = ?
   `, [intra]);
