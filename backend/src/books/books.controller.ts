@@ -3,7 +3,7 @@ import {
 } from 'express';
 import * as status from 'http-status';
 import ErrorResponse from '../errorResponse';
-import * as BooksSerice from './books.service';
+import * as BooksService from './books.service';
 
 export interface SearchBookInfoQuery {
   query: string,
@@ -25,14 +25,22 @@ export const searchBookInfo = async (
     next(new ErrorResponse(status.BAD_REQUEST, 'query, page, limit 중 하나 이상이 없습니다.'));
   } else {
     res.status(status.OK).json(
-      await BooksSerice.searchInfo(query, sort, parseInt(page, 10), parseInt(limit, 10), category),
+      await BooksService.searchInfo(query, sort, parseInt(page, 10), parseInt(limit, 10), category),
     );
   }
 };
 
-export const infoId: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
-  // search 함수
+export const getInfoId: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const bookId = parseInt(req.params.id, 10);
+  if (Number.isNaN(bookId)) {
+    next(new ErrorResponse(status.BAD_REQUEST, 'id가 숫자가 아닙니다.'));
+  } else {
+    res.status(status.OK).json(await BooksService.getInfo(bookId));
+  }
 };
 export const info: RequestHandler = (req: Request, res: Response) => {};
 
