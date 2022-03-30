@@ -193,7 +193,6 @@ export const searchInfo = async (
   `, [`%${query}%`,
     `%${query}%`,
     `%${query}%`,
-    `%${query}%`,
   ]) as categoryCount[];
   const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
   const bookList = await executeQuery(`
@@ -220,16 +219,24 @@ export const searchInfo = async (
       )
     HAVING ${categoryHaving}
     ${ordering}
-    LIMIT 3
-    OFFSET 0;
+    LIMIT ?
+    OFFSET ?;
   `, [`%${query}%`,
-    `%${query}%`,
     `%${query}%`,
     `%${query}%`,
     limit,
     page * limit,
   ]) as BookInfo[];
-  return { items: bookList, categories: categoryList };
+
+  const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, categories: categoryList, meta };
 };
 
 const statusConverter = (status: number, dueDate: string) => {
@@ -238,6 +245,7 @@ const statusConverter = (status: number, dueDate: string) => {
     return '비치 중';
   } if (status === 1) return '분실';
   if (status === 2) return '파손';
+  return '알 수 없음';
 };
 
 const getDueDate = (lendingData: lending[]) => {
