@@ -109,6 +109,30 @@ router
  *                          description: 검색된 개수
  *                          type: integer
  *                          example: 1
+ *                  meta:
+ *                    description: 책 수와 관련된 정보
+ *                    type: object
+ *                    properties:
+ *                      totalItems:
+ *                        description: 전체 검색 결과 수
+ *                        type: integer
+ *                        example: 1
+ *                      itemCount:
+ *                        description: 현재 페이지 검색 결과 수
+ *                        type: integer
+ *                        example: 1
+ *                      itemsPerPage:
+ *                        description: 페이지 당 검색 결과 수
+ *                        type: integer
+ *                        example: 1
+ *                      totalPages:
+ *                        description: 전체 결과 페이지 수
+ *                        type: integer
+ *                        example: 1
+ *                      currentPage:
+ *                        description: 현재 페이지
+ *                        type: integer
+ *                        example: 1
  *        '400':
  *          description: query, page, limit 중 하나 이상이 없다.
  *          content:
