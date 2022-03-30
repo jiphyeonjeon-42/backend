@@ -3,18 +3,20 @@ import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 
 export interface BookInfo extends RowDataPacket {
+  id?: number,
   title: string,
   author: string,
   publisher: string,
   isbn?: string
   image: string,
   category: string,
-  publishedAt?: Date,
+  publishedAt?: string | Date,
   createdAt: Date,
   updatedAt: Date
 }
 
 export interface BookEach extends RowDataPacket {
+  id?: number,
   donator: string,
   donatorId?: number,
   callSign: string,
@@ -40,6 +42,11 @@ export interface Book {
 interface categoryCount extends RowDataPacket {
   name: string,
   count: number,
+}
+
+interface lending extends RowDataPacket {
+  lendingCreatedAt: Date,
+  returningCreatedAt: Date,
 }
 
 export const createBook = async (book: Book): Promise<void> => {
@@ -223,4 +230,89 @@ export const searchInfo = async (
     page * limit,
   ]) as BookInfo[];
   return { items: bookList, categories: categoryList };
+};
+
+const statusConverter = (status: number, dueDate: string) => {
+  if (status === 0) {
+    if (dueDate !== '-') return '대출 중';
+    return '비치 중';
+  } if (status === 1) return '분실';
+  if (status === 2) return '파손';
+};
+
+const getDueDate = (lendingData: lending[]) => {
+  if (lendingData && lendingData.length === 0) return '-';
+  const lastLending = lendingData.sort(
+    (a, b) => new Date(b.lendingCreatedAt).getTime() - new Date(a.lendingCreatedAt).getTime(),
+  )[0];
+  if (lastLending.returningCreatedAt) {
+    return '-';
+  }
+  const tDate = new Date(lastLending.lendingCreatedAt);
+  tDate.setDate(tDate.getDate() + 14);
+  return tDate.toJSON().substring(2, 10).split('-').join('.');
+};
+
+export const getInfo = async (id: number) => {
+  const [bookSpec] = await executeQuery(`
+    SELECT
+      id,
+      title,
+      author,
+      publisher,
+      isbn,
+      image,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      book_info.publishedAt as publishedAt
+    FROM book_info
+    WHERE
+      id = ?
+  `, [id]) as BookInfo[];
+  if (bookSpec.publishedAt) {
+    const date = new Date(bookSpec.publishedAt);
+    bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+  }
+
+  const eachBook = await executeQuery(`
+    SELECT
+      id,
+      callSign,
+      status,
+      donator
+    FROM book
+    WHERE
+      infoId = ?
+  `, [id]) as BookEach[];
+
+  const donators: string[] = [];
+  const books = await Promise.all(eachBook.map(async (val) => {
+    const lendingData = await executeQuery(`
+      SELECT
+        lending.createdAt AS lendingCreatdAt,
+        returning.createdAt AS returningCreatedAt
+      FROM lending
+      LEFT JOIN returning ON lending.id = returning.lendingId
+      WHERE
+        bookId = ?
+    `, [val.id]) as lending[];
+    const dueDate = getDueDate(lendingData);
+    const status = statusConverter(val.status, dueDate);
+
+    if (val.donator) {
+      donators.push(val.donator);
+    }
+    const { donator, ...rest } = val;
+    return { ...rest, dueDate, status };
+  }));
+  if (donators.length === 0) {
+    bookSpec.donators = '-';
+  } else {
+    bookSpec.donators = donators.join(', ');
+  }
+  bookSpec.books = books;
+  return bookSpec;
 };

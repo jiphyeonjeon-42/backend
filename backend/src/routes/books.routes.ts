@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  searchBookInfo, infoId, info, booker, search,
+  searchBookInfo, info, booker, search, getInfoId,
 } from '../books/books.controller';
 
 export const path = '/books';
@@ -43,7 +43,7 @@ router
  *        schema:
  *          type: string
  *      responses:
- *        200:
+ *        '200':
  *          description: 검색 결과를 반환한다.
  *          content:
  *            application/json:
@@ -109,7 +109,7 @@ router
  *                          description: 검색된 개수
  *                          type: integer
  *                          example: 1
- *        400:
+ *        '400':
  *          description: query, page, limit 중 하나 이상이 없다.
  *          content:
  *            application/json:
@@ -118,9 +118,96 @@ router
  *                description: error decription
  *                example: query, page, limit 중 하나 이상이 없습니다.
  */
-
   .get('/info/search', searchBookInfo)
-  .get('/info/:id', infoId)
+
+/**
+ * @openapi
+ * /api/books/info/{id}:
+ *    get:
+ *      description: 책 한 종류의 정보를 가져온다.
+ *      parameters:
+ *      - name: id
+ *        in: path
+ *        description: 책의 id
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      responses:
+ *        '200':
+ *          description: 조회 결과를 반환한다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    description: 책의 id
+ *                    type: integer
+ *                    example: 4261
+ *                  title:
+ *                    description: 제목
+ *                    type: string
+ *                    example: 12가지 인생의 법칙
+ *                  author:
+ *                    description: 저자
+ *                    type: string
+ *                    example: 조던 B. 피터슨
+ *                  publisher:
+ *                    description: 출판사
+ *                    type: string
+ *                    example: 메이븐
+ *                  image:
+ *                    description: 이미지 주소
+ *                    type: string
+ *                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
+ *                  category:
+ *                    description: 카테고리
+ *                    type: string
+ *                    example: 프로그래밍
+ *                  publishedAt:
+ *                    description: 출판일자
+ *                    type: string
+ *                    example: 2018년 10월
+ *                  isbn:
+ *                    descriptoin: isbn
+ *                    type: string
+ *                    example: '9791196067694'
+ *                  donators:
+ *                    descriptoin: 기부자
+ *                    type: string
+ *                    example: hyekim, tkim, jwoo, minkykim
+ *                  books:
+ *                    description: 비치된 책들
+ *                    type: array
+ *                    items:
+ *                      type: object
+ *                      properties:
+ *                        id:
+ *                          description: 실물 책의 id
+ *                          type: integer
+ *                          example: 3
+ *                        callSign:
+ *                          description: 청구기호
+ *                          type: string
+ *                          example: h1.18.v1.c1
+ *                        status:
+ *                          description: 책의 상태
+ *                          type: string
+ *                          example: 비치 중
+ *                        dueDate:
+ *                          description: 반납 예정 일자
+ *                          type: string
+ *                          example: 21.08.05
+ *        '400':
+ *          description: id가 숫자가 아니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: string
+ *                description: error decription
+ *                example: id가 숫자가 아닙니다.
+ */
+  .get('/info/:id', getInfoId)
   .get('/info', info)
   .get('/:id/reservations/count', booker)
   .get('/search', search);
