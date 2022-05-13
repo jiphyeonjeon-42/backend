@@ -16,6 +16,8 @@ router
    * /api/books/info/search:
    *    get:
    *      description: 책 정보를 검색하여 가져온다.
+   *      tags:
+   *      - books
    *      parameters:
    *      - name: query
    *        in: query
@@ -154,6 +156,8 @@ router
    * /api/books/info:
    *    get:
    *      description: 책 정보를 기준에 따라 정렬한다.
+   *      tags:
+   *      - books
    *      parameters:
    *
    *      - name: sort
@@ -261,6 +265,8 @@ router
    * /api/books/info/{id}:
    *    get:
    *      description: 책 한 종류의 정보를 가져온다.
+   *      tags:
+   *      - books
    *      parameters:
    *      - name: id
    *        in: path
