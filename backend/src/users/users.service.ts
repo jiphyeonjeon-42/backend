@@ -2,27 +2,47 @@ import { FtTypes } from '../auth/auth.service';
 import { executeQuery, pool } from '../mysql';
 
 export interface User {
-  id: number,
-  login: string,
-  intra: number,
+  id: string,
+  IntraId: string,
+  IntraKey: number,
   slack?: string,
-  penaltyAt?: Date,
-  librarian?: number,
-  createdAt?: Date,
-  updatedAt?: Date,
-  imageURL?: string,
+  penaltyEndDay?: Date,
+  role: number,
+  lendingCnt?: number,
+  reservations?: [],
+  lendings?: [],
 }
 
-export const identifyUserByLogin = async (login: string) => {
+export const searchUserById = async (Id: string) => {
   const rows = (await executeQuery(`
     SELECT *
       FROM user
     WHERE
-      login = ?
-  `, [login])) as User[];
+      IntraKey = ?
+  `, [Id])) as User[];
   return rows[0];
 };
 
+export const searchAllUsers = async (limit: number, page: number): Promise<User> => {
+  const result = (await executeQuery(`
+    SELECT *
+      FROM user
+    LIMIT ?
+    OFFSET ?;
+  `, [limit, limit * page])) as User[];
+  return result[0];
+};
+
+export const searchUserByIntraKey = async (IntraKey: number): Promise<User> => {
+  const result = (await executeQuery(`
+    SELECT *
+      FROM user
+    WHERE
+      IntraKey = ?
+  `, [IntraKey])) as User[];
+  return result[0];
+};
+/*
 export const identifyUserById = async (id: number): Promise<User> => {
   const result = (await executeQuery(`
     SELECT *
@@ -54,18 +74,18 @@ export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
   user.imageURL = ftUserInfo.imageURL;
   return user;
 };
-
-export const deleteUserByIntra = async (intra: number): Promise<boolean> => {
+*/
+export const deleteUserById = async (id: string): Promise<boolean> => {
   const result = (await executeQuery(`
     SELECT *
     FROM user
-    WHERE intra = ?
-  `, [intra])) as User[];
+    WHERE id = ?
+  `, [id])) as User[];
   if (result?.length === 0) return false;
   await executeQuery(`
     DELETE FROM user
-    WHERE intra = ?
-  `, [intra]);
+    WHERE id = ?
+  `, [id]);
   return true;
 };
 
