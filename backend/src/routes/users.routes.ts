@@ -11,7 +11,7 @@ router.post('/', create)
  *    get:
  *      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
  *      parameters:
- *      - name: IntraId
+ *      - name: intraId
  *        in: query
  *        description: 닉네임
  *        required: false
@@ -47,7 +47,7 @@ router.post('/', create)
  *                          description: 이메일
  *                          type: string
  *                          example: "kyungsle@gmail.com"
- *                        IntraId:
+ *                        intraId:
  *                          description: 닉네임
  *                          type: string
  *                          example: "kyungsle"

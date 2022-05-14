@@ -3,7 +3,7 @@ import { executeQuery, pool } from '../mysql';
 
 export interface User {
   id: string,
-  IntraId: string,
+  intraId: string,
   IntraKey: number,
   slack?: string,
   penaltyEndDay?: Date,
@@ -13,13 +13,15 @@ export interface User {
   lendings?: [],
 }
 
-export const searchUserById = async (Id: string) => {
+export const searchUserByIntraId = async (intraId: string, limit: number, page: number) => {
   const rows = (await executeQuery(`
     SELECT *
       FROM user
-    WHERE
-      IntraKey = ?
-  `, [Id])) as User[];
+    LIKE
+      intraId = %?%
+    LIMIT ?
+    OFFSET ?;
+  `, [intraId, limit, limit * page])) as User[];
   return rows[0];
 };
 
