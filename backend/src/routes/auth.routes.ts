@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { getMe, getOAuth, getToken } from '../auth/auth.controller';
+import { getMe, getOAuth, getToken, register, login, logout } from '../auth/auth.controller';
 
 export const path = '/auth';
 export const router = Router();
@@ -37,4 +37,74 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *          description: 토큰이 없거나 올바르지 않다.
  */
 router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
-// router.get('/logout');
+
+/**
+ * @openapi
+ * /api/auth/register:
+ *    post:
+ *      description: 입력된 회원정보를 Users DB에 저장한다
+ *      responses:
+ *        200:
+ *          description: 정상적으로 회원가입절차 완료.
+ *        403:
+ *          description: Email 또는 Password 의 양식이 맞지 않음
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  error:
+ *                    description: 에러 발생 원인
+ *                    type: string
+ *        409:
+ *          description: 중복된 ID가 존재.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  error:
+ *                    description: 에러 발생 원인
+ *                    type: string
+ */
+router.post('/register', register);
+
+/**
+ * @openapi
+ * /api/auth/login:
+ *    post:
+ *      description: 입력된 회원정보를 Users DB에서 확인하여, Token을 발급해준다.
+ *      responses:
+ *        200:
+ *          description: 성공적으로 로그인 완료
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  token:
+ *                    description: 발급한 jwt token
+ *                    type: string
+ *        401:
+ *          description:
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  error:
+ *                    description: 에러 발생 원인
+ *                    type: string
+ */
+router.post('/login', login);
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *    post:
+ *      description: 발급한 token을 소멸시킨다.
+ *      responses:
+ *        200:
+ *          description: 정상적으로 token 삭제 완료
+ */
+router.post('/logout', logout);
