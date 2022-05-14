@@ -40,7 +40,7 @@ router
    *      - name: limit
    *        in: query
    *        description: 한 페이지 표시 개수
-   *        requied: true
+   *        required: true
    *        schema:
    *          type: integer
    *      - name: category
@@ -159,17 +159,15 @@ router
    *      tags:
    *      - books
    *      parameters:
-   *
    *      - name: sort
    *        in: query
    *        description: 정렬 기준
    *        schema:
    *          type: string
-   *          enum: [title, new]
+   *          enum: [new, popular]
    *      - name: limit
    *        in: query
    *        description: 한 페이지 표시 개수
-   *        requied: true
    *        schema:
    *          type: integer
    *      responses:
@@ -250,13 +248,13 @@ router
    *                        type: integer
    *                        example: 1
    *        '400':
-   *          description: query, page, limit 중 하나 이상이 없다.
+   *          description: 클라이언트 오류
    *          content:
    *            application/json:
    *              schema:
    *                type: string
    *                description: error decription
-   *                example: query, page, limit 중 하나 이상이 없습니다.
+   *                example: 클라이언트 오류.
    */
   .get("/info", info)
 
