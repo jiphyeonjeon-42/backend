@@ -12,17 +12,34 @@ export interface User {
   reservations?: [],
   lendings?: [],
 }
-
+export interface Meta {
+  totalItems: number,
+  itemCount: number,
+  itemsPerPage: number,
+  totalPages: number,
+  currentPage: number
+}
 export const searchUserByIntraId = async (intraId: string, limit: number, page: number) => {
-  const rows = (await executeQuery(`
-    SELECT *
-      FROM user
-    LIKE
-      intraId = %?%
+  const items = (await executeQuery(`
+    SELECT 
+    SQL_CALC_FOUND_ROWS
+    *
+    FROM user
+    WHERE login LIKE ?
     LIMIT ?
     OFFSET ?;
-  `, [intraId, limit, limit * page])) as User[];
-  return rows[0];
+  `, [`%${intraId}%`, limit, limit * page])) as User[];
+  const total = (await executeQuery(`
+  SELECT FOUND_ROWS() as totalItems;
+  `));
+  const meta: Meta = {
+    totalItems: total[0].totalItems,
+    itemCount: items.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(total[0].totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items, meta };
 };
 
 export const searchAllUsers = async (limit: number, page: number): Promise<User> => {

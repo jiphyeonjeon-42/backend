@@ -14,6 +14,8 @@ const app: express.Application = express();
 app.use(morganMiddleware);
 app.use(cookieParser());
 app.use(passport.initialize());
+app.use(express.urlencoded());
+app.use(express.json());
 
 passport.use('42', FtStrategy);
 passport.use('jwt', JwtStrategy);

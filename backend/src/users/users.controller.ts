@@ -7,13 +7,13 @@ interface Params {
   limit?: number;
 }
 
-export const search: RequestHandler = (req: Request, res: Response) => {
-  const { intraId, page = 1, limit = 5 }: Params = req.body.params;
-
+export const search: RequestHandler = async (req: Request, res: Response) => {
+  const { intraId, page = 1, limit = 5 }: Params = req.body;
   if (intraId === '') {
-    return res.send(searchAllUsers(page, limit));
+    res.send(searchAllUsers(page, limit));
   }
-  return res.send(searchUserByIntraId(intraId, page, limit));
+  const items = JSON.parse(JSON.stringify(await searchUserByIntraId(intraId, limit, page)));
+  res.send(items);
 };
 
 export const create: RequestHandler = (req: Request, res: Response) => {};
