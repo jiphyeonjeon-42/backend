@@ -8,27 +8,20 @@ router.post('/', create)
 /**
  * @openapi
  * /api/users/search:
- *    get:
+ *    post:
  *      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
- *      parameters:
- *      - name: intraId
- *        in: query
- *        description: 닉네임
- *        required: false
- *        schema:
- *          type: string
- *      - name: page
- *        in: query
- *        description: 페이지 수
- *        required: true
- *        schema:
- *          type: integer
- *      - name: limit
- *        in: query
- *        description: 한 페이지 표시 개수
- *        requied: true
- *        schema:
- *          type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                intraId:
+ *                  type: string
+ *                page:
+ *                  type: integer
+ *                limit:
+ *                  type: integer
  *      responses:
  *        '200':
  *          description: 검색 결과를 반환한다.
@@ -112,4 +105,4 @@ router.post('/', create)
  *                type: string
  *                description: error decription
  *                example: page, limit 중 한 개 이상이 존재 하지 않습니다..
- */.get('/', search);
+ */.post('/search', search);
