@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   searchBookInfo,
-  info,
+  sortInfo,
   booker,
   search,
   getInfoId,
@@ -256,7 +256,7 @@ router
    *                description: error decription
    *                example: 클라이언트 오류.
    */
-  .get("/info", info)
+  .get("/info", sortInfo)
 
   /**
    * @openapi

@@ -166,6 +166,42 @@ export const deleteBook = async (book: Book): Promise<boolean> => {
   return true;
 };
 
+export const sortInfo = async (sort: string, limit: number) => {
+  let ordering = "";
+  switch (sort) {
+    case "popular":
+      ordering = "ORDER BY book 추후 수정 필요함.";
+    default:
+      ordering = "ORDER BY book_info.createdAt DESC";
+  }
+
+  const bookList = (await executeQuery(
+    `
+    SELECT
+      book_info.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      book_info.image AS image,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      book_info.publishedAt as publishedAt,
+      book_info.createdAt as createdAt,
+      book_info.updatedAt as updatedAt
+    FROM book_info
+    ${ordering}
+    LIMIT ?;
+  `,
+    [limit]
+  )) as BookInfo[];
+
+  return { items: bookList };
+};
+
 export const searchInfo = async (
   query: string,
   sort: string,

@@ -51,7 +51,26 @@ export const getInfoId: RequestHandler = async (
     res.status(status.OK).json(await BooksService.getInfo(bookId));
   }
 };
-export const info: RequestHandler = (req: Request, res: Response) => {};
+export const sortInfo = async (
+  req: Request<{}, {}, {}, { sort: string; limit: string }>,
+  res: Response
+) => {
+  const { sort, limit } = req.query;
+  if (!(sort && limit)) {
+    res
+      .status(400)
+      .send(
+        new ErrorResponse(
+          status.BAD_REQUEST,
+          "sort, limit 중 하나 이상이 없습니다."
+        )
+      );
+  } else {
+    res
+      .status(status.OK)
+      .json(await BooksService.sortInfo(sort, parseInt(limit, 10)));
+  }
+};
 
 export const booker: RequestHandler = (req: Request, res: Response) => {
   res.send("hello express");
