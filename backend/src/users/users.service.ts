@@ -1,40 +1,84 @@
 import { FtTypes } from '../auth/auth.service';
-import { executeQuery, pool } from '../mysql';
+import { executeQuery } from '../mysql';
+import * as models from './users.model';
 
-export interface User {
-  id: number,
-  login: string,
-  intra: number,
-  slack?: string,
-  penaltyAt?: Date,
-  librarian?: number,
-  createdAt?: Date,
-  updatedAt?: Date,
-  imageURL?: string,
-}
-
-export const identifyUserByLogin = async (login: string) => {
-  const rows = (await executeQuery(`
-    SELECT *
-      FROM user
-    WHERE
-      login = ?
-  `, [login])) as User[];
-  return rows[0];
+export const searchUserByNickName = async (nickName: string, limit: number, page: number) => {
+  const items = (await executeQuery(`
+    SELECT 
+    SQL_CALC_FOUND_ROWS
+    *
+    FROM user
+    WHERE nickName LIKE ?
+    LIMIT ?
+    OFFSET ?;
+  `, [`%${nickName}%`, limit, limit * page])) as models.User[];
+  const total = (await executeQuery(`
+  SELECT FOUND_ROWS() as totalItems;
+  `));
+  const meta: models.Meta = {
+    totalItems: total[0].totalItems,
+    itemCount: items.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(total[0].totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items, meta };
 };
 
-export const identifyUserById = async (id: number): Promise<User> => {
+export const searchUserById = async (id: number) => {
+  const items = (await executeQuery(`
+    SELECT 
+    *
+    FROM user
+    WHERE id=?;
+  `, [id])) as models.User[];
+  return { items };
+};
+
+export const searchUserByEmail = async (email: string) => {
+  const items = (await executeQuery(`
+    SELECT 
+    *
+    FROM user
+    WHERE email LIKE ?;
+  `, [email])) as models.User[];
+  return { items };
+};
+
+export const searchUserByIntraId = async (intraId: number) => {
   const result = (await executeQuery(`
     SELECT *
       FROM user
     WHERE
-      id = ?
-    LIMIT 1;
-  `, [id])) as User[];
-  return result[0];
+      intraId = ?
+  `, [intraId])) as models.User[];
+  return result;
 };
 
-export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
+export const searchAllUsers = async (limit: number, page: number) => {
+  const items = (await executeQuery(`
+    SELECT
+    SQL_CALC_FOUND_ROWS
+    *
+    FROM user
+    LIMIT ?
+    OFFSET ?;
+  `, [limit, limit * page])) as models.User[];
+  const total = (await executeQuery(`
+  SELECT FOUND_ROWS() as to
+  talItems;
+  `));
+  const meta: models.Meta = {
+    totalItems: total[0].totalItems,
+    itemCount: items.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(total[0].totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items, meta };
+};
+/*
+export const createUser = async (ftUserInfo: FtTypes): Promise<models.User> => {
   await executeQuery(`
     INSERT INTO user(
       login, intra
@@ -49,24 +93,35 @@ export const createUser = async (ftUserInfo: FtTypes): Promise<User> => {
     WHERE
       login = ?
     ;
-  `, [ftUserInfo.login])) as User[];
+  `, [ftUserInfo.login])) as models.User[];
   const user = result[0];
   user.imageURL = ftUserInfo.imageURL;
   return user;
 };
-
-export const deleteUserByIntra = async (intra: number): Promise<boolean> => {
+*/
+export const deleteUserById = async (id: string): Promise<boolean> => {
   const result = (await executeQuery(`
     SELECT *
     FROM user
-    WHERE intra = ?
-  `, [intra])) as User[];
+    WHERE id = ?
+  `, [id])) as models.User[];
   if (result?.length === 0) return false;
   await executeQuery(`
     DELETE FROM user
-    WHERE intra = ?
-  `, [intra]);
+    WHERE id = ?
+  `, [id]);
   return true;
 };
 
+// 없어질 함수입니다. 다른 함수로 바꾸세요 searchUsersById 추천
+export const identifyUserById = async (id: number): Promise<models.User> => {
+  const result = (await executeQuery(`
+    SELECT *
+      FROM user
+    WHERE
+      id = ?
+    LIMIT 1;
+  `, [id])) as models.User[];
+  return result[0];
+};
 // export const searchByLogin = async (login: string, page: number, limit: number) => {};

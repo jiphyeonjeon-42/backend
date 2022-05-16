@@ -1,8 +1,19 @@
 import { Request, RequestHandler, Response } from 'express';
+import { searchAllUsers, searchUserByIntraId } from './users.service';
 
-export const search: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
-  // search 함수
+interface Params {
+  intraId: string;
+  page?: number;
+  limit?: number;
+}
+
+export const search: RequestHandler = async (req: Request, res: Response) => {
+  const { intraId, page = 1, limit = 5 }: Params = req.body;
+  if (intraId === '') {
+    res.send(searchAllUsers(page, limit));
+  }
+  const items = JSON.parse(JSON.stringify(await searchUserByIntraId(intraId, limit, page)));
+  res.send(items);
 };
 
 export const create: RequestHandler = (req: Request, res: Response) => {};
