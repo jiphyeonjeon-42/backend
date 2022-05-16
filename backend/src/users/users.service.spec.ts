@@ -146,22 +146,4 @@ describe('UsersService', () => {
     });
   });
 
-  // it('User is created and deleted', async () => {
-  //   const ftUserInfo: FtTypes = {
-  //     intra: 44444,
-  //     login: 'test',
-  //     imageURL: 'http://localhost:3000/img',
-  //   };
-  //   expect(await UsersService.deleteUserByIntra(ftUserInfo.intra)).toBe(false);
-  //   expect(await UsersService.createUser(ftUserInfo)).toEqual(
-  //     expect.objectContaining({
-  //       login: 'test',
-  //       intra: 44444,
-  //       slack: '0',
-  //       librarian: 0,
-  //       imageURL: 'http://localhost:3000/img',
-  //     }),
-  //   );
-  //   expect(await UsersService.deleteUserByIntra(ftUserInfo.intra)).toBe(true);
-  // });
 });

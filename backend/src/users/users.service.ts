@@ -76,28 +76,20 @@ export const searchAllUsers = async (limit: number, page: number) => {
   };
   return { items, meta };
 };
-/*
-export const createUser = async (ftUserInfo: FtTypes): Promise<models.User> => {
+
+export const createUser = async (email: string, password: string) => {
   await executeQuery(`
     INSERT INTO user(
-      login, intra
+      email, password, nickName
     )
     VALUES (
-      ?, ?
+      ?, ?, ?
     );
-  `, [ftUserInfo.login, ftUserInfo.intra]);
-  const result = (await executeQuery(`
-    SELECT *
-      FROM user
-    WHERE
-      login = ?
-    ;
-  `, [ftUserInfo.login])) as models.User[];
-  const user = result[0];
-  user.imageURL = ftUserInfo.imageURL;
-  return user;
+  `, [email, password, '']);
+  return null;
 };
-*/
+
+// 구현 전 함수
 export const deleteUserById = async (id: string): Promise<boolean> => {
   const result = (await executeQuery(`
     SELECT *

@@ -1,10 +1,16 @@
-import { Request, RequestHandler, Response } from 'express';
-import { searchAllUsers, searchUserByNickName } from './users.service';
+import bcrypt from 'bcrypt';
+import { Request,  Response } from 'express';
+import { createUser, searchAllUsers, searchUserByNickName } from './users.service';
 
 export interface searchQuery {
   nickName: string;
   page?: number;
   limit?: number;
+}
+
+export interface createQuery {
+  email: string;
+  password: string;
 }
 
 export const search = async (
@@ -20,4 +26,7 @@ export const search = async (
   }
 };
 
-export const create = (req: Request, res: Response) => {};
+export const create = async (req: Request<{}, {}, {}, createQuery>) => {
+  const { email, password } = req.query;
+  createUser(email, await bcrypt.hash(password, 10));
+};
