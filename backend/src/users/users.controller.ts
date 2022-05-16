@@ -4,8 +4,8 @@ import { createUser, searchAllUsers, searchUserByNickName } from './users.servic
 
 export interface searchQuery {
   nickName: string;
-  page?: number;
-  limit?: number;
+  page?: string;
+  limit?: string;
 }
 
 export interface createQuery {
@@ -17,11 +17,12 @@ export const search = async (
   req: Request<{}, {}, {}, searchQuery>,
   res: Response,
 ) => {
-  const { nickName = '', page = 1, limit = 5 } = req.query;
+  const { nickName = '', page = '1', limit = '5' } = req.query;
   if (nickName === '') {
-    res.send(searchAllUsers(page, limit));
+    res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
   } else if (nickName) {
-    const items = JSON.parse(JSON.stringify(await searchUserByNickName(nickName, limit, page)));
+    const items = JSON.parse(JSON.stringify(await
+    searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
     res.send(items);
   }
 };

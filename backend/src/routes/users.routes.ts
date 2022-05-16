@@ -8,20 +8,27 @@ router.post('/', create)
 /**
  * @openapi
  * /api/users/search:
- *    post:
- *      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                intraId:
- *                  type: string
- *                page:
- *                  type: integer
- *                limit:
- *                  type: integer
+ *    get:
+ *      description: 유저 정보를 검색해 온다. nickName 이 null이거나 빈 문자열이면 모든 유저를 검색한다.
+ *      parameters:
+ *      - name: nickName
+ *        in: query
+ *        description: 유저 닉네임 검색어
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: limit
+ *        in: query
+ *        description: 한 페이지 표시 개수
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      - name: page
+ *        in: query
+ *        description: 페이지 수
+ *        required: true
+ *        schema:
+ *          type: integer
  *      responses:
  *        '200':
  *          description: 검색 결과를 반환한다.
@@ -37,14 +44,18 @@ router.post('/', create)
  *                      type: object
  *                      properties:
  *                        id:
+ *                          description: 유저 번호
+ *                          type: integer
+ *                          example: 3
+ *                        email:
  *                          description: 이메일
  *                          type: string
  *                          example: "kyungsle@gmail.com"
- *                        intraId:
+ *                        nickName:
  *                          description: 닉네임
  *                          type: string
  *                          example: "kyungsle"
- *                        IntraKey:
+ *                        intraId:
  *                          description: 인트라 고유 번호
  *                          type: integer
  *                          example: 10068
@@ -105,4 +116,4 @@ router.post('/', create)
  *                type: string
  *                description: error decription
  *                example: page, limit 중 한 개 이상이 존재 하지 않습니다..
- */.post('/search', search);
+ */.get('/search', search);
