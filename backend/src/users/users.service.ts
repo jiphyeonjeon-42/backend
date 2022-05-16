@@ -31,8 +31,8 @@ export const searchUserById = async (id: number) => {
     *
     FROM user
     WHERE id=?;
-  `, [id])) as models.User[];
-  return { items };
+  `, [id])) as models.User;
+  return items;
 };
 
 export const searchUserByEmail = async (email: string) => {
@@ -41,17 +41,17 @@ export const searchUserByEmail = async (email: string) => {
     *
     FROM user
     WHERE email LIKE ?;
-  `, [email])) as models.User[];
-  return { items };
+  `, [email])) as models.User;
+  return items;
 };
 
 export const searchUserByIntraId = async (intraId: number) => {
   const result = (await executeQuery(`
     SELECT *
-      FROM user
+    FROM user
     WHERE
       intraId = ?
-  `, [intraId])) as models.User[];
+  `, [intraId])) as models.User;
   return result;
 };
 
@@ -65,8 +65,7 @@ export const searchAllUsers = async (limit: number, page: number) => {
     OFFSET ?;
   `, [limit, limit * page])) as models.User[];
   const total = (await executeQuery(`
-  SELECT FOUND_ROWS() as to
-  talItems;
+  SELECT FOUND_ROWS() as totalItems;
   `));
   const meta: models.Meta = {
     totalItems: total[0].totalItems,
