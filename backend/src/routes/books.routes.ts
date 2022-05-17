@@ -331,5 +331,108 @@ router
    *                example: id가 숫자가 아닙니다.
    */
   .get("/info/:id", getInfoId)
-  .get("/:id/reservations/count", booker)
+  .get("/:id/reservations/count", booker);
+
+router
+  /**
+   * @openapi
+   * /api/books/search:
+   *    get:
+   *      description: 사서용 책 정보를 검색하여 가져온다. 책이 대출할 수 있는지 확인 할 수 있음
+   *      tags:
+   *      - books
+   *      parameters:
+   *      - name: query
+   *        in: query
+   *        description: 검색어
+   *        required: true
+   *        schema:
+   *          type: string
+   *      - name: page
+   *        in: query
+   *        description: 페이지 수
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      - name: limit
+   *        in: query
+   *        description: 한 페이지 표시 개수
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '200':
+   *          description: 검색 결과를 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 검색된 책들의 목록
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id:
+   *                          description: 고유 id
+   *                          type: integer
+   *                          example: 340
+   *                        title:
+   *                          description: 제목
+   *                          type: string
+   *                          example: "한눈에 보이는 무료 글꼴 가이드: 영어편"
+   *                        author:
+   *                          description: 저자
+   *                          type: string
+   *                          example: 탁연상
+   *                        publisher:
+   *                          description: 출판사
+   *                          type: string
+   *                          example: DigitalNew
+   *                        isbn:
+   *                          description: 책의 isbn
+   *                          type: string
+   *                          example: 9791195982394
+   *                        category:
+   *                          description: 카데고리
+   *                          type: string
+   *                          example: 기술교양
+   *                        isLenderable:
+   *                          description: 대출 가능 여부
+   *                          type: boolean
+   *                          example: true
+   *                  meta:
+   *                    description: 책 수와 관련된 정보
+   *                    type: object
+   *                    properties:
+   *                      totalItems:
+   *                        description: 전체 검색 결과 수
+   *                        type: integer
+   *                        example: 1
+   *                      itemCount:
+   *                        description: 현재 페이지 검색 결과 수
+   *                        type: integer
+   *                        example: 1
+   *                      itemsPerPage:
+   *                        description: 페이지 당 검색 결과 수
+   *                        type: integer
+   *                        example: 1
+   *                      totalPages:
+   *                        description: 전체 결과 페이지 수
+   *                        type: integer
+   *                        example: 1
+   *                      currentPage:
+   *                        description: 현재 페이지
+   *                        type: integer
+   *                        example: 1
+   *        '400':
+   *          description: query, page, limit 중 하나 이상이 없다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: string
+   *                description: error decription
+   *                example: query, page, limit 중 하나 이상이 없습니다.
+   */
   .get("/search", search);
