@@ -168,9 +168,11 @@ export const deleteBook = async (book: Book): Promise<boolean> => {
 
 export const sortInfo = async (sort: string, limit: number) => {
   let ordering = "";
+  console.log("sort : ", sort);
   switch (sort) {
     case "popular":
-      ordering = "ORDER BY book 추후 수정 필요함.";
+      ordering = "ORDER BY lendingCnt DESC";
+      break;
     default:
       ordering = "ORDER BY book_info.createdAt DESC";
   }
@@ -191,8 +193,11 @@ export const sortInfo = async (sort: string, limit: number) => {
       ) AS category,
       book_info.publishedAt as publishedAt,
       book_info.createdAt as createdAt,
-      book_info.updatedAt as updatedAt
-    FROM book_info
+      book_info.updatedAt as updatedAt,
+      COUNT(lending.id) as lendingCnt
+    FROM book_info, lending
+    WHERE book_info.id = lending.bookId
+    GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
   `,
