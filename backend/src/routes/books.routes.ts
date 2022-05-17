@@ -30,7 +30,7 @@ router
    *        description: 정렬 기준
    *        schema:
    *          type: string
-   *          enum: [title, new]
+   *          enum: [title,popular ,new]
    *      - name: page
    *        in: query
    *        description: 페이지 수
