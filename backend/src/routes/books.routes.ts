@@ -162,12 +162,14 @@ router
    *      - name: sort
    *        in: query
    *        description: 정렬 기준
+   *        required: true
    *        schema:
    *          type: string
    *          enum: [new, popular]
    *      - name: limit
    *        in: query
    *        description: 한 페이지 표시 개수
+   *        required: true
    *        schema:
    *          type: integer
    *      responses:
@@ -269,7 +271,6 @@ router
    *      - name: id
    *        in: path
    *        description: 책의 id
-   *        required: true
    *        schema:
    *          type: integer
    *      responses:
