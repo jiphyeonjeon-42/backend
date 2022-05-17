@@ -225,30 +225,12 @@ router
    *                          type: string
    *                          format: date
    *                          example: 2022-03-06T09:29:04.340Z
-   *                  meta:
-   *                    description: 책 수와 관련된 정보
-   *                    type: object
-   *                    properties:
-   *                      totalItems:
-   *                        description: 전체 검색 결과 수
-   *                        type: integer
-   *                        example: 1
-   *                      itemCount:
-   *                        description: 현재 페이지 검색 결과 수
-   *                        type: integer
-   *                        example: 1
-   *                      itemsPerPage:
-   *                        description: 페이지 당 검색 결과 수
-   *                        type: integer
-   *                        example: 1
-   *                      totalPages:
-   *                        description: 전체 결과 페이지 수
-   *                        type: integer
-   *                        example: 1
-   *                      currentPage:
-   *                        description: 현재 페이지
-   *                        type: integer
-   *                        example: 1
+   *                        lendingCnt:
+   *                          description: 전체기간동안 책이 빌려진 횟수
+   *                          type : number
+   *                          example: 1
+   *
+   *
    *        '400':
    *          description: 클라이언트 오류
    *          content:
