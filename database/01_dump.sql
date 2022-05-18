@@ -112,11 +112,11 @@ CREATE TABLE `lending` (
 -- Dumping data for table `lending`
 --
 
--- LOCK TABLES `lending` WRITE;
--- /*!40000 ALTER TABLE `lending` DISABLE KEYS */;
--- INSERT INTO `lending` VALUES (1,1,"ok",,,,,,1,1);
--- /*!40000 ALTER TABLE `lending` ENABLE KEYS */;
--- UNLOCK TABLES;
+LOCK TABLES `lending` WRITE;
+/*!40000 ALTER TABLE `lending` DISABLE KEYS */;
+INSERT INTO `lending` VALUES (1,1,"ok",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,1);
+/*!40000 ALTER TABLE `lending` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `reservation`
@@ -180,11 +180,11 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
--- LOCK TABLES `user` WRITE;
--- /*!40000 ALTER TABLE `user` DISABLE KEYS */;
--- INSERT INTO `user` VALUES (1,"example1@gmail.com","1234","nickName1","intraId1",NULL,0,,) ;
--- /*!40000 ALTER TABLE `user` ENABLE KEYS */;
--- UNLOCK TABLES;
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,"example1@gmail.com","1234","nickName1","intraId1",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT) ;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
