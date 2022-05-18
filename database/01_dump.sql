@@ -114,7 +114,7 @@ CREATE TABLE `lending` (
 
 LOCK TABLES `lending` WRITE;
 /*!40000 ALTER TABLE `lending` DISABLE KEYS */;
-INSERT INTO `lending` VALUES (1,1,"ok",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT,1,1);
+INSERT INTO `lending` (lendingLibrarianId, userId, bookId) VALUES (14, 1, 1);
 /*!40000 ALTER TABLE `lending` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,11 +148,11 @@ CREATE TABLE `reservation` (
 -- Dumping data for table `reservation`
 --
 
--- LOCK TABLES `reservation` WRITE;
--- /*!40000 ALTER TABLE `reservation` DISABLE KEYS */;
--- INSERT INTO `reservation` VALUES (1,NULL,'2022-01-12 10:31:19.191485','2022-01-12 10:31:19.191485',0,1,NULL,12);
--- /*!40000 ALTER TABLE `reservation` ENABLE KEYS */;
--- UNLOCK TABLES;
+ LOCK TABLES `reservation` WRITE;
+/*!40000 ALTER TABLE `reservation` DISABLE KEYS */;
+INSERT INTO `reservation` (userId, bookId, bookInfoId) VALUES (1, 1, 1);
+/*!40000 ALTER TABLE `reservation` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
@@ -182,7 +182,14 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,"example1@gmail.com","1234","nickName1","intraId1",DEFAULT,DEFAULT,DEFAULT,DEFAULT,DEFAULT) ;
+/*미인증 유저 예시 데이터*/
+INSERT INTO `user` (email, password) VALUES ("example_role0_1@gmail.com","1234"),("example_role0_2@gmail.com","1234"),("example_role0_3@gmail.com","1234"),("example_role0_3@gmail.com","1234"),("example_role0_3@gmail.com","1234"),("example_role0_3@gmail.com","1234"),("example_role0_4@gmail.com","1234"),("example_role0_5@gmail.com","1234"),("example_role0_6@gmail.com","1234"),("example_role0_7@gmail.com","1234"),("example_role0_8@gmail.com","1234"),("example_role0_9@gmail.com","1234"),("example_role0_10@gmail.com","1234"),("examp1e_role0_11@gmail.com","1234"),("example_role0_12@gmail.com","1234"),("example_role0_13@gmail.com","1234");
+/*인증유저 예시 데이터*/
+INSERT INTO `user` (email, password, nickname, intraId, role) VALUES ("example_role1_1@gmail.com","1234", "seongyle1", 1, 1),("example_role1_2@gmail.com","1234", "seongyle2", 2, 1),("example_role_1_3@gmail.com","1234", "seongyle3", 3, 1),("example_role1_4@gmail.com","1234", "seongyle4", 4, 1),("example_role_1_5@gmail.com","1234", "seongyle5", 5, 1),("example_role1_6@gmail.com","1234", "seongyle6", 6, 1),("example_role1_7@gmail.com","1234", "seongyle7", 7, 1),("example_role1_8@gmail.com","1234", "seongyle2", 8, 1),("example_role1_9@gmail.com","1234", "seongyle9", 9, 1),("example_role1_10@gmail.com","1234", "seongyle10", 10, 1),("example_role1_11@gmail.com","1234", "seongyle11", 11, 1),("example_role1_12@gmail.com","1234", "seongyle12", 12, 1),("example_role1_13@gmail.com","1234", "seongyle13", 13, 1);
+/*기타 운영진 예시 데이터*/
+INSERT INTO `user` (email, password, nickname, role) VALUES ("example_role2_1@gmail.com","1234", "vocal1", 2),("example_role2_2@gmail.com","1234", "vocal2", 2),("example_role_1_3@gmail.com","1234", "vocal3", 2),("example_role2_4@gmail.com","1234", "vocal4", 2),("example_role_1_5@gmail.com","1234", "vocal5", 2),("example_role2_6@gmail.com","1234", "vocal6", 2),("example_role2_7@gmail.com","1234", "vocal7", 2),("example_role2_8@gmail.com","1234", "vocal2", 2),("example_role2_9@gmail.com","1234", "vocal9", 2),("example_role2_10@gmail.com","1234", "vocal10", 2),("example_role2_11@gmail.com","1234", "vocal11", 2),("example_role2_12@gmail.com","1234", "vocal12", 2),("example_role2_13@gmail.com","1234", "vocal13", 2);
+/*사서유저 예시 데이터*/
+INSERT INTO `user` (email, password, nickname, intraId, role) VALUES ("example_role3_1@gmail.com","1234", "seongyle_librian1", 14, 3),("example_role3_2@gmail.com","1234", "seongyle_librian2", 15, 3),("example_role_1_3@gmail.com","1234", "seongyle_librian3", 16, 3),("example_role3_4@gmail.com","1234", "seongyle_librian4", 17, 3),("example_role_1_5@gmail.com","1234", "seongyle_librian5", 18, 3),("example_role3_6@gmail.com","1234", "seongyle_librian6", 19, 3),("example_role3_7@gmail.com","1234", "seongyle_librian7", 20, 3),("example_role3_8@gmail.com","1234", "seongyle_librian2", 21, 3),("example_role3_9@gmail.com","1234", "seongyle_librian9", 22, 3),("example_role3_10@gmail.com","1234", "seongyle_librian10", 23, 3),("example_role3_11@gmail.com","1234", "seongyle_librian11", 24, 3),("example_role3_12@gmail.com","1234", "seongyle_librian12", 25, 3),("example_role3_13@gmail.com","1234", "seongyle_librian13", 26, 3);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
