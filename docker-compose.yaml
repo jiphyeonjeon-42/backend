@@ -2,6 +2,7 @@ version: '3'
 
 services:
   database:
+    platform: linux/x86_64
     container_name: database
     image: mysql:8.0
     environment:
