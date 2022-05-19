@@ -10,12 +10,21 @@ import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
 import { morganMiddleware } from './utils/logger';
 
 const app: express.Application = express();
+const cors = require('cors');
 
 app.use(morganMiddleware);
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(express.urlencoded());
 app.use(express.json());
+app.use(cors({
+  origin: [
+    'http://localhost:4242',
+    'http://42library.kr',
+    'https://42library.kr',
+  ],
+  credentials: true,
+}));
 
 passport.use('42', FtStrategy);
 passport.use('jwt', JwtStrategy);
