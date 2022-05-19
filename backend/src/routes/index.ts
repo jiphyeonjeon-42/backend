@@ -3,7 +3,6 @@ import * as auth from './auth.routes';
 import * as books from './books.routes';
 import * as lendings from './lendings.routes';
 import * as reservations from './reservations.routes';
-import * as returnings from './returnings.routes';
 import * as users from './users.routes';
 
 const router = Router();
