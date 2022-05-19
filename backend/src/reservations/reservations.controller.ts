@@ -9,8 +9,8 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   const page = info.page as string ? info.page as string : '1';
   const limit = info.limit as string ? info.limit as string : '5';
   const filter = info.filter as string[];
-  
   const p :ReservationsPageInfo = new ReservationsPageInfo(page, limit, filter);
-  const data = await reservationsService.searchReservation(p.getPage(), p.getLimit(), p.getFilter());
+  const data = await reservationsService
+    .searchReservation(p.getPage(), p.getLimit(), p.getFilter());
   res.send(data);
 };
