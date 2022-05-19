@@ -11,7 +11,6 @@ router.use(auth.path, auth.router);
 router.use(books.path, books.router);
 router.use(lendings.path, lendings.router);
 router.use(reservations.path, reservations.router);
-router.use(returnings.path, returnings.router);
 router.use(users.path, users.router);
 
 export default router;
