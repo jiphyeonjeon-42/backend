@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import { create, search, booksId } from '../lendings/lendings.controller';
+import {
+  create, search, booksId, returnBook,
+} from '../lendings/lendings.controller';
 
 export const path = '/lendings';
 export const router = Router();
@@ -221,4 +223,53 @@ export const router = Router();
  *          description: db 에러
  */
 
-router.post('/', create).get('/search', search).get('/:id', booksId);
+/**
+ * @openapi
+ * /api/lendings/return:
+ *    patch:
+ *      tags:
+ *      - lendings
+ *      summary: 반납 처리
+ *      description: 대출 레코드에 반납 처리를 한다.
+ *      requestBody:
+ *        description: lendingId는 대출 고유 아이디, condition은 반납 당시 책 상태
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                lendingId:
+ *                  type: integer
+ *                condition:
+ *                  type: string
+ *              required:
+ *                - lendingId
+ *                - condition
+ *      responses:
+ *        '200':
+ *          description: 반납처리 완료
+ *        '400':
+ *          description: 에러코드 0 dto에러 잘못된 json key, 1 db 에러 알 수 없는 lending id 등
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *        '401':
+ *          description: 알 수 없는 사용자 0 로그인 안 된 유저 1 사서권한없음
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ * */
+
+router
+  .post('/', create)
+  .get('/search', search)
+  .get('/:id', booksId)
+  .patch('/return', returnBook);

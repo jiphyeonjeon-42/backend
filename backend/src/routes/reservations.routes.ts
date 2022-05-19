@@ -295,7 +295,7 @@ export const router = Router();
 /**
  * @openapi
  * /api/reservations/cancel/{id}:
- *    post:
+ *    patch:
  *      tags:
  *      - reservations
  *      summary: 예약 취소
