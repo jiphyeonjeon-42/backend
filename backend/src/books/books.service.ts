@@ -1,55 +1,8 @@
-import { RowDataPacket } from "mysql2";
 import { executeQuery } from "../mysql";
 import { StringRows } from "../utils/types";
+import * as models from "./books.model";
 
-export interface BookInfo extends RowDataPacket {
-  id?: number;
-  title: string;
-  author: string;
-  publisher: string;
-  isbn?: string;
-  image: string;
-  category: string;
-  publishedAt?: string | Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface BookEach extends RowDataPacket {
-  id?: number;
-  donator: string;
-  donatorId?: number;
-  callSign: string;
-  status: number;
-  createdAt: Date;
-  updatedAt: Date;
-  infoId: number;
-}
-
-export interface Book {
-  title: string;
-  author: string;
-  publisher: string;
-  isbn: string;
-  image?: string;
-  category: string;
-  publishedAt?: Date;
-  donator?: string;
-  callSign: string;
-  status: number;
-}
-
-interface categoryCount extends RowDataPacket {
-  name: string;
-  count: number;
-}
-
-interface lending extends RowDataPacket {
-  lendingCreatedAt: Date;
-  returningCreatedAt: Date;
-}
-
-export const createBook = async (book: Book): Promise<void> => {
+export const createBook = async (book: models.Book): Promise<void> => {
   const result = (await executeQuery(
     `
     SELECT
@@ -135,7 +88,7 @@ export const createBook = async (book: Book): Promise<void> => {
   );
 };
 
-export const deleteBook = async (book: Book): Promise<boolean> => {
+export const deleteBook = async (book: models.Book): Promise<boolean> => {
   const result = (await executeQuery(
     `
     SELECT *
@@ -143,7 +96,7 @@ export const deleteBook = async (book: Book): Promise<boolean> => {
     WHERE callSign = ?
   `,
     [book.callSign]
-  )) as BookEach[];
+  )) as models.BookEach[];
   if (result.length === 0) {
     return false;
   }
@@ -202,7 +155,7 @@ export const sortInfo = async (sort: string, limit: number) => {
     LIMIT ?;
   `,
     [limit]
-  )) as BookInfo[];
+  )) as models.BookInfo[];
 
   return { items: bookList };
 };
@@ -254,7 +207,7 @@ export const searchInfo = async (
     GROUP BY name;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`]
-  )) as categoryCount[];
+  )) as models.categoryCount[];
   const categoryHaving = categoryName ? `category = '${categoryName}'` : "TRUE";
   const bookList = (await executeQuery(
     `
@@ -288,7 +241,7 @@ export const searchInfo = async (
     OFFSET ?;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit]
-  )) as BookInfo[];
+  )) as models.BookInfo[];
 
   const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
   const meta = {
@@ -311,7 +264,7 @@ const statusConverter = (status: number, dueDate: string) => {
   return "알 수 없음";
 };
 
-const getDueDate = (lendingData: lending[]) => {
+const getDueDate = (lendingData: models.lending[]) => {
   if (lendingData && lendingData.length === 0) return "-";
   const lastLending = lendingData.sort(
     (a, b) =>
@@ -347,7 +300,7 @@ export const getInfo = async (id: number) => {
       id = ?
   `,
     [id]
-  )) as BookInfo[];
+  )) as models.BookInfo[];
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);
     bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
@@ -365,7 +318,7 @@ export const getInfo = async (id: number) => {
       infoId = ?
   `,
     [id]
-  )) as BookEach[];
+  )) as models.BookEach[];
 
   const donators: string[] = [];
   const books = await Promise.all(
@@ -381,7 +334,7 @@ export const getInfo = async (id: number) => {
         bookId = ?
     `,
         [val.id]
-      )) as lending[];
+      )) as models.lending[];
       const dueDate = getDueDate(lendingData);
       const status = statusConverter(val.status, dueDate);
 

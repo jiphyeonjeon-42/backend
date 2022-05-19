@@ -2,17 +2,11 @@ import { NextFunction, Request, RequestHandler, Response } from "express";
 import * as status from "http-status";
 import ErrorResponse from "../errorResponse";
 import * as BooksService from "./books.service";
+import * as types from "./books.type";
 
-export interface SearchBookInfoQuery {
-  query: string;
-  sort: string;
-  page: string;
-  limit: string;
-  category: string;
-}
 
 export const searchBookInfo = async (
-  req: Request<{}, {}, {}, SearchBookInfoQuery>,
+  req: Request<{}, {}, {}, types.SearchBookInfoQuery>,
   res: Response,
   next: NextFunction
 ) => {
@@ -52,7 +46,7 @@ export const getInfoId: RequestHandler = async (
   }
 };
 export const sortInfo = async (
-  req: Request<{}, {}, {}, { sort: string; limit: string }>,
+  req: Request<{}, {}, {}, types.SortInfoType>,
   res: Response
 ) => {
   const { sort, limit } = req.query;
