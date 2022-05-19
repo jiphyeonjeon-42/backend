@@ -311,7 +311,7 @@ export const router = Router();
  *        '200':
  *          description: 예약 취소처리 완료
  *        '400':
- *          description: 에러코드 0 dto에러 잘못된 json key, 1 db 에러
+ *          description: 에러코드 0 dto에러 잘못된 json key 1 존재하지 않는 예약 아이디
  *          content:
  *            application/json:
  *              schema:
