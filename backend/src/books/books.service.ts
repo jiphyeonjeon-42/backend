@@ -1,6 +1,6 @@
-import { executeQuery } from "../mysql";
-import { StringRows } from "../utils/types";
-import * as models from "./books.model";
+import { executeQuery } from '../mysql';
+import { StringRows } from '../utils/types';
+import * as models from './books.model';
 
 export const createBook = async (book: models.Book): Promise<void> => {
   const result = (await executeQuery(
@@ -10,13 +10,13 @@ export const createBook = async (book: models.Book): Promise<void> => {
     FROM book_info
     WHERE isbn = ?
   `,
-    [book.isbn]
+    [book.isbn],
   )) as StringRows[];
   if (result.length === 0) {
     let image = null;
     if (!book.image) {
       image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(
-        -3
+        -3,
       )}/x${book.isbn}.jpg`;
     }
     await executeQuery(
@@ -51,7 +51,7 @@ export const createBook = async (book: models.Book): Promise<void> => {
         book.image ?? image,
         book.category,
         book.publishedAt,
-      ]
+      ],
     );
   }
   await executeQuery(
@@ -79,12 +79,12 @@ export const createBook = async (book: models.Book): Promise<void> => {
     )
   `,
     [
-      book.donator ?? "null",
-      book.donator ?? "0",
+      book.donator ?? 'null',
+      book.donator ?? '0',
       book.callSign,
       book.status,
       book.isbn,
-    ]
+    ],
   );
 };
 
@@ -95,7 +95,7 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
     FROM book
     WHERE callSign = ?
   `,
-    [book.callSign]
+    [book.callSign],
   )) as models.BookEach[];
   if (result.length === 0) {
     return false;
@@ -105,7 +105,7 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
     DELETE FROM book
     WHERE callSign = ?
   `,
-    [book.callSign]
+    [book.callSign],
   );
   if (result.length === 1) {
     await executeQuery(
@@ -113,21 +113,20 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
       DELETE FROM book_info
       WHERE id = ?
     `,
-      [result[0].infoId]
+      [result[0].infoId],
     );
   }
   return true;
 };
 
 export const sortInfo = async (sort: string, limit: number) => {
-  let ordering = "";
-  console.log("sort : ", sort);
+  let ordering = '';
   switch (sort) {
-    case "popular":
-      ordering = "ORDER BY lendingCnt DESC";
+    case 'popular':
+      ordering = 'ORDER BY lendingCnt DESC';
       break;
     default:
-      ordering = "ORDER BY book_info.createdAt DESC";
+      ordering = 'ORDER BY book_info.createdAt DESC';
   }
 
   const bookList = (await executeQuery(
@@ -154,7 +153,7 @@ export const sortInfo = async (sort: string, limit: number) => {
     ${ordering}
     LIMIT ?;
   `,
-    [limit]
+    [limit],
   )) as models.BookInfo[];
 
   return { items: bookList };
@@ -165,18 +164,18 @@ export const searchInfo = async (
   sort: string,
   page: number,
   limit: number,
-  category: string | null
+  category: string | null,
 ) => {
-  let ordering = "";
+  let ordering = '';
   switch (sort) {
-    case "title":
-      ordering = "ORDER BY book_info.title";
+    case 'title':
+      ordering = 'ORDER BY book_info.title';
       break;
-    case "popular":
-      ordering = "ORDER BY lendingCnt DESC";
+    case 'popular':
+      ordering = 'ORDER BY lendingCnt DESC';
       break;
     default:
-      ordering = "ORDER BY book_info.createdAt DESC";
+      ordering = 'ORDER BY book_info.createdAt DESC';
   }
   const categoryResult = (await executeQuery(
     `
@@ -184,12 +183,12 @@ export const searchInfo = async (
     FROM category
     WHERE name = ?
   `,
-    [category]
+    [category],
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
   const categoryWhere = categoryName
     ? `category.name = '${categoryName}'`
-    : "TRUE";
+    : 'TRUE';
   const categoryList = (await executeQuery(
     `
     SELECT
@@ -206,9 +205,9 @@ export const searchInfo = async (
       )
     GROUP BY name;
   `,
-    [`%${query}%`, `%${query}%`, `%${query}%`]
+    [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
-  const categoryHaving = categoryName ? `category = '${categoryName}'` : "TRUE";
+  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
   const bookList = (await executeQuery(
     `
     SELECT
@@ -240,7 +239,7 @@ export const searchInfo = async (
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit]
+    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
   const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
@@ -256,27 +255,26 @@ export const searchInfo = async (
 
 const statusConverter = (status: number, dueDate: string) => {
   if (status === 0) {
-    if (dueDate !== "-") return "대출 중";
-    return "비치 중";
+    if (dueDate !== '-') return '대출 중';
+    return '비치 중';
   }
-  if (status === 1) return "분실";
-  if (status === 2) return "파손";
-  return "알 수 없음";
+  if (status === 1) return '분실';
+  if (status === 2) return '파손';
+  return '알 수 없음';
 };
 
 const getDueDate = (lendingData: models.lending[]) => {
-  if (lendingData && lendingData.length === 0) return "-";
+  if (lendingData && lendingData.length === 0) return '-';
   const lastLending = lendingData.sort(
-    (a, b) =>
-      new Date(b.lendingCreatedAt).getTime() -
-      new Date(a.lendingCreatedAt).getTime()
+    (a, b) => new Date(b.lendingCreatedAt).getTime()
+      - new Date(a.lendingCreatedAt).getTime(),
   )[0];
   if (lastLending.returningCreatedAt) {
-    return "-";
+    return '-';
   }
   const tDate = new Date(lastLending.lendingCreatedAt);
   tDate.setDate(tDate.getDate() + 14);
-  return tDate.toJSON().substring(2, 10).split("-").join(".");
+  return tDate.toJSON().substring(2, 10).split('-').join('.');
 };
 
 export const getInfo = async (id: number) => {
@@ -299,7 +297,7 @@ export const getInfo = async (id: number) => {
     WHERE
       id = ?
   `,
-    [id]
+    [id],
   )) as models.BookInfo[];
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);
@@ -317,7 +315,7 @@ export const getInfo = async (id: number) => {
     WHERE
       infoId = ?
   `,
-    [id]
+    [id],
   )) as models.BookEach[];
 
   const donators: string[] = [];
@@ -333,7 +331,7 @@ export const getInfo = async (id: number) => {
       WHERE
         bookId = ?
     `,
-        [val.id]
+        [val.id],
       )) as models.lending[];
       const dueDate = getDueDate(lendingData);
       const status = statusConverter(val.status, dueDate);
@@ -343,12 +341,12 @@ export const getInfo = async (id: number) => {
       }
       const { donator, ...rest } = val;
       return { ...rest, dueDate, status };
-    })
+    }),
   );
   if (donators.length === 0) {
-    bookSpec.donators = "-";
+    bookSpec.donators = '-';
   } else {
-    bookSpec.donators = donators.join(", ");
+    bookSpec.donators = donators.join(', ');
   }
   bookSpec.books = books;
   return bookSpec;

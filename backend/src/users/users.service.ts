@@ -1,4 +1,3 @@
-import { FtTypes } from '../auth/auth.service';
 import { executeQuery } from '../mysql';
 import * as models from './users.model';
 
