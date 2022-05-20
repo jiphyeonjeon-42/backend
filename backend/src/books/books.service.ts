@@ -18,7 +18,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   const author = 'isbn기호로 잘 찾아오기';
   const publisher = 'isbn기호로 잘 찾아오기';
   const publishedAt = 'isbn기호로 잘 찾아오기';
-  const category = await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`);
+  const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
   if (result.length === 0) {
     await executeQuery(
@@ -29,7 +29,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       publisher,
       isbn,
       image,
-      categoryId,
+      category,
       publishedAt
     ) VALUES (
       ?,
