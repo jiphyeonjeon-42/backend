@@ -1,4 +1,4 @@
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket } from 'mysql2';
 
 export interface BookInfo extends RowDataPacket {
     id?: number;
@@ -11,7 +11,7 @@ export interface BookInfo extends RowDataPacket {
     publishedAt?: string | Date;
     createdAt: Date;
     updatedAt: Date;
-};
+}
 
 export interface BookEach extends RowDataPacket {
     id?: number;
@@ -22,8 +22,8 @@ export interface BookEach extends RowDataPacket {
     createdAt: Date;
     updatedAt: Date;
     infoId: number;
-};
-  
+}
+
 export interface Book {
     title: string;
     author: string;
@@ -35,14 +35,14 @@ export interface Book {
     donator?: string;
     callSign: string;
     status: number;
-};
-  
+}
+
 export interface categoryCount extends RowDataPacket {
     name: string;
     count: number;
-};
-  
+}
+
 export interface lending extends RowDataPacket {
     lendingCreatedAt: Date;
     returningCreatedAt: Date;
-};
+}
