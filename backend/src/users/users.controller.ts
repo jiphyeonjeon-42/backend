@@ -12,7 +12,7 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   if (intraId === '') {
     res.send(searchAllUsers(page, limit));
   }
-  const items = JSON.parse(JSON.stringify(await searchUserByIntraId(intraId, limit, page)));
+  const items = JSON.parse(JSON.stringify(await searchUserByIntraId(parseInt(intraId, 10))));
   res.send(items);
 };
 
