@@ -1,13 +1,14 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   searchBookInfo,
   sortInfo,
   booker,
   search,
   getInfoId,
-} from "../books/books.controller";
+  createBook,
+} from '../books/books.controller';
 
-export const path = "/books";
+export const path = '/books';
 export const router = Router();
 
 router
@@ -148,7 +149,7 @@ router
    *                description: error decription
    *                example: query, page, limit 중 하나 이상이 없습니다.
    */
-  .get("/info/search", searchBookInfo);
+  .get('/info/search', searchBookInfo);
 
 router
   /**
@@ -240,7 +241,7 @@ router
    *                description: error decription
    *                example: 클라이언트 오류.
    */
-  .get("/info", sortInfo)
+  .get('/info', sortInfo)
 
   /**
    * @openapi
@@ -330,8 +331,8 @@ router
    *                description: error decription
    *                example: id가 숫자가 아닙니다.
    */
-  .get("/info/:id", getInfoId)
-  .get("/:id/reservations/count", booker);
+  .get('/info/:id', getInfoId)
+  .get('/:id/reservations/count', booker);
 
 router
   /**
@@ -435,4 +436,55 @@ router
    *                description: error decription
    *                example: query, page, limit 중 하나 이상이 없습니다.
    */
-  .get("/search", search);
+  .get('/search', search);
+
+router/**
+* @openapi
+* /api/books/create:
+*    post:
+*      description: 책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.
+*      tags:
+*      - books
+*      requestBody:
+*        content:
+*          application/json:
+*            schema:
+*              type: object
+*              properties:
+*                title:
+*                  type: string
+*                isbn:
+*                  type: string
+*                categoryId:
+*                  type: integer
+*                donator:
+*                  type: string
+*                callSign:
+*                  type: string
+*      responses:
+*         '200':
+*            description: 책 정보 정상적으로 insert됨.
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert success
+*                 example: insert successfully done.
+*         '400':
+*            description: 클라이언트 오류.
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail
+*                 example: insert unsuccessfully done.
+*         '500':
+*            description: 서버오류
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail, 서버오류
+*                 example: insert unsuccessfully done.
+*/
+  .post('/create', createBook);
