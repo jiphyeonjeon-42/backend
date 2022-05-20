@@ -1,8 +1,9 @@
 import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
+import * as types from './books.type';
 
-export const createBook = async (book: models.Book): Promise<void> => {
+export const createBook = async (book: types.CreateBookInfo) => {
   const result = (await executeQuery(
     `
     SELECT
@@ -12,13 +13,14 @@ export const createBook = async (book: models.Book): Promise<void> => {
   `,
     [book.isbn],
   )) as StringRows[];
+
+  const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
+  const author = 'isbn기호로 잘 찾아오기';
+  const publisher = 'isbn기호로 잘 찾아오기';
+  const publishedAt = 'isbn기호로 잘 찾아오기';
+  const category = await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`);
+
   if (result.length === 0) {
-    let image = null;
-    if (!book.image) {
-      image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(
-        -3,
-      )}/x${book.isbn}.jpg`;
-    }
     await executeQuery(
       `
     INSERT INTO book_info(
@@ -45,12 +47,12 @@ export const createBook = async (book: models.Book): Promise<void> => {
     )`,
       [
         book.title,
-        book.author,
-        book.publisher,
+        author,
+        publisher,
         book.isbn,
-        book.image ?? image,
-        book.category,
-        book.publishedAt,
+        image,
+        category,
+        publishedAt,
       ],
     );
   }
@@ -70,7 +72,7 @@ export const createBook = async (book: models.Book): Promise<void> => {
         WHERE login = ?
       ),
       ?,
-      ?,
+      0,
       (
         SELECT id
         FROM book_info
@@ -82,10 +84,10 @@ export const createBook = async (book: models.Book): Promise<void> => {
       book.donator ?? 'null',
       book.donator ?? '0',
       book.callSign,
-      book.status,
       book.isbn,
     ],
   );
+  return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 
 export const deleteBook = async (book: models.Book): Promise<boolean> => {
