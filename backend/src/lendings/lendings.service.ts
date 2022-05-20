@@ -23,7 +23,7 @@ export const create = async (
     // 유저가 2권 이상 대출
     const numberOfLendings = await transactionExecuteQuery(`
       SELECT COUNT(*)
-      FROM lendings
+      FROM lending
       WHERE userId = ? AND returnedAt IS NULL;
     `, [userId]);
     if (numberOfLendings[0].count >= 2) { throw new Error(lendingOverload); }
@@ -31,7 +31,7 @@ export const create = async (
     // 유저가 연체중
     const hasPenalty = await transactionExecuteQuery(`
       SELECT penaltyEndDay
-      FROM users
+      FROM user
       WHERE id = ?
     `, [userId]);
     if (hasPenalty[0].penaltyEndDay > 0) { throw new Error(lendingOverdue); }
@@ -39,7 +39,7 @@ export const create = async (
     // 책이 대출되지 않은 상태인지
     const isNotLended = await transactionExecuteQuery(`
       SELECT *
-      FROM lendings
+      FROM lending
       WHERE bookId = ? AND returnedAt IS NULL
     `, [bookId]);
     if (isNotLended[0].length !== 0) { throw new Error(onLending); }
@@ -47,7 +47,7 @@ export const create = async (
     // 책이 분실, 파손이 아닌지
     const isLendableBook = await transactionExecuteQuery(`
      SELECT *
-     FROM books
+     FROM book
      WHERE id = ? AND status = 0
     `, [bookId]);
     if (isLendableBook[0].status === 1) {
@@ -65,7 +65,7 @@ export const create = async (
     if (isNotReservedBook[0].userId !== userId) { throw new Error(onReservation); }
 
     await transactionExecuteQuery(`
-      INSERT INTO lendings (userId, bookId, lendingLibrarianId, lendingCondition)
+      INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)
       VALUES (?, ?, ?, ?)
     `, [userId, bookId, librarianId, condition]);
 
