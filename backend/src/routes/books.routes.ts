@@ -471,7 +471,7 @@ router/**
 *               schema:
 *                 type: string
 *                 description: insert success
-*                 example: insert successfully done.
+*                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
 *         '400':
 *            description: 클라이언트 오류.
 *            content:
