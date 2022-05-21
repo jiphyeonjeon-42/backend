@@ -451,16 +451,18 @@ router/**
 *            schema:
 *              type: object
 *              properties:
-*                title:
-*                  type: string
 *                isbn:
 *                  type: string
+*                  example: 9788065960874
 *                categoryId:
 *                  type: integer
+*                  example: 1
 *                donator:
 *                  type: string
+*                  example: seongyle
 *                callSign:
 *                  type: string
+*                  example: e7.79.v2.c3
 *      responses:
 *         '200':
 *            description: 책 정보 정상적으로 insert됨.
