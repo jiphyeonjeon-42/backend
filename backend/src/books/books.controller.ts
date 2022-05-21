@@ -8,12 +8,13 @@ import * as types from './books.type';
 
 export const createBook = async (req: Request, res: Response) => {
   const {
-    title, isbn, categoryId, donator, callSign,
+    isbn, categoryId, donator, callSign,
   } = req.body;
-  if (!(title && isbn && categoryId && donator && callSign)) {
+  if (!(isbn && categoryId && donator && callSign)) {
     res.status(400).send('값이 다 없습니다.');
+  } else {
+    res.status(200).send(await BooksService.createBook(req.body));
   }
-  res.status(200).send(await BooksService.createBook(req.body));
 };
 
 export const searchBookInfo = async (
