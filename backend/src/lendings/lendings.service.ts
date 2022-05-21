@@ -15,6 +15,7 @@ export const create = async (
   librarianId: number,
   condition: string,
 ): Promise<string> => {
+  let message = ok;
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
@@ -73,12 +74,12 @@ export const create = async (
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
-      return e.message;
+      message = e.message;
     }
   } finally {
     conn.release();
   }
-  return ok;
+  return message;
 };
 
 export const search = async () => {};

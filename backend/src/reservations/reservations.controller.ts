@@ -3,12 +3,35 @@ import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
 import { ReservationsPageInfo } from '../paginate';
 
-export const create: RequestHandler = (req: Request, res: Response) => {
+export const create: RequestHandler = async (req: Request, res: Response) => {
   if (!req.role) {
     res.status(status.UNAUTHORIZED);
     return;
   }
-  reservationsService.create;
+  const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
+  if (Number.isNaN(bookInfoId)) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+  }
+  const result = await reservationsService.create(req.id, req.body.bookInfoId);
+  switch (result) {
+    case reservationsService.ok:
+      res.status(status.OK);
+      break;
+    case reservationsService.notLended:
+      res.status(status.BAD_REQUEST).json({ errorCode: 1 });
+      break;
+    case reservationsService.alreadyReserved:
+      res.status(status.BAD_REQUEST).json({ errorCode: 2 });
+      break;
+    case reservationsService.moreThanTwoReservations:
+      res.status(status.BAD_REQUEST).json({ errorCode: 3 });
+      break;
+    case reservationsService.alreadyLended:
+      res.status(status.BAD_REQUEST).json({ errorCode: 4 });
+      break;
+    default:
+      res.status(status.INTERNAL_SERVER_ERROR);
+  }
 };
 
 export const search: RequestHandler = async (req: Request, res: Response) => {
@@ -20,4 +43,33 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   const data = await reservationsService
     .search(p.getPage(), p.getLimit(), p.getFilter());
   res.send(data);
+};
+
+export const cancel: RequestHandler = async (req: Request, res: Response) => {
+  const reservationId = Number.parseInt(req.body.reservationId);
+  if (Number.isNaN(reservationId)) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+    return;
+  }
+  let result = '';
+  if (req.role === 3) {
+    result = await reservationsService.cancel(reservationId);
+  } else {
+    result = await reservationsService.userCancel(req.id, reservationId);
+  }
+  switch (result) {
+    case (reservationsService.ok):
+      res.status(status.OK);
+      break;
+    case (reservationsService.notMatchingUser):
+      res.status(status.BAD_REQUEST).json({ errorCode: 1 });
+      break;
+    case (reservationsService.reservationNotExist):
+      res.status(status.BAD_REQUEST).json({ errorCode: 2 });
+      break;
+    case (reservationsService.notReserved):
+      res.status(status.BAD_REQUEST).json({ errorCode: 3 });
+      break;
+    default:
+  }
 };
