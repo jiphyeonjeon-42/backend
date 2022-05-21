@@ -12,7 +12,6 @@ export interface SortInfoType {
 }
 
 export interface CreateBookInfo {
-    title: string;
     isbn: string;
     donator: string;
     categoryId: number

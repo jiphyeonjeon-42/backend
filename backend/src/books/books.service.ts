@@ -1,8 +1,31 @@
+import axios from 'axios';
 import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
-import axios from 'axios';
+
+const searchByIsbn = async (isbn: string) => {
+  let book;
+  await axios
+    .get(
+      `
+  https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
+      {
+        headers: {
+          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
+          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+        },
+      },
+    )
+    .then((res) => {
+      // eslint-disable-next-line prefer-destructuring
+      book = res.data.items[0];
+    })
+    .catch((err) => {
+      throw err;
+    });
+  return (book);
+};
 
 export const createBook = async (book: types.CreateBookInfo) => {
   const result = (await executeQuery(
@@ -15,10 +38,25 @@ export const createBook = async (book: types.CreateBookInfo) => {
     [book.isbn],
   )) as StringRows[];
 
+  const searchBySlackID = (await executeQuery(
+    `
+    SELECT
+      id
+    FROM user
+    WHERE nickname = ?
+  `,
+    [book.donator],
+  )) as StringRows[];
+
+  if (searchBySlackID.length > 1) {
+    return ({ code: 501, message: '중복된 slackid 입니다. DB관리자에게 문의하세요.' });
+  }
+
+  const {
+    title, author, publisher, pubdate,
+  } : any = await searchByIsbn(book.isbn);
   const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
-  const author = 'isbn기호로 잘 찾아오기';
-  const publisher = 'isbn기호로 잘 찾아오기';
-  const publishedAt = 'isbn기호로 잘 찾아오기';
+  // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
   if (result.length === 0) {
@@ -47,16 +85,17 @@ export const createBook = async (book: types.CreateBookInfo) => {
       ?
     )`,
       [
-        book.title,
+        title,
         author,
         publisher,
         book.isbn,
         image,
         category,
-        publishedAt,
+        pubdate,
       ],
     );
   }
+
   await executeQuery(
     `
     INSERT INTO book(
@@ -70,7 +109,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM user
-        WHERE login = ?
+        WHERE nickname = ?
       ),
       ?,
       0,
@@ -82,8 +121,8 @@ export const createBook = async (book: types.CreateBookInfo) => {
     )
   `,
     [
-      book.donator ?? 'null',
-      book.donator ?? '0',
+      book.donator,
+      book.donator,
       book.callSign,
       book.isbn,
     ],
