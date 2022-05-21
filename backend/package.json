@@ -4,7 +4,7 @@
   "description": "3rd of 42-jiphyeonjeon web service backend",
   "main": "./dist/server.js",
   "repository": "https://github.com/jiphyeonjeon-42/backend-express.git",
-  "author": "jolim, chanykim, tkim, jimin, wocho",
+  "author": "jolim, chanykim, tkim, jimin, wocho, seongyle, seunam",
   "license": "MIT",
   "scripts": {
     "start": "node dist/server.js",
@@ -40,8 +40,10 @@
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.12",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "http-errors": "^2.0.0",

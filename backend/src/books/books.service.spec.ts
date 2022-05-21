@@ -1,5 +1,6 @@
 import { pool } from '../mysql';
 import * as BooksService from './books.service';
+import * as models from './books.model';
 
 describe('BooksService', () => {
   afterAll(() => {
@@ -7,7 +8,7 @@ describe('BooksService', () => {
   });
 
   it('A book is added and deleted', async () => {
-    const book: BooksService.Book = {
+    const book: models.Book = {
       title: 'test',
       author: 'testauthor',
       publisher: 'testpublisher',

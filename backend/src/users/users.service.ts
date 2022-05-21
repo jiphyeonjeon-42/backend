@@ -1,6 +1,6 @@
-import { FtTypes } from '../auth/auth.service';
 import { executeQuery } from '../mysql';
 import * as models from './users.model';
+import * as types from './users.type';
 
 export const searchUserByNickName = async (nickName: string, limit: number, page: number) => {
   const items = (await executeQuery(`
@@ -15,7 +15,7 @@ export const searchUserByNickName = async (nickName: string, limit: number, page
   const total = (await executeQuery(`
   SELECT FOUND_ROWS() as totalItems;
   `));
-  const meta: models.Meta = {
+  const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
     itemsPerPage: limit,
@@ -67,7 +67,7 @@ export const searchAllUsers = async (limit: number, page: number) => {
   const total = (await executeQuery(`
   SELECT FOUND_ROWS() as totalItems;
   `));
-  const meta: models.Meta = {
+  const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
     itemsPerPage: limit,
@@ -89,19 +89,38 @@ export const createUser = async (email: string, password: string) => {
   return null;
 };
 
-// 구현 전 함수
-export const deleteUserById = async (id: string): Promise<boolean> => {
-  const result = (await executeQuery(`
-    SELECT *
-    FROM user
-    WHERE id = ?
-  `, [id])) as models.User[];
-  if (result?.length === 0) return false;
+export const updateUserEmail = async (id: number, email:string) => {
   await executeQuery(`
-    DELETE FROM user
-    WHERE id = ?
-  `, [id]);
-  return true;
+  UPDATE user 
+  SET email = ?
+  WHERE id = ?;
+  `, [email, id]);
+};
+
+export const updateUserPassword = async (id: number, password: string) => {
+  await executeQuery(`
+  UPDATE user
+  SET password = ? 
+  WHERE id = ?;
+  `, [password, id]);
+};
+
+export const updateUserAuth = async (
+  id: number,
+  nickname: string,
+  intraId: number,
+  slack: string,
+  role: number,
+) => {
+  await executeQuery(`
+  UPDATE user 
+  SET 
+  nickname=?,
+  intraId=?, 
+  slack=?,
+  role=? 
+  WHERE id=?;
+  `, [nickname, intraId, slack, role, id]);
 };
 
 // 없어질 함수입니다. 다른 함수로 바꾸세요 searchUsersById 추천

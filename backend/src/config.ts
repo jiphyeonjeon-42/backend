@@ -16,6 +16,7 @@ const config = {
     id: process.env.CLIENT_ID,
     secret: process.env.CLIENT_SECRET,
     redirectURL: process.env.REDIRECT_URL ?? 'localhost:3000',
+    clientURL: process.env.CLIENT_URL ?? 'localhost:4242',
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'secret',
