@@ -488,5 +488,13 @@ router/**
 *                 type: string
 *                 description: insert fail, 서버오류
 *                 example: insert unsuccessfully done.
+*         '501':
+*            description: DB오류
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail, DB오류
+*                 example: { code: 501, message: '중복된 slackid 입니다.  DB관리자에게 문의하세요.' }
 */
   .post('/create', createBook);
