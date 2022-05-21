@@ -8,8 +8,8 @@ export const router = Router();
 /**
  * @openapi
  * /api/auth/oauth:
- *    post:
- *      description: 42 Api에 API key값을 추가해서 요청한다.
+ *    get:
+ *      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
  *      tags:
  *      - auth
  *      parameters:
@@ -38,8 +38,8 @@ router.get('/oauth', getOAuth);
 /**
  * @openapi
  * /api/auth/token:
- *    post:
- *      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다.
+ *    get:
+ *      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다. redirect 되기에 반환값 확인 불가.
  *      tags:
  *      - auth
  *      parameters:
@@ -135,20 +135,18 @@ router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
  *      description: 입력된 회원정보를 Users DB에서 확인하여, Token을 발급해 쿠키에 저장해준다.
  *      tags:
  *      - auth
- *      parameters:
- *      - in: body
- *        name: user
+ *      requestBody:
  *        description: 로그인할 유저 정보
- *        schema:
- *          type: object
- *          required:
- *            - id
- *            - password
- *          properties:
- *            id:
- *              type: string
- *            password:
- *              type: string
+ *        required: true
+ *        content:
+ *           application/x-www-form-urlencoded:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  id:
+ *                    type: string
+ *                  password:
+ *                    type: string
  *      responses:
  *        '302':
  *          description: 성공적으로 토큰 발급
