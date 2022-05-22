@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import {
-  getMe, getOAuth, getToken, login,
+  getMe, getOAuth, getToken, login, logout,
 } from '../auth/auth.controller';
 
 export const path = '/auth';
@@ -187,3 +187,14 @@ router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
  *                    type: string
  */
 router.post('/login', login);
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *    get:
+ *      description: 발급한 token을 소멸시킨다.
+ *      responses:
+ *        204:
+ *          description: 정상적으로 token 삭제 완료
+ */
+router.get('/logout', logout);

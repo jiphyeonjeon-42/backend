@@ -63,3 +63,8 @@ export const login = async (req: Request, res: Response) => {
     else throw e;
   }
 };
+
+export const logout = async (req: Request, res: Response) => {
+  res.cookie('access_token', null, { maxAge: 0, httpOnly: true });
+  res.status(204);
+};
