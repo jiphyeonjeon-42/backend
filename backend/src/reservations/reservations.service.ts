@@ -188,3 +188,14 @@ export const userCancel = async (userId: number, reservationId: number): Promise
   }
   return cancel(reservationId);
 };
+
+export const count = async (bookInfoId: string) => {
+  console.log(`bookInfoId: ${bookInfoId}`);
+  const numberOfReservations = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM reservation
+    WHERE bookInfoId = ? AND status = 0;
+  `, [bookInfoId]);
+  console.log(`numberOfReservations: ${numberOfReservations[0].count}`);
+  return numberOfReservations[0];
+};

@@ -73,3 +73,10 @@ export const cancel: RequestHandler = async (req: Request, res: Response) => {
     default:
   }
 };
+
+export const count: RequestHandler = async (req: Request, res: Response) => {
+  const info = req.query;
+  const bookInfoId = info.bookInfo as string;
+  const data = await reservationsService.count(bookInfoId);
+  res.send(data);
+};

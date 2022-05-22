@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { cancel, create, search } from '../reservations/reservations.controller';
+import { cancel, create, search, count } from '../reservations/reservations.controller';
 
 export const path = '/reservations';
 export const router = Router();
@@ -323,4 +323,8 @@ export const router = Router();
  *          description: 알 수 없는 사용자
  * */
 
-router.post('/', create).get('/search', search).patch('/cancel/:reservationId', cancel);
+router
+  .post('/', create)
+  .get('/search', search)
+  .patch('/cancel/:reservationId', cancel)
+  .get('/count', count);
