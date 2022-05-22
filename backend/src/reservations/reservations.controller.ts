@@ -80,3 +80,10 @@ export const count: RequestHandler = async (req: Request, res: Response) => {
   const data = await reservationsService.count(bookInfoId);
   res.send(data);
 };
+
+export const userReservations: RequestHandler = async (req: Request, res: Response) => {
+  const info = req.query;
+  const userId = info.id as string;
+  const data = await reservationsService.userReservations(userId);
+  res.send(data);
+};

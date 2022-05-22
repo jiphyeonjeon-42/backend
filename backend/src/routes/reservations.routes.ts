@@ -335,4 +335,5 @@ router
   .post('/', create)
   .get('/search', search)
   .patch('/cancel/:reservationId', cancel)
-  .get('/count', count);
+  .get('/count', count)
+  .get('/', userReservations);

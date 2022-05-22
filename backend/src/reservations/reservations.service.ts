@@ -190,7 +190,7 @@ export const userCancel = async (userId: number, reservationId: number): Promise
 };
 
 export const count = async (bookInfoId: string) => {
-  console.log(`bookInfoId: ${bookInfoId}`);
+  console.log(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
     FROM reservation
@@ -198,4 +198,27 @@ export const count = async (bookInfoId: string) => {
   `, [bookInfoId]);
   console.log(`numberOfReservations: ${numberOfReservations[0].count}`);
   return numberOfReservations[0];
+};
+
+export const userReservations = async (userId: string) => {
+  console.log(`userReservations userId: ${userId}`);
+  const reservationList = await executeQuery(`
+    SELECT reservation.id as reservationId,
+    reservation.bookInfoId as reservedBookInfoId,
+    reservation.createdAt as reservationDate,
+    reservation.endAt as endAt,
+    (SELECT COUNT(*)
+      FROM reservation
+      WHERE status = 0
+        AND bookInfoId = reservedBookInfoId
+        AND createdAt <= reservationDate) as orderOfReservation,
+    book_info.title as title,
+    book_info.image as image
+    FROM reservation
+    LEFT JOIN book_info
+    ON reservation.bookInfoId = book_info.id
+    WHERE reservation.userId = ? AND reservation.status = 0;
+  `, [userId]);
+  console.log(`reservationList: ${reservationList}`);
+  return reservationList;
 };
