@@ -23,7 +23,7 @@ export const
         reservation.id AS reservationsId,
         user.nickName AS login,
         CASE
-          WHEN NOW() < user.penaltyEndDay THEN 0
+          WHEN NOW() > user.penaltyEndDay THEN 0
           ELSE DATEDIFF(now(), user.penaltyEndDay) 
         END AS penaltyDays,
         book.title,
