@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { getMe, getOAuth, getToken, login } from '../auth/auth.controller';
+import {
+  getMe, getOAuth, getToken, login,
+} from '../auth/auth.controller';
 
 export const path = '/auth';
 export const router = Router();

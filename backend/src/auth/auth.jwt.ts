@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
+import { Request, Response } from 'express';
 import config from '../config';
 import { User } from '../users/users.model';
-import {Request, Response} from "express";
 
 /**
  * Client URL값이 맞는지 확인
@@ -10,12 +10,12 @@ import {Request, Response} from "express";
  * [보안상 확인하는거 같음]
  */
 export const clientValidator = (value: any) => {
-    const CLIENT_DEV_URL = 'http://localhost:4242';
-    const CLIENT_PRODUCTION_URL = 'https://42library.kr';
-    if (value !== CLIENT_DEV_URL && value !== CLIENT_PRODUCTION_URL) {
-        return false;
-    }
-    return value;
+  const CLIENT_DEV_URL = 'http://localhost:4242';
+  const CLIENT_PRODUCTION_URL = 'https://42library.kr';
+  if (value !== CLIENT_DEV_URL && value !== CLIENT_PRODUCTION_URL) {
+    return false;
+  }
+  return value;
 };
 
 /**
@@ -25,16 +25,16 @@ export const clientValidator = (value: any) => {
  * option에 유효기간과 발행처를 작성한 토큰을 발급한다.
  */
 export const issueJwt = (user: User) => {
-    const payload = {
-        id: user.id,
-        role: user.role,
-    };
-    const secretKey = config.jwt.secret;
-    const options = {
-        expiresIn : "60m",
-        issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
-    };
-    return jwt.sign(payload, secretKey, options);
+  const payload = {
+    id: user.id,
+    role: user.role,
+  };
+  const secretKey = config.jwt.secret;
+  const options = {
+    expiresIn: '60m',
+    issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
+  };
+  return jwt.sign(payload, secretKey, options);
 };
 
 /**
@@ -48,11 +48,11 @@ export const issueJwt = (user: User) => {
  *      expires: 밀리세컨드 값으로 설정해야하고, 1000 * 60 * 60 = 1시간으로 설정
  */
 export const saveJwt = async (req: Request, res: Response, user: User) => {
-    const token = issueJwt(user);
-    res.cookie('access_token', token, {
-        httpOnly: true,
-        secure: true, // ANCHOR https 연결시에는 true로 설정해주어야함.
-        sameSite: 'strict',
-        expires: new Date(new Date().getTime() + 1000 * 60 * 60),
-    });
+  const token = issueJwt(user);
+  res.cookie('access_token', token, {
+    httpOnly: true,
+    secure: true, // ANCHOR https 연결시에는 true로 설정해주어야함.
+    sameSite: 'strict',
+    expires: new Date(new Date().getTime() + 1000 * 60 * 60),
+  });
 };
