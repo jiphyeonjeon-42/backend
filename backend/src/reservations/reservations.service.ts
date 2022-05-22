@@ -22,7 +22,10 @@ export const
       SELECT 
         reservation.id AS reservationsId,
         user.nickName AS login,
-        DATEDIFF(now(), user.penaltyEndDay) AS penaltyDays,
+        CASE
+          WHEN NOW() < user.penaltyEndDay THEN 0
+          ELSE DATEDIFF(now(), user.penaltyEndDay) 
+        END AS penaltyDays,
         book.title,
         book.image,
         (
@@ -30,8 +33,8 @@ export const
           FROM book
           WHERE book.id = reservation.bookId
         ) AS callSign,
-        reservation.createdAt,
-        endAt,
+        DATE_FORMAT(reservation.createdAt, '%Y.%m.%d') AS createdAt,
+        DATE_FORMAT(reservation.endAt, '%Y.%m.%d') AS endAt,
         status
       FROM reservation
       LEFT JOIN user AS user ON reservation.userId = user.id
