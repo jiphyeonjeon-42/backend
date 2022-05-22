@@ -191,10 +191,12 @@ router.post('/login', login);
 /**
  * @openapi
  * /api/auth/logout:
- *    get:
+ *    post:
  *      description: 발급한 token을 소멸시킨다.
+ *      tags:
+ *      - auth
  *      responses:
  *        204:
  *          description: 정상적으로 token 삭제 완료
  */
-router.get('/logout', logout);
+router.post('/logout', logout);
