@@ -11,8 +11,8 @@ export const lendingId = async (id:number) => {
     DATE_FORMAT(lending.createdAt, '%Y.%m.%d') as createdAt,
     user.nickname as login,
     CASE
-      WHEN user.penaltyEndDay < NOW() THEN 0
-      ELSE DATEDIFF(NOW(), user.penaltyEndDay)
+      WHEN user.penaltyEndDate < NOW() THEN 0
+      ELSE DATEDIFF(NOW(), user.penaltyEndDate)
     END AS penaltyDays,
     (
         SELECT callSign
