@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { createUser, searchAllUsers, searchUserByNickName, updateUserAuth, updateUserEmail, updateUserPassword } from './users.service';
+import {
+  createUser, searchAllUsers, searchUserByNickName,
+  updateUserAuth, updateUserEmail, updateUserPassword,
+} from './users.service';
 import { createQuery, searchQuery, updateQuery } from './users.type';
 
 export const search = async (
@@ -14,26 +17,27 @@ export const search = async (
     const items = JSON.parse(JSON.stringify(await
     searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
     res.send(items);
-  }
+  } else res.status(400).send('NickName is NULL');
 };
 
 export const update = async (
   req: Request<{}, {}, {}, updateQuery>,
+  res: Response,
 ) => {
-  const { id, email = '', password = '', nickname = '', intraId = null, slack = '', role = -1 } = req.query;
-  if (email !== '') {
-    updateUserEmail(id, email);
-  } else if (password !== '') {
-    updateUserPassword(id, password);
-  } else if (nickname !== '' && intraId && slack !== '' && role !== -1) {
-    updateUserAuth(id, nickname, intraId, slack, role);
-  } else {
-    // 나중에 에러처리 추가
-    // 나중에 코드찍고 메세지 보내기
-  }
+  const {
+    id, email = '', password = '', nickname = '', intraId = null, slack = '', role = -1,
+  } = req.query;
+  if (id) {
+    if (email !== '') updateUserEmail(id, email);
+    else if (password !== '') updateUserPassword(id, password);
+    else if (nickname !== '' && intraId && slack !== '' && role !== -1) updateUserAuth(id, nickname, intraId, slack, role);
+    else res.status(400).send('Insufficient arguments');
+  } else res.status(401).send('Id is invalid');
 };
 
-export const create = async (req: Request<{}, {}, {}, createQuery>) => {
+export const create = async (req: Request<{}, {}, {}, createQuery>, res: Response) => {
   const { email, password } = req.query;
-  createUser(email, await bcrypt.hash(password, 10));
+  if (email && password) createUser(email, await bcrypt.hash(password, 10));
+  else if (!email) res.status(400).send('Email is NULL');
+  else if (!password) res.status(400).send('Password is NULL');
 };
