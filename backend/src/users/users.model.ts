@@ -11,10 +11,3 @@ export interface User {
   reservations?: [],
   lendings?: [],
 }
-export interface Meta {
-  totalItems: number,
-  itemCount: number,
-  itemsPerPage: number,
-  totalPages: number,
-  currentPage: number
-}
