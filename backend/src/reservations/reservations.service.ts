@@ -1,8 +1,10 @@
 import { executeQuery } from '../mysql';
 import * as models from '../users/users.model';
+import { logger } from '../utils/logger';
 
 export const
-  searchReservation = async (query:string, page: number, limit: number, filter: string) => {
+  search = async (query:string, page: number, limit: number, filter: string) => {
+    logger.debug(`reservation search query: ${query} page: ${page} limit ${limit} filter ${filter}`);
     let filterQuery;
     switch (filter) {
       case 'waiting':
@@ -19,17 +21,17 @@ export const
     }
 
     const items = (await executeQuery(`
-      SELECT 
+      SELECT
         reservation.id AS reservationsId,
-        user.nickName AS login,
+        user.nickname AS login,
         CASE
-          WHEN NOW() > user.penaltyEndDay THEN 0
-          ELSE DATEDIFF(now(), user.penaltyEndDay) 
+          WHEN NOW() > user.penaltyEndDate THEN 0
+          ELSE DATEDIFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
         book.title,
         book.image,
         (
-          SELECT callSign 
+          SELECT callSign
           FROM book
           WHERE book.id = reservation.bookId
         ) AS callSign,
@@ -45,12 +47,12 @@ export const
       OFFSET ?
   `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
     const totalItems = (await executeQuery(`
-      SELECT 
+      SELECT
         reservation.id AS reservationsId,
         user.nickName AS login,
         book.title,
         (
-          SELECT callSign 
+          SELECT callSign
           FROM book
           WHERE book.id = reservation.bookId
         ) AS callSign
@@ -58,7 +60,7 @@ export const
       LEFT JOIN user AS user ON reservation.userId = user.id
       LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
       ${filterQuery}
-      HAVING book.title LIKE '%a%' OR login LIKE '%a%' OR callSign LIKE '%a%'
+      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
     `, [`%${query}%`, `%${query}%`, `%${query}%`]));
     const meta :models.Meta = {
       totalItems: totalItems.length,

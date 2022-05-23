@@ -1,4 +1,5 @@
 import { Request, RequestHandler, Response } from 'express';
+import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
 
 export const create: RequestHandler = (req: Request, res: Response) => {};
@@ -22,8 +23,8 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) - 1 : 0;
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
-  if (!filterCheck) { res.status(400); }
+  if (!filterCheck(filter)) { res.status(status.BAD_REQUEST); }
   const result = await reservationsService
-    .searchReservation(query, page, limit, filter);
+    .search(query, page, limit, filter);
   res.send(result);
 };
