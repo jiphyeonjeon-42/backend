@@ -28,7 +28,7 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const result = (await executeQuery(
+  const isbnInBookInfo = (await executeQuery(
     `
     SELECT
       isbn
@@ -63,7 +63,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
-  if (result.length === 0) {
+  if (isbnInBookInfo.length === 0) {
     await executeQuery(
       `
     INSERT INTO book_info(
