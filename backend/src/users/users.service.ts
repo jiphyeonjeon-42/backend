@@ -51,7 +51,7 @@ export const searchUserByIntraId = async (intraId: number) => {
     FROM user
     WHERE
       intraId = ?
-  `, [intraId])) as models.User;
+  `, [intraId])) as models.User[];
   return result;
 };
 
