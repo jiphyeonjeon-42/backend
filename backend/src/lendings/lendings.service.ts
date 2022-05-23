@@ -112,7 +112,8 @@ export const returnBook = async (
     await transactionExecuteQuery(`
       UPDATE lending
       SET returningLibrarian = ?,
-          returningCondition = ?
+          returningCondition = ?,
+          returnedAt = NOW()
       WHERE id = ?
     `, [librarianId, lendingId, condition]);
 
@@ -131,7 +132,9 @@ export const returnBook = async (
     if (isReserved && isReserved[0]) {
       await transactionExecuteQuery(`
         UPDATE reservation
-        SET bookId = ?
+        SET
+          bookId = ?,
+          endAt =  DATE_ADD(NOW(), INTERVAL 3 DAY)
         WHERE id = ?
     `, [lendingInfo[0].bookId, isReserved[0].id]);
     }

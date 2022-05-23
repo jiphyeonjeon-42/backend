@@ -41,14 +41,14 @@ export const booksId: RequestHandler = (req: Request, res: Response) => {
   // search 함수
 };
 
-export const returnBook: RequestHandler = (req: Request, res: Response) => {
+export const returnBook: RequestHandler = async (req: Request, res: Response) => {
   res.send('hello express');
-  if (req.query.role < 3) { res.status(401); }
+  if (req.role < 3) { res.status(401); }
   if (!req.body.lendingId || req.body.condition) {
     res.status(401).json({ errorCode: 1 });
   }
   const result = await lendingsService.returnBook(
-    req.query.id,
+    req.id,
     req.body.lendingId,
     req.body.condition,
   );

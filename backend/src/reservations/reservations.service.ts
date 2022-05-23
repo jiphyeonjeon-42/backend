@@ -1,5 +1,7 @@
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { paginate } from '../paginate';
+import { logger } from '../utils/logger';
+import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
 export const ok = 'ok';
 
@@ -19,6 +21,7 @@ export const create = async (userId: number, bookInfoId: number) => {
   let message = ok;
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
   try {
     // 연체중인지 확인
     const userPenalty = await transactionExecuteQuery(`
@@ -128,6 +131,7 @@ export const cancel = async (reservationId: number): Promise<string> => {
   let message = ok;
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
   try {
     const reservations = await transactionExecuteQuery(`
       SELECT status, bookId
@@ -190,18 +194,31 @@ export const userCancel = async (userId: number, reservationId: number): Promise
 };
 
 export const count = async (bookInfoId: string) => {
-  console.log(`count bookInfoId: ${bookInfoId}`);
+  logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
     FROM reservation
     WHERE bookInfoId = ? AND status = 0;
   `, [bookInfoId]);
-  console.log(`numberOfReservations: ${numberOfReservations[0].count}`);
+  logger.debug(`numberOfReservations: ${numberOfReservations[0].count}`);
   return numberOfReservations[0];
 };
 
+export const reservationKeySubstitution = (obj: queriedReservationInfo): reservationInfo => {
+  const newObj: reservationInfo = {
+    reservationId: obj.reservationId,
+    bookInfoId: obj.reservedBookInfoId,
+    createdAt: obj.reservationDate,
+    endAt: obj.endAt,
+    orderOfReservation: obj.orderOfReservation,
+    title: obj.title,
+    image: obj.image,
+  };
+  return newObj;
+};
+
 export const userReservations = async (userId: string) => {
-  console.log(`userReservations userId: ${userId}`);
+  logger.debug(`userReservations userId: ${userId}`);
   const reservationList = await executeQuery(`
     SELECT reservation.id as reservationId,
     reservation.bookInfoId as reservedBookInfoId,
@@ -218,7 +235,8 @@ export const userReservations = async (userId: string) => {
     LEFT JOIN book_info
     ON reservation.bookInfoId = book_info.id
     WHERE reservation.userId = ? AND reservation.status = 0;
-  `, [userId]);
-  console.log(`reservationList: ${reservationList}`);
+  `, [userId]) as [queriedReservationInfo];
+  reservationList.forEach((obj) => reservationKeySubstitution(obj));
+  logger.debug(`reservationList: ${reservationList}`);
   return reservationList;
 };
