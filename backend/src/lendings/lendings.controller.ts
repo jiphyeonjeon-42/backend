@@ -14,14 +14,18 @@ export const search: RequestHandler = (req: Request, res: Response) => {
   // search 함수
 };
 
-export const lendingId: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const lendingId: RequestHandler = async (req: Request, res: Response) => {
   // 사서권한 확인추가해야
-  const lendingId = parseInt(req.params.id, 10);
-  if (Number.isNaN(lendingId)) {
-    next(new ErrorResponse(status.BAD_REQUEST, 'id가 숫자가 아닙니다.'));
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    res.status(status.BAD_REQUEST);
   } else {
-    const result = await lendingsService.lendingId(lendingId);
-    result.length ? res.status(status.OK).json(result[0]) : next(new ErrorResponse(status.BAD_REQUEST, 'id가 유효하지 않습니다'));
+    const result = await lendingsService.lendingId(id);
+    if (result.length) {
+      res.status(status.OK).json(result[0]);
+    } else {
+      res.status(status.BAD_REQUEST);
+    }
   }
 };
 
