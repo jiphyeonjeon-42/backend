@@ -31,8 +31,8 @@ export const searchUserById = async (id: number) => {
     *
     FROM user
     WHERE id=?;
-  `, [id])) as models.User;
-  return items;
+  `, [id])) as models.User[];
+  return { items };
 };
 
 export const searchUserByEmail = async (email: string) => {
@@ -41,8 +41,8 @@ export const searchUserByEmail = async (email: string) => {
     *
     FROM user
     WHERE email LIKE ?;
-  `, [email])) as models.User;
-  return items;
+  `, [email])) as models.User[];
+  return { items };
 };
 
 export const searchUserByIntraId = async (intraId: number) => {
