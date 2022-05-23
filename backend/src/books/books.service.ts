@@ -52,9 +52,13 @@ export const createBook = async (book: types.CreateBookInfo) => {
     return ({ code: 501, message: '중복된 slackid 입니다. DB관리자에게 문의하세요.' });
   }
 
+  const isbnData : any = await searchByIsbn(book.isbn);
+  if (isbnData === undefined) {
+    return { code: 502, message: 'ISBN 검색결과가 없습니다.' };
+  }
   const {
     title, author, publisher, pubdate,
-  } : any = await searchByIsbn(book.isbn);
+  } = isbnData;
   const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
   // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
