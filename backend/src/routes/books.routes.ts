@@ -496,5 +496,13 @@ router/**
 *                 type: string
 *                 description: insert fail, DB오류
 *                 example: { code: 501, message: '중복된 slackid 입니다.  DB관리자에게 문의하세요.' }
+*         '502':
+*            description: naver openapi에서 못 찾음
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail
+*                 example: { code: 502, message: 'ISBN 검색결과가 없습니다.' }
 */
   .post('/create', createBook);
