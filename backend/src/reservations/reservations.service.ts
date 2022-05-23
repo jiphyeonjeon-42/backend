@@ -23,16 +23,17 @@ export const create = async (userId: number, bookInfoId: number) => {
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
   try {
-    // 연체중인지 확인
+    // 연체 전적이 있는지 확인
     const userPenalty = await transactionExecuteQuery(`
-      SELECT penaltyEndDay
+      SELECT penaltyEndDate
       FROM user
       WHERE id = ?;
     `, [userId]);
-    if (userPenalty.penaltyEndDay > new Date()) {
+    if (userPenalty.penaltyEndDate > new Date()) {
       throw new Error(atPenalty);
     }
-    // bookInfoId가 모두 대출중인지 확인
+    // 현재 대출 중인 책이 연체 중인지 확인
+    // bookInfoId가 모두 대출 중인지 확인
     const allBooks = await transactionExecuteQuery(`
       SELECT id
       FROM book
@@ -75,8 +76,8 @@ export const create = async (userId: number, bookInfoId: number) => {
     const reservedBook = await transactionExecuteQuery(`
       SELECT id
       FROM reservation
-      WHERE bookInfoId = ? AND status = 0;
-    `, [bookInfoId]);
+      WHERE bookInfoId = ? AND userId = ? AND status = 0;
+    `, [bookInfoId, userId]);
     if (reservedBook.length) {
       throw new Error(alreadyReserved);
     }
@@ -90,7 +91,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       throw new Error(moreThanTwoReservations);
     }
     await transactionExecuteQuery(`
-      INSERT INTO (userId, bookInfoId)
+      INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
   } catch (e) {

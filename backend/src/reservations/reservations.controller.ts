@@ -46,7 +46,7 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response) => {
-  const reservationId = Number.parseInt(req.body.reservationId);
+  const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
     return;

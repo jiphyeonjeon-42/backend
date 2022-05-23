@@ -119,7 +119,7 @@ INSERT INTO `lending` (lendingLibrarianId, userId, bookId) VALUES (1435, 1408, 1
 /*대출 (반납O) 예시 데이터 */
 INSERT INTO `lending` (lendingLibrarianId, userId, bookId, returningLibrarianId, returnedAt) VALUES (1436, 1435, 1, 1436, "2022-05-18 18:30:52.363687"), (1436, 1408, 2, 1446, "2022-05-18 19:30:51.363687"), (1440, 1410, 1, 1436, "2022-05-18 20:30:52.363687"), (1446, 1446, 12, 1436, "2022-05-20 20:30:52.363687"), (1436, 1410, 22, 1436, "2022-05-20 20:31:52.363687"), (1442, 1409, 3, 1436, "2022-05-20 20:42:52.363687");
 /*!40000 ALTER TABLE `lending` ENABLE KEYS */;
-UNLOCK TABLES; 
+UNLOCK TABLES;
 
 --
 -- Table structure for table `reservation`
@@ -171,7 +171,7 @@ CREATE TABLE `user` (
   `nickname` varchar(255) DEFAULT NULL,
   `intraId` int DEFAULT NULL,
   `slack` varchar(255) DEFAULT NULL,
-  `penaltyEndDay` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `penaltyEndDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `role` tinyint NOT NULL DEFAULT '0',
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
