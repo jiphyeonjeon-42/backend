@@ -11,13 +11,16 @@ export const search = async (
   res: Response,
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
-  if (nickName === '') {
-    res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
-  } else if (nickName) {
-    const items = JSON.parse(JSON.stringify(await
-    searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
-    res.send(items);
-  } else res.status(400).send('NickName is NULL');
+  if (parseInt(limit, 10) > 0 && parseInt(page, 10) >= 0) {
+    if (nickName === '') {
+      res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
+    } else if (nickName) {
+      const items = JSON.parse(JSON.stringify(await
+      searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
+      res.send(items);
+    } else res.status(400).send('NickName is NULL');
+  } else if (parseInt(limit, 10) <= 0) res.status(400).send('Limit is Invalid');
+  else if (parseInt(page, 10) < 0) res.status(400).send('Page is Invalid');
 };
 
 export const update = async (
