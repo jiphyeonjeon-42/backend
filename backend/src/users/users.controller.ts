@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+import { User } from './users.model';
 import {
-  createUser, searchAllUsers, searchUserByNickName,
+  createUser, getLending, searchAllUsers, searchUserByNickName,
   updateUserAuth, updateUserEmail, updateUserPassword,
 } from './users.service';
 import { createQuery, searchQuery, updateQuery } from './users.type';
@@ -12,13 +13,20 @@ export const search = async (
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
   if (parseInt(limit, 10) > 0 && parseInt(page, 10) >= 0) {
+    const lending = await getLending();
+    let items;
     if (nickName === '') {
-      res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
+      items = searchAllUsers(parseInt(page, 10), parseInt(limit, 10));
     } else if (nickName) {
-      const items = JSON.parse(JSON.stringify(await
+      items = JSON.parse(JSON.stringify(await
       searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
-      res.send(items);
     } else res.status(400).send('NickName is NULL');
+    items.map((item:User) => {
+      const rtnObj = Object.assign(item);
+      rtnObj.lendings = lending.items.filter((lend) => lend.userId === item.id);
+      return rtnObj;
+    });
+    res.send(items);
   } else if (parseInt(limit, 10) <= 0) res.status(400).send('Limit is Invalid');
   else if (parseInt(page, 10) < 0) res.status(400).send('Page is Invalid');
 };

@@ -9,19 +9,19 @@ describe('UsersService', () => {
 
   // searchUserByNickName
   it('[searchUserByNickName] User hihi is', async () => {
-    expect(await UsersService.searchUserByNickName('hihi', 5, 0)).toStrictEqual({
+    expect(await UsersService.searchUserByNickName('seongyle3', 5, 0)).toStrictEqual({
       items: [
         {
-          id: 1414,
-          email: 'example_role1_7@gmail.com',
-          password: '4444',
-          nickname: 'hihi',
-          intraId: 44,
-          slack: 'dasdwqwe1132',
+          id: 1410,
+          email: 'example_role_1_3@gmail.com',
+          password: '1234',
+          nickname: 'seongyle3',
+          intraId: 3,
+          slack: null,
           penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
           role: 1,
           createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
-          updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
+          updatedAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
         },
       ],
       meta: {

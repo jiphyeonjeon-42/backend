@@ -2,7 +2,7 @@ import { executeQuery } from '../mysql';
 import * as models from './users.model';
 import * as types from './users.type';
 
-export const searchLendingByIntraId = async (intraId: number) => {
+export const getLending = async () => {
   const items = await executeQuery(`
     SELECT
     l.userId as userId, bi.title as title, DATE_ADD(l.updatedAt, INTERVAL 14 DAY) as duedate
@@ -11,27 +11,14 @@ export const searchLendingByIntraId = async (intraId: number) => {
     on l.bookId = b.id
     LEFT JOIN book_info as bi
     on b.infoid = bi.id
-    where l.returnedAt is null AND userId = ?;
-  `, [intraId]) as models.Lending[];
+    where l.returnedAt is null;
+  `) as models.Lending[];
   return { items };
-};
-
-export const getLendingFromUser = async (items: models.User[]) => {
-  if (items) {
-    items.map((user) => {
-      const lendingPromise = searchLendingByIntraId(user.intraId);
-      const newUserObj:models.User = Object.assign(user);
-      lendingPromise.then((res) => { newUserObj.lendings = res.items; });
-      return newUserObj;
-    });
-    return items;
-  }
 };
 
 export const searchUserByNickName = async (nickName: string, limit: number, page: number) => {
   const items = (await executeQuery(`
     SELECT 
-    SQL_CALC_FOUND_ROWS
     *
     FROM user
     WHERE nickName LIKE ?
