@@ -122,16 +122,3 @@ export const updateUserAuth = async (
   WHERE id=?;
   `, [nickname, intraId, slack, role, id]);
 };
-
-// 없어질 함수입니다. 다른 함수로 바꾸세요 searchUsersById 추천
-export const identifyUserById = async (id: number): Promise<models.User> => {
-  const result = (await executeQuery(`
-    SELECT *
-      FROM user
-    WHERE
-      id = ?
-    LIMIT 1;
-  `, [id])) as models.User[];
-  return result[0];
-};
-// export const searchByLogin = async (login: string, page: number, limit: number) => {};
