@@ -46,7 +46,7 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response) => {
-  const reservationId = Number.parseInt(req.body.reservationId);
+  const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
     return;
@@ -72,4 +72,18 @@ export const cancel: RequestHandler = async (req: Request, res: Response) => {
       break;
     default:
   }
+};
+
+export const count: RequestHandler = async (req: Request, res: Response) => {
+  const info = req.query;
+  const bookInfoId = info.bookInfo as string;
+  const data = await reservationsService.count(bookInfoId);
+  res.send(data);
+};
+
+export const userReservations: RequestHandler = async (req: Request, res: Response) => {
+  const info = req.query;
+  const userId = info.id as string;
+  const data = await reservationsService.userReservations(userId);
+  res.send(data);
 };

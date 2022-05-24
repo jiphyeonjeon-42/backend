@@ -1,5 +1,7 @@
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { paginate } from '../paginate';
+import { logger } from '../utils/logger';
+import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
 export const ok = 'ok';
 
@@ -19,17 +21,19 @@ export const create = async (userId: number, bookInfoId: number) => {
   let message = ok;
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
   try {
-    // 연체중인지 확인
+    // 연체 전적이 있는지 확인
     const userPenalty = await transactionExecuteQuery(`
-      SELECT penaltyEndDay
+      SELECT penaltyEndDate
       FROM user
       WHERE id = ?;
     `, [userId]);
-    if (userPenalty.penaltyEndDay > new Date()) {
+    if (userPenalty.penaltyEndDate > new Date()) {
       throw new Error(atPenalty);
     }
-    // bookInfoId가 모두 대출중인지 확인
+    // 현재 대출 중인 책이 연체 중인지 확인
+    // bookInfoId가 모두 대출 중인지 확인
     const allBooks = await transactionExecuteQuery(`
       SELECT id
       FROM book
@@ -72,8 +76,8 @@ export const create = async (userId: number, bookInfoId: number) => {
     const reservedBook = await transactionExecuteQuery(`
       SELECT id
       FROM reservation
-      WHERE bookInfoId = ? AND status = 0;
-    `, [bookInfoId]);
+      WHERE bookInfoId = ? AND userId = ? AND status = 0;
+    `, [bookInfoId, userId]);
     if (reservedBook.length) {
       throw new Error(alreadyReserved);
     }
@@ -87,7 +91,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       throw new Error(moreThanTwoReservations);
     }
     await transactionExecuteQuery(`
-      INSERT INTO (userId, bookInfoId)
+      INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
   } catch (e) {
@@ -128,6 +132,7 @@ export const cancel = async (reservationId: number): Promise<string> => {
   let message = ok;
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
   try {
     const reservations = await transactionExecuteQuery(`
       SELECT status, bookId
@@ -187,4 +192,52 @@ export const userCancel = async (userId: number, reservationId: number): Promise
     return notMatchingUser;
   }
   return cancel(reservationId);
+};
+
+export const count = async (bookInfoId: string) => {
+  logger.debug(`count bookInfoId: ${bookInfoId}`);
+  const numberOfReservations = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM reservation
+    WHERE bookInfoId = ? AND status = 0;
+  `, [bookInfoId]);
+  logger.debug(`numberOfReservations: ${numberOfReservations[0].count}`);
+  return numberOfReservations[0];
+};
+
+export const reservationKeySubstitution = (obj: queriedReservationInfo): reservationInfo => {
+  const newObj: reservationInfo = {
+    reservationId: obj.reservationId,
+    bookInfoId: obj.reservedBookInfoId,
+    createdAt: obj.reservationDate,
+    endAt: obj.endAt,
+    orderOfReservation: obj.orderOfReservation,
+    title: obj.title,
+    image: obj.image,
+  };
+  return newObj;
+};
+
+export const userReservations = async (userId: string) => {
+  logger.debug(`userReservations userId: ${userId}`);
+  const reservationList = await executeQuery(`
+    SELECT reservation.id as reservationId,
+    reservation.bookInfoId as reservedBookInfoId,
+    reservation.createdAt as reservationDate,
+    reservation.endAt as endAt,
+    (SELECT COUNT(*)
+      FROM reservation
+      WHERE status = 0
+        AND bookInfoId = reservedBookInfoId
+        AND createdAt <= reservationDate) as orderOfReservation,
+    book_info.title as title,
+    book_info.image as image
+    FROM reservation
+    LEFT JOIN book_info
+    ON reservation.bookInfoId = book_info.id
+    WHERE reservation.userId = ? AND reservation.status = 0;
+  `, [userId]) as [queriedReservationInfo];
+  reservationList.forEach((obj) => reservationKeySubstitution(obj));
+  logger.debug(`reservationList: ${reservationList}`);
+  return reservationList;
 };
