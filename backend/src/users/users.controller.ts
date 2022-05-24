@@ -4,7 +4,7 @@ import {
   createUser, searchAllUsers, searchUserByNickName, updateUserAuth,
 } from './users.service';
 import {
-  createQuery, searchQuery, updateBody, updateParam
+  createQuery, searchQuery, updateBody, updateParam,
 } from './users.type';
 
 export const search = async (
