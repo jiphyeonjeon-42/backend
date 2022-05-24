@@ -112,13 +112,27 @@ export const updateUserAuth = async (
   slack: string,
   role: number,
 ) => {
+  let setString = '';
+  const queryParameters = [];
+  if (nickname !== '') {
+    setString += 'nickname=?,';
+    queryParameters.push(nickname);
+  } if (intraId) {
+    setString += 'intraId=?,';
+    queryParameters.push(nickname);
+  } if (slack !== '') {
+    setString += 'slack=?,';
+    queryParameters.push(slack);
+  } if (role !== -1) {
+    setString += 'role=?,';
+    queryParameters.push(role);
+  }
+  setString = setString.slice(0, -1);
+  queryParameters.push(id);
   await executeQuery(`
   UPDATE user 
-  SET 
-  nickname=?,
-  intraId=?, 
-  slack=?,
-  role=? 
-  WHERE id=?;
-  `, [nickname, intraId, slack, role, id]);
+  SET
+  ${setString}
+  where id=?
+  `, queryParameters);
 };

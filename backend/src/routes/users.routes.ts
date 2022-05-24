@@ -1,15 +1,17 @@
 import { Router } from 'express';
-import { create, search } from '../users/users.controller';
+import { create, search, update } from '../users/users.controller';
 
 export const path = '/users';
 export const router = Router();
 
-router.post('/', create)
+router.get('/', create)
 /**
  * @openapi
  * /api/users/search:
- *    post:
+ *    get:
  *      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
+ *      tags:
+ *        - users
  *      requestBody:
  *        content:
  *          application/json:
@@ -105,4 +107,43 @@ router.post('/', create)
  *                type: string
  *                description: error decription
  *                example: page, limit 중 한 개 이상이 존재 하지 않습니다..
- */.post('/search', search);
+ */.get('/search', search)
+/**
+ * @openapi
+ * /api/users/update/{id}:
+ *    patch:
+ *      description: 유저 정보를 변경한다.
+ *      tags:
+ *        - users
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nickname:
+ *                  type: string
+ *                intraId:
+ *                  type: integer
+ *                slack:
+ *                  type: string
+ *                role:
+ *                  type: integer
+ *      responses:
+ *        '200':
+ *          description: 유저 정보 변경 성공!
+ *        '400':
+ *          description: nickname, intraId, slack, role 중 하나도 없습니다..
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: string
+ *                description: error decription
+ *                example: nickname, intraId, slack, role  중 하나도 없습니다..
+ */.patch('/update/:id', update);

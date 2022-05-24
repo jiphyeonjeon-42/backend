@@ -17,12 +17,16 @@ export interface createQuery {
   password: string,
 }
 
-export interface updateQuery {
-  id: number,
+export interface updateBody {
+  id: string,
   email?: string,
   password?: string,
   nickname?: string,
-  intraId?: number,
+  intraId?: string,
   slack?: string,
-  role?: number,
+  role?: string,
+}
+
+export interface updateParam {
+  id: string,
 }

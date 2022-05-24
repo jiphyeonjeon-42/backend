@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import * as usersService
-  from './users.service';
-import { createQuery, searchQuery, updateQuery } from './users.type';
+import {
+  createUser, searchAllUsers, searchUserByNickName, updateUserAuth,
+} from './users.service';
+import {
+  createQuery, searchQuery, updateBody, updateParam
+} from './users.type';
 
 export const search = async (
   req: Request<{}, {}, {}, searchQuery>,
@@ -10,33 +13,31 @@ export const search = async (
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
   if (nickName === '') {
-    res.send(usersService.searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
+    res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
   } else if (nickName) {
     const items = JSON.parse(JSON.stringify(await
-    usersService.searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
+    searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
     res.send(items);
   }
 };
 
 export const update = async (
-  req: Request<{}, {}, {}, updateQuery>,
+  req: Request< updateParam, {}, updateBody, {} >,
+  res: Response,
 ) => {
+  const { id } = req.params;
   const {
-    id, email = '', password = '', nickname = '', intraId = null, slack = '', role = -1,
-  } = req.query;
-  if (email !== '') {
-    usersService.updateUserEmail(id, email);
-  } else if (password !== '') {
-    usersService.updateUserPassword(id, password);
-  } else if (nickname !== '' && intraId && slack !== '' && role !== -1) {
-    usersService.updateUserAuth(id, nickname, intraId, slack, role);
-  } else {
-    // 나중에 에러처리 추가
-    // 나중에 코드찍고 메세지 보내기
-  }
+    nickname = '', intraId = '0', slack = '', role = '-1',
+  } = req.body;
+  if (id) {
+    if (nickname !== '' || intraId || slack !== '' || role !== '-1') {
+      updateUserAuth(parseInt(id, 10), nickname, parseInt(intraId, 10), slack, parseInt(role, 10));
+      res.status(200).send('success');
+    } else res.status(400).send('Insufficient arguments');
+  } else res.status(401).send('Id is invalid');
 };
 
 export const create = async (req: Request<{}, {}, {}, createQuery>) => {
   const { email, password } = req.query;
-  usersService.createUser(email, await bcrypt.hash(password, 10));
+  createUser(email, await bcrypt.hash(password, 10));
 };
