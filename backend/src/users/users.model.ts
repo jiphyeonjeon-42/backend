@@ -1,3 +1,9 @@
+export interface Lending {
+  userId: string,
+  title: string,
+  duedate: Date,
+}
+
 export interface User {
   id: number,
   email: string,
@@ -9,5 +15,5 @@ export interface User {
   role: number,
   lendingCnt?: number,
   reservations?: [],
-  lendings?: [],
+  lendings?: Lending[],
 }
