@@ -1,9 +1,11 @@
 import { makeExecuteQuery, pool } from '../mysql';
 // search할때 사용하는 sql문들
 
+export const noUserId = '유저 없음';
+export const noPermission = '권한 없음';
 export const lendingOverload = '2권 이상 대출';
 export const lendingOverdue = '연체 중';
-export const onLending = '대출중';
+export const onLending = '대출 중';
 export const onReservation = '예약된 책';
 export const lostBook = '분실';
 export const damagedBook = '파손';
@@ -22,22 +24,39 @@ export const create = async (
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
     await conn.beginTransaction();
-
+    // 존재하는 유저인지 확인
+    const hasUser = await transactionExecuteQuery(`
+      SELECT *
+      FROM user
+      WHERE id = ?
+    `, [userId]);
+    if (!hasUser.length) { throw new Error(noUserId); }
+    // 유저 권한 없음
+    if (hasUser[0].role === 0) { throw new Error(noPermission); }
     // 유저가 2권 이상 대출
     const numberOfLendings = await transactionExecuteQuery(`
-      SELECT COUNT(*)
+      SELECT COUNT(*) as count
       FROM lending
       WHERE userId = ? AND returnedAt IS NULL;
     `, [userId]);
     if (numberOfLendings[0].count >= 2) { throw new Error(lendingOverload); }
 
-    // 유저가 연체중
+    // 유저가 연체중 (패널티를 받았거나 대출중인 책이 반납기한을 넘겼을때)
     const hasPenalty = await transactionExecuteQuery(`
-      SELECT penaltyEndDay
+      SELECT penaltyEndDate
       FROM user
       WHERE id = ?
     `, [userId]);
-    if (hasPenalty[0].penaltyEndDay > 0) { throw new Error(lendingOverdue); }
+    const isOverdue = await transactionExecuteQuery(`
+      SELECT
+        CASE WHEN 14 >= DATEDIFF(NOW(), DATE(createdAt)) THEN 0
+          ELSE  DATEDIFF(NOW(), DATE(createdAt))
+        END AS overdue
+      FROM lending
+      WHERE userId = ? AND returnedAt IS NULL
+    `, [userId]);
+    if (hasPenalty[0].penaltyEndDate >= new Date()
+      || isOverdue[0]?.overdue) { throw new Error(lendingOverdue); }
 
     // 책이 대출되지 않은 상태인지
     const isNotLended = await transactionExecuteQuery(`
@@ -45,13 +64,13 @@ export const create = async (
       FROM lending
       WHERE bookId = ? AND returnedAt IS NULL
     `, [bookId]);
-    if (isNotLended[0].length !== 0) { throw new Error(onLending); }
+    if (isNotLended.length !== 0) { throw new Error(onLending); }
 
     // 책이 분실, 파손이 아닌지
     const isLendableBook = await transactionExecuteQuery(`
      SELECT *
      FROM book
-     WHERE id = ? AND status = 0
+     WHERE id = ?
     `, [bookId]);
     if (isLendableBook[0].status === 1) {
       throw new Error(damagedBook);
@@ -65,7 +84,9 @@ export const create = async (
       FROM reservation
       WHERE bookId = ? AND status = 0
     `, [bookId]);
-    if (isNotReservedBook[0].userId !== userId) { throw new Error(onReservation); }
+    if (isNotReservedBook.length && isNotReservedBook[0].userId !== userId) {
+      throw new Error(onReservation);
+    }
 
     await transactionExecuteQuery(`
       INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)

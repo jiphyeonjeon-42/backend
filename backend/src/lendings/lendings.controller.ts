@@ -6,6 +6,9 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
   res.send('lending create');
   // 사서권한 확인
   if (req.role < 3) { res.status(401); }
+  if (!req.body.userId || !req.body.bookId) {
+    res.status(400).json({ errorCode: 0 });
+  }
   const result = await lendingsService.create(
     req.body.userId,
     req.body.bookId,
@@ -13,6 +16,37 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
     req.body.condition,
   );
   // 서비스 가져와서?
+  switch (result) {
+    case lendingsService.ok:
+      res.status(status.OK);
+      break;
+    case lendingsService.noUserId:
+      res.status(400).json({ errorCode: 1 });
+      break;
+    case lendingsService.noPermission:
+      res.status(400).json({ errorCode: 2 });
+      break;
+    case lendingsService.lendingOverload:
+      res.status(400).json({ errorCode: 3 });
+      break;
+    case lendingsService.lendingOverdue:
+      res.status(400).json({ errorCode: 4 });
+      break;
+    case lendingsService.onLending:
+      res.status(400).json({ errorCode: 5 });
+      break;
+    case lendingsService.onReservation:
+      res.status(400).json({ errorCode: 6 });
+      break;
+    case lendingsService.lostBook:
+      res.status(400).json({ errorCode: 7 });
+      break;
+    case lendingsService.damagedBook:
+      res.status(400).json({ errorCode: 8 });
+      break;
+    default:
+      res.status(500);
+  }
   if (result === lendingsService.ok) {
     res.status(status.OK);
   } else if (result === lendingsService.lendingOverload) {
