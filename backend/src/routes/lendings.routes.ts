@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  create, search, booksId, returnBook,
+  create, search, lendingId, returnBook,
 } from '../lendings/lendings.controller';
 
 export const path = '/lendings';
@@ -249,7 +249,7 @@ router
  *        '500':
  *          description: db 에러
  */
-  .get('/:id', booksId)
+  .get('/:id', lendingId)
 
 /**
  * @openapi
@@ -295,4 +295,5 @@ router
  *                  errorCode:
  *                    type: integer
  * */
+
   .patch('/return', returnBook);

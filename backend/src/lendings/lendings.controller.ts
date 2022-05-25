@@ -73,7 +73,6 @@ const argumentCheck = (sort:string, type:string) => {
 };
 
 export const search: RequestHandler = async (req: Request, res: Response) => {
-  // 사서 권한 확인 필요
   const info = req.query;
   const query = info.query as string;
   const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) - 1 : 0;
@@ -85,9 +84,18 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   res.send({ items: result });
 };
 
-export const booksId: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
-  // search 함수
+export const lendingId: RequestHandler = async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) {
+    res.status(status.BAD_REQUEST);
+  } else {
+    const result = await lendingsService.lendingId(id);
+    if (result.length) {
+      res.status(status.OK).json(result[0]);
+    } else {
+      res.status(status.BAD_REQUEST);
+    }
+  }
 };
 
 export const returnBook: RequestHandler = async (req: Request, res: Response) => {
