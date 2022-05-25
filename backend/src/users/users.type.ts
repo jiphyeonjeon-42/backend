@@ -18,7 +18,7 @@ export interface createQuery {
 }
 
 export interface updateBody {
-  id: string,
+  id?: string,
   email?: string,
   password?: string,
   nickname?: string,

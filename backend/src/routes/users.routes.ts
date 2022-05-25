@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import { create, search, update } from '../users/users.controller';
+import {
+  create, myupdate, search, update,
+} from '../users/users.controller';
 
 export const path = '/users';
 export const router = Router();
@@ -146,4 +148,39 @@ router.get('/', create)
  *                type: string
  *                description: error decription
  *                example: nickname, intraId, slack, role  중 하나도 없습니다..
- */.patch('/update/:id', update);
+ */.patch('/update/:id', update)
+/**
+ * @openapi
+ * /api/users/myupdate/{id}:
+ *    patch:
+ *      description: 유저 정보를 변경한다.
+ *      tags:
+ *        - users
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                password:
+ *                  type: string
+ *      responses:
+ *        '200':
+ *          description: 유저 정보 변경 성공!
+ *        '400':
+ *          description: email, password 중 하나도 없습니다..
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: string
+ *                description: error decription
+ *                example: nickname, intraId, slack, role  중 하나도 없습니다..
+ */.patch('/myupdate/:id', myupdate);

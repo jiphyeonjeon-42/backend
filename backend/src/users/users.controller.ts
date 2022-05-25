@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import {
-  createUser, searchAllUsers, searchUserByNickName, updateUserAuth,
+  createUser, searchAllUsers, searchUserByNickName,
+  updateUserAuth, updateUserEmail, updateUserPassword,
 } from './users.service';
 import {
   createQuery, searchQuery, updateBody, updateParam,
@@ -37,6 +38,26 @@ export const update = async (
   } else res.status(401).send('Id is invalid');
 };
 
+export const myupdate = async (
+  req: Request< updateParam, {}, updateBody, {} >,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const {
+    email = '', password = '0',
+  } = req.body;
+  if (id) {
+    if (email !== '') {
+      updateUserEmail(parseInt(id, 10), email);
+    } else if (password !== '') {
+      const encryptedPW = bcrypt.hashSync(password, 10);
+      updateUserPassword(parseInt(id, 10), encryptedPW);
+    } else {
+      res.status(400).send('Insufficient arguments');
+    }
+    res.status(200).send('success');
+  } else res.status(401).send('Id is invalid');
+};
 export const create = async (req: Request<{}, {}, {}, createQuery>) => {
   const { email, password } = req.query;
   createUser(email, await bcrypt.hash(password, 10));
