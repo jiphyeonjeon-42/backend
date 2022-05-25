@@ -1,5 +1,5 @@
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import { paginate } from '../paginate';
+import * as models from '../users/users.model';
 import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
@@ -105,28 +105,75 @@ export const create = async (userId: number, bookInfoId: number) => {
   return message;
 };
 
-export const search = async (page: string, limit: string, filter: string[]) => {
-  console.log(`page: ${page}`);
-  console.log(`limit: ${limit}`);
-  console.log(`filter: ${filter}`);
-  if (!filter) filter = []; // query에 filter가 없을 시 나타나는 에러 방지
-  if (!filter.includes('proceeding') && !filter.includes('finish')) { // 둘다 선택 x
-    console.log('둘다 선택 x');
-  }
-  if (filter.includes('proceeding') && filter.includes('finish')) { // 둘다 선택 x
-    console.log('둘다 선택 O');
-  } else if (filter.includes('proceeding')) // proceeding
-  {
-    console.log('proceeding');
-  } else if (filter.includes('finish')) // finish
-  {
-    console.log('finish');
-  }
-  const data = await pool.query('SELECT * FROM book');
-  const item = JSON.parse(JSON.stringify(data[0]));
-  console.log(paginate(item, 150, parseInt(page)));
-  return paginate(item, 150, parseInt(page));
-};
+export const
+  search = async (query:string, page: number, limit: number, filter: string) => {
+    logger.debug(`reservation search query: ${query} page: ${page} limit ${limit} filter ${filter}`);
+    let filterQuery;
+    switch (filter) {
+      case 'waiting':
+        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NULL';
+        break;
+      case 'expired':
+        filterQuery = 'WHERE reservation.status > 0';
+        break;
+      case 'all':
+        filterQuery = '';
+        break;
+      default:
+        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NOT NULL';
+    }
+
+    const items = (await executeQuery(`
+      SELECT
+        reservation.id AS reservationsId,
+        user.nickname AS login,
+        CASE
+          WHEN NOW() > user.penaltyEndDate THEN 0
+          ELSE DATEDIFF(now(), user.penaltyEndDate)
+        END AS penaltyDays,
+        book.title,
+        book.image,
+        (
+          SELECT callSign
+          FROM book
+          WHERE book.id = reservation.bookId
+        ) AS callSign,
+        DATE_FORMAT(reservation.createdAt, '%Y.%m.%d') AS createdAt,
+        DATE_FORMAT(reservation.endAt, '%Y.%m.%d') AS endAt,
+        status
+      FROM reservation
+      LEFT JOIN user AS user ON reservation.userId = user.id
+      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
+      ${filterQuery}
+      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
+      LIMIT ?
+      OFFSET ?
+  `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
+    const totalItems = (await executeQuery(`
+      SELECT
+        reservation.id AS reservationsId,
+        user.nickName AS login,
+        book.title,
+        (
+          SELECT callSign
+          FROM book
+          WHERE book.id = reservation.bookId
+        ) AS callSign
+      FROM reservation
+      LEFT JOIN user AS user ON reservation.userId = user.id
+      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
+      ${filterQuery}
+      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
+    `, [`%${query}%`, `%${query}%`, `%${query}%`]));
+    const meta :models.Meta = {
+      totalItems: totalItems.length,
+      itemCount: items.length,
+      itemsPerPage: limit,
+      totalPages: Math.ceil(totalItems.length / limit),
+      currentPage: page + 1,
+    };
+    return { items, meta };
+  };
 
 export const cancel = async (reservationId: number): Promise<string> => {
   let message = ok;

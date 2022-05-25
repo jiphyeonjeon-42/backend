@@ -4,10 +4,9 @@ export interface SearchBookInfoQuery {
     page: string;
     limit: string;
     category: string;
-};
+}
 
-
-export interface SortInfoType { 
+export interface SortInfoType {
     sort: string;
     limit: string;
-};
+}

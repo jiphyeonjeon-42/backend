@@ -121,7 +121,6 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
 
 export const sortInfo = async (sort: string, limit: number) => {
   let ordering = '';
-  console.log('sort : ', sort);
   switch (sort) {
     case 'popular':
       ordering = 'ORDER BY lendingCnt DESC';

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  create, search, booksId, returnBook,
+  create, search, lendingId, returnBook,
 } from '../lendings/lendings.controller';
 
 export const path = '/lendings';
@@ -148,6 +148,30 @@ router
  *                        callSign: H19.19.v1.c1
  *                        title: "클린 아키텍처: 소프트웨어 구조와 설계의 원칙"
  *                        dueDate: 2022.06.07
+ *                  meta:
+ *                    description: 대출 조회 결과에 대한 요약 정보
+ *                    type: object
+ *                    properties:
+ *                      totalItems:
+ *                        description: 전체 대출 검색 결과 건수
+ *                        type: integer
+ *                        example: 2
+ *                      itemCount:
+ *                        description: 현재 페이지 검색 결과 수
+ *                        type: integer
+ *                        example: 2
+ *                      itemsPerPage:
+ *                        description: 페이지 당 검색 결과 수
+ *                        type: integer
+ *                        example: 2
+ *                      totalPages:
+ *                        description: 전체 결과 페이지 수
+ *                        type: integer
+ *                        example: 1
+ *                      currentPage:
+ *                        description: 현재 페이지
+ *                        type: integer
+ *                        example: 1
  *        '400':
  *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
  *        '401':
@@ -225,7 +249,7 @@ router
  *        '500':
  *          description: db 에러
  */
-  .get('/:id', booksId)
+  .get('/:id', lendingId)
 
 /**
  * @openapi
@@ -271,4 +295,5 @@ router
  *                  errorCode:
  *                    type: integer
  * */
+
   .patch('/return', returnBook);

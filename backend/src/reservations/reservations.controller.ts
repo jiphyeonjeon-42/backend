@@ -1,7 +1,6 @@
 import { Request, RequestHandler, Response } from 'express';
 import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
-import { ReservationsPageInfo } from '../paginate';
 
 export const create: RequestHandler = async (req: Request, res: Response) => {
   if (!req.role) {
@@ -34,15 +33,28 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
+const filterCheck = (argument: string) => {
+  switch (argument) {
+    case 'pending':
+    case 'waiting':
+    case 'expired':
+    case 'all':
+      return 1;
+    default:
+      return 0;
+  }
+};
+
 export const search: RequestHandler = async (req: Request, res: Response) => {
   const info = req.query;
-  const page = info.page as string ? info.page as string : '1';
-  const limit = info.limit as string ? info.limit as string : '5';
-  const filter = info.filter as string[];
-  const p :ReservationsPageInfo = new ReservationsPageInfo(page, limit, filter);
-  const data = await reservationsService
-    .search(p.getPage(), p.getLimit(), p.getFilter());
-  res.send(data);
+  const query = info.query as string ? info.query as string : '';
+  const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) - 1 : 0;
+  const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
+  const filter = info.filter as string;
+  if (!filterCheck(filter)) { res.status(status.BAD_REQUEST); }
+  const result = await reservationsService
+    .search(query, page, limit, filter);
+  res.send(result);
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response) => {
