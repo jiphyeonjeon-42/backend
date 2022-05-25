@@ -4,7 +4,7 @@ import config from '../config';
 import * as usersService from '../users/users.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
-import FtError from './auth.interface';
+import { FtError } from './auth.type';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;

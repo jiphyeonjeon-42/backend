@@ -3,6 +3,8 @@ import passport from 'passport';
 import {
   getMe, getOAuth, getToken, login, logout,
 } from '../auth/auth.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/auth';
 export const router = Router();
@@ -109,16 +111,14 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  librarian:
  *                    description: 사서 여부
  *                    type: boolean
- *        '400':
+ *        '401':
  *          description: 토큰이 없을 경우 에러
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  message:
- *                    type: string
- *        '401':
+ *                type: string
+ *                example: Unauthorized
+ *        '403':
  *          description: 유저가 없을 경우의 에러
  *          content:
  *            application/json:
@@ -128,7 +128,7 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  message:
  *                    type: string
  */
-router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
+router.get('/me', authValidate(roleSet.all), getMe);
 
 /**
  * @openapi
