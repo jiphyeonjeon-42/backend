@@ -27,7 +27,6 @@ export const clientValidator = (value: any) => {
 export const issueJwt = (user: User) => {
   const payload = {
     id: user.id,
-    role: user.role,
   };
   const secretKey = config.jwt.secret;
   const options = {

@@ -1,4 +1,4 @@
-class FtError {
+export class FtError {
     public code: number;
 
     public message: string;
@@ -9,4 +9,15 @@ class FtError {
     }
 }
 
-export default FtError;
+export enum Role {
+    User = 0,
+    Cadet,
+    Librarian,
+    Staff,
+}
+
+export const RoleSet = {
+  All: [Role.User, Role.Cadet, Role.Librarian, Role.Staff],
+  Service: [Role.Cadet, Role.Librarian, Role.Staff],
+  Admin: [Role.Librarian],
+};
