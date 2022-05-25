@@ -11,9 +11,8 @@ export const FtStrategy = new FortyTwoStrategy(
   },
   (accessToken: any, refreshToken: any, profile: any, cb: Function) => {
     const { id } = profile._json; // eslint-disable-line no-underscore-dangle
-    const imageURL = profile._json.image_url; // eslint-disable-line no-underscore-dangle
     const user = {
-      id
+      id,
     };
     cb(null, user);
   },
@@ -31,7 +30,6 @@ export const JwtStrategy = new JWTStrategy(
   (payload, done) => {
     const user = {
       id: payload.id,
-      role: payload.role
     };
     done(null, user);
   },
