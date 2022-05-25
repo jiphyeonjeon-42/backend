@@ -1,4 +1,4 @@
-import { executeQuery } from '../mysql';
+import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import * as models from '../users/users.model';
 import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
