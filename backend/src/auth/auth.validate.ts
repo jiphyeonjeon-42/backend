@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import * as usersService from '../users/users.service';
-import { FtError, Role } from './auth.interface';
+import { FtError, role } from './auth.type';
 import { User } from '../users/users.model';
 import config from '../config';
 
-const authValidate = (roles: Role[]) => async (req: Request, res: Response, next: Function) => {
+const authValidate = (roles: role[]) => async (req: Request, res: Response, next: Function) => {
   try {
     if (!req.cookies.access_token) throw new FtError(401, '토큰이 발급되지 않았습니다.');
     // 토큰 복호화

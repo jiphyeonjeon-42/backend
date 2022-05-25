@@ -4,7 +4,7 @@ import {
   getMe, getOAuth, getToken, login, logout,
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
-import { RoleSet } from '../auth/auth.interface';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/auth';
 export const router = Router();
@@ -128,7 +128,7 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  message:
  *                    type: string
  */
-router.get('/me', authValidate(RoleSet.All), getMe);
+router.get('/me', authValidate(roleSet.all), getMe);
 
 /**
  * @openapi
