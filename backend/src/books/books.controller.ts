@@ -1,22 +1,25 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
-import * as status from "http-status";
-import ErrorResponse from "../errorResponse";
-import * as BooksService from "./books.service";
-import * as types from "./books.type";
-
+import {
+  NextFunction, Request, RequestHandler, Response,
+} from 'express';
+import * as status from 'http-status';
+import ErrorResponse from '../errorResponse';
+import * as BooksService from './books.service';
+import * as types from './books.type';
 
 export const searchBookInfo = async (
   req: Request<{}, {}, {}, types.SearchBookInfoQuery>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const { query, sort, page, limit, category } = req.query;
+  const {
+    query, sort, page, limit, category,
+  } = req.query;
   if (!(query && page && limit)) {
     next(
       new ErrorResponse(
         status.BAD_REQUEST,
-        "query, page, limit 중 하나 이상이 없습니다."
-      )
+        'query, page, limit 중 하나 이상이 없습니다.',
+      ),
     );
   } else {
     res
@@ -27,8 +30,8 @@ export const searchBookInfo = async (
           sort,
           parseInt(page, 10),
           parseInt(limit, 10),
-          category
-        )
+          category,
+        ),
       );
   }
 };
@@ -36,18 +39,18 @@ export const searchBookInfo = async (
 export const getInfoId: RequestHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const bookId = parseInt(req.params.id, 10);
   if (Number.isNaN(bookId)) {
-    next(new ErrorResponse(status.BAD_REQUEST, "id가 숫자가 아닙니다."));
+    next(new ErrorResponse(status.BAD_REQUEST, 'id가 숫자가 아닙니다.'));
   } else {
     res.status(status.OK).json(await BooksService.getInfo(bookId));
   }
 };
 export const sortInfo = async (
   req: Request<{}, {}, {}, types.SortInfoType>,
-  res: Response
+  res: Response,
 ) => {
   const { sort, limit } = req.query;
   if (!(sort && limit)) {
@@ -56,8 +59,8 @@ export const sortInfo = async (
       .send(
         new ErrorResponse(
           status.BAD_REQUEST,
-          "sort, limit 중 하나 이상이 없습니다."
-        )
+          'sort, limit 중 하나 이상이 없습니다.',
+        ),
       );
   } else {
     res
@@ -67,10 +70,10 @@ export const sortInfo = async (
 };
 
 export const booker: RequestHandler = (req: Request, res: Response) => {
-  res.send("hello express");
+  res.send('hello express');
   // search 함수
 };
 
 export const search: RequestHandler = (req: Request, res: Response) => {
-  res.send("hello express");
+  res.send('hello express');
 };

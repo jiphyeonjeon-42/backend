@@ -6,6 +6,7 @@ import {
 export const path = '/lendings';
 export const router = Router();
 
+router
 /**
  * @openapi
  * /api/lendings:
@@ -52,6 +53,7 @@ export const router = Router();
  *        '500':
  *          description: db 에러
  * */
+  .post('/', create)
 
 /**
  * @openapi
@@ -153,6 +155,7 @@ export const router = Router();
  *        '500':
  *          description: db 에러
  */
+  .get('/search', search)
 
 /**
  * @openapi
@@ -222,6 +225,7 @@ export const router = Router();
  *        '500':
  *          description: db 에러
  */
+  .get('/:id', booksId)
 
 /**
  * @openapi
@@ -267,9 +271,4 @@ export const router = Router();
  *                  errorCode:
  *                    type: integer
  * */
-
-router
-  .post('/', create)
-  .get('/search', search)
-  .get('/:id', booksId)
   .patch('/return', returnBook);

@@ -227,7 +227,7 @@ export const searchInfo = async (
       book_info.updatedAt as updatedAt,
       COUNT(lending.id) as lendingCnt
     FROM book_info, lending
-    WHERE book_info.id = lending.bookId 
+    WHERE book_info.id = lending.bookId
     AND (
       (book_info.title like ?
       OR book_info.author like ?
