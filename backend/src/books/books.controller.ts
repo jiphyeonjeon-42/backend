@@ -80,11 +80,20 @@ export const sortInfo = async (
   }
 };
 
-export const booker: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
-  // search 함수
-};
-
-export const search: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
+export const search = async (
+  req: Request<{}, {}, {}, types.SearchQuery>,
+  res: Response,
+) => {
+  const { query, page, limit } = req.query;
+  if (!(query && page && limit)) {
+    res.status(401).send('필수 검색어를 채워주세요.');
+  } else {
+    res.status(status.OK).json(
+      await BooksService.search(
+        query,
+        parseInt(page, 10),
+        parseInt(limit, 10),
+      ),
+    );
+  }
 };

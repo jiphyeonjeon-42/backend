@@ -2,7 +2,6 @@ import { Router } from 'express';
 import {
   searchBookInfo,
   sortInfo,
-  booker,
   search,
   getInfoId,
   createBook,
@@ -334,7 +333,6 @@ router
    *                example: id가 숫자가 아닙니다.
    */
   .get('/info/:id', getInfoId)
-  .get('/:id/reservations/count', booker);
 
 router
   /**
