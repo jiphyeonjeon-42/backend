@@ -11,7 +11,7 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
   if (Number.isNaN(bookInfoId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
   }
-  const result = await reservationsService.create(req.id, req.body.bookInfoId);
+  const result = await reservationsService.create(req.user.id, req.body.bookInfoId);
   switch (result) {
     case reservationsService.ok:
       res.status(status.OK);
@@ -67,7 +67,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response) => {
   if (req.role === 3) {
     result = await reservationsService.cancel(reservationId);
   } else {
-    result = await reservationsService.userCancel(req.id, reservationId);
+    result = await reservationsService.userCancel(req.user.id, reservationId);
   }
   switch (result) {
     case (reservationsService.ok):
