@@ -1,13 +1,16 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   searchBookInfo,
   sortInfo,
   booker,
   search,
   getInfoId,
-} from "../books/books.controller";
+  createBook,
+} from '../books/books.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
-export const path = "/books";
+export const path = '/books';
 export const router = Router();
 
 router
@@ -148,7 +151,7 @@ router
    *                description: error decription
    *                example: query, page, limit 중 하나 이상이 없습니다.
    */
-  .get("/info/search", searchBookInfo);
+  .get('/info/search', searchBookInfo);
 
 router
   /**
@@ -240,7 +243,7 @@ router
    *                description: error decription
    *                example: 클라이언트 오류.
    */
-  .get("/info", sortInfo)
+  .get('/info', sortInfo)
 
   /**
    * @openapi
@@ -330,8 +333,8 @@ router
    *                description: error decription
    *                example: id가 숫자가 아닙니다.
    */
-  .get("/info/:id", getInfoId)
-  .get("/:id/reservations/count", booker);
+  .get('/info/:id', getInfoId)
+  .get('/:id/reservations/count', booker);
 
 router
   /**
@@ -435,4 +438,73 @@ router
    *                description: error decription
    *                example: query, page, limit 중 하나 이상이 없습니다.
    */
-  .get("/search", search);
+  .get('/search', search);
+
+router/**
+* @openapi
+* /api/books/create:
+*    post:
+*      description: 책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.
+*      tags:
+*      - books
+*      requestBody:
+*        content:
+*          application/json:
+*            schema:
+*              type: object
+*              properties:
+*                isbn:
+*                  type: string
+*                  example: 9788065960874
+*                categoryId:
+*                  type: integer
+*                  example: 1
+*                donator:
+*                  type: string
+*                  example: seongyle
+*                callSign:
+*                  type: string
+*                  example: e7.79.v2.c3
+*      responses:
+*         '200':
+*            description: 책 정보 정상적으로 insert됨.
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert success
+*                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
+*         '400':
+*            description: 클라이언트 오류.
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail
+*                 example: insert unsuccessfully done.
+*         '500':
+*            description: 서버오류
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail, 서버오류
+*                 example: insert unsuccessfully done.
+*         '501':
+*            description: DB오류
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail, DB오류
+*                 example: { code: 501, message: '중복된 slackid 입니다.  DB관리자에게 문의하세요.' }
+*         '502':
+*            description: naver openapi에서 못 찾음
+*            content:
+*             application/json:
+*               schema:
+*                 type: string
+*                 description: insert fail
+*                 example: { code: 502, message: 'ISBN 검색결과가 없습니다.' }
+*/
+  .post('/create', authValidate(roleSet.librarian), createBook);

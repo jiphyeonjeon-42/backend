@@ -1,9 +1,34 @@
+import axios from 'axios';
 import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
+import * as types from './books.type';
 
-export const createBook = async (book: models.Book): Promise<void> => {
-  const result = (await executeQuery(
+const searchByIsbn = async (isbn: string) => {
+  let book;
+  await axios
+    .get(
+      `
+  https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
+      {
+        headers: {
+          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
+          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+        },
+      },
+    )
+    .then((res) => {
+      // eslint-disable-next-line prefer-destructuring
+      book = res.data.items[0];
+    })
+    .catch((err) => {
+      throw err;
+    });
+  return (book);
+};
+
+export const createBook = async (book: types.CreateBookInfo) => {
+  const isbnInBookInfo = (await executeQuery(
     `
     SELECT
       isbn
@@ -12,13 +37,33 @@ export const createBook = async (book: models.Book): Promise<void> => {
   `,
     [book.isbn],
   )) as StringRows[];
-  if (result.length === 0) {
-    let image = null;
-    if (!book.image) {
-      image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(
-        -3,
-      )}/x${book.isbn}.jpg`;
-    }
+
+  const searchBySlackID = (await executeQuery(
+    `
+    SELECT
+      id
+    FROM user
+    WHERE nickname = ?
+  `,
+    [book.donator],
+  )) as StringRows[];
+
+  if (searchBySlackID.length > 1) {
+    return ({ code: 501, message: '중복된 slackid 입니다. DB관리자에게 문의하세요.' });
+  }
+
+  const isbnData : any = await searchByIsbn(book.isbn);
+  if (isbnData === undefined) {
+    return { code: 502, message: 'ISBN 검색결과가 없습니다.' };
+  }
+  const {
+    title, author, publisher, pubdate,
+  } = isbnData;
+  const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
+  // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
+  const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
+
+  if (isbnInBookInfo.length === 0) {
     await executeQuery(
       `
     INSERT INTO book_info(
@@ -27,7 +72,7 @@ export const createBook = async (book: models.Book): Promise<void> => {
       publisher,
       isbn,
       image,
-      categoryId,
+      category,
       publishedAt
     ) VALUES (
       ?,
@@ -44,16 +89,17 @@ export const createBook = async (book: models.Book): Promise<void> => {
       ?
     )`,
       [
-        book.title,
-        book.author,
-        book.publisher,
+        title,
+        author,
+        publisher,
         book.isbn,
-        book.image ?? image,
-        book.category,
-        book.publishedAt,
+        image,
+        category,
+        pubdate,
       ],
     );
   }
+
   await executeQuery(
     `
     INSERT INTO book(
@@ -67,10 +113,10 @@ export const createBook = async (book: models.Book): Promise<void> => {
       (
         SELECT id
         FROM user
-        WHERE login = ?
+        WHERE nickname = ?
       ),
       ?,
-      ?,
+      0,
       (
         SELECT id
         FROM book_info
@@ -79,13 +125,13 @@ export const createBook = async (book: models.Book): Promise<void> => {
     )
   `,
     [
-      book.donator ?? 'null',
-      book.donator ?? '0',
+      book.donator,
+      book.donator,
       book.callSign,
-      book.status,
       book.isbn,
     ],
   );
+  return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 
 export const deleteBook = async (book: models.Book): Promise<boolean> => {
