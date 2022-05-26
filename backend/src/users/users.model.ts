@@ -12,6 +12,7 @@ export interface User {
   intraId?: number;
   slack?: string,
   penaltyEndDay?: Date,
+  overDueDay:number,
   role: number,
   reservations?: [],
   lendings?: Lending[],
