@@ -4,6 +4,55 @@ import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
 
+export const search = async (
+  query: string,
+  page: number,
+  limit: number,
+) => {
+  const bookList = (await executeQuery(
+    `
+    SELECT
+      book.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      (
+        IF ((
+          (select COUNT(*) from lending where (bookId = book.id and returnedAt is NULL) = 0)
+          and 
+          (select COUNT(*) from book where (id = book.id and status = 0) = 1) 
+          and
+          (select COUNT(*) from reservation where (bookId = book.id and status = 0) = 0)
+      ),TRUE,FALSE)
+      ) AS isLendable 
+    FROM book_info, book 
+    WHERE book_info.id = book.infoId AND
+    (book_info.title like ?
+      OR book_info.author like ?
+      OR book_info.isbn like ?)
+    LIMIT ?
+    OFFSET ?;
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
+  )) as models.BookInfo[];
+
+  const totalItems = bookList.length;
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, meta };
+};
+
 const searchByIsbn = async (isbn: string) => {
   let book;
   await axios
