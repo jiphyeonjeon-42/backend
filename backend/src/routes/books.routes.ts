@@ -7,6 +7,8 @@ import {
   getInfoId,
   createBook,
 } from '../books/books.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/books';
 export const router = Router();
@@ -505,4 +507,4 @@ router/**
 *                 description: insert fail
 *                 example: { code: 502, message: 'ISBN 검색결과가 없습니다.' }
 */
-  .post('/create', createBook);
+  .post('/create', authValidate(roleSet.librarian), createBook);
