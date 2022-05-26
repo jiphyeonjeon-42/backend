@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { getMe, getOAuth, getToken, login } from '../auth/auth.controller';
+import {
+  getMe, getOAuth, getToken, login, logout,
+} from '../auth/auth.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/auth';
 export const router = Router();
@@ -8,8 +12,8 @@ export const router = Router();
 /**
  * @openapi
  * /api/auth/oauth:
- *    post:
- *      description: 42 Api에 API key값을 추가해서 요청한다.
+ *    get:
+ *      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
  *      tags:
  *      - auth
  *      parameters:
@@ -38,8 +42,8 @@ router.get('/oauth', getOAuth);
 /**
  * @openapi
  * /api/auth/token:
- *    post:
- *      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다.
+ *    get:
+ *      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다. redirect 되기에 반환값 확인 불가.
  *      tags:
  *      - auth
  *      parameters:
@@ -107,16 +111,14 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  librarian:
  *                    description: 사서 여부
  *                    type: boolean
- *        '400':
+ *        '401':
  *          description: 토큰이 없을 경우 에러
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  message:
- *                    type: string
- *        '401':
+ *                type: string
+ *                example: Unauthorized
+ *        '403':
  *          description: 유저가 없을 경우의 에러
  *          content:
  *            application/json:
@@ -126,7 +128,7 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  message:
  *                    type: string
  */
-router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
+router.get('/me', authValidate(roleSet.all), getMe);
 
 /**
  * @openapi
@@ -135,20 +137,18 @@ router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
  *      description: 입력된 회원정보를 Users DB에서 확인하여, Token을 발급해 쿠키에 저장해준다.
  *      tags:
  *      - auth
- *      parameters:
- *      - in: body
- *        name: user
+ *      requestBody:
  *        description: 로그인할 유저 정보
- *        schema:
- *          type: object
- *          required:
- *            - id
- *            - password
- *          properties:
- *            id:
- *              type: string
- *            password:
- *              type: string
+ *        required: true
+ *        content:
+ *           application/x-www-form-urlencoded:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  id:
+ *                    type: string
+ *                  password:
+ *                    type: string
  *      responses:
  *        '302':
  *          description: 성공적으로 토큰 발급
@@ -187,3 +187,16 @@ router.get('/me', passport.authenticate('jwt', { session: false }), getMe);
  *                    type: string
  */
 router.post('/login', login);
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *    post:
+ *      description: 발급한 token을 소멸시킨다.
+ *      tags:
+ *      - auth
+ *      responses:
+ *        204:
+ *          description: 정상적으로 token 삭제 완료
+ */
+router.post('/logout', logout);
