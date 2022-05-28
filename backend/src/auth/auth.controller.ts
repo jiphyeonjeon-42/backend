@@ -5,6 +5,7 @@ import * as usersService from '../users/users.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
 import { FtError } from './auth.type';
+import { use } from 'passport';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
@@ -38,7 +39,8 @@ export const getMe = async (req: Request, res: Response) => {
     if (user.items.length === 0) throw new FtError(401, 'not found user');
     const result = {
       id: user.items[0].id,
-      intra: user.items[0].nickName.length === 0 ? user.items[0].email : user.items[0].nickName,
+      intra: user.items[0].nickName && user.items[0].nickName.length === 0
+        ? user.items[0].email : user.items[0].nickName,
       librarian: user.items[0].role === 2,
     };
     res.status(200).json(result);

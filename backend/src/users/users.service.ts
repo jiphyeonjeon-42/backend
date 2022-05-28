@@ -16,8 +16,50 @@ export const getLending = async () => {
   return { items };
 };
 
+export const setOverDueDay = async (items: any) => {
+  const lending = await getLending();
+  if (items) {
+    return items.map((item: models.User) => {
+      const rtnObj: models.User = Object.assign(item);
+      rtnObj.lendings = lending.items.filter((lend) => lend.userId === item.id);
+      rtnObj.overDueDay = 0;
+      if (rtnObj.lendings.length) {
+        const nowDate = new Date();
+        rtnObj.lendings.forEach((lend: models.Lending) => {
+          if (lend.duedate > nowDate) {
+            rtnObj.overDueDay += Math.floor(lend.duedate.getTime() / (1000 * 3600 * 24)
+            - nowDate.getTime() / (1000 * 3600 * 24));
+          }
+        });
+      }
+      return rtnObj;
+    });
+  }
+  return items;
+};
+
+export const userReservations = async (userId: number) => {
+  const reservationList = await executeQuery(`
+    SELECT reservation.id as reservationId,
+    reservation.bookInfoId as reservedBookInfoId,
+    reservation.createdAt as reservationDate,
+    reservation.endAt as endAt,
+    (SELECT COUNT(*)
+      FROM reservation
+      WHERE status = 0
+        AND bookInfoId = reservedBookInfoId
+        AND createdAt <= reservationDate) as ranking,
+    book_info.title as title
+    FROM reservation
+    LEFT JOIN book_info
+    ON reservation.bookInfoId = book_info.id
+    WHERE reservation.userId = ? AND reservation.status = 0;
+  `, [userId]);
+  return reservationList;
+};
+
 export const searchUserByNickName = async (nickName: string, limit: number, page: number) => {
-  const items = (await executeQuery(`
+  let items = (await executeQuery(`
     SELECT 
     *
     FROM user
@@ -25,6 +67,7 @@ export const searchUserByNickName = async (nickName: string, limit: number, page
     LIMIT ?
     OFFSET ?;
   `, [`%${nickName}%`, limit, limit * page])) as models.User[];
+  items = await setOverDueDay(items);
   const total = (await executeQuery(`
   SELECT FOUND_ROWS() as totalItems;
   `));
@@ -69,7 +112,7 @@ export const searchUserByIntraId = async (intraId: number) => {
 };
 
 export const searchAllUsers = async (limit: number, page: number) => {
-  const items = (await executeQuery(`
+  let items = (await executeQuery(`
     SELECT
     SQL_CALC_FOUND_ROWS
     *
@@ -77,6 +120,7 @@ export const searchAllUsers = async (limit: number, page: number) => {
     LIMIT ?
     OFFSET ?;
   `, [limit, limit * page])) as models.User[];
+  items = await setOverDueDay(items);
   const total = (await executeQuery(`
   SELECT FOUND_ROWS() as totalItems;
   `));

@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { Lending, User } from './users.model';
+import { User } from './users.model';
 import {
-  createUser, getLending, searchAllUsers, searchUserByNickName,
-  updateUserAuth, updateUserEmail, updateUserPassword,
+  createUser, searchAllUsers, searchUserByNickName,
+  updateUserAuth, updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { createQuery, searchQuery, updateQuery } from './users.type';
 
@@ -13,32 +13,18 @@ export const search = async (
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
   if (parseInt(limit, 10) > 0 && parseInt(page, 10) >= 0) {
-    const lending = await getLending();
     let items;
     if (nickName === '') {
-      items = searchAllUsers(parseInt(page, 10), parseInt(limit, 10));
+      items = await searchAllUsers(parseInt(limit, 10),parseInt(page, 10));
     } else if (nickName) {
       items = JSON.parse(JSON.stringify(await
       searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
     } else res.status(400).send('NickName is NULL');
     if (items) {
-      items.items.map((item:User) => {
-        const rtnObj:User = Object.assign(item);
-        rtnObj.lendings = lending.items.filter((lend) => lend.userId === item.id);
-        rtnObj.overDueDay = 0;
-        if (rtnObj.lendings.length) {
-          const nowDate = new Date();
-          rtnObj.lendings.forEach((lend: Lending) => {
-            if (lend.duedate > nowDate) {
-              rtnObj.overDueDay += lend.duedate.getTime() / (1000 * 3600 * 24)
-                - nowDate.getTime() / (1000 * 3600 * 24);
-            }
-          });
-        }
-        return rtnObj;
-      });
-      res.send(items);
+      items.items = await Promise.all(items.items.map(async (data: User) => ({ ...data, reservations: await userReservations(data['id']) })));
+      console.log(items.items);
     }
+    res.send(items);
   } else if (parseInt(limit, 10) <= 0) res.status(400).send('Limit is Invalid');
   else if (parseInt(page, 10) < 0) res.status(400).send('Page is Invalid');
 };
