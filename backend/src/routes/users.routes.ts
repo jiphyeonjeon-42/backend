@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import { roleSet } from '../auth/auth.type';
+import authValidate from '../auth/auth.validate';
 import {
   create, myupdate, search, update,
 } from '../users/users.controller';
@@ -148,7 +150,7 @@ router.get('/', create)
  *                type: string
  *                description: error decription
  *                example: nickname, intraId, slack, role  중 하나도 없습니다..
- */.patch('/update/:id', update)
+ */.patch('/update/:id', authValidate(roleSet.librarian), update)
 /**
  * @openapi
  * /api/users/myupdate/{id}:
@@ -183,4 +185,4 @@ router.get('/', create)
  *                type: string
  *                description: error decription
  *                example: nickname, intraId, slack, role  중 하나도 없습니다..
- */.patch('/myupdate/:id', myupdate);
+ */.patch('/myupdate/:id', authValidate(roleSet.all), myupdate);

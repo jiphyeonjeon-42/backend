@@ -4,26 +4,27 @@ import {
   createUser, searchAllUsers, searchUserByNickName,
   updateUserAuth, updateUserEmail, updateUserPassword,
 } from './users.service';
-import {
-  createQuery, searchQuery, updateBody, updateParam,
-} from './users.type';
 
 export const search = async (
-  req: Request<{}, {}, {}, searchQuery>,
+  req: Request,
   res: Response,
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
   if (nickName === '') {
-    res.send(searchAllUsers(parseInt(page, 10), parseInt(limit, 10)));
+    res.send(searchAllUsers(parseInt(String(page), 10), parseInt(String(limit), 10)));
   } else if (nickName) {
     const items = JSON.parse(JSON.stringify(await
-    searchUserByNickName(nickName, parseInt(limit, 10), parseInt(page, 10))));
+    searchUserByNickName(
+      String(nickName),
+      parseInt(String(limit), 10),
+      parseInt(String(page), 10),
+    )));
     res.send(items);
   }
 };
 
 export const update = async (
-  req: Request< updateParam, {}, updateBody, {} >,
+  req: Request,
   res: Response,
 ) => {
   const { id } = req.params;
@@ -39,7 +40,7 @@ export const update = async (
 };
 
 export const myupdate = async (
-  req: Request< updateParam, {}, updateBody, {} >,
+  req: Request,
   res: Response,
 ) => {
   const { id } = req.params;
