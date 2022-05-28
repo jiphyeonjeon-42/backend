@@ -169,26 +169,27 @@ export const updateUserAuth = async (
   slack: string,
   role: number,
 ) => {
+  let setString = '';
+  const queryParameters = [];
+  if (nickname !== '') {
+    setString += 'nickname=?,';
+    queryParameters.push(nickname);
+  } if (intraId) {
+    setString += 'intraId=?,';
+    queryParameters.push(nickname);
+  } if (slack !== '') {
+    setString += 'slack=?,';
+    queryParameters.push(slack);
+  } if (role !== -1) {
+    setString += 'role=?,';
+    queryParameters.push(role);
+  }
+  setString = setString.slice(0, -1);
+  queryParameters.push(id);
   await executeQuery(`
   UPDATE user 
-  SET 
-  nickname=?,
-  intraId=?, 
-  slack=?,
-  role=? 
-  WHERE id=?;
-  `, [nickname, intraId, slack, role, id]);
+  SET
+  ${setString}
+  where id=?
+  `, queryParameters);
 };
-
-// 없어질 함수입니다. 다른 함수로 바꾸세요 searchUsersById 추천
-export const identifyUserById = async (id: number): Promise<models.User> => {
-  const result = (await executeQuery(`
-    SELECT *
-      FROM user
-    WHERE
-      id = ?
-    LIMIT 1;
-  `, [id])) as models.User[];
-  return result[0];
-};
-// export const searchByLogin = async (login: string, page: number, limit: number) => {};
