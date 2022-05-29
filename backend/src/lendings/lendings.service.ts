@@ -121,7 +121,7 @@ export const returnBook = async (
     const lendingInfo = await transactionExecuteQuery(`
       SELECT *
       FROM lending
-      WHERE id = ?;
+      WHERE id = ?
     `, [lendingId]);
     if (!lendingInfo || !lendingInfo[0]) {
       throw new Error(nonexistentLending);
@@ -131,11 +131,11 @@ export const returnBook = async (
 
     await transactionExecuteQuery(`
       UPDATE lending
-      SET returningLibrarian = ?,
+      SET returningLibrarianId = ?,
           returningCondition = ?,
           returnedAt = NOW()
       WHERE id = ?
-    `, [librarianId, lendingId, condition]);
+    `, [librarianId, condition, lendingId]);
 
     // 예약된 책이 있다면 예약 부여, endAt 어떻게 처리하지..?
     const isReserved = await transactionExecuteQuery(`
@@ -193,14 +193,14 @@ export const search = async (
     default:
       filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
   }
-  const orderQuery = sort === 'old' ? 'DESC' : '';
+  const orderQuery = sort === 'new' ? 'DESC' : 'ASC';
   const items = await executeQuery(`
     SELECT
       lending.id AS id,
       lendingCondition,
-      user.nickname AS login, 
+      user.nickname AS login,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
-        ELSE DATEDIFF(now(), user.penaltyEndDate) 
+        ELSE DATEDIFF(now(), user.penaltyEndDate)
       END AS penaltyDays,
       (
           SELECT callSign
@@ -212,7 +212,8 @@ export const search = async (
         FROM book_info
         WHERE id = bookId
       ) AS title,
-      DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y.%m.%d') AS dueDate
+      lending.createdAt AS createdAt,
+      DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
     JOIN user AS user ON lending.userId = user.id
     ${filterQuery}
@@ -227,7 +228,7 @@ export const search = async (
         SELECT nickname
         FROM user
         WHERE id = userId
-      ) AS login, 
+      ) AS login,
       (
         SELECT callSign
         FROM book

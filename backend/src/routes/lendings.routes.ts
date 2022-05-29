@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {
   create, search, lendingId, returnBook,
 } from '../lendings/lendings.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/lendings';
 export const router = Router();
@@ -53,7 +55,7 @@ router
  *        '500':
  *          description: db 에러
  * */
-  .post('/', create)
+  .post('/', authValidate(roleSet.librarian), create)
 
 /**
  * @openapi
@@ -129,6 +131,9 @@ router
  *                        title:
  *                          description: 대출된 책의 제목
  *                          type: string
+ *                        createdAt:
+ *                          type: string
+ *                          format: date
  *                        dueDate:
  *                          description: 반납기한
  *                          type: string
@@ -179,7 +184,7 @@ router
  *        '500':
  *          description: db 에러
  */
-  .get('/search', search)
+  .get('/search', authValidate(roleSet.librarian), search)
 
 /**
  * @openapi
@@ -249,7 +254,7 @@ router
  *        '500':
  *          description: db 에러
  */
-  .get('/:id', lendingId)
+  .get('/:id', authValidate(roleSet.librarian), lendingId)
 
 /**
  * @openapi
@@ -296,4 +301,4 @@ router
  *                    type: integer
  * */
 
-  .patch('/return', returnBook);
+  .patch('/return', authValidate(roleSet.librarian), returnBook);

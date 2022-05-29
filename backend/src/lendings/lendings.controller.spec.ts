@@ -25,30 +25,24 @@ describe('LendingsController', () => {
   const next = jest.fn();
 
   it('success create lending', async () => {
-    req.body.userId = 22;
-    req.body.bookId = 33;
+    req.body.userId = 1444;
+    req.body.bookId = 34;
     req.body.condition = '이상없음';
-    req.user.id = 2;
+    req.user.id = 1410;
     req.user.role = 3;
     await lendingsController.create(req, res, next);
     expect(res.status.mock.calls[0][0]).toBe(status.OK);
   });
 
-  //   it('failed 1',async () => {
-  //     const req = mockReq();
-  //     req.body.userId = 1111;
-  //     req.body.bookId = 33;
-  //     req.body.condition = '이상없음';
-  //     req.user.id = 2;
-  //     req.user.role = 3;
-  //     const res = mockResp();
-  //     const next = jest.fn();
+  it('failed 1', async () => {
+    req.body.userId = 1111;
+    req.body.bookId = 33;
+    req.body.condition = '이상없음';
+    req.user.id = 2;
+    req.user.role = 3;
 
-  //     await lendingsController.create(req, res, next);
-  //     expect(res.status.mock.calls[1][0]).toBe(status.BAD_REQUEST);
-  //     expect(res.json.mock.calls[1][0].errorCode).toBe(2);
-  //   })
-
-//     const [[jsonResult]] = res.json.mock.calls;
-//   });
+    await lendingsController.create(req, res, next);
+    expect(res.status.mock.calls[1][0]).toBe(status.BAD_REQUEST);
+    expect(res.json.mock.calls[1][0].errorCode).toBe(2);
+  });
 });

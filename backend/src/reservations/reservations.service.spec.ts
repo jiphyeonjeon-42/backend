@@ -5,6 +5,7 @@ describe('ReservationsServices', () => {
   afterAll(() => {
     pool.end();
   });
+
   it('search reservation record', async () => {
     const noQueryDefaultCase = await reservationsService.search('', 0, 5, 'all');
 
@@ -26,7 +27,6 @@ describe('ReservationsServices', () => {
     expect(noQueryDefaultCase).toHaveProperty('meta.totalPages');
     expect(noQueryDefaultCase).toHaveProperty('meta.currentPage');
 
-    console.log(noQueryDefaultCase);
     // check type of property
     expect(typeof noQueryDefaultCase.items).toBe('object');
     expect(typeof noQueryDefaultCase.items[0].reservationsId).toBe('number');
@@ -44,8 +44,8 @@ describe('ReservationsServices', () => {
     expect(typeof noQueryDefaultCase.meta.itemsPerPage).toBe('number');
     expect(typeof noQueryDefaultCase.meta.totalPages).toBe('number');
     expect(typeof noQueryDefaultCase.meta.currentPage).toBe('number');
-
-    // // check result of setting filter
+  });
+  it('search reservation record (filter)', async () => {
     const pendingCase = await reservationsService.search('', 0, 5, 'pending');
     expect(pendingCase.items[0].status).toBe(0);
     expect(pendingCase.items[0].callSign).not.toBeNull();
@@ -54,73 +54,95 @@ describe('ReservationsServices', () => {
     const waitingCase = await reservationsService.search('', 0, 5, 'waiting');
     expect(waitingCase.items[0].status).toBe(0);
     expect(waitingCase.items[0].callSign).toBeNull();
-
-    // check basic values of meta
+  });
+  it('search reservation record (meta)', async () => {
     const { meta } = await reservationsService.search('', 4, 7, 'all');
     expect(meta.currentPage).toBe(4 + 1); // page was subtracted 1 in controller, so n + 1 is right
     expect(meta.itemsPerPage).toBe(7);
   });
-
-  it('book a book', async () => {
-    let userId = 1418;
-    let bookInfoId = 4;
-    let result = await reservationsService.create(userId, bookInfoId);
+  let userId = 1418;
+  let bookInfoId = 4;
+  it('book a book (atPenalty)', async () => {
+    const result = await reservationsService.create(userId, bookInfoId);
     expect(result).toBe(reservationsService.atPenalty);
+  });
+  it('book a book (notLended)', async () => {
     userId = 1402;
     bookInfoId = 64;
-    result = await reservationsService.create(userId, bookInfoId);
+    const result = await reservationsService.create(userId, bookInfoId);
     expect(result).toBe(reservationsService.notLended);
+  });
+  it('book a book (alreadyLended)', async () => {
     userId = 1408;
     bookInfoId = 1;
-    result = await reservationsService.create(userId, bookInfoId);
+    const result = await reservationsService.create(userId, bookInfoId);
     expect(result).toBe(reservationsService.alreadyLended);
+  });
+  it('book a book (alreadyReserved)', async () => {
     userId = 1434;
     bookInfoId = 1;
-    result = await reservationsService.create(userId, bookInfoId);
+    const result = await reservationsService.create(userId, bookInfoId);
     expect(result).toBe(reservationsService.alreadyReserved);
+  });
+  it('book a book (moreThanTwoReservations)', async () => {
     userId = 1410;
     bookInfoId = 1;
-    result = await reservationsService.create(userId, bookInfoId);
+    const result = await reservationsService.create(userId, bookInfoId);
     expect(result).toBe(reservationsService.moreThanTwoReservations);
   });
 
-  it('cancel a reservation', async () => {
-    let result = await reservationsService.cancel(1);
+  it('cancel a reservation (reservationNotExist)', async () => {
+    const result = await reservationsService.cancel(1);
     expect(result).toBe(reservationsService.reservationNotExist);
-    result = await reservationsService.cancel(2);
-    expect(result).toBe(reservationsService.ok);
-    result = await reservationsService.cancel(12);
+  });
+
+  it('cancel a reservation (ok)', async () => {
+    const result = await reservationsService.cancel(2);
     expect(result).toBe(reservationsService.ok);
   });
 
-  it('reservation count', async () => {
-    let bookInfoId = '2';
+  // bookId가 후순위로 넘어가야 함
+  it('cancel a reservation (ok)', async () => {
+    const result = await reservationsService.cancel(12);
+    expect(result).toBe(reservationsService.ok);
+  });
+
+  it('reservation count (ok)', async () => {
+    bookInfoId = 2;
     expect(await reservationsService.count(bookInfoId)).toEqual(
       expect.objectContaining({
-        count: expect.any(String),
+        count: expect.any(Number),
       }),
     );
-    bookInfoId = '4242';
+    bookInfoId = 4242;
+  });
+
+  it('reservation count (invalidBookInfoId)', async () => {
+    bookInfoId = 4242;
     expect(await reservationsService.count(bookInfoId))
       .toBe(reservationsService.invalidBookInfoId);
-    bookInfoId = '42';
+  });
+
+  it('reservation count (availableLoan)', async () => {
+    bookInfoId = 1;
     expect(await reservationsService.count(bookInfoId))
       .toBe(reservationsService.availableLoan);
   });
 
   it('get user reservation', async () => {
-    const userId = '1407';
+    userId = 1402;
     expect(await reservationsService.userReservations(userId)).toEqual(
-      expect.arrayContaining(
+      expect.arrayContaining([
         expect.objectContaining({
-          reservationId: expect.any(BigInt), // BigInt..?
-          orderOfReservation: expect.any(BigInt),
-          bookInfoID: expect.any(BigInt),
+          reservationId: expect.any(Number),
+          orderOfReservation: expect.any(Number),
+          reservedBookInfoId: expect.any(Number),
           title: expect.any(String),
           image: expect.any(String),
-          endAt: expect.any(Date),
+          // endAt: expect.any(Date),
+          reservationDate: expect.any(Date),
         }),
-      ),
+      ]),
     );
   });
 });

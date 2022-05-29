@@ -3,15 +3,12 @@ import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
 
 export const create: RequestHandler = async (req: Request, res: Response) => {
-  if (!req.role) {
-    res.status(status.UNAUTHORIZED);
-    return;
-  }
+  const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
   }
-  const result = await reservationsService.create(req.user.id, req.body.bookInfoId);
+  const result = await reservationsService.create(id, req.body.bookInfoId);
   switch (result) {
     case reservationsService.ok:
       res.status(status.OK);
@@ -61,16 +58,17 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response) => {
+  const { role, id } = req.user as any;
   const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
     return;
   }
   let result = '';
-  if (req.role === 3) {
+  if (role === 3) {
     result = await reservationsService.cancel(reservationId);
   } else {
-    result = await reservationsService.userCancel(req.user.id, reservationId);
+    result = await reservationsService.userCancel(id, reservationId);
   }
   switch (result) {
     case (reservationsService.ok):
@@ -90,15 +88,20 @@ export const cancel: RequestHandler = async (req: Request, res: Response) => {
 };
 
 export const count: RequestHandler = async (req: Request, res: Response) => {
-  const info = req.query;
-  const bookInfoId = info.bookInfo as string;
+  const bookInfoId = parseInt(req.query.bookInfo as string, 10);
+  if (Number.isNaN(bookInfoId)) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+  }
   const data = await reservationsService.count(bookInfoId);
   res.send(data);
 };
 
 export const userReservations: RequestHandler = async (req: Request, res: Response) => {
   const info = req.query;
-  const userId = info.id as string;
+  const userId = parseInt(info.id as string, 10);
+  if (Number.isNaN(userId)) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+  }
   const data = await reservationsService.userReservations(userId);
   res.send(data);
 };

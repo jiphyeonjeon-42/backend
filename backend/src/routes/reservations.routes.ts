@@ -2,10 +2,11 @@ import { Router } from 'express';
 import {
   cancel, create, search, count, userReservations,
 } from '../reservations/reservations.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/reservations';
 export const router = Router();
-
 /**
  * @openapi
  *  /api/reservations/count:
@@ -332,8 +333,8 @@ export const router = Router();
  * */
 
 router
-  .post('/', create)
-  .get('/search', search)
-  .patch('/cancel/:reservationId', cancel)
-  .get('/count', count)
-  .get('/', userReservations);
+  .post('/', authValidate(roleSet.service), create)
+  .get('/search', authValidate(roleSet.librarian), search)
+  .patch('/cancel/:reservationId', authValidate(roleSet.service), cancel)
+  .get('/count', authValidate(roleSet.all), count)
+  .get('/', authValidate(roleSet.service), userReservations);

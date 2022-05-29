@@ -3,19 +3,17 @@ import * as status from 'http-status';
 import * as lendingsService from './lendings.service';
 
 export const create: RequestHandler = async (req: Request, res: Response) => {
-  res.send('lending create');
-  // 사서권한 확인
-  if (req.user.role < 3) { res.status(401); }
+  const { id } = req.user as any;
   if (!req.body.userId || !req.body.bookId) {
     res.status(400).json({ errorCode: 0 });
   }
   const result = await lendingsService.create(
     req.body.userId,
     req.body.bookId,
-    req.user.id,
+    id,
     req.body.condition,
   );
-  // 서비스 가져와서?
+
   switch (result) {
     case lendingsService.ok:
       res.status(status.OK);
@@ -99,13 +97,12 @@ export const lendingId: RequestHandler = async (req: Request, res: Response) => 
 };
 
 export const returnBook: RequestHandler = async (req: Request, res: Response) => {
-  res.send('hello express');
-  if (req.role < 3) { res.status(401); }
+  const { id } = req.user as any;
   if (!req.body.lendingId || req.body.condition) {
     res.status(401).json({ errorCode: 1 });
   }
   const result = await lendingsService.returnBook(
-    req.user.id,
+    id,
     req.body.lendingId,
     req.body.condition,
   );

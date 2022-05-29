@@ -16,6 +16,7 @@ export const moreThanTwoReservations = '두 개 이상 예약 중';
 // constants for cancel
 export const notMatchingUser = '해당 유저 아님';
 export const reservationNotExist = '예약 ID 존재하지 않음';
+export const StatusNotZero = '상태가 0이 아님';
 export const notReserved = '예약 상태가 아님';
 
 // constants for cancel
@@ -258,7 +259,7 @@ export const userCancel = async (userId: number, reservationId: number): Promise
   return cancel(reservationId);
 };
 
-export const count = async (bookInfoId: string) => {
+export const count = async (bookInfoId: number) => {
   const numberOfBookInfo = await executeQuery(`
     SELECT COUNT(*) as count
     FROM book
@@ -300,7 +301,7 @@ export const reservationKeySubstitution = (obj: queriedReservationInfo): reserva
   return newObj;
 };
 
-export const userReservations = async (userId: string) => {
+export const userReservations = async (userId: number) => {
   logger.debug(`userReservations userId: ${userId}`);
   const reservationList = await executeQuery(`
     SELECT reservation.id as reservationId,
