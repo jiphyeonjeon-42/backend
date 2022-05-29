@@ -16,6 +16,9 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
     case reservationsService.ok:
       res.status(status.OK);
       break;
+    case reservationsService.invalidInfoId:
+      res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+      break;
     case reservationsService.notLended:
       res.status(status.BAD_REQUEST).json({ errorCode: 1 });
       break;
