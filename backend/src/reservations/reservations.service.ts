@@ -6,6 +6,7 @@ import { queriedReservationInfo, reservationInfo } from './reservations.type';
 export const ok = 'ok';
 
 // constants for create
+export const invalidInfoId = 'bookInfoId가 유효하지 않음';
 export const atPenalty = '대출 제한 중';
 export const notLended = '대출 가능';
 export const alreadyReserved = '이미 예약 중';
@@ -19,8 +20,17 @@ export const notReserved = '예약 상태가 아님';
 
 export const create = async (userId: number, bookInfoId: number) => {
   let message = ok;
+  // bookInfoId가 유효한지 확인
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  const bookInfo = await transactionExecuteQuery(`
+    SELECT *
+    FROM book_info
+    WHERE id = ?;
+  `, [bookInfoId]);
+  if (!bookInfo.length) {
+    return invalidInfoId;
+  }
   conn.beginTransaction();
   try {
     // 연체 전적이 있는지 확인
@@ -33,6 +43,16 @@ export const create = async (userId: number, bookInfoId: number) => {
       throw new Error(atPenalty);
     }
     // 현재 대출 중인 책이 연체 중인지 확인
+    const overdueBooks = await transactionExecuteQuery(`
+      SELECT
+        DATE_ADD(createdAt, INTERVAL 14 DAY) as duedate
+      FROM lending
+      WHERE userId = ? AND returnedAt IS NULL
+      ORDER BY createdAt ASC
+    `, [userId]);
+    if (overdueBooks?.[0]?.duedate < new Date()) {
+      throw new Error(atPenalty);
+    }
     // bookInfoId가 모두 대출 중인지 확인
     const allBooks = await transactionExecuteQuery(`
       SELECT id
@@ -41,22 +61,13 @@ export const create = async (userId: number, bookInfoId: number) => {
     `, [bookInfoId]) as [{id: number}];
     const allLendings = await transactionExecuteQuery(`
       SELECT
-        bookId,
-        returnedAt
+        lending.bookId as bookId,
+        lending.returnedAt as returnedAt
       FROM lending
-      WHERE bookId = (
-        SELECT id
-        FROM book
-        WHERE infoId = ?
-      );
+      LEFT JOIN book ON book.id = lending.bookId
+      WHERE book.infoId = ? AND returnedAt IS NULL;
     `, [bookInfoId]) as [{bookId: number, returnedAt: Date}];
-    const isLended: Set<number> = new Set<number>();
-    Object.values(allLendings).forEach((lending) => {
-      if (lending.returnedAt !== null) {
-        isLended.add(lending.bookId);
-      }
-    });
-    if (isLended.size !== allBooks.length) {
+    if (allLendings.length !== allBooks.length) {
       throw new Error(notLended);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
@@ -66,7 +77,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       LEFT JOIN book ON book.id = lending.bookId
       WHERE
         lending.userId = ? AND
-        lending.returnedAt = NULL AND
+        lending.returnedAt IS NULL AND
         book.infoId = ?
     `, [userId, bookInfoId]);
     if (lendedBook.length) {
@@ -94,6 +105,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
+    conn.commit();
   } catch (e) {
     conn.rollback();
     if (e instanceof Error) {
@@ -217,6 +229,7 @@ export const cancel = async (reservationId: number): Promise<string> => {
           WHERE id = ?
         `, [reservations[0].bookId, candidates[0].id]);
       }
+      conn.commit();
     }
   } catch (e) {
     conn.rollback();
