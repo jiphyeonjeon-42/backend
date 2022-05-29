@@ -193,14 +193,14 @@ export const search = async (
     default:
       filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
   }
-  const orderQuery = sort === 'new' ? 'DESC' : '';
+  const orderQuery = sort === 'old' ? 'DESC' : '';
   const items = await executeQuery(`
     SELECT
-      lending.id,
+      lending.id AS id,
       lendingCondition,
-      user.nickname as login, 
-      CASE WHEN NOW() > user.penaltyEndDay THEN 0
-        ELSE DATEDIFF(now(), user.penaltyEndDay) 
+      user.nickname AS login, 
+      CASE WHEN NOW() > user.penaltyEndDate THEN 0
+        ELSE DATEDIFF(now(), user.penaltyEndDate) 
       END AS penaltyDays,
       (
           SELECT callSign
@@ -275,5 +275,5 @@ export const lendingId = async (id:number) => {
     JOIN book_info AS book ON book.id = lending.bookId
     WHERE lending.id = ?
   `, [id]);
-  return data;
+  return data[0];
 };

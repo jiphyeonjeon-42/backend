@@ -136,7 +136,7 @@ export const
         (
           SELECT callSign
           FROM book
-          WHERE book.id = reservation.bookId
+          WHERE id = bookId
         ) AS callSign,
         DATE_FORMAT(reservation.createdAt, '%Y.%m.%d') AS createdAt,
         DATE_FORMAT(reservation.endAt, '%Y.%m.%d') AS endAt,
