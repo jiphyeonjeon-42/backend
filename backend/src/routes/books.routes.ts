@@ -332,7 +332,7 @@ router
    *                description: error decription
    *                example: id가 숫자가 아닙니다.
    */
-  .get('/info/:id', getInfoId)
+  .get('/info/:id', getInfoId);
 
 router
   /**
