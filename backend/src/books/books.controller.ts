@@ -10,7 +10,7 @@ export const createBook = async (req: Request, res: Response) => {
     isbn, categoryId, donator, callSign,
   } = req.body;
   if (!(isbn && categoryId && donator && callSign)) {
-    res.status(400).send({ errorCode: 300 });
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
     try {
       return res.status(status.OK).send(await BooksService.createBook(req.body));
@@ -32,7 +32,7 @@ export const searchBookInfo = async (
     query, sort, page, limit, category,
   } = req.query;
   if (!(query && page && limit)) {
-    res.status(400).send({ errorCode: 300 });
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
     try {
       return res.status(status.OK).json(
@@ -60,7 +60,7 @@ export const getInfoId: RequestHandler = async (
 ) => {
   const bookId = parseInt(req.params.id, 10);
   if (Number.isNaN(bookId)) {
-    res.status(400).send({ errorCode: 300 });
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
     try {
       return res.status(status.OK).json(await BooksService.getInfo(bookId));
@@ -79,7 +79,7 @@ export const sortInfo = async (
 ) => {
   const { sort, limit } = req.query;
   if (!(sort && limit)) {
-    res.status(400).send({ errorCode: 300 });
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
     try {
       return res.status(status.OK).json(await BooksService.sortInfo(sort, parseInt(limit, 10)));
@@ -99,7 +99,7 @@ export const search = async (
 ) => {
   const { query, page, limit } = req.query as any;
   if (!(query && page && limit)) {
-    res.status(400).send({ errorCode: 300 });
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
     try {
       return res.status(status.OK).json(
