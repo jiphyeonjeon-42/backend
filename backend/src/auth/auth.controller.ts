@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import config from '../config';
 import * as usersService from '../users/users.service';
+import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
-import { FtError } from './auth.type';
+import { FtError, role } from './auth.type';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
-  const redirectURL = config.client.redirectURL ?? 'http://localhost:3000/auth/token';
+  const redirectURL = `${config.client.redirectURL}/api/auth/token`;
   const clientURL = (req.query.clientURL as string) ?? 'http://localhost:4242';
   const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectURL,
@@ -67,4 +68,32 @@ export const login = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   res.cookie('access_token', null, { maxAge: 0, httpOnly: true });
   res.status(204).send();
+};
+
+export const getIntraAuthentication = (req: Request, res: Response) => {
+  const clientId = config.client.id;
+  const redirectURL = `${config.client.redirectURL}/api/auth/intraAuthentication`;
+  const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+    redirectURL,
+  )}&response_type=code&}`;
+  res.status(302).redirect(oauthUrl);
+};
+
+export const intraAuthentication = async (req: Request, res: Response) => {
+  try {
+    const { intraProfile, id } = req.user as any;
+    const { intraId, nickName } = intraProfile;
+    const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
+    if (intraList.length !== 0) throw new FtError(401, 'authenticated intra user');
+    const user: { items: models.User[] } = await usersService.searchUserById(id);
+    if (user.items.length === 0) throw new FtError(401, 'not found user');
+    if (user.items[0].role !== role.user) throw new FtError(401, 'already authenticated');
+    const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
+    if (affectedRow === 0) throw new FtError(401, 'update sql error');
+    await authJwt.saveJwt(req, res, user.items[0]);
+    res.status(200).send();
+  } catch (e: any) {
+    if (e instanceof FtError) res.status(e.code).json(e.message);
+    else throw e;
+  }
 };

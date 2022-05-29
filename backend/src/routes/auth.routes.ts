@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 import {
-  getMe, getOAuth, getToken, login, logout,
+  getMe, getOAuth, getToken, intraAuthentication, login, logout, getIntraAuthentication,
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -19,7 +19,7 @@ export const router = Router();
  *      parameters:
  *      - in: query
  *        name: client url
- *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
+ *        description: API 를 호출한 주소가 정상적인지 확인하는데 사용하는 값
  *        schema:
  *          type: object
  *          required:
@@ -49,7 +49,7 @@ router.get('/oauth', getOAuth);
  *      parameters:
  *      - in: query
  *        name: client url
- *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
+ *        description: API 를 호출한 주소가 정상적인지 확인하는데 사용하는 값
  *        schema:
  *          type: object
  *          required:
@@ -67,7 +67,7 @@ router.get('/oauth', getOAuth);
  *                 type: string
  *                 format: uri
  *        '401':
- *          description: 42 api와 연동된 ID가 없음, [front에서 알림 후 회원가입창으로 이동]
+ *          description: 42 api 와 연동된 ID가 없음, [front 에서 알림 후 회원가입창으로 이동]
  *          content:
  *            application/json:
  *              schema:
@@ -111,14 +111,16 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  librarian:
  *                    description: 사서 여부
  *                    type: boolean
- *        '401':
+ *        '400':
  *          description: 토큰이 없을 경우 에러
  *          content:
  *            application/json:
  *              schema:
- *                type: string
- *                example: Unauthorized
- *        '403':
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *        '401':
  *          description: 유저가 없을 경우의 에러
  *          content:
  *            application/json:
@@ -200,3 +202,57 @@ router.post('/login', login);
  *          description: 정상적으로 token 삭제 완료
  */
 router.post('/logout', logout);
+
+/**
+ * @openapi
+ * /api/auth/getIntraAuthentication:
+ *    get:
+ *      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '302':
+ *          description: 정상적으로 42 Api로 이동
+ *          headers:
+ *             Location:
+ *               description: 42 Api 주소로 이동
+ *               schema:
+ *                 type: string
+ *                 format: uri
+ */
+router.get('/getIntraAuthentication', getIntraAuthentication);
+
+/**
+ * @openapi
+ * /api/auth/intraAuthentication:
+ *    get:
+ *      description: 42 intra 인증을 실시한다.
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '302':
+ *          description: 성공적으로 토큰 발급
+ *          headers:
+ *             Location:
+ *               description: 브라우저에 유저정보를 저장 하는 frontend /auth 주소로 이동
+ *               schema:
+ *                 type: string
+ *                 format: uri
+ *        '400':
+ *          description: ID, PW 값이 없는 잘못된 요청
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *        '401':
+ *          description: 토큰이 없을 경우 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: string
+ *                example: Unauthorized
+ */
+router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false }), authValidate(roleSet.all), intraAuthentication);
