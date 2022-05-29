@@ -70,8 +70,8 @@ const searchByIsbn = async (isbn: string) => {
       // eslint-disable-next-line prefer-destructuring
       book = res.data.items[0];
     })
-    .catch((err) => {
-      throw err;
+    .catch(() => {
+      throw new Error('303');
     });
   return (book);
 };
@@ -98,12 +98,12 @@ export const createBook = async (book: types.CreateBookInfo) => {
   )) as StringRows[];
 
   if (searchBySlackID.length > 1) {
-    return ({ code: 501, message: '중복된 slackid 입니다. DB관리자에게 문의하세요.' });
+    throw new Error('301');
   }
 
   const isbnData : any = await searchByIsbn(book.isbn);
   if (isbnData === undefined) {
-    return { code: 502, message: 'ISBN 검색결과가 없습니다.' };
+    throw new Error('302');
   }
   const {
     title, author, publisher, pubdate,
