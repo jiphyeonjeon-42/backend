@@ -18,6 +18,10 @@ export const notMatchingUser = '해당 유저 아님';
 export const reservationNotExist = '예약 ID 존재하지 않음';
 export const notReserved = '예약 상태가 아님';
 
+// constants for cancel
+export const invalidBookInfoId = '해당하는 book info id 가 없음';
+export const availableLoan = '대출 가능한 책';
+
 export const create = async (userId: number, bookInfoId: number) => {
   let message = ok;
   // bookInfoId가 유효한지 확인
@@ -255,6 +259,24 @@ export const userCancel = async (userId: number, reservationId: number): Promise
 };
 
 export const count = async (bookInfoId: string) => {
+  const numberOfBookInfo = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM book
+    WHERE infoId = ? AND status = 0;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) {
+    return invalidBookInfoId;
+  }
+  const borrowedBookInfo = await executeQuery(`
+    SELECT count(*) as count
+    FROM book
+    LEFT JOIN lending
+    ON lending.bookId = book.id
+    WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
+    return availableLoan;
+  }
   logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
