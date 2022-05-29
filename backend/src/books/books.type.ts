@@ -17,9 +17,3 @@ export interface CreateBookInfo {
     categoryId: number
     callSign: string;
 }
-
-export interface SearchQuery {
-    query: string;
-    page: string;
-    limit: string;
-}

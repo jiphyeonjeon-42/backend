@@ -81,10 +81,10 @@ export const sortInfo = async (
 };
 
 export const search = async (
-  req: Request<{}, {}, {}, types.SearchQuery>,
+  req: Request,
   res: Response,
 ) => {
-  const { query, page, limit } = req.query;
+  const { query, page, limit } = req.query as any;
   if (!(query && page && limit)) {
     res.status(401).send('필수 검색어를 채워주세요.');
   } else {

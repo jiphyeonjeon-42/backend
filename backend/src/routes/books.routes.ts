@@ -436,7 +436,7 @@ router
    *                description: error decription
    *                example: query, page, limit 중 하나 이상이 없습니다.
    */
-  .get('/search', search);
+  .get('/search', authValidate(roleSet.librarian), search);
 
 router/**
 * @openapi
