@@ -121,7 +121,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       publisher,
       isbn,
       image,
-      category,
+      categoryId,
       publishedAt
     ) VALUES (
       ?,
