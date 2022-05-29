@@ -37,4 +37,35 @@ describe('ReservationsService', () => {
     result = await reservationsService.cancel(12);
     expect(result).toBe(reservationsService.ok);
   });
+
+  it('reservation count', async () => {
+    let bookInfoId = '2';
+    expect(await reservationsService.count(bookInfoId)).toEqual(
+      expect.objectContaining({
+        count: expect.any(String),
+      }),
+    );
+    bookInfoId = '4242';
+    expect(await reservationsService.count(bookInfoId))
+      .toBe(reservationsService.invalidBookInfoId);
+    bookInfoId = '42';
+    expect(await reservationsService.count(bookInfoId))
+      .toBe(reservationsService.availableLoan);
+  });
+
+  it('get user reservation', async () => {
+    const userId = '1407';
+    expect(await reservationsService.userReservations(userId)).toEqual(
+      expect.arrayContaining(
+        expect.objectContaining({
+          reservationId: expect.any(BigInt), // BigInt..?
+          orderOfReservation: expect.any(BigInt),
+          bookInfoID: expect.any(BigInt),
+          title: expect.any(String),
+          image: expect.any(String),
+          endAt: expect.any(Date),
+        }),
+      ),
+    );
+  });
 });

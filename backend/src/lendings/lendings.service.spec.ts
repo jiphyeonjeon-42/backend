@@ -38,4 +38,18 @@ describe('BooksService', () => {
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
       .toBe(lendingsService.damagedBook);
   });
+
+  it('return a book', async () => {
+    let lendingId = 144;
+    const librarianId = 1410;
+    const condition = '이상없음';
+    expect(await lendingsService.returnBook(lendingId, librarianId, condition))
+      .toBe(lendingsService.ok);
+    expect(await lendingsService.returnBook(lendingId, librarianId, condition))
+      .toBe(lendingsService.alreadyReturned);
+    lendingId = 1000;
+    expect(await lendingsService.returnBook(lendingId, librarianId, condition))
+      .toBe(lendingsService.nonexistentLending);
+    // 예약 생성 확인은 어떻게?
+  });
 });
