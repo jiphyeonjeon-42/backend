@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import passport from 'passport';
 import {
-  getMe, getOAuth, getToken, intraAuthentication, login, logout, getIntraAuthentication,
+  getMe, getOAuth, getToken, intraAuthentication, login, logout, getIntraAuthentication, updateSlackList,
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
+import slack from '../auth/auth.slack';
 
 export const path = '/auth';
 export const router = Router();
@@ -19,7 +20,7 @@ export const router = Router();
  *      parameters:
  *      - in: query
  *        name: client url
- *        description: API 를 호출한 주소가 정상적인지 확인하는데 사용하는 값
+ *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
  *        schema:
  *          type: object
  *          required:
@@ -49,7 +50,7 @@ router.get('/oauth', getOAuth);
  *      parameters:
  *      - in: query
  *        name: client url
- *        description: API 를 호출한 주소가 정상적인지 확인하는데 사용하는 값
+ *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
  *        schema:
  *          type: object
  *          required:
@@ -67,7 +68,7 @@ router.get('/oauth', getOAuth);
  *                 type: string
  *                 format: uri
  *        '401':
- *          description: 42 api 와 연동된 ID가 없음, [front 에서 알림 후 회원가입창으로 이동]
+ *          description: 42 api와 연동된 ID가 없음, [front에서 알림 후 회원가입창으로 이동]
  *          content:
  *            application/json:
  *              schema:
@@ -111,16 +112,14 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *                  librarian:
  *                    description: 사서 여부
  *                    type: boolean
- *        '400':
+ *        '401':
  *          description: 토큰이 없을 경우 에러
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  message:
- *                    type: string
- *        '401':
+ *                type: string
+ *                example: Unauthorized
+ *        '403':
  *          description: 유저가 없을 경우의 에러
  *          content:
  *            application/json:
@@ -256,3 +255,16 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  *                example: Unauthorized
  */
 router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false }), authValidate(roleSet.all), intraAuthentication);
+
+/**
+ * @openapi
+ * /api/auth/refreshSlackList:
+ *    get:
+ *      description: Slack User List를 다시 검사한다.
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '204':
+ *          description: 정상적으로 검사 완료
+ */
+router.get('/updateSlackList', authValidate(roleSet.librarian), updateSlackList);

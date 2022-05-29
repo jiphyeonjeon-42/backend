@@ -6,6 +6,7 @@ import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
 import { FtError, role } from './auth.type';
+import slack from "./auth.slack";
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
@@ -95,5 +96,15 @@ export const intraAuthentication = async (req: Request, res: Response) => {
   } catch (e: any) {
     if (e instanceof FtError) res.status(e.code).json(e.message);
     else throw e;
+  }
+};
+
+export const updateSlackList = async (req: Request, res: Response) => {
+  try {
+    await slack.updateSlackID();
+    res.status(204).send();
+  } catch (e: any) {
+    if (e instanceof FtError) res.status(e.code).json(e.message);
+    else res.status(500).json('알 수 없는 오류');
   }
 };
