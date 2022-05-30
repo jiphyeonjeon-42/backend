@@ -14,11 +14,44 @@ export const pool = mysql.createPool({
 export const executeQuery = async (queryText: string, values: any[] = []): Promise<any> => {
   const connection = await pool.getConnection();
   logger.debug(`Executing query: ${queryText} (${values})`);
-  const [result]: [
-    any,
-    FieldPacket[]
-  ] = await connection.query(queryText, values);
-  connection.release();
+  let result;
+  try {
+    const queryResult: [
+      any,
+      FieldPacket[]
+    ] = await connection.query(queryText, values);
+    [result] = queryResult;
+  } catch (e) {
+    if (e instanceof Error) {
+      logger.error(e.message);
+      throw new Error('DB error');
+    }
+    throw e;
+  } finally {
+    connection.release();
+  }
+  return result;
+};
+
+export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
+  queryText: string,
+  values: any[] = [],
+): Promise<any> => {
+  logger.debug(`Executing query: ${queryText} (${values})`);
+  let result;
+  try {
+    const queryResult: [
+        any,
+        FieldPacket[]
+    ] = await connection.query(queryText, values);
+    [result] = queryResult;
+  } catch (e) {
+    if (e instanceof Error) {
+      logger.error(e.message);
+      throw new Error('DB error');
+    }
+    throw e;
+  }
   return result;
 };
 
