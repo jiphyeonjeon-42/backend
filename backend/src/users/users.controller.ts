@@ -39,10 +39,29 @@ export const search = async (
 };
 
 export const create = async (req: Request, res: Response) => {
-  const { email, password } = req.query;
-  if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
-  else if (!email) res.status(400).send('Email is NULL');
-  else if (!password) res.status(400).send('Password is NULL');
+  try {
+    const { email, password } = req.query;
+    const pwSchema = new PasswordValidator();
+    pwSchema
+      .is().min(10)
+      .is().max(42)
+      .has()
+      .lowercase()
+      .has()
+      .digits(1)
+      .has()
+      .not()
+      .spaces()
+      .symbols(1);
+    if (!pwSchema.validate(String(password))) {
+      throw new ErrorResponse(205, 'password invalid');
+    }
+    if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
+    else if (!email) res.status(400).send('Email is NULL');
+    else if (!password) res.status(400).send('Password is NULL');
+  } catch (error) {
+
+  }
 };
 
 export const update = async (
