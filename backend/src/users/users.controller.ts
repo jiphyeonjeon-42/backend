@@ -1,9 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-<<<<<<< HEAD
 import PasswordValidator from 'password-validator';
-=======
->>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
 import ErrorResponse from '../errorResponse';
 import { User } from './users.model';
 import {
@@ -29,17 +26,6 @@ export const search = async (
           parseInt(String(limit), 10),
           parseInt(String(page), 10),
         )));
-<<<<<<< HEAD
-      } else res.status(400).send('NickName is NULL');
-      if (items) {
-        items.items = await Promise.all(items.items.map(async (data: User) => ({ ...data, reservations: await userReservations(data.id) })));
-      }
-      res.send(items);
-    } else if (parseInt(String(limit), 10) <= 0) res.status(400).send('Limit is Invalid');
-    else if (parseInt(String(page), 10) < 0) res.status(400).send('Page is Invalid');
-  } catch (error) {
-    if (error === 'DB error') res.send(error);
-=======
       } else throw new ErrorResponse(201, 'nickname is NULL');
       if (items) {
         items.items = await Promise.all(items.items.map(async (data: User) => ({
@@ -57,12 +43,10 @@ export const search = async (
     } else if (error.message === 'DB error') {
       res.status(500).send(error.message);
     }
->>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
   }
 };
 
 export const create = async (req: Request, res: Response) => {
-<<<<<<< HEAD
   try {
     const { email, password } = req.query;
     const pwSchema = new PasswordValidator();
@@ -83,21 +67,12 @@ export const create = async (req: Request, res: Response) => {
     if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
     else if (!email) res.status(400).send('Email is NULL');
     else if (!password) res.status(400).send('Password is NULL');
-  } catch (error) {
-
-=======
-  const { email, password } = req.query;
-  try {
-    if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
-    else if (!email) throw new ErrorResponse(201, 'Email is NULL');
-    else if (!password) throw new ErrorResponse(201, 'Password is NULL');
   } catch (error: any) {
     if (error instanceof ErrorResponse) {
       res.status(400).send(error.message);
     } else if (error.message === 'DB error') {
       res.status(500).send(error.message);
     }
->>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
   }
 };
 
@@ -139,36 +114,26 @@ export const myupdate = async (
   const {
     email = '', password = '0',
   } = req.body;
-<<<<<<< HEAD
-  if (id) {
-    if (email !== '') {
-      updateUserEmail(parseInt(id, 10), email);
-    } else if (password !== '') {
-      const pwSchema = new PasswordValidator();
-      pwSchema
-        .is().min(10)
-        .is().max(42)
-        .has()
-        .lowercase()
-        .has()
-        .digits(1)
-        .has()
-        .not()
-        .spaces()
-        .symbols(1);
-      if (!pwSchema.validate(password)) {
-        throw new ErrorResponse(205, 'password invalid');
-      }
-      const encryptedPW = bcrypt.hashSync(password, 10);
-      updateUserPassword(parseInt(id, 10), encryptedPW);
-    } else {
-      res.status(400).send('Insufficient arguments');
-=======
   try {
     if (id) {
       if (email !== '') {
         updateUserEmail(parseInt(id, 10), email);
       } else if (password !== '') {
+        const pwSchema = new PasswordValidator();
+        pwSchema
+          .is().min(10)
+          .is().max(42)
+          .has()
+          .lowercase()
+          .has()
+          .digits(1)
+          .has()
+          .not()
+          .spaces()
+          .symbols(1);
+        if (!pwSchema.validate(password)) {
+          throw new ErrorResponse(205, 'password invalid');
+        }
         const encryptedPW = bcrypt.hashSync(password, 10);
         updateUserPassword(parseInt(id, 10), encryptedPW);
       } else { throw new ErrorResponse(202, 'Insufficient arguments'); }
@@ -179,7 +144,6 @@ export const myupdate = async (
       res.status(400).send(error.message);
     } else if (error.message === 'DB error') {
       res.status(500).send(error.message);
->>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
     }
   }
 };
