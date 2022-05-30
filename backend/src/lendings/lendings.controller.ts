@@ -45,23 +45,6 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
     default:
       res.status(500);
   }
-  if (result === lendingsService.ok) {
-    res.status(status.OK);
-  } else if (result === lendingsService.lendingOverload) {
-    res.status(400).json({ errorCode: 1 });
-  } else if (result === lendingsService.lendingOverdue) {
-    res.status(400).json({ errorCode: 2 });
-  } else if (result === lendingsService.onLending) {
-    res.status(400).json({ errorCode: 3 });
-  } else if (result === lendingsService.onReservation) {
-    res.status(400).json({ errorCode: 4 });
-  } else if (result === lendingsService.lostBook) {
-    res.status(400).json({ errorCode: 5 });
-  } else if (result === lendingsService.damagedBook) {
-    res.status(400).json({ errorCode: 6 });
-  } else {
-    res.status(500);
-  }
 };
 
 const argumentCheck = (sort:string, type:string) => {
