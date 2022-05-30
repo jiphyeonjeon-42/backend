@@ -116,7 +116,7 @@ CREATE TABLE `reservation` (
   KEY `FK_bookInfo` (`bookInfoId`),
   CONSTRAINT `FK_529dceb01ef681127fef04d755d` FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_c82001439df87b04c529f301f6e` FOREIGN KEY (`bookId`) REFERENCES `book` (`id`),
-  CONSTRAINT `FK_bookInfo` FOREIGN KEY (`bookInfoId`) REFERENCES `bookInfo` (`id`)
+  CONSTRAINT `FK_bookInfo` FOREIGN KEY (`bookInfoId`) REFERENCES `book_info` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
