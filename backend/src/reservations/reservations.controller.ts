@@ -29,6 +29,7 @@ export const create: RequestHandler = async (req: Request, res: Response) => {
       res.status(status.BAD_REQUEST).json({ errorCode: 4 });
       break;
     default:
+      console.log(result);
       res.status(status.INTERNAL_SERVER_ERROR);
   }
 };

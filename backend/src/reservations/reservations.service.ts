@@ -253,6 +253,9 @@ export const userCancel = async (userId: number, reservationId: number): Promise
     FROM reservation
     WHERE id = ?
   `, [reservationId]);
+  if (!reservations.length) {
+    return reservationNotExist;
+  }
   if (reservations[0].userId !== userId) {
     return notMatchingUser;
   }
