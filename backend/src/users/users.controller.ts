@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+import PasswordValidator from 'password-validator';
+import ErrorResponse from '../errorResponse';
 import { User } from './users.model';
 import {
   createUser,
@@ -12,24 +14,28 @@ export const search = async (
   res: Response,
 ) => {
   const { nickName = '', page = '1', limit = '5' } = req.query;
-  if (parseInt(String(limit), 10) > 0 && parseInt(String(page), 10) >= 0) {
-    let items;
-    if (nickName === '') {
-      items = await searchAllUsers(parseInt(String(limit), 10), parseInt(String(page), 10));
-    } else if (nickName) {
-      items = JSON.parse(JSON.stringify(await
-      searchUserByNickName(
-        String(nickName),
-        parseInt(String(limit), 10),
-        parseInt(String(page), 10),
-      )));
-    } else res.status(400).send('NickName is NULL');
-    if (items) {
-      items.items = await Promise.all(items.items.map(async (data: User) => ({ ...data, reservations: await userReservations(data.id) })));
-    }
-    res.send(items);
-  } else if (parseInt(String(limit), 10) <= 0) res.status(400).send('Limit is Invalid');
-  else if (parseInt(String(page), 10) < 0) res.status(400).send('Page is Invalid');
+  try {
+    if (parseInt(String(limit), 10) > 0 && parseInt(String(page), 10) >= 0) {
+      let items;
+      if (nickName === '') {
+        items = await searchAllUsers(parseInt(String(limit), 10), parseInt(String(page), 10));
+      } else if (nickName) {
+        items = JSON.parse(JSON.stringify(await
+        searchUserByNickName(
+          String(nickName),
+          parseInt(String(limit), 10),
+          parseInt(String(page), 10),
+        )));
+      } else res.status(400).send('NickName is NULL');
+      if (items) {
+        items.items = await Promise.all(items.items.map(async (data: User) => ({ ...data, reservations: await userReservations(data.id) })));
+      }
+      res.send(items);
+    } else if (parseInt(String(limit), 10) <= 0) res.status(400).send('Limit is Invalid');
+    else if (parseInt(String(page), 10) < 0) res.status(400).send('Page is Invalid');
+  } catch (error) {
+    if (error === 'DB error') res.send(error);
+  }
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -67,6 +73,21 @@ export const myupdate = async (
     if (email !== '') {
       updateUserEmail(parseInt(id, 10), email);
     } else if (password !== '') {
+      const pwSchema = new PasswordValidator();
+      pwSchema
+        .is().min(10)
+        .is().max(42)
+        .has()
+        .lowercase()
+        .has()
+        .digits(1)
+        .has()
+        .not()
+        .spaces()
+        .symbols(1);
+      if (!pwSchema.validate(password)) {
+        throw new ErrorResponse(205, 'password invalid');
+      }
       const encryptedPW = bcrypt.hashSync(password, 10);
       updateUserPassword(parseInt(id, 10), encryptedPW);
     } else {

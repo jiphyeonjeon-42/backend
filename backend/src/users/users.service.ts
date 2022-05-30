@@ -1,3 +1,4 @@
+import ErrorResponse from '../errorResponse';
 import { executeQuery } from '../mysql';
 import * as models from './users.model';
 import * as types from './users.type';
@@ -135,6 +136,11 @@ export const searchAllUsers = async (limit: number, page: number) => {
 };
 
 export const createUser = async (email: string, password: string) => {
+  const emailList = await executeQuery(`
+  SELECT email FROM user`);
+  if (emailList.indexOf(email) === -1) {
+    throw new ErrorResponse(203, 'email overlap');
+  }
   await executeQuery(`
     INSERT INTO user(
       email, password, nickName
@@ -147,6 +153,11 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const updateUserEmail = async (id: number, email:string) => {
+  const emailList = await executeQuery(`
+  SELECT email FROM user`);
+  if (emailList.indexOf(email) === -1) {
+    throw new ErrorResponse(203, 'email overlap');
+  }
   await executeQuery(`
   UPDATE user 
   SET email = ?
@@ -157,7 +168,7 @@ export const updateUserEmail = async (id: number, email:string) => {
 export const updateUserPassword = async (id: number, password: string) => {
   await executeQuery(`
   UPDATE user
-  SET password = ? 
+  SET password = ?
   WHERE id = ?;
   `, [password, id]);
 };
@@ -169,6 +180,11 @@ export const updateUserAuth = async (
   slack: string,
   role: number,
 ) => {
+  const nicknameList = await executeQuery(`
+  SELECT nickname FROM user`);
+  if (nicknameList.indexOf(nickname) === -1) {
+    throw new ErrorResponse(204, 'nickname overlap');
+  }
   let setString = '';
   const queryParameters = [];
   if (nickname !== '') {
