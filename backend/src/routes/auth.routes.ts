@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import passport from 'passport';
 import {
-  getMe, getOAuth, getToken, login, logout,
+  getMe, getOAuth, getToken, intraAuthentication, login, logout, getIntraAuthentication, updateSlackList,
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
+import slack from '../auth/auth.slack';
 
 export const path = '/auth';
 export const router = Router();
@@ -200,3 +201,70 @@ router.post('/login', login);
  *          description: 정상적으로 token 삭제 완료
  */
 router.post('/logout', logout);
+
+/**
+ * @openapi
+ * /api/auth/getIntraAuthentication:
+ *    get:
+ *      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '302':
+ *          description: 정상적으로 42 Api로 이동
+ *          headers:
+ *             Location:
+ *               description: 42 Api 주소로 이동
+ *               schema:
+ *                 type: string
+ *                 format: uri
+ */
+router.get('/getIntraAuthentication', getIntraAuthentication);
+
+/**
+ * @openapi
+ * /api/auth/intraAuthentication:
+ *    get:
+ *      description: 42 intra 인증을 실시한다.
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '302':
+ *          description: 성공적으로 토큰 발급
+ *          headers:
+ *             Location:
+ *               description: 브라우저에 유저정보를 저장 하는 frontend /auth 주소로 이동
+ *               schema:
+ *                 type: string
+ *                 format: uri
+ *        '400':
+ *          description: ID, PW 값이 없는 잘못된 요청
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *        '401':
+ *          description: 토큰이 없을 경우 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: string
+ *                example: Unauthorized
+ */
+router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false }), authValidate(roleSet.all), intraAuthentication);
+
+/**
+ * @openapi
+ * /api/auth/refreshSlackList:
+ *    get:
+ *      description: Slack User List를 다시 검사한다.
+ *      tags:
+ *      - auth
+ *      responses:
+ *        '204':
+ *          description: 정상적으로 검사 완료
+ */
+router.get('/updateSlackList', authValidate(roleSet.librarian), updateSlackList);
