@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+<<<<<<< HEAD
 import PasswordValidator from 'password-validator';
+=======
+>>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
 import ErrorResponse from '../errorResponse';
 import { User } from './users.model';
 import {
@@ -26,6 +29,7 @@ export const search = async (
           parseInt(String(limit), 10),
           parseInt(String(page), 10),
         )));
+<<<<<<< HEAD
       } else res.status(400).send('NickName is NULL');
       if (items) {
         items.items = await Promise.all(items.items.map(async (data: User) => ({ ...data, reservations: await userReservations(data.id) })));
@@ -35,10 +39,30 @@ export const search = async (
     else if (parseInt(String(page), 10) < 0) res.status(400).send('Page is Invalid');
   } catch (error) {
     if (error === 'DB error') res.send(error);
+=======
+      } else throw new ErrorResponse(201, 'nickname is NULL');
+      if (items) {
+        items.items = await Promise.all(items.items.map(async (data: User) => ({
+          ...data,
+          reservations:
+              await userReservations(data.id),
+        })));
+      }
+      res.send(items);
+    } else if (parseInt(String(limit), 10) <= 0) throw new ErrorResponse(200, 'limit is invalid');
+    else if (parseInt(String(page), 10) < 0) throw new ErrorResponse(200, 'Page is Invalid');
+  } catch (error:any) {
+    if (error instanceof ErrorResponse) {
+      res.status(400).send(error.message);
+    } else if (error.message === 'DB error') {
+      res.status(500).send(error.message);
+    }
+>>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
   }
 };
 
 export const create = async (req: Request, res: Response) => {
+<<<<<<< HEAD
   try {
     const { email, password } = req.query;
     const pwSchema = new PasswordValidator();
@@ -61,6 +85,19 @@ export const create = async (req: Request, res: Response) => {
     else if (!password) res.status(400).send('Password is NULL');
   } catch (error) {
 
+=======
+  const { email, password } = req.query;
+  try {
+    if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
+    else if (!email) throw new ErrorResponse(201, 'Email is NULL');
+    else if (!password) throw new ErrorResponse(201, 'Password is NULL');
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) {
+      res.status(400).send(error.message);
+    } else if (error.message === 'DB error') {
+      res.status(500).send(error.message);
+    }
+>>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
   }
 };
 
@@ -72,12 +109,26 @@ export const update = async (
   const {
     nickname = '', intraId = '0', slack = '', role = '-1',
   } = req.body;
-  if (id) {
-    if (nickname !== '' || intraId || slack !== '' || role !== '-1') {
-      updateUserAuth(parseInt(id, 10), nickname, parseInt(intraId, 10), slack, parseInt(role, 10));
-      res.status(200).send('success');
-    } else res.status(400).send('Insufficient arguments');
-  } else res.status(401).send('Id is invalid');
+  try {
+    if (id) {
+      if (nickname !== '' || intraId || slack !== '' || role !== '-1') {
+        updateUserAuth(
+          parseInt(id, 10),
+          nickname,
+          parseInt(intraId, 10),
+          slack,
+          parseInt(role, 10),
+        );
+        res.status(200).send('success');
+      } else throw new ErrorResponse(202, 'Insufficient arguments');
+    } else throw new ErrorResponse(201, 'Id is NULL');
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) {
+      res.status(400).send(error.message);
+    } else if (error.message === 'DB error') {
+      res.status(500).send(error.message);
+    }
+  }
 };
 
 export const myupdate = async (
@@ -88,6 +139,7 @@ export const myupdate = async (
   const {
     email = '', password = '0',
   } = req.body;
+<<<<<<< HEAD
   if (id) {
     if (email !== '') {
       updateUserEmail(parseInt(id, 10), email);
@@ -111,7 +163,23 @@ export const myupdate = async (
       updateUserPassword(parseInt(id, 10), encryptedPW);
     } else {
       res.status(400).send('Insufficient arguments');
+=======
+  try {
+    if (id) {
+      if (email !== '') {
+        updateUserEmail(parseInt(id, 10), email);
+      } else if (password !== '') {
+        const encryptedPW = bcrypt.hashSync(password, 10);
+        updateUserPassword(parseInt(id, 10), encryptedPW);
+      } else { throw new ErrorResponse(202, 'Insufficient arguments'); }
+      res.status(200).send('success');
+    } else throw new ErrorResponse(201, 'Id is NULL');
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) {
+      res.status(400).send(error.message);
+    } else if (error.message === 'DB error') {
+      res.status(500).send(error.message);
+>>>>>>> efdfdf08ee70d5789c204085b384e52328febfdf
     }
-    res.status(200).send('success');
-  } else res.status(401).send('Id is invalid');
+  }
 };
