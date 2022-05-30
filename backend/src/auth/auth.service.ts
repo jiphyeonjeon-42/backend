@@ -3,7 +3,7 @@ import { executeQuery } from '../mysql';
 import { role } from './auth.type';
 import * as models from '../users/users.model';
 
-export const updateAuthenticationUser = async (id: number, intraId: number, nickName: string) => {
+export const updateAuthenticationUser = async (id: number, intraId: number, nickName: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
     UPDATE USER
     SET intraId = ?, nickName = ?, role = ?
@@ -12,7 +12,7 @@ export const updateAuthenticationUser = async (id: number, intraId: number, nick
   return result.affectedRows;
 };
 
-export const updateSlackIDUser = async (id: number, slackID: string) => {
+export const updateSlackIDUser = async (id: number, slackID: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
     UPDATE USER
     SET slack = ?
@@ -21,7 +21,7 @@ export const updateSlackIDUser = async (id: number, slackID: string) => {
   return result.affectedRows;
 };
 
-export const searchAuthenticatedUser = async () => {
+export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
   const result : models.User[] = await executeQuery(`
     SELECT *
     FROM USER

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import passport from 'passport';
 import {
-  getMe, getOAuth, getToken, intraAuthentication, login, logout, getIntraAuthentication, updateSlackList,
+  getMe, getOAuth, getToken, intraAuthentication, login, logout,
+  getIntraAuthentication, updateSlackList,
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import slack from '../auth/auth.slack';
 
 export const path = '/auth';
 export const router = Router();
@@ -17,17 +17,6 @@ export const router = Router();
  *      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
  *      tags:
  *      - auth
- *      parameters:
- *      - in: query
- *        name: client url
- *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
- *        schema:
- *          type: object
- *          required:
- *            - clientURL
- *          properties:
- *            clientURL:
- *              type: string
  *      responses:
  *        '302':
  *          description: 정상적으로 42 Api로 이동
@@ -47,17 +36,6 @@ router.get('/oauth', getOAuth);
  *      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다. redirect 되기에 반환값 확인 불가.
  *      tags:
  *      - auth
- *      parameters:
- *      - in: query
- *        name: client url
- *        description: API를 호출한 주소가 정상적인지 확인하는데 사용하는 값
- *        schema:
- *          type: object
- *          required:
- *            - clientURL
- *          properties:
- *            clientURL:
- *              type: string
  *      responses:
  *        '302':
  *          description: 성공적으로 토큰 발급
@@ -74,15 +52,19 @@ router.get('/oauth', getOAuth);
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
- *        '403':
- *          description: client url 값 오류
+ *        '500':
+ *          description: 예상 하지 못한 오류
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  */
@@ -117,15 +99,43 @@ router.get('/token', passport.authenticate('42', { session: false }), getToken);
  *          content:
  *            application/json:
  *              schema:
- *                type: string
- *                example: Unauthorized
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
  *        '403':
- *          description: 유저가 없을 경우의 에러
+ *          description: 권한이 맞지 않을때 에러
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '410':
+ *          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '500':
+ *          description: 예상 하지 못한 오류
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  */
@@ -166,6 +176,8 @@ router.get('/me', authValidate(roleSet.all), getMe);
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  *        '401':
@@ -175,6 +187,8 @@ router.get('/me', authValidate(roleSet.all), getMe);
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  *        '403':
@@ -184,6 +198,19 @@ router.get('/me', authValidate(roleSet.all), getMe);
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '500':
+ *          description: 예상 하지 못한 오류
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  */
@@ -225,7 +252,7 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  * @openapi
  * /api/auth/intraAuthentication:
  *    get:
- *      description: 42 intra 인증을 실시한다.
+ *      description: 42 intra 인증을 실시한다. redirect 되어 들어오기에 반환값 확인 불가.
  *      tags:
  *      - auth
  *      responses:
@@ -244,27 +271,99 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  *              schema:
  *                type: object
  *                properties:
+ *                  code:
+ *                    type: number
  *                  message:
  *                    type: string
  *        '401':
- *          description: 토큰이 없을 경우 에러
+ *          description: 토큰이 없을 경우, 이미 인증된 회원의 경우 에러
+ *          content:
+ *            application/json:
+ *             schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '410':
+ *          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
  *          content:
  *            application/json:
  *              schema:
- *                type: string
- *                example: Unauthorized
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '500':
+ *          description: 예상 하지 못한 오류
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
  */
 router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false }), authValidate(roleSet.all), intraAuthentication);
 
 /**
  * @openapi
- * /api/auth/refreshSlackList:
+ * /api/auth/updateSlackList:
  *    get:
- *      description: Slack User List를 다시 검사한다.
+ *      description: 인증된 회원의 Slack ID를 추가한다. (사서만 가능)
  *      tags:
  *      - auth
  *      responses:
  *        '204':
  *          description: 정상적으로 검사 완료
+ *        '401':
+ *          description: 토큰이 없을 경우 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '403':
+ *          description: 권한이 맞지 않을때 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '410':
+ *          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
+ *        '500':
+ *          description: 예상 하지 못한 오류
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  code:
+ *                    type: number
+ *                  message:
+ *                    type: string
  */
 router.get('/updateSlackList', authValidate(roleSet.librarian), updateSlackList);

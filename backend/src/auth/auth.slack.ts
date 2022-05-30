@@ -10,7 +10,7 @@ const token = process.env.BOT_USER_OAUTH_ACCESS_TOKEN;
 const web = new WebClient(token);
 const userMap = new Map();
 
-const updateSlackID = async () => {
+const updateSlackID = async () : Promise<void> => {
   let searchUsers: any[] = [];
   let cursor;
   const authenticatedUser : models.User[] = await searchAuthenticatedUser();
