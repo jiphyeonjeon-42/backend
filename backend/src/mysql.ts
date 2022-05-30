@@ -3,6 +3,8 @@ import { FieldPacket } from 'mysql2';
 import config from './config';
 import { logger } from './utils/logger';
 
+export const DBError = 'DB error';
+
 export const pool = mysql.createPool({
   host: config.database.host,
   port: 3306,
@@ -48,7 +50,7 @@ export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
   } catch (e) {
     if (e instanceof Error) {
       logger.error(e.message);
-      throw new Error('DB error');
+      throw new Error(DBError);
     }
     throw e;
   }
