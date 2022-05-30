@@ -25,19 +25,19 @@ DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int NOT NULL AUTO_INCREMENT,
   `donator` varchar(255) NOT NULL,
-  `donatorId` int DEFAULT NULL,
   `callSign` varchar(255) NOT NULL,
   `status` int NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `infoId` int NOT NULL,
+  `donatorId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_493671e9872dfd0ec4b35c628a2` (`infoId`),
+  KEY `FK_donator_id_from_user` (`donatorId`),
   CONSTRAINT `FK_493671e9872dfd0ec4b35c628a2` FOREIGN KEY (`infoId`) REFERENCES `book_info` (`id`),
-  CONSTRAINT `FK_donator_id_from_user`
-    FOREIGN KEY (`donatorId`)
-    REFERENCES `user`(`id`)
+  CONSTRAINT `FK_donator_id_from_user` FOREIGN KEY (`donatorId`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=859 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `book_info`
