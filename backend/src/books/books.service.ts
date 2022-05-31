@@ -1,9 +1,83 @@
+import axios from 'axios';
 import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
+import * as types from './books.type';
 
-export const createBook = async (book: models.Book): Promise<void> => {
-  const result = (await executeQuery(
+export const search = async (
+  query: string,
+  page: number,
+  limit: number,
+) => {
+  const bookList = (await executeQuery(
+    `
+    SELECT
+      book.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      (
+        IF ((
+          (select COUNT(*) from lending where (bookId = book.id and returnedAt is NULL) = 0)
+          and 
+          (select COUNT(*) from book where (id = book.id and status = 0) = 1) 
+          and
+          (select COUNT(*) from reservation where (bookId = book.id and status = 0) = 0)
+      ),TRUE,FALSE)
+      ) AS isLendable 
+    FROM book_info, book 
+    WHERE book_info.id = book.infoId AND
+    (book_info.title like ?
+      OR book_info.author like ?
+      OR book_info.isbn like ?)
+    LIMIT ?
+    OFFSET ?;
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
+  )) as models.BookInfo[];
+
+  const totalItems = bookList.length;
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, meta };
+};
+
+const searchByIsbn = async (isbn: string) => {
+  let book;
+  await axios
+    .get(
+      `
+  https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
+      {
+        headers: {
+          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
+          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+        },
+      },
+    )
+    .then((res) => {
+      // eslint-disable-next-line prefer-destructuring
+      book = res.data.items[0];
+    })
+    .catch(() => {
+      throw new Error('303');
+    });
+  return (book);
+};
+
+export const createBook = async (book: types.CreateBookInfo) => {
+  const isbnInBookInfo = (await executeQuery(
     `
     SELECT
       isbn
@@ -12,13 +86,33 @@ export const createBook = async (book: models.Book): Promise<void> => {
   `,
     [book.isbn],
   )) as StringRows[];
-  if (result.length === 0) {
-    let image = null;
-    if (!book.image) {
-      image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(
-        -3,
-      )}/x${book.isbn}.jpg`;
-    }
+
+  const searchBySlackID = (await executeQuery(
+    `
+    SELECT
+      id
+    FROM user
+    WHERE nickname = ?
+  `,
+    [book.donator],
+  )) as StringRows[];
+
+  if (searchBySlackID.length > 1) {
+    throw new Error('301');
+  }
+
+  const isbnData : any = await searchByIsbn(book.isbn);
+  if (isbnData === undefined) {
+    throw new Error('302');
+  }
+  const {
+    title, author, publisher, pubdate,
+  } = isbnData;
+  const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
+  // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
+  const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
+
+  if (isbnInBookInfo.length === 0) {
     await executeQuery(
       `
     INSERT INTO book_info(
@@ -44,16 +138,17 @@ export const createBook = async (book: models.Book): Promise<void> => {
       ?
     )`,
       [
-        book.title,
-        book.author,
-        book.publisher,
+        title,
+        author,
+        publisher,
         book.isbn,
-        book.image ?? image,
-        book.category,
-        book.publishedAt,
+        image,
+        category,
+        pubdate,
       ],
     );
   }
+
   await executeQuery(
     `
     INSERT INTO book(
@@ -67,10 +162,10 @@ export const createBook = async (book: models.Book): Promise<void> => {
       (
         SELECT id
         FROM user
-        WHERE login = ?
+        WHERE nickname = ?
       ),
       ?,
-      ?,
+      0,
       (
         SELECT id
         FROM book_info
@@ -79,13 +174,13 @@ export const createBook = async (book: models.Book): Promise<void> => {
     )
   `,
     [
-      book.donator ?? 'null',
-      book.donator ?? '0',
+      book.donator,
+      book.donator,
       book.callSign,
-      book.status,
       book.isbn,
     ],
   );
+  return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 
 export const deleteBook = async (book: models.Book): Promise<boolean> => {
