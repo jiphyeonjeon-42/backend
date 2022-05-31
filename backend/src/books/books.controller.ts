@@ -1,30 +1,44 @@
 import {
-  NextFunction, Request, RequestHandler, Response,
+  Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
-import ErrorResponse from '../errorResponse';
 import * as BooksService from './books.service';
 import * as types from './books.type';
+
+export const createBook = async (req: Request, res: Response) => {
+  const {
+    isbn, categoryId, donator, callSign,
+  } = req.body;
+  if (!(isbn && categoryId && donator && callSign)) {
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
+  } else {
+    try {
+      return res.status(status.OK).send(await BooksService.createBook(req.body));
+    } catch (error: any) {
+      if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
+        return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
+      return res.status(500).send({ errorCode: 0 });
+    }
+  }
+  return 0;
+};
 
 export const searchBookInfo = async (
   req: Request<{}, {}, {}, types.SearchBookInfoQuery>,
   res: Response,
-  next: NextFunction,
 ) => {
   const {
     query, sort, page, limit, category,
   } = req.query;
   if (!(query && page && limit)) {
-    next(
-      new ErrorResponse(
-        status.BAD_REQUEST,
-        'query, page, limit 중 하나 이상이 없습니다.',
-      ),
-    );
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
-    res
-      .status(status.OK)
-      .json(
+    try {
+      return res.status(status.OK).json(
         await BooksService.searchInfo(
           query,
           sort,
@@ -33,20 +47,40 @@ export const searchBookInfo = async (
           category,
         ),
       );
+    } catch (error: any) {
+      if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
+        return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
+      return res.status(500).send({ errorCode: 0 });
+    }
   }
+  return 0;
 };
 
 export const getInfoId: RequestHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction,
 ) => {
   const bookId = parseInt(req.params.id, 10);
   if (Number.isNaN(bookId)) {
-    next(new ErrorResponse(status.BAD_REQUEST, 'id가 숫자가 아닙니다.'));
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
   } else {
-    res.status(status.OK).json(await BooksService.getInfo(bookId));
+    try {
+      return res.status(status.OK).json(await BooksService.getInfo(bookId));
+    } catch (error: any) {
+      if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
+        return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
+      return res.status(500).send({ errorCode: 0 });
+    }
   }
+  return 0;
 };
 export const sortInfo = async (
   req: Request<{}, {}, {}, types.SortInfoType>,
@@ -54,26 +88,48 @@ export const sortInfo = async (
 ) => {
   const { sort, limit } = req.query;
   if (!(sort && limit)) {
-    res
-      .status(400)
-      .send(
-        new ErrorResponse(
-          status.BAD_REQUEST,
-          'sort, limit 중 하나 이상이 없습니다.',
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
+  } else {
+    try {
+      return res.status(status.OK).json(await BooksService.sortInfo(sort, parseInt(limit, 10)));
+    } catch (error: any) {
+      if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
+        return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
+      return res.status(500).send({ errorCode: 0 });
+    }
+  }
+  return 0;
+};
+
+export const search = async (
+  req: Request,
+  res: Response,
+) => {
+  const { query, page, limit } = req.query as any;
+  if (!(query && page && limit)) {
+    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
+  } else {
+    try {
+      return res.status(status.OK).json(
+        await BooksService.search(
+          query,
+          parseInt(page, 10),
+          parseInt(limit, 10),
         ),
       );
-  } else {
-    res
-      .status(status.OK)
-      .json(await BooksService.sortInfo(sort, parseInt(limit, 10)));
+    } catch (error: any) {
+      if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
+        return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
+      return res.status(500).send({ errorCode: 0 });
+    }
   }
-};
-
-export const booker: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
-  // search 함수
-};
-
-export const search: RequestHandler = (req: Request, res: Response) => {
-  res.send('hello express');
+  return 0;
 };

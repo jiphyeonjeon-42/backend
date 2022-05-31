@@ -3,6 +3,8 @@ import { FieldPacket } from 'mysql2';
 import config from './config';
 import { logger } from './utils/logger';
 
+export const DBError = 'DB error';
+
 export const pool = mysql.createPool({
   host: config.database.host,
   port: 3306,
@@ -14,11 +16,22 @@ export const pool = mysql.createPool({
 export const executeQuery = async (queryText: string, values: any[] = []): Promise<any> => {
   const connection = await pool.getConnection();
   logger.debug(`Executing query: ${queryText} (${values})`);
-  const [result]: [
-    any,
-    FieldPacket[]
-  ] = await connection.query(queryText, values);
-  connection.release();
+  let result;
+  try {
+    const queryResult: [
+      any,
+      FieldPacket[]
+    ] = await connection.query(queryText, values);
+    [result] = queryResult;
+  } catch (e) {
+    if (e instanceof Error) {
+      logger.error(e.message);
+      throw new Error('DB error');
+    }
+    throw e;
+  } finally {
+    connection.release();
+  }
   return result;
 };
 
@@ -27,10 +40,20 @@ export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
   values: any[] = [],
 ): Promise<any> => {
   logger.debug(`Executing query: ${queryText} (${values})`);
-  const [result]: [
-      any,
-      FieldPacket[]
+  let result;
+  try {
+    const queryResult: [
+        any,
+        FieldPacket[]
     ] = await connection.query(queryText, values);
+    [result] = queryResult;
+  } catch (e) {
+    if (e instanceof Error) {
+      logger.error(e.message);
+      throw new Error(DBError);
+    }
+    throw e;
+  }
   return result;
 };
 
