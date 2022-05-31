@@ -18,6 +18,9 @@ export const createBook = async (req: Request, res: Response) => {
       if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
         return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
       }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
       return res.status(500).send({ errorCode: 0 });
     }
   }
@@ -48,6 +51,9 @@ export const searchBookInfo = async (
       if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
         return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
       }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
       return res.status(500).send({ errorCode: 0 });
     }
   }
@@ -68,6 +74,9 @@ export const getInfoId: RequestHandler = async (
       if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
         return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
       }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
+      }
       return res.status(500).send({ errorCode: 0 });
     }
   }
@@ -86,6 +95,9 @@ export const sortInfo = async (
     } catch (error: any) {
       if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
         return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
       }
       return res.status(500).send({ errorCode: 0 });
     }
@@ -112,6 +124,9 @@ export const search = async (
     } catch (error: any) {
       if (parseInt(error.message, 10) >= 300 && parseInt(error.message, 10) < 400) {
         return res.status(status.BAD_REQUEST).send({ errorCode: parseInt(error.message, 10) });
+      }
+      if (error.message === 'DB error') {
+        return res.status(500).send({ errorCode: 1 });
       }
       return res.status(500).send({ errorCode: 0 });
     }
