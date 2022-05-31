@@ -136,4 +136,34 @@ describe('LendingsController', () => {
     expect(res.status.mock.calls[7][0]).toBe(status.BAD_REQUEST);
     expect(res.json.mock.calls[7][0].errorCode).toBe(8);
   });
+
+  it('return lending (ok)', async () => {
+    req.body.lendingId = 135;
+    req.body.condition = '이상없음';
+    req.user.id = 2;
+    req.user.role = 3;
+
+    await lendingsController.returnBook(req, res, next);
+    expect(res.status.mock.calls[0][0]).toBe(status.OK);
+    expect(res.json.mock.calls[0][0].errorCode).toBe(2);
+  });
+  it('return lending (error 2)', async () => {
+    req.body.lendingId = 4242;
+    req.body.condition = '이상없음';
+    req.user.id = 2;
+    req.user.role = 3;
+    await lendingsController.returnBook(req, res, next);
+    expect(res.status.mock.calls[1][0]).toBe(status.BAD_REQUEST);
+    expect(res.json.mock.calls[1][0].errorCode).toBe(2);
+  });
+  it('return lending (error 3)', async () => {
+    req.body.lendingId = 150;
+    req.body.condition = '이상없음';
+    req.user.id = 2;
+    req.user.role = 3;
+
+    await lendingsController.returnBook(req, res, next);
+    expect(res.status.mock.calls[2][0]).toBe(status.BAD_REQUEST);
+    expect(res.json.mock.calls[2][0].errorCode).toBe(3);
+  });
 });
