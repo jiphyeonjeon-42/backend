@@ -53,7 +53,7 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
   if (!filterCheck(filter)) {
-    res.status(status.BAD_REQUEST);
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
   } else {
     const result = await reservationsService
       .search(query, page, limit, filter);
@@ -96,8 +96,14 @@ export const count: RequestHandler = async (req: Request, res: Response) => {
   if (Number.isNaN(bookInfoId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
   }
-  const data = await reservationsService.count(bookInfoId);
-  res.send(data);
+  const result = await reservationsService.count(bookInfoId);
+  if (result === reservationsService.invalidBookInfoId) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+  } else if (result === reservationsService.availableLoan) {
+    res.status(status.BAD_REQUEST).json({ errorCode: 1 });
+  } else {
+    res.status(status.OK).json(result);
+  }
 };
 
 export const userReservations: RequestHandler = async (req: Request, res: Response) => {
@@ -106,6 +112,6 @@ export const userReservations: RequestHandler = async (req: Request, res: Respon
   if (Number.isNaN(userId)) {
     res.status(status.BAD_REQUEST).json({ errorCode: 0 });
   }
-  const data = await reservationsService.userReservations(userId);
-  res.send(data);
+  const result = await reservationsService.userReservations(userId);
+  res.status(status.OK).json(result);
 };
