@@ -77,21 +77,24 @@ export const search: RequestHandler = async (req: Request, res: Response) => {
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const sort = info.sort as string;
   const type = info.type as string ? info.type as string : 'all';
-  if (!argumentCheck(sort, type)) res.status(400);
-  const result = await lendingsService.search(query, page, limit, sort, type);
-  res.send({ items: result });
+  if (!argumentCheck(sort, type)) {
+    res.status(400);
+  } else {
+    const result = await lendingsService.search(query, page, limit, sort, type);
+    res.status(status.OK).json(result);
+  }
 };
 
 export const lendingId: RequestHandler = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10);
   if (Number.isNaN(id)) {
-    res.status(status.BAD_REQUEST);
+    res.status(400);
   } else {
     const result = await lendingsService.lendingId(id);
-    if (result.length) {
-      res.status(status.OK).json(result[0]);
+    if (result) {
+      res.status(status.OK).json({ ...result });
     } else {
-      res.status(status.BAD_REQUEST);
+      res.status(400);
     }
   }
 };

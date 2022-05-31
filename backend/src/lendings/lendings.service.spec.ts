@@ -53,7 +53,7 @@ describe('LendingsService', () => {
   });
 
   it('search lending record (success)', async () => {
-    const noQueryDefaultCase = await lendingsService.search('', 0, 5, 'new', 'all');
+    const noQueryDefaultCase = await lendingsService.search('', 0, 1, 'new', 'all');
 
     // check property
     expect(noQueryDefaultCase).toHaveProperty('items');
@@ -73,21 +73,29 @@ describe('LendingsService', () => {
     expect(noQueryDefaultCase).toHaveProperty('meta.currentPage');
 
     // check type of property
-    expect(typeof noQueryDefaultCase?.items).toBe('object');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.id).toBe('number');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.lendingCondition).toBe('string');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.login).toBe('string');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.penaltyDays).toBe('number');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.callSign).toBe('string');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.title).toBe('string');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.createdAt).toBe('object');
-    expect(typeof noQueryDefaultCase?.items?.[0]?.dueDate).toBe('object');
-    expect(typeof noQueryDefaultCase?.meta).toBe('object');
-    expect(typeof noQueryDefaultCase?.meta?.totalItems).toBe('number');
-    expect(typeof noQueryDefaultCase?.meta?.itemCount).toBe('number');
-    expect(typeof noQueryDefaultCase?.meta?.itemsPerPage).toBe('number');
-    expect(typeof noQueryDefaultCase?.meta?.totalPages).toBe('number');
-    expect(typeof noQueryDefaultCase?.meta?.currentPage).toBe('number');
+    expect(noQueryDefaultCase).toEqual(
+      expect.objectContaining({
+        items: expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            lendingCondition: expect.any(String),
+            login: expect.any(String),
+            penaltyDays: expect.any(Number),
+            callSign: expect.any(String),
+            title: expect.any(String),
+            createdAt: expect.any(Date),
+            dueDate: expect.any(Date),
+          }),
+        ]),
+        meta: expect.objectContaining({
+          totalItems: expect.any(Number),
+          itemCount: expect.any(Number),
+          itemsPerPage: expect.any(Number),
+          totalPages: expect.any(Number),
+          currentPage: expect.any(Number),
+        }),
+      }),
+    );
   });
 
   it('search lending record (sort)', async () => {

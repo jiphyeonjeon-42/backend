@@ -155,8 +155,8 @@ export const
           FROM book
           WHERE id = bookId
         ) AS callSign,
-        DATE_FORMAT(reservation.createdAt, '%Y.%m.%d') AS createdAt,
-        DATE_FORMAT(reservation.endAt, '%Y.%m.%d') AS endAt,
+        reservation.createdAt AS createdAt,
+        reservation.endAt AS endAt,
         status
       FROM reservation
       LEFT JOIN user AS user ON reservation.userId = user.id

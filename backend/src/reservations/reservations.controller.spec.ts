@@ -12,6 +12,7 @@ describe('ReservationsController', () => {
     req.body = {};
     req.user = {};
     req.params = {};
+    req.query = jest.fn().mockReturnValue(req);
     return req;
   };
   const mockResp = () => {
@@ -97,5 +98,25 @@ describe('ReservationsController', () => {
     await reservationsController.cancel(req, res, next);
     expect(res.status.mock.calls[8][0]).toBe(status.BAD_REQUEST);
     expect(res.json.mock.calls[8][0]?.errorCode).toBe(3);
+  });
+
+  it('reservation search success', async () => {
+    req.query.query = '';
+    req.query.page = 'a';
+    req.query.limit = '5';
+    req.query.filter = 'all';
+    await reservationsController.search(req, res, next);
+    expect(res.status.mock.calls[9][0]).toBe(status.OK);
+    expect(res.json.mock.calls[9][0]).toHaveProperty('items');
+    expect(res.json.mock.calls[9][0]).toHaveProperty('meta');
+  });
+
+  it('reservation search failed wrong filter', async () => {
+    req.query.query = '';
+    req.query.page = '0';
+    req.query.limit = '5';
+    req.query.filter = 'every';
+    await reservationsController.search(req, res, next);
+    expect(res.status.mock.calls[10][0]).toBe(status.BAD_REQUEST);
   });
 });
