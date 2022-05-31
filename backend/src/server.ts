@@ -1,4 +1,5 @@
 import app from './app';
+import scheduler from './auth/auth.scheduler';
 
 app.listen('3000', () => {
   console.log(`
@@ -6,4 +7,5 @@ app.listen('3000', () => {
   🛡️  Server listening on port: 3000🛡️
   ################################################
     `);
+  scheduler();
 });

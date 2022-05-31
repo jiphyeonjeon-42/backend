@@ -4,21 +4,6 @@ import config from '../config';
 import { User } from '../users/users.model';
 
 /**
- * Client URL값이 맞는지 확인
- *
- * query값중 state값이 서버에서 설정한 값과 같은지 확인
- * [보안상 확인하는거 같음]
- */
-export const clientValidator = (value: any) => {
-  const CLIENT_DEV_URL = 'http://localhost:4242';
-  const CLIENT_PRODUCTION_URL = 'https://42library.kr';
-  if (value !== CLIENT_DEV_URL && value !== CLIENT_PRODUCTION_URL) {
-    return false;
-  }
-  return value;
-};
-
-/**
  * User 정보를 가지고 token 만들기
  *
  * payload 로 user.id, user.role을 저장하고, secretkey는 config파일을 참조하고,
@@ -46,7 +31,7 @@ export const issueJwt = (user: User) => {
  *      sameSite : 같은 도메인의에서만 쿠키를 사용할 수 있는 'strict' 값 설정
  *      expires: 밀리세컨드 값으로 설정해야하고, 1000 * 60 * 60 = 1시간으로 설정
  */
-export const saveJwt = async (req: Request, res: Response, user: User) => {
+export const saveJwt = async (req: Request, res: Response, user: User) : Promise<void> => {
   const token = issueJwt(user);
   res.cookie('access_token', token, {
     httpOnly: true,
