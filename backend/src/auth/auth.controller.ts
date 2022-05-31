@@ -60,7 +60,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       throw new FtError(403, errCode.wrongPassword, errMsg.wrongPassword);
     }
     await authJwt.saveJwt(req, res, user.items[0]);
-    res.status(204);
+    res.status(204).send();
   } catch (e: any) {
     if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
     else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
