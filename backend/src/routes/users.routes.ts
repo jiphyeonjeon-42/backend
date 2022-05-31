@@ -8,7 +8,6 @@ import {
 export const path = '/users';
 export const router = Router();
 
-router.get('/', create)
 /**
  * @openapi
  * /api/users/search:
@@ -22,7 +21,7 @@ router.get('/', create)
  *            schema:
  *              type: object
  *              properties:
- *                intraId:
+ *                nickname:
  *                  type: string
  *                page:
  *                  type: integer
@@ -62,19 +61,20 @@ router.get('/', create)
  *                          description: slack 멤버 Id
  *                          type: string
  *                          example: "U035MUEUGKW"
- *                        penaltyEndDay:
- *                          description: 패널티 끝나는 날
+ *                        penaltyEndDate:
+ *                          description: 패널티 끝나는 날짜
  *                          type: string
  *                          format: date
  *                          example: 2022-05-22
+ *                        overDueDay:
+ *                          description: 현재 연체된 날수
+ *                          type: string
+ *                          format: number
+ *                          example: 0
  *                        role:
  *                          description: 권한
  *                          type: integer
  *                          example: 2
- *                        lendingCnt:
- *                          description: 해당 유저의 대출 권 수
- *                          type: integer
- *                          example: 0
  *                        reservations:
  *                          description: 해당 유저의 예약 정보
  *                          type: array
@@ -108,58 +108,47 @@ router.get('/', create)
  *                        type: integer
  *                        example: 1
  *        '400':
- *          description: page, limit 중 한 개 이상이 존재 하지 않습니다.
+ *          description: Bad Request
  *          content:
  *            application/json:
  *              schema:
- *                type: string
+ *                type: object
  *                description: error decription
- *                example: page, limit 중 한 개 이상이 존재 하지 않습니다..
- */.get('/search', search)
-/**
- * @openapi
- * /api/users/update/{id}:
- *    patch:
- *      description: 유저 정보를 변경한다.
- *      tags:
- *        - users
- *      parameters:
- *        - in: path
- *          name: id
- *          required: true
- *          schema:
- *            type: integer
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                nickname:
- *                  type: string
- *                intraId:
- *                  type: integer
- *                slack:
- *                  type: string
- *                role:
- *                  type: integer
- *      responses:
- *        '200':
- *          description: 유저 정보 변경 성공!
- *        '400':
- *          description: nickname, intraId, slack, role 중 하나도 없습니다..
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 200
+ *        '404':
+ *          description: Unknown Error
  *          content:
  *            application/json:
  *              schema:
- *                type: string
+ *                type: object
  *                description: error decription
- *                example: nickname, intraId, slack, role  중 하나도 없습니다..
- */.patch('/update/:id', authValidate(roleSet.librarian), update)
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 0
+ *        '500':
+ *          description: DB Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 1
+ */
 /**
  * @openapi
- * /api/users/myupdate/{id}:
- *    patch:
- *      description: 유저 정보를 변경한다.
+ * /api/users/create:
+ *    post:
+ *      description: 유저를 생성한다.
  *      tags:
  *        - users
  *      parameters:
@@ -179,14 +168,206 @@ router.get('/', create)
  *                password:
  *                  type: string
  *      responses:
- *        '200':
- *          description: 유저 정보 변경 성공!
+ *        '201':
+ *          description: 유저 생성 성공!
  *        '400':
- *          description: email, password 중 하나도 없습니다..
+ *          description: 입력된 인자가 부적절합니다
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: 200, 201, 205 에러 가능
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: error description
+ *                    example: 200
+ *        '404':
+ *          description: Unknown Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 0
+ *        '500':
+ *          description: DB Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 1
+ */
+/**
+ * @openapi
+ * /api/users/update/{id}:
+ *    patch:
+ *      description: 유저 정보를 변경한다.
+ *      tags:
+ *        - users
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          description: authValidate 에서 받아오는 유저 본인의 id 값
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                nickname:
+ *                  type: string
+ *                intraId:
+ *                  type: integer
+ *                slack:
+ *                  type: string
+ *                role:
+ *                  type: integer
+ *      responses:
+ *        '204':
+ *          description: 성공
  *          content:
  *            application/json:
  *              schema:
  *                type: string
+ *                example: success
+ *        '400':
+ *          description: nickname, intraId, slack, role 중 아무것도 없습니다..
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errCode:
+ *                    type: integer
+ *                    example: 200
+ *        '404':
+ *          description: Unknown Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
  *                description: error decription
- *                example: nickname, intraId, slack, role  중 하나도 없습니다..
- */.patch('/myupdate/:id', authValidate(roleSet.all), myupdate);
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 0
+ *        '500':
+ *          description: DB Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 1
+ */
+/**
+ * @openapi
+ * /api/users/myupdate/{id}:
+ *    patch:
+ *      description: 유저 정보를 변경한다.
+ *      tags:
+ *        - users
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          description: authValidate 에서 받아온 유저의 id
+ *          required: true
+ *          schema:
+ *            type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                password:
+ *                  type: string
+ *      responses:
+ *        '200':
+ *          description: 유저 정보 변경 성공!
+ *        '400':
+ *          description: 들어온 인자가 없습니다..
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 200
+ *        '403':
+ *          description: 수정하려는 계정이 본인의 계정이 아닙니다
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 206
+ *        '404':
+ *          description: Unknown Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 0
+ *        '409':
+ *          description: 수정하려는 값이 중복됩니다
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: 203, 204 에러
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 204
+ *        '500':
+ *          description: DB Error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                description: error decription
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    description: 에러코드
+ *                    example: 1
+ */
+
+router.get('/search', search)
+  .post('/create', create)
+  .patch('/update/:id', authValidate(roleSet.librarian), update)
+  .patch('/myupdate/:id', authValidate(roleSet.all), myupdate);
