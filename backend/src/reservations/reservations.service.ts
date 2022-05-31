@@ -16,7 +16,6 @@ export const moreThanTwoReservations = '두 개 이상 예약 중';
 // constants for cancel
 export const notMatchingUser = '해당 유저 아님';
 export const reservationNotExist = '예약 ID 존재하지 않음';
-export const StatusNotZero = '상태가 0이 아님';
 export const notReserved = '예약 상태가 아님';
 
 // constants for cancel
