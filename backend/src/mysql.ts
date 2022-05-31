@@ -57,18 +57,6 @@ export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
   return result;
 };
 
-export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
-  queryText: string,
-  values: any[] = [],
-): Promise<any> => {
-  logger.debug(`Executing query: ${queryText} (${values})`);
-  const [result]: [
-      any,
-      FieldPacket[]
-    ] = await connection.query(queryText, values);
-  return result;
-};
-
 type lending = {
   lendingId: number;
 }
