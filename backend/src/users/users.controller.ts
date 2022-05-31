@@ -93,7 +93,7 @@ export const update = async (
     else if (error.message === 'DB error') res.status(500).send({ errCode: 1 });
     else res.status(404).send({ errCode: 0 });
   }
-  res.status(200).send('success');
+  res.status(204).send('success');
 };
 
 export const myupdate = async (
@@ -101,11 +101,12 @@ export const myupdate = async (
   res: Response,
 ) => {
   const { id } = req.params;
+  const { tokenId } = req.user as any;
   const {
     email = '', password = '0',
   } = req.body;
   try {
-    if (id) {
+    if (id === String(tokenId)) {
       if (email !== '') {
         updateUserEmail(parseInt(id, 10), email);
       } else if (password !== '') {
@@ -120,7 +121,7 @@ export const myupdate = async (
         if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
         updateUserPassword(parseInt(id, 10), bcrypt.hashSync(password, 10));
       } else res.status(400).send({ errCode: 202 });
-    } else throw new ErrorResponse(201, 'Id is NULL');
+    } else throw res.status(403).send({ errCode: 206 });
   } catch (error: any) {
     if (error instanceof ErrorResponse) {
       res.status(error.status).send(error.message);
