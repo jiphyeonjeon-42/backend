@@ -13,67 +13,59 @@ export const search = async (
   req: Request,
   res: Response,
 ) => {
-  const { nickName = '', page = '1', limit = '5' } = req.query;
+  const { nickname = '', page = '1', limit = '5' } = req.query;
+  let items;
   try {
     if (parseInt(String(limit), 10) > 0 && parseInt(String(page), 10) >= 0) {
-      let items;
-      if (nickName === '') {
+      if (nickname === '') {
         items = await searchAllUsers(parseInt(String(limit), 10), parseInt(String(page), 10));
-      } else if (nickName) {
+      } else if (nickname) {
         items = JSON.parse(JSON.stringify(await
         searchUserByNickName(
-          String(nickName),
+          String(nickname),
           parseInt(String(limit), 10),
           parseInt(String(page), 10),
         )));
-      } else throw new ErrorResponse(201, 'nickname is NULL');
+      } else res.status(400).send({ errCode: 201 });
       if (items) {
         items.items = await Promise.all(items.items.map(async (data: User) => ({
           ...data,
           reservations:
-              await userReservations(data.id),
+            await userReservations(data.id),
         })));
       }
-      res.send(items);
-    } else if (parseInt(String(limit), 10) <= 0) throw new ErrorResponse(200, 'limit is invalid');
-    else if (parseInt(String(page), 10) < 0) throw new ErrorResponse(200, 'Page is Invalid');
+    } else if (parseInt(String(limit), 10) <= 0) res.status(400).send({ errCode: 200 });
+    else if (parseInt(String(page), 10) < 0) res.status(400).send({ errCode: 200 });
   } catch (error:any) {
-    if (error instanceof ErrorResponse) {
-      res.status(400).send(error.message);
-    } else if (error.message === 'DB error') {
-      res.status(500).send(error.message);
-    }
-  }
+    if (error.message === 'DB error') res.status(500).send(error.message);
+    else if (error instanceof ErrorResponse) res.status(error.status).send(error.message);
+    else res.status(404).send({ errCode: 0 });
+  } res.status(200).send(items);
 };
 
 export const create = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const pwSchema = new PasswordValidator();
   try {
-    const { email, password } = req.query;
-    const pwSchema = new PasswordValidator();
     pwSchema
       .is().min(10)
-      .is().max(42)
-      .has()
-      .lowercase()
-      .has()
-      .digits(1)
-      .has()
-      .not()
-      .spaces()
+      .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
+      .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
+      .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
+      .has().not().spaces()
       .symbols(1);
-    if (!pwSchema.validate(String(password))) {
-      throw new ErrorResponse(205, 'password invalid');
-    }
+    if (!pwSchema.validate(String(password))) res.status(400).send({ errCode: 205 });
     if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
-    else if (!email) res.status(400).send('Email is NULL');
-    else if (!password) res.status(400).send('Password is NULL');
+    else if (!email) res.status(400).send({ errCode: 205 });
+    else if (!password) res.status(400).send({ errCode: 205 });
   } catch (error: any) {
     if (error instanceof ErrorResponse) {
-      res.status(400).send(error.message);
+      res.status(error.status).send(error.message);
     } else if (error.message === 'DB error') {
-      res.status(500).send(error.message);
-    }
+      res.status(500).send({ errCode: 1 });
+    } else res.status(404).send({ errCode: 0 });
   }
+  res.status(204).send(`${email} created!`);
 };
 
 export const update = async (
@@ -94,16 +86,14 @@ export const update = async (
           slack,
           parseInt(role, 10),
         );
-        res.status(200).send('success');
-      } else throw new ErrorResponse(202, 'Insufficient arguments');
-    } else throw new ErrorResponse(201, 'Id is NULL');
+      } else res.status(400).send({ errCode: 202 });
+    } else res.status(400).send({ errCode: 201 });
   } catch (error: any) {
-    if (error instanceof ErrorResponse) {
-      res.status(400).send(error.message);
-    } else if (error.message === 'DB error') {
-      res.status(500).send(error.message);
-    }
+    if (error instanceof ErrorResponse) res.status(error.status).send(error.message);
+    else if (error.message === 'DB error') res.status(500).send({ errCode: 1 });
+    else res.status(404).send({ errCode: 0 });
   }
+  res.status(200).send('success');
 };
 
 export const myupdate = async (
@@ -122,28 +112,21 @@ export const myupdate = async (
         const pwSchema = new PasswordValidator();
         pwSchema
           .is().min(10)
-          .is().max(42)
-          .has()
-          .lowercase()
-          .has()
-          .digits(1)
-          .has()
-          .not()
-          .spaces()
+          .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
+          .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
+          .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
+          .has().not().spaces()
           .symbols(1);
-        if (!pwSchema.validate(password)) {
-          throw new ErrorResponse(205, 'password invalid');
-        }
-        const encryptedPW = bcrypt.hashSync(password, 10);
-        updateUserPassword(parseInt(id, 10), encryptedPW);
-      } else { throw new ErrorResponse(202, 'Insufficient arguments'); }
-      res.status(200).send('success');
+        if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
+        updateUserPassword(parseInt(id, 10), bcrypt.hashSync(password, 10));
+      } else res.status(400).send({ errCode: 202 });
     } else throw new ErrorResponse(201, 'Id is NULL');
   } catch (error: any) {
     if (error instanceof ErrorResponse) {
-      res.status(400).send(error.message);
+      res.status(error.status).send(error.message);
     } else if (error.message === 'DB error') {
       res.status(500).send(error.message);
-    }
+    } else res.status(404).send({ errCode: 0 });
   }
+  res.status(200).send('success');
 };
