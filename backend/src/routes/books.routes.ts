@@ -103,6 +103,10 @@ router
    *                          type: string
    *                          format: date
    *                          example: 2022-03-06T09:29:04.340Z
+   *                        lendingCnt:
+   *                          description: 대출 횟수
+   *                          type: integer
+   *                          example: 0
    *                  categories:
    *                    description: 검색된 목록의 카테고리 분류
    *                    type: array
