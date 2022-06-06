@@ -372,6 +372,7 @@ export const getInfo = async (id: number) => {
   `,
     [id],
   )) as models.BookInfo[];
+  if (bookSpec === undefined) { throw new Error('304'); }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);
     bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
