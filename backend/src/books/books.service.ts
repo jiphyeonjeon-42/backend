@@ -267,10 +267,10 @@ export const searchInfo = async (
       ordering = 'ORDER BY book_info.title';
       break;
     case 'popular':
-      ordering = 'ORDER BY lendingCnt DESC';
+      ordering = 'ORDER BY lendingCnt DESC, book_info.title';
       break;
     default:
-      ordering = 'ORDER BY book_info.createdAt DESC';
+      ordering = 'ORDER BY book_info.createdAt DESC, book_info.title';
   }
   const categoryResult = (await executeQuery(
     `
@@ -320,14 +320,16 @@ export const searchInfo = async (
       book_info.publishedAt as publishedAt,
       book_info.createdAt as createdAt,
       book_info.updatedAt as updatedAt,
-      COUNT(lending.id) as lendingCnt
-    FROM book_info, lending
-    WHERE book_info.id = lending.bookId
-    AND (
-      (book_info.title like ?
+      (
+        SELECT COUNT(id) FROM lending WHERE lending.bookId = book_info.id
+      ) as lendingCnt
+    FROM book_info
+    WHERE
+    (
+      book_info.title like ?
       OR book_info.author like ?
-      OR book_info.isbn like ?)
-      )
+      OR book_info.isbn like ?
+    )
     GROUP BY book_info.id
     HAVING ${categoryHaving}
     ${ordering}
