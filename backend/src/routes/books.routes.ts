@@ -335,6 +335,14 @@ router
    *                type: json
    *                description: error decription
    *                example: { errorCode: 300 }
+   *        '400':
+   *          description: 유효하지않은 infoId 값.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                description: error decription
+   *                example: { errorCode: 304 }
    */
   .get('/info/:id', getInfoId);
 
