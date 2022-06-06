@@ -301,10 +301,6 @@ router
    *                    descriptoin: isbn
    *                    type: string
    *                    example: '9791196067694'
-   *                  donators:
-   *                    descriptoin: 기부자
-   *                    type: string
-   *                    example: seongyle, seunam
    *                  books:
    *                    description: 비치된 책들
    *                    type: array
@@ -319,14 +315,18 @@ router
    *                          description: 청구기호
    *                          type: string
    *                          example: h1.18.v1.c1
+   *                        donator:
+   *                          description: 책의 기부자
+   *                          type: string
+   *                          example: seongyle
+   *                        dueDate:
+   *                          description: 반납 예정 일자, 대출가능 시 '-'
+   *                          type: date
+   *                          example: 21.08.05
    *                        isLendable:
    *                          description: 책의 대출가능여부
    *                          type: boolean
    *                          example: 1
-   *                        dueDate:
-   *                          description: 반납 예정 일자
-   *                          type: date
-   *                          example: 21.08.05
    *        '400':
    *          description: id가 숫자가 아니다.
    *          content:
