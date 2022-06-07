@@ -301,10 +301,6 @@ router
    *                    descriptoin: isbn
    *                    type: string
    *                    example: '9791196067694'
-   *                  donators:
-   *                    descriptoin: 기부자
-   *                    type: string
-   *                    example: hyekim, tkim, jwoo, minkykim
    *                  books:
    *                    description: 비치된 책들
    *                    type: array
@@ -319,14 +315,18 @@ router
    *                          description: 청구기호
    *                          type: string
    *                          example: h1.18.v1.c1
-   *                        status:
-   *                          description: 책의 상태
+   *                        donator:
+   *                          description: 책의 기부자
    *                          type: string
-   *                          example: 비치 중
+   *                          example: seongyle
    *                        dueDate:
-   *                          description: 반납 예정 일자
-   *                          type: string
+   *                          description: 반납 예정 일자, 대출가능 시 '-'
+   *                          type: date
    *                          example: 21.08.05
+   *                        isLendable:
+   *                          description: 책의 대출가능여부
+   *                          type: boolean
+   *                          example: 1
    *        '400':
    *          description: id가 숫자가 아니다.
    *          content:
@@ -335,6 +335,14 @@ router
    *                type: json
    *                description: error decription
    *                example: { errorCode: 300 }
+   *        '400':
+   *          description: 유효하지않은 infoId 값.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                description: error decription
+   *                example: { errorCode: 304 }
    */
   .get('/info/:id', getInfoId);
 
@@ -406,7 +414,7 @@ router
    *                        isLenderable:
    *                          description: 대출 가능 여부
    *                          type: boolean
-   *                          example: true
+   *                          example: 1
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object

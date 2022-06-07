@@ -350,30 +350,6 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-const statusConverter = (status: number, dueDate: string) => {
-  if (status === 0) {
-    if (dueDate !== '-') return '대출 중';
-    return '비치 중';
-  }
-  if (status === 1) return '분실';
-  if (status === 2) return '파손';
-  return '알 수 없음';
-};
-
-const getDueDate = (lendingData: models.lending[]) => {
-  if (lendingData && lendingData.length === 0) return '-';
-  const lastLending = lendingData.sort(
-    (a, b) => new Date(b.lendingCreatedAt).getTime()
-      - new Date(a.lendingCreatedAt).getTime(),
-  )[0];
-  if (lastLending.returningCreatedAt) {
-    return '-';
-  }
-  const tDate = new Date(lastLending.lendingCreatedAt);
-  tDate.setDate(tDate.getDate() + 14);
-  return tDate.toJSON().substring(2, 10).split('-').join('.');
-};
-
 export const getInfo = async (id: number) => {
   const [bookSpec] = (await executeQuery(
     `
@@ -396,17 +372,17 @@ export const getInfo = async (id: number) => {
   `,
     [id],
   )) as models.BookInfo[];
+  if (bookSpec === undefined) { throw new Error('304'); }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);
     bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
   }
 
-  const eachBook = (await executeQuery(
+  const eachBooks = (await executeQuery(
     `
     SELECT
       id,
       callSign,
-      status,
       donator
     FROM book
     WHERE
@@ -415,36 +391,40 @@ export const getInfo = async (id: number) => {
     [id],
   )) as models.BookEach[];
 
-  const donators: string[] = [];
   const books = await Promise.all(
-    eachBook.map(async (val) => {
-      const lendingData = (await executeQuery(
-        `
-      SELECT
-        lending.createdAt AS lendingCreatdAt,
-        returning.createdAt AS returningCreatedAt
-      FROM lending
-      LEFT JOIN returning ON lending.id = returning.lendingId
-      WHERE
-        bookId = ?
-    `,
-        [val.id],
-      )) as models.lending[];
-      const dueDate = getDueDate(lendingData);
-      const status = statusConverter(val.status, dueDate);
-
-      if (val.donator) {
-        donators.push(val.donator);
+    eachBooks.map(async (eachBook) => {
+      const isLendable = await executeQuery(
+        `SELECT (
+          IF ((
+          (select COUNT(*) from lending where (bookId = ${eachBook.id} and returnedAt is NULL) = 0)
+          and 
+          (select COUNT(*) from book where (id = ${eachBook.id} and status = 0) = 1) 
+          and
+          (select COUNT(*) from reservation where (bookId = ${eachBook.id} and status = 0) = 0)),
+          TRUE,FALSE)
+          ) as isLendable`,
+      ).then((isLendableArr) => isLendableArr[0].isLendable);
+      let dueDate;
+      if (isLendable === 0) {
+        dueDate = await executeQuery(
+          `
+        SELECT
+          DATE_ADD(createdAt, INTERVAL 14 DAY) as dueDate
+        FROM lending
+        WHERE
+          bookId = ?
+        ORDER BY createdAt DESC
+        LIMIT 1;
+      `,
+          [eachBook.id],
+        ).then((dueDateArr) => dueDateArr[0].dueDate);
+      } else {
+        dueDate = '-';
       }
-      const { donator, ...rest } = val;
-      return { ...rest, dueDate, status };
+      const { ...rest } = eachBook;
+      return { ...rest, dueDate, isLendable };
     }),
   );
-  if (donators.length === 0) {
-    bookSpec.donators = '-';
-  } else {
-    bookSpec.donators = donators.join(', ');
-  }
   bookSpec.books = books;
   return bookSpec;
 };
