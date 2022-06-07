@@ -327,7 +327,7 @@ router
    *                          description: 책의 대출가능여부
    *                          type: boolean
    *                          example: 1
-   *        '400':
+   *        '400_case1':
    *          description: id가 숫자가 아니다.
    *          content:
    *            application/json:
@@ -335,7 +335,7 @@ router
    *                type: json
    *                description: error decription
    *                example: { errorCode: 300 }
-   *        '400':
+   *        '400_case2':
    *          description: 유효하지않은 infoId 값.
    *          content:
    *            application/json:

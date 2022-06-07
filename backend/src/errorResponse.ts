@@ -3,8 +3,8 @@ export default class ErrorResponse extends Error {
 
   errorCode: number;
 
-  constructor(...args: [status: number, errorCode: number, messages?: string]) {
+  constructor(...args: [errorCode: number, status: number, messages?: string]) {
     super(args[2]);
-    [this.status, this.errorCode] = args;
+    [this.errorCode, this.status] = args;
   }
 }
