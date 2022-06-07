@@ -161,14 +161,8 @@ router.get('/me', authValidate(roleSet.all), getMe);
  *                  password:
  *                    type: string
  *      responses:
- *        '302':
+ *        '204':
  *          description: 성공적으로 토큰 발급
- *          headers:
- *             Location:
- *               description: 브라우저에 유저정보를 저장 하는 frontend /auth 주소로 이동
- *               schema:
- *                 type: string
- *                 format: uri
  *        '400':
  *          description: ID, PW 값이 없는 잘못된 요청
  *          content:
