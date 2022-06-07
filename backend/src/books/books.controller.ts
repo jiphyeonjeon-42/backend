@@ -7,7 +7,11 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
-export const createBook = async (req: Request, res: Response) => {
+export const createBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const {
     isbn, categoryId, donator, callSign,
   } = req.body;
@@ -19,18 +23,16 @@ export const createBook = async (req: Request, res: Response) => {
         .status(status.OK)
         .send(await BooksService.createBook(req.body));
     } catch (error: any) {
+      const errorCode = parseInt(error.message, 10);
       if (
-        parseInt(error.message, 10) >= 300
-        && parseInt(error.message, 10) < 400
+        errorCode >= 300 && errorCode < 400
       ) {
-        return res
-          .status(status.BAD_REQUEST)
-          .send({ errorCode: parseInt(error.message, 10) });
+        next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+      } else if (error.message === 'DB error') {
+        next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
       }
-      if (error.message === 'DB error') {
-        return res.status(500).send({ errorCode: 1 });
-      }
-      return res.status(500).send({ errorCode: 0 });
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -39,6 +41,7 @@ export const createBook = async (req: Request, res: Response) => {
 export const searchBookInfo = async (
   req: Request<{}, {}, {}, types.SearchBookInfoQuery>,
   res: Response,
+  next: NextFunction,
 ) => {
   const {
     query, sort, page, limit, category,
@@ -59,18 +62,15 @@ export const searchBookInfo = async (
           ),
         );
     } catch (error: any) {
-      if (
-        parseInt(error.message, 10) >= 300
-        && parseInt(error.message, 10) < 400
-      ) {
-        return res
-          .status(status.BAD_REQUEST)
-          .send({ errorCode: parseInt(error.message, 10) });
+      const errorCode = parseInt(error.message, 10);
+      if (errorCode >= 300 && errorCode < 400) {
+        next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+      } else if (error.message === 'DB error') {
+        next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      } else {
+        logger.error(error.message);
+        next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
       }
-      if (error.message === 'DB error') {
-        return res.status(500).send({ errorCode: 1 });
-      }
-      return res.status(500).send({ errorCode: 0 });
     }
   }
   return 0;
@@ -105,6 +105,7 @@ export const getInfoId: RequestHandler = async (
 export const sortInfo = async (
   req: Request<{}, {}, {}, types.SortInfoType>,
   res: Response,
+  next: NextFunction,
 ) => {
   const { sort, limit } = req.query;
   if (!(sort && limit)) {
@@ -115,24 +116,25 @@ export const sortInfo = async (
         .status(status.OK)
         .json(await BooksService.sortInfo(sort, parseInt(limit, 10)));
     } catch (error: any) {
-      if (
-        parseInt(error.message, 10) >= 300
-        && parseInt(error.message, 10) < 400
-      ) {
-        return res
-          .status(status.BAD_REQUEST)
-          .send({ errorCode: parseInt(error.message, 10) });
+      const errorCode = parseInt(error.message, 10);
+      if (errorCode >= 300 && errorCode < 400) {
+        next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+      } else if (error.message === 'DB error') {
+        next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      } else {
+        logger.error(error.message);
+        next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
       }
-      if (error.message === 'DB error') {
-        return res.status(500).send({ errorCode: 1 });
-      }
-      return res.status(500).send({ errorCode: 0 });
     }
   }
   return 0;
 };
 
-export const search = async (req: Request, res: Response) => {
+export const search = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { query, page, limit } = req.query as any;
   if (!(query && page && limit)) {
     res.status(status.BAD_REQUEST).send({ errorCode: 300 });
@@ -148,18 +150,15 @@ export const search = async (req: Request, res: Response) => {
           ),
         );
     } catch (error: any) {
-      if (
-        parseInt(error.message, 10) >= 300
-        && parseInt(error.message, 10) < 400
-      ) {
-        return res
-          .status(status.BAD_REQUEST)
-          .send({ errorCode: parseInt(error.message, 10) });
+      const errorCode = parseInt(error.message, 10);
+      if (errorCode >= 300 && errorCode < 400) {
+        next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+      } else if (error.message === 'DB error') {
+        next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      } else {
+        logger.error(error.message);
+        next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
       }
-      if (error.message === 'DB error') {
-        return res.status(500).send({ errorCode: 1 });
-      }
-      return res.status(500).send({ errorCode: 0 });
     }
   }
   return 0;
