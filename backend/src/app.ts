@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import router from './routes';
 import swaggerOptions from './swagger/swagger';
 import errorHandler from './errorHandler';
-import { FtStrategy, JwtStrategy } from './auth/auth.strategy';
+import { FtStrategy, JwtStrategy, FtAuthentication } from './auth/auth.strategy';
 import { morganMiddleware } from './utils/logger';
 
 const app: express.Application = express();
@@ -27,6 +27,7 @@ app.use(cors({
 }));
 
 passport.use('42', FtStrategy);
+passport.use('42Auth', FtAuthentication);
 passport.use('jwt', JwtStrategy);
 
 app.get('/welcome', (req: Request, res: Response) => {

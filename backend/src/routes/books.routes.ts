@@ -103,6 +103,10 @@ router
    *                          type: string
    *                          format: date
    *                          example: 2022-03-06T09:29:04.340Z
+   *                        lendingCnt:
+   *                          description: 대출 횟수
+   *                          type: integer
+   *                          example: 0
    *                  categories:
    *                    description: 검색된 목록의 카테고리 분류
    *                    type: array
@@ -146,9 +150,9 @@ router
    *          content:
    *            application/json:
    *              schema:
-   *                type: string
+   *                type: json
    *                description: error decription
-   *                example: query, page, limit 중 하나 이상이 없습니다.
+   *                example: { errorCode: 300 }
    */
   .get('/info/search', searchBookInfo);
 
@@ -238,9 +242,9 @@ router
    *          content:
    *            application/json:
    *              schema:
-   *                type: string
+   *                type: json
    *                description: error decription
-   *                example: 클라이언트 오류.
+   *                example: { errorCode: 300 }
    */
   .get('/info', sortInfo)
 
@@ -297,10 +301,6 @@ router
    *                    descriptoin: isbn
    *                    type: string
    *                    example: '9791196067694'
-   *                  donators:
-   *                    descriptoin: 기부자
-   *                    type: string
-   *                    example: hyekim, tkim, jwoo, minkykim
    *                  books:
    *                    description: 비치된 책들
    *                    type: array
@@ -315,24 +315,36 @@ router
    *                          description: 청구기호
    *                          type: string
    *                          example: h1.18.v1.c1
-   *                        status:
-   *                          description: 책의 상태
+   *                        donator:
+   *                          description: 책의 기부자
    *                          type: string
-   *                          example: 비치 중
+   *                          example: seongyle
    *                        dueDate:
-   *                          description: 반납 예정 일자
-   *                          type: string
+   *                          description: 반납 예정 일자, 대출가능 시 '-'
+   *                          type: date
    *                          example: 21.08.05
+   *                        isLendable:
+   *                          description: 책의 대출가능여부
+   *                          type: boolean
+   *                          example: 1
    *        '400':
    *          description: id가 숫자가 아니다.
    *          content:
    *            application/json:
    *              schema:
-   *                type: string
+   *                type: json
    *                description: error decription
-   *                example: id가 숫자가 아닙니다.
+   *                example: { errorCode: 300 }
+   *        '400':
+   *          description: 유효하지않은 infoId 값.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                description: error decription
+   *                example: { errorCode: 304 }
    */
-  .get('/info/:id', getInfoId)
+  .get('/info/:id', getInfoId);
 
 router
   /**
@@ -402,7 +414,7 @@ router
    *                        isLenderable:
    *                          description: 대출 가능 여부
    *                          type: boolean
-   *                          example: true
+   *                          example: 1
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object
@@ -432,11 +444,11 @@ router
    *          content:
    *            application/json:
    *              schema:
-   *                type: string
+   *                type: json
    *                description: error decription
-   *                example: query, page, limit 중 하나 이상이 없습니다.
+   *                example: { errorCode: 300 }
    */
-  .get('/search', search);
+  .get('/search', authValidate(roleSet.librarian), search);
 
 router/**
 * @openapi
@@ -472,37 +484,37 @@ router/**
 *                 type: string
 *                 description: insert success
 *                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
-*         '400':
+*         '400_case1':
 *            description: 클라이언트 오류.
 *            content:
 *             application/json:
-*               schema:
-*                 type: string
-*                 description: insert fail
-*                 example: insert unsuccessfully done.
-*         '500':
-*            description: 서버오류
-*            content:
-*             application/json:
-*               schema:
-*                 type: string
-*                 description: insert fail, 서버오류
-*                 example: insert unsuccessfully done.
-*         '501':
+*              schema:
+*                type: json
+*                description: error decription
+*                example: { errorCode: 300 }
+*         '400_case2':
 *            description: DB오류
 *            content:
 *             application/json:
 *               schema:
-*                 type: string
-*                 description: insert fail, DB오류
-*                 example: { code: 501, message: '중복된 slackid 입니다.  DB관리자에게 문의하세요.' }
-*         '502':
+*                 type: json
+*                 description: slackId 중복
+*                 example: { errorCode: 301 }
+*         '400_case3':
+*            description: 서버오류
+*            content:
+*             application/json:
+*               schema:
+*                 type: json
+*                 description: naver open API에서 ISBN 검색결과가 없음.
+*                 example: { errorCode: 302 }
+*         '400_case4':
 *            description: naver openapi에서 못 찾음
 *            content:
 *             application/json:
 *               schema:
-*                 type: string
-*                 description: insert fail
-*                 example: { code: 502, message: 'ISBN 검색결과가 없습니다.' }
+*                 type: json
+*                 description: naver open API에서 ISBN 검색 자체 실패
+*                 example: { errorCode: 302 }
 */
   .post('/create', authValidate(roleSet.librarian), createBook);

@@ -1,9 +1,12 @@
 import { Router } from 'express';
-import { create, search } from '../reservations/reservations.controller';
+import {
+  cancel, create, search, count, userReservations,
+} from '../reservations/reservations.controller';
+import authValidate from '../auth/auth.validate';
+import { roleSet } from '../auth/auth.type';
 
 export const path = '/reservations';
 export const router = Router();
-
 /**
  * @openapi
  *  /api/reservations/count:
@@ -76,6 +79,10 @@ export const router = Router();
  *                    image:
  *                      description: 예약할 책 이미지
  *                      type: string
+ *                    createdAt:
+ *                      description: 예약 생성일
+ *                      type: string
+ *                      format: date
  *                    endAt:
  *                      description: 예약 종료일
  *                      type: string
@@ -86,12 +93,14 @@ export const router = Router();
  *                  bookInfoId: 34
  *                  title: 소프트웨어 장인(로버트 C. 마틴 시리즈)
  *                  image: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1633934%3Ftimestamp%3D20210706193409
+ *                  createdAt: 2022.04.05
  *                  endAt:
  *                - reservationId: 24
  *                  orderOfReservation: 0
  *                  bookInfoId: 135
  *                  title: Clean Code(클린 코드)
  *                  image: https://image.kyobobook.co.kr/images/book/xlarge/959/x9788966260959.jpg
+ *                  createdAt: 2021.08.02
  *                  endAt: 2021.09.23
  *        '401':
  *          description: 유저 정보가 정확하지 않음
@@ -323,4 +332,9 @@ export const router = Router();
  *          description: 알 수 없는 사용자
  * */
 
-router.post('/', create).get('/search', search);
+router
+  .post('/', authValidate(roleSet.service), create)
+  .get('/search', authValidate(roleSet.librarian), search)
+  .patch('/cancel/:reservationId', authValidate(roleSet.service), cancel)
+  .get('/count', authValidate(roleSet.all), count)
+  .get('/', authValidate(roleSet.service), userReservations);
