@@ -15,18 +15,22 @@ export const router = Router();
  *      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
  *      tags:
  *        - users
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                nickname:
- *                  type: string
- *                page:
- *                  type: integer
- *                limit:
- *                  type: integer
+ *      parameters:
+ *        - in: query
+ *          name: nickname
+ *          description: 검색할 유저의 nickname
+ *          schema:
+ *            type: string
+ *        - in: query
+ *          name: page
+ *          description: 페이지
+ *          schema:
+ *            type: integer
+ *        - in: query
+ *          name: limit
+ *          description: 한 페이지에 들어올 검색결과 수
+ *          schema:
+ *            type: integer
  *      responses:
  *        '200':
  *          description: 검색 결과를 반환한다.

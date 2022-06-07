@@ -1,5 +1,5 @@
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import * as models from '../users/users.model';
+import { Meta } from '../users/users.type';
 import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
@@ -181,7 +181,7 @@ export const
       ${filterQuery}
       HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
     `, [`%${query}%`, `%${query}%`, `%${query}%`]));
-    const meta :models.Meta = {
+    const meta : Meta = {
       totalItems: totalItems.length,
       itemCount: items.length,
       itemsPerPage: limit,
