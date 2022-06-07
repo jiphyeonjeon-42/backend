@@ -1,8 +1,10 @@
 export default class ErrorResponse extends Error {
-    status: number;
-  
-    constructor(status: number, message: string) {
-      super(message);
-      this.status = status;
-    }
+  status: number;
+
+  errorCode: number;
+
+  constructor(...args: [status: number, errorCode: number, messages?: string]) {
+    super(args[2]);
+    [this.status, this.errorCode] = args;
   }
+}
