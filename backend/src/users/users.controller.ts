@@ -50,11 +50,9 @@ export const create = async (req: Request, res: Response) => {
     pwSchema
       .is().min(10)
       .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
-      .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
-      .has().not().spaces()
       .symbols(1);
-    if (!pwSchema.validate(String(password))) res.status(400).send({ errCode: 205 });
+    if (!pwSchema.validate(String(password))) return res.status(400).send({ errCode: 205 });
     if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
     else if (!email) res.status(400).send({ errCode: 205 });
     else if (!password) res.status(400).send({ errCode: 205 });
@@ -65,7 +63,7 @@ export const create = async (req: Request, res: Response) => {
       res.status(500).send({ errCode: 1 });
     } else res.status(404).send({ errCode: 0 });
   }
-  res.status(204).send(`${email} created!`);
+  res.status(200).send(`${email} created!`);
 };
 
 export const update = async (
@@ -76,58 +74,55 @@ export const update = async (
   const {
     nickname = '', intraId = '0', slack = '', role = '-1',
   } = req.body;
+
+  if (!id) return res.status(400).send({ errCode: 201 });
+  if (nickname === '' || !intraId || slack === '' || role === '-1') return res.status(400).send({ errCode: 202 });
   try {
-    if (id) {
-      if (nickname !== '' || intraId || slack !== '' || role !== '-1') {
-        updateUserAuth(
-          parseInt(id, 10),
-          nickname,
-          parseInt(intraId, 10),
-          slack,
-          parseInt(role, 10),
-        );
-      } else res.status(400).send({ errCode: 202 });
-    } else res.status(400).send({ errCode: 201 });
+    updateUserAuth(
+      parseInt(id, 10),
+      nickname,
+      parseInt(intraId, 10),
+      slack,
+      parseInt(role, 10),
+    );
+    return res.status(204).send('success');
   } catch (error: any) {
     if (error instanceof ErrorResponse) res.status(error.status).send(error.message);
     else if (error.message === 'DB error') res.status(500).send({ errCode: 1 });
     else res.status(404).send({ errCode: 0 });
   }
-  res.status(204).send('success');
 };
 
 export const myupdate = async (
   req: Request,
   res: Response,
 ) => {
-  const { id } = req.params;
-  const { tokenId } = req.user as any;
+  const { id: tokenId } = req.user as any;
   const {
     email = '', password = '0',
   } = req.body;
+  if (email === '' && password === '0') return res.status(400).send({ errCode: 202 });
   try {
-    if (id === String(tokenId)) {
-      if (email !== '') {
-        updateUserEmail(parseInt(id, 10), email);
-      } else if (password !== '') {
-        const pwSchema = new PasswordValidator();
-        pwSchema
-          .is().min(10)
-          .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
-          .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
-          .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
-          .has().not().spaces()
-          .symbols(1);
-        if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
-        updateUserPassword(parseInt(id, 10), bcrypt.hashSync(password, 10));
-      } else res.status(400).send({ errCode: 202 });
-    } else throw res.status(403).send({ errCode: 206 });
+    if (email !== '' && password === '0') {
+      updateUserEmail(parseInt(tokenId, 10), email);
+    } else if (email === '' && password !== '0') {
+      const pwSchema = new PasswordValidator();
+      pwSchema
+        .is().min(10)
+        .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
+        .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
+        .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
+        .symbols(1);
+      if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
+      else updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
+    } res.status(200).send('success');
   } catch (error: any) {
     if (error instanceof ErrorResponse) {
       res.status(error.status).send(error.message);
     } else if (error.message === 'DB error') {
       res.status(500).send(error.message);
-    } else res.status(404).send({ errCode: 0 });
+    } else {
+      res.status(404).send({ errCode: 0 });
+    }
   }
-  res.status(200).send('success');
 };

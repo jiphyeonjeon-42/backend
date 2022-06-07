@@ -138,7 +138,7 @@ export const searchAllUsers = async (limit: number, page: number) => {
 export const createUser = async (email: string, password: string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
-  if (emailList.indexOf(email) === -1) {
+  if (emailList.indexOf(email) !== -1) {
     throw new ErrorResponse(203, 'email overlap');
   }
   await executeQuery(`
@@ -155,7 +155,7 @@ export const createUser = async (email: string, password: string) => {
 export const updateUserEmail = async (id: number, email:string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
-  if (emailList.indexOf(email) === -1) {
+  if (emailList.indexOf(email) !== -1) {
     throw new ErrorResponse(203, 'email overlap');
   }
   await executeQuery(`
@@ -182,7 +182,7 @@ export const updateUserAuth = async (
 ) => {
   const nicknameList = await executeQuery(`
   SELECT nickname FROM user`);
-  if (nicknameList.indexOf(nickname) === -1) {
+  if (nicknameList.indexOf(nickname) !== -1) {
     throw new ErrorResponse(204, 'nickname overlap');
   }
   let setString = '';
@@ -192,7 +192,7 @@ export const updateUserAuth = async (
     queryParameters.push(nickname);
   } if (intraId) {
     setString += 'intraId=?,';
-    queryParameters.push(nickname);
+    queryParameters.push(intraId);
   } if (slack !== '') {
     setString += 'slack=?,';
     queryParameters.push(slack);

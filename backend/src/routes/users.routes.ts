@@ -108,7 +108,7 @@ export const router = Router();
  *                        type: integer
  *                        example: 1
  *        '400':
- *          description: Bad Request
+ *          description: Client Error Bad Request
  *          content:
  *            application/json:
  *              schema:
@@ -119,20 +119,8 @@ export const router = Router();
  *                    type: number
  *                    description: 에러코드
  *                    example: 200
- *        '404':
- *          description: Unknown Error
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                description: error decription
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    description: 에러코드
- *                    example: 0
  *        '500':
- *          description: DB Error
+ *          description: Server Error
  *          content:
  *            application/json:
  *              schema:
@@ -143,6 +131,7 @@ export const router = Router();
  *                    type: number
  *                    description: 에러코드
  *                    example: 1
+ *
  */
 /**
  * @openapi
@@ -151,12 +140,6 @@ export const router = Router();
  *      description: 유저를 생성한다.
  *      tags:
  *        - users
- *      parameters:
- *        - in: path
- *          name: id
- *          required: true
- *          schema:
- *            type: integer
  *      requestBody:
  *        content:
  *          application/json:
@@ -182,20 +165,8 @@ export const router = Router();
  *                    type: number
  *                    description: error description
  *                    example: 200
- *        '404':
- *          description: Unknown Error
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                description: error decription
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    description: 에러코드
- *                    example: 0
  *        '500':
- *          description: DB Error
+ *          description: Server Error
  *          content:
  *            application/json:
  *              schema:
@@ -217,7 +188,7 @@ export const router = Router();
  *      parameters:
  *        - in: path
  *          name: id
- *          description: authValidate 에서 받아오는 유저 본인의 id 값
+ *          description: 변경할 유저의 id 값
  *          required: true
  *          schema:
  *            type: integer
@@ -236,7 +207,7 @@ export const router = Router();
  *                role:
  *                  type: integer
  *      responses:
- *        '204':
+ *        '200':
  *          description: 성공
  *          content:
  *            application/json:
@@ -253,18 +224,6 @@ export const router = Router();
  *                  errCode:
  *                    type: integer
  *                    example: 200
- *        '404':
- *          description: Unknown Error
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                description: error decription
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    description: 에러코드
- *                    example: 0
  *        '500':
  *          description: DB Error
  *          content:
@@ -280,18 +239,11 @@ export const router = Router();
  */
 /**
  * @openapi
- * /api/users/myupdate/{id}:
+ * /api/users/myupdate:
  *    patch:
  *      description: 유저 정보를 변경한다.
  *      tags:
  *        - users
- *      parameters:
- *        - in: path
- *          name: id
- *          description: authValidate 에서 받아온 유저의 id
- *          required: true
- *          schema:
- *            type: integer
  *      requestBody:
  *        content:
  *          application/json:
@@ -329,18 +281,6 @@ export const router = Router();
  *                    type: number
  *                    description: 에러코드
  *                    example: 206
- *        '404':
- *          description: Unknown Error
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                description: error decription
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    description: 에러코드
- *                    example: 0
  *        '409':
  *          description: 수정하려는 값이 중복됩니다
  *          content:
@@ -354,7 +294,7 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 204
  *        '500':
- *          description: DB Error
+ *          description: Server Error
  *          content:
  *            application/json:
  *              schema:
@@ -370,4 +310,4 @@ export const router = Router();
 router.get('/search', search)
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
-  .patch('/myupdate/:id', authValidate(roleSet.all), myupdate);
+  .patch('/myupdate', authValidate(roleSet.all), myupdate);
