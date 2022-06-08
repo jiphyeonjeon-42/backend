@@ -5,10 +5,14 @@ import * as models from './books.model';
 import * as types from './books.type';
 
 export const search = async (
-  query: string,
-  page: number,
-  limit: number,
+  searchInfo: types.SearchType,
 ) => {
+  const { query } = searchInfo;
+  const page = parseInt(searchInfo.page, 10);
+  const limit = parseInt(searchInfo.limit, 10);
+  if (!(query && page && limit)) {
+    throw new Error('300');
+  }
   const bookList = (await executeQuery(
     `
     SELECT
@@ -220,7 +224,12 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
   return true;
 };
 
-export const sortInfo = async (sort: string, limit: number) => {
+export const sortInfo = async (sortInfoquery: types.SortInfoType) => {
+  const { sort } = sortInfoquery;
+  const limit = parseInt(sortInfoquery.limit, 10);
+  if (!(sort && limit)) {
+    throw new Error('300');
+  }
   let ordering = '';
   switch (sort) {
     case 'popular':
@@ -261,12 +270,16 @@ export const sortInfo = async (sort: string, limit: number) => {
 };
 
 export const searchInfo = async (
-  query: string,
-  sort: string,
-  page: number,
-  limit: number,
-  category: string | null,
+  searchInfoType: types.SearchBookInfoQuery,
 ) => {
+  const {
+    query, sort, category,
+  } = searchInfoType;
+  const page = parseInt(searchInfoType.page, 10);
+  const limit = parseInt(searchInfoType.limit, 10);
+  if (!(query && page && limit)) {
+    throw new Error('300');
+  }
   let ordering = '';
   switch (sort) {
     case 'title':
@@ -356,7 +369,11 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getInfo = async (id: number) => {
+export const getInfo = async (idInfo: string) => {
+  const id = parseInt(idInfo, 10);
+  if (Number.isNaN(id)) {
+    throw new Error('300');
+  }
   const [bookSpec] = (await executeQuery(
     `
     SELECT
