@@ -6,21 +6,21 @@ import { queriedReservationInfo, reservationInfo } from './reservations.type';
 export const ok = 'ok';
 
 // constants for create
-export const invalidInfoId = 'bookInfoId가 유효하지 않음';
-export const atPenalty = '대출 제한 중';
-export const notLended = '대출 가능';
-export const alreadyReserved = '이미 예약 중';
-export const alreadyLended = '이미 대출 중';
-export const moreThanTwoReservations = '두 개 이상 예약 중';
+export const invalidInfoId = '501';
+export const atPenalty = '502';
+export const notLended = '503';
+export const alreadyReserved = '504';
+export const alreadyLended = '505';
+export const moreThanTwoReservations = '506';
 
 // constants for cancel
-export const notMatchingUser = '해당 유저 아님';
-export const reservationNotExist = '예약 ID 존재하지 않음';
-export const notReserved = '예약 상태가 아님';
+export const notMatchingUser = '507';
+export const reservationNotExist = '508';
+export const notReserved = '509';
 
 // constants for cancel
-export const invalidBookInfoId = '해당하는 book info id 가 없음';
-export const availableLoan = '대출 가능한 책';
+export const invalidBookInfoId = '510';
+export const availableLoan = '511';
 
 export const create = async (userId: number, bookInfoId: number) => {
   let message = ok;
@@ -33,7 +33,7 @@ export const create = async (userId: number, bookInfoId: number) => {
     WHERE id = ?;
   `, [bookInfoId]);
   if (!bookInfo.length) {
-    return invalidInfoId;
+    throw new Error(invalidInfoId);
   }
   conn.beginTransaction();
   try {
@@ -253,10 +253,10 @@ export const userCancel = async (userId: number, reservationId: number): Promise
     WHERE id = ?
   `, [reservationId]);
   if (!reservations.length) {
-    return reservationNotExist;
+    throw new Error(reservationNotExist);
   }
   if (reservations[0].userId !== userId) {
-    return notMatchingUser;
+    throw new Error(notMatchingUser);
   }
   return cancel(reservationId);
 };
@@ -268,7 +268,7 @@ export const count = async (bookInfoId: number) => {
     WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count === 0) {
-    return invalidBookInfoId;
+    throw new Error(invalidBookInfoId);
   }
   const borrowedBookInfo = await executeQuery(`
     SELECT count(*) as count
@@ -278,7 +278,7 @@ export const count = async (bookInfoId: number) => {
     WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
-    return availableLoan;
+    throw new Error(availableLoan);
   }
   logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
