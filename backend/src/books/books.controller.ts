@@ -12,28 +12,21 @@ export const createBook = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const {
-    isbn, categoryId, donator, callSign,
-  } = req.body;
-  if (!(isbn && categoryId && donator && callSign)) {
-    res.status(status.BAD_REQUEST).send({ errorCode: 300 });
-  } else {
-    try {
-      return res
-        .status(status.OK)
-        .send(await BooksService.createBook(req.body));
-    } catch (error: any) {
-      const errorCode = parseInt(error.message, 10);
-      if (
-        errorCode >= 300 && errorCode < 400
-      ) {
-        next(new ErrorResponse(errorCode, status.BAD_REQUEST));
-      } else if (error.message === 'DB error') {
-        next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
-      }
-      logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+  try {
+    return res
+      .status(status.OK)
+      .send(await BooksService.createBook(req.body));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (
+      errorCode >= 300 && errorCode < 400
+    ) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
     }
+    logger.error(error.message);
+    next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
 };

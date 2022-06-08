@@ -77,6 +77,12 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
+  const {
+    isbn, categoryId, donator, callSign,
+  } = book;
+  if (!(isbn && categoryId && donator && callSign)) {
+    throw new Error('300');
+  }
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
