@@ -18,7 +18,7 @@ export const notMatchingUser = '507';
 export const reservationNotExist = '508';
 export const notReserved = '509';
 
-// constants for cancel
+// constants for count
 export const invalidBookInfoId = '510';
 export const availableLoan = '511';
 

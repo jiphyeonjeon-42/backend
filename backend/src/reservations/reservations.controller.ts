@@ -115,7 +115,7 @@ export const count: RequestHandler = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const bookInfoId = parseInt(req.query.bookInfo as string, 10);
+  const bookInfoId = parseInt(req.query['book-info'] as any, 10);
   if (Number.isNaN(bookInfoId)) {
     next(new ErrorResponse(500, status.BAD_REQUEST));
   }
