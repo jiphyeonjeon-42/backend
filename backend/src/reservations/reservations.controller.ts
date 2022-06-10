@@ -1,37 +1,37 @@
-import { Request, RequestHandler, Response } from 'express';
+import {
+  NextFunction, Request, RequestHandler, Response,
+} from 'express';
 import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
+import ErrorResponse from '../errorResponse';
+import { logger } from '../utils/logger';
 
-export const create: RequestHandler = async (req: Request, res: Response) => {
+export const create: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+    next(new ErrorResponse(500, status.BAD_REQUEST));
   }
-  const result = await reservationsService.create(id, req.body.bookInfoId);
-  switch (result) {
-    case reservationsService.ok:
-      res.status(status.OK);
-      break;
-    case reservationsService.invalidInfoId:
-      res.status(status.BAD_REQUEST).json({ errorCode: 0 });
-      break;
-    case reservationsService.notLended:
-      res.status(status.BAD_REQUEST).json({ errorCode: 1 });
-      break;
-    case reservationsService.alreadyReserved:
-      res.status(status.BAD_REQUEST).json({ errorCode: 2 });
-      break;
-    case reservationsService.moreThanTwoReservations:
-      res.status(status.BAD_REQUEST).json({ errorCode: 3 });
-      break;
-    case reservationsService.alreadyLended:
-      res.status(status.BAD_REQUEST).json({ errorCode: 4 });
-      break;
-    default:
-      console.log(result);
-      res.status(status.INTERNAL_SERVER_ERROR);
+  try {
+    return res
+      .status(status.OK)
+      .json(await reservationsService.create(id, req.body.bookInfoId));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (errorCode >= 500 && errorCode < 600) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+    }
   }
+  return 0;
 };
 
 const filterCheck = (argument: string) => {
@@ -46,72 +46,121 @@ const filterCheck = (argument: string) => {
   }
 };
 
-export const search: RequestHandler = async (req: Request, res: Response) => {
+export const search: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const info = req.query;
   const query = info.query as string ? info.query as string : '';
   const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) - 1 : 0;
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
   if (!filterCheck(filter)) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
-  } else {
-    const result = await reservationsService
-      .search(query, page, limit, filter);
-    res.status(200).json(result);
+    next(new ErrorResponse(500, status.BAD_REQUEST));
   }
+  try {
+    return res
+      .status(status.OK)
+      .json(await reservationsService.search(query, page, limit, filter));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (errorCode >= 500 && errorCode < 600) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+    }
+  }
+  return 0;
 };
 
-export const cancel: RequestHandler = async (req: Request, res: Response) => {
+export const cancel: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { role, id } = req.user as any;
   const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
-    return;
+    next(new ErrorResponse(500, status.BAD_REQUEST));
   }
-  let result = '';
-  if (role === 3) {
-    result = await reservationsService.cancel(reservationId);
-  } else {
-    result = await reservationsService.userCancel(id, reservationId);
+  try {
+    if (role === 3) {
+      return res
+        .status(status.OK)
+        .json(await reservationsService.cancel(reservationId));
+    }
+    return res
+      .status(status.OK)
+      .json(await reservationsService.userCancel(id, reservationId));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (errorCode >= 500 && errorCode < 600) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+    }
   }
-  switch (result) {
-    case (reservationsService.ok):
-      res.status(status.OK);
-      break;
-    case (reservationsService.notMatchingUser):
-      res.status(status.BAD_REQUEST).json({ errorCode: 1 });
-      break;
-    case (reservationsService.reservationNotExist):
-      res.status(status.BAD_REQUEST).json({ errorCode: 2 });
-      break;
-    case (reservationsService.notReserved):
-      res.status(status.BAD_REQUEST).json({ errorCode: 3 });
-      break;
-    default:
-  }
+  return 0;
 };
 
-export const count: RequestHandler = async (req: Request, res: Response) => {
+export const count: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const bookInfoId = parseInt(req.query.bookInfo as string, 10);
   if (Number.isNaN(bookInfoId)) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+    next(new ErrorResponse(500, status.BAD_REQUEST));
   }
-  const result = await reservationsService.count(bookInfoId);
-  if (result === reservationsService.invalidBookInfoId) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
-  } else if (result === reservationsService.availableLoan) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 1 });
-  } else {
-    res.status(status.OK).json(result);
+  try {
+    return res
+      .status(status.OK)
+      .json(await reservationsService.count(bookInfoId));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (errorCode >= 500 && errorCode < 600) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+    }
   }
+  return 0;
 };
 
-export const userReservations: RequestHandler = async (req: Request, res: Response) => {
+export const userReservations: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const info = req.query;
   const userId = parseInt(info.id as string, 10);
   if (Number.isNaN(userId)) {
-    res.status(status.BAD_REQUEST).json({ errorCode: 0 });
+    next(new ErrorResponse(500, status.BAD_REQUEST));
   }
-  const result = await reservationsService.userReservations(userId);
-  res.status(status.OK).json(result);
+  try {
+    return res
+      .status(status.OK)
+      .json(await reservationsService.userReservations(userId));
+  } catch (error: any) {
+    const errorCode = parseInt(error.message, 10);
+    if (errorCode >= 500 && errorCode < 600) {
+      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+    }
+  }
+  return 0;
 };
