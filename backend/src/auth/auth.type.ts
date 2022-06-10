@@ -1,17 +1,3 @@
-export class FtError {
-    public statusCode: number;
-
-    public message: string;
-
-    public errCode: number;
-
-    constructor(statusCode: number, errCode: number, message: string) {
-      this.statusCode = statusCode;
-      this.errCode = errCode;
-      this.message = message;
-    }
-}
-
 export const enum role {
     user = 0,
     cadet,
@@ -26,17 +12,17 @@ export const roleSet = {
 };
 
 export const enum errCode {
-    unknownError = 0,
-    queryExecutionFailed = 1,
-    noAuthorization = 100,
-    noUser = 101,
-    noToken = 102,
-    noInput = 103,
-    wrongPassword = 104,
-    alreadyAuthenticated = 105,
-    noId = 107,
-    expirationToken = 108,
-    tokenNotValid = 109,
+    unknownError = '0',
+    queryExecutionFailed = '1',
+    noAuthorization = '100',
+    noUser = '101',
+    noToken = '102',
+    noInput = '103',
+    wrongPassword = '104',
+    alreadyAuthenticated = '105',
+    noId = '107',
+    expirationToken = '108',
+    tokenNotValid = '109',
 }
 
 export const enum errMsg {
