@@ -1,0 +1,9 @@
+insert into jiphyeonjeon.user values ('1','example_role2_14@gmail.com','1234','jwoo', '80460', 'U01H0NYMA8N', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('2','example_role2_15@gmail.com','1234','sujikim', '81805', 'U01H0NV06J2', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('3','example_role2_16@gmail.com','1234','kyungsle', '100016', 'U02L3CLE9PY', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('4','example_role2_17@gmail.com','1234','tkim', '81394', 'U01H0NWN9QE', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('5','example_role2_18@gmail.com','1234','seunam', '106931', 'U035F8XS1FG', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('6','example_role2_19@gmail.com','1234','jimin', '99994', 'U02LNNDRC9F', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('7','example_role2_20@gmail.com','1234','jolim', '74906', 'U01BA6HPR9T', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('8','example_role2_21@gmail.com','1234','seongyle', '103894', 'U035MTLHXEF', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('9','example_role2_22@gmail.com','1234','chulee', '99900', 'U02KVE6JD2T', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
