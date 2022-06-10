@@ -39,7 +39,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     if (user.items.length === 0) throw new FtError(410, errCode.noUser, errMsg.noUser);
     const result = {
       id: user.items[0].id,
-      intra: user.items[0].nickName.length === 0 ? user.items[0].email : user.items[0].nickName,
+      intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
       librarian: user.items[0].role === 2,
     };
     res.status(200).json(result);

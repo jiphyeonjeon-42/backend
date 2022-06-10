@@ -2,7 +2,7 @@ export interface User {
   id: number,
   email: string,
   password: string,
-  nickName: string,
+  nickname: string,
   intraId: number;
   slack?: string,
   penaltyEndDay?: Date,
