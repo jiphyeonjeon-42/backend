@@ -2,17 +2,18 @@ import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { logger } from '../utils/logger';
 import * as Models from '../users/users.model';
 
-export const noUserId = '유저 없음';
-export const noPermission = '권한 없음';
-export const lendingOverload = '2권 이상 대출';
-export const lendingOverdue = '연체 중';
-export const onLending = '대출 중';
-export const onReservation = '예약된 책';
-export const lostBook = '분실';
-export const damagedBook = '파손';
-export const ok = 'ok';
-export const nonexistentLending = '존재하지 않는 대출';
-export const alreadyReturned = '이미 반납 처리된 대출';
+export const badRequest = '400';
+export const noUserId = '401';
+export const noPermission = '402';
+export const lendingOverload = '403';
+export const lendingOverdue = '404';
+export const onLending = '405';
+export const onReservation = '406';
+export const lostBook = '407';
+export const damagedBook = '408';
+export const ok = '409';
+export const nonexistentLending = '410';
+export const alreadyReturned = '411';
 
 export const create = async (
   userId: number,
