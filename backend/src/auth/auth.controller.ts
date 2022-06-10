@@ -27,8 +27,9 @@ export const getToken = async (req: Request, res: Response): Promise<void> => {
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+    if (e instanceof FtError) {
+      res.status(e.statusCode).send(`<script type="text/javascript">alert("회원가입 후 이용 바랍니다."); window.location="${config.client.clientURL}"</script>`);
+    } else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
   }
 };
 
