@@ -6,7 +6,7 @@ import * as types from './users.type';
 export const getLending = async () => {
   const items = await executeQuery(`
     SELECT
-    l.userId as userId, bi.title as title, DATE_ADD(l.updatedAt, INTERVAL 14 DAY) as duedate
+    l.userId as userId, bi.title as title, DATE_ADD(l.createdAt, INTERVAL 14 DAY) as duedate
     FROM lending as l
     LEFT JOIN book as b
     on l.bookId = b.id
