@@ -8,8 +8,8 @@ export interface User {
   id: number,
   email: string,
   password: string,
-  nickName?: string,
-  intraId?: number;
+  nickname: string,
+  intraId: number,
   slack?: string,
   penaltyEndDate?: Date,
   overDueDay: number,
