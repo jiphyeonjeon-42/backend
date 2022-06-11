@@ -7,7 +7,7 @@ export interface Meta {
 }
 
 export interface searchQuery {
-  nickName: string,
+  nickname: string,
   page?: string,
   limit?: string,
 }

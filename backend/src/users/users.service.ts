@@ -59,7 +59,7 @@ export const userReservations = async (userId: number) => {
   return reservationList;
 };
 
-export const searchUserByNickName = async (nickName: string, limit: number, page: number) => {
+export const searchUserByNickName = async (nickname: string, limit: number, page: number) => {
   let items = (await executeQuery(`
     SELECT 
     *
@@ -67,7 +67,7 @@ export const searchUserByNickName = async (nickName: string, limit: number, page
     WHERE nickName LIKE ?
     LIMIT ?
     OFFSET ?;
-  `, [`%${nickName}%`, limit, limit * page])) as models.User[];
+  `, [`%${nickname}%`, limit, limit * page])) as models.User[];
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
   SELECT FOUND_ROWS() as totalItems;
