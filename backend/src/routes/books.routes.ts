@@ -5,6 +5,7 @@ import {
   search,
   getInfoId,
   createBook,
+  createBookInfo,
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -327,7 +328,7 @@ router
    *                          description: 책의 대출가능여부
    *                          type: boolean
    *                          example: 1
-   *        '400':
+   *        '400_case1':
    *          description: id가 숫자가 아니다.
    *          content:
    *            application/json:
@@ -335,7 +336,7 @@ router
    *                type: json
    *                description: error decription
    *                example: { errorCode: 300 }
-   *        '400':
+   *        '400_case2':
    *          description: 유효하지않은 infoId 값.
    *          content:
    *            application/json:
@@ -518,3 +519,56 @@ router/**
 *                 example: { errorCode: 302 }
 */
   .post('/create', authValidate(roleSet.librarian), createBook);
+
+router
+  /**
+   * @openapi
+   * /api/books/create:
+   *    get:
+   *      description: 책 생성을 위한 정보를 반환합니다.
+   *      tags:
+   *      - books
+   *      parameters:
+   *      - name: isbn
+   *        in: query
+   *        description: isbn번호
+   *        required: true
+   *        schema:
+   *          type: string
+   *          example: 9791191114225
+   *      responses:
+   *         '200_case1':
+   *            description: 네이버 ISBN 검색결과도 없고, 집현전 DB에도 비슷한게 없다.
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: string
+   *                 description: 네이버 ISBN 검색결과가 없고, 집현전 DB에도 없을 때
+   *                 example: { "isbnInNaver": [], "isbnInBookInfo": [], "sameTitleOrAuthor": [] }
+   *         '200_case2':
+   *            description: 네이버 ISBN 검색결과있고, 집현전 DB에도 비슷한게 없다.
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: string
+   *                 description: 네이버 ISBN 검색결과가 있고, 집현전 DB에도 없을 때
+   *                 example: {"isbnInNaver": [{"title": "작별인사 (김영하 장편소설)","link": "http://book.naver.com/bookdb/book_detail.php?bid=22353804","image": "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608","author": "김영하","price": "14000","discount": "12600","publisher": "복복서가","pubdate": "20220502","isbn": "1191114228 9791191114225","description": "누구도 도와줄 수 없는 상황, 혼자 헤쳐나가야 한다\n지켜야 할 약속, 붙잡고 싶은 온기\n\n김영하가 『살인자의 기억법』 이후 9 년 만에 내놓는 장편소설 『작별인사』는 그리 멀지 않은 미래를 배경으로, 별안간 삶이 송두리째 뒤흔들린 한 소년의 여정을 좇는다. 유명한 IT 기업의 연구원인 아버지와 쾌적하고... " }], "isbnInBookInfo": [], "sameTitleOrAuthor": []}
+   *         '200_case3':
+   *            description: 네이버 ISBN 검색결과있고, 집현전 DB에 일치하는 ISBN이 있다.
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: JSON
+   *                 description: 네이버 ISBN 검색결과있고, 집현전 DB에 일치하는 ISBN이 있다
+   *                 example: {"isbnInNaver": [ {"title": "모두의 알고리즘 with 파이썬 (컴퓨팅 사고를 위한 기초 알고리즘)","link": "http://book.naver.com/bookdb/book_detail.php?bid=12057147","image": "https://bookthumb-phinf.pstatic.net/cover/120/571/12057147.jpg?type=m1&udate=20210508","author": "이승찬","price": "16000","discount": "14400","publisher": "길벗","pubdate": "20170518","isbn": "1160501726 9791160501728","description": "남녀노소 누구나 즐겁게 프로그래밍을 시작하세요!\n남녀노소 누구나 즐겁게 프로그래밍을 시작하세요!\n4차 산업혁명이 가져올 일자리와 삶의 변화 그 중심에 있는 알고리즘을 배워 보자! 인공지능이 일자리를 대체하는 시대가 되면서, 코딩 교육과 컴퓨팅 사고의 중요성이 나날이 커지고 있다. 그리고 그... "}], "isbnInBookInfo": [ {"callSign": "I9.17.v1.c1","title": "모두의 알고리즘 with 파이썬","author": "이승찬","publisher": "길벗","pubdate": "2017-05-17T15:00:00.000Z","isbn": "9791160501728","category": "자료구조/알고리즘"}, {"callSign": "I9.17.v1.c2","title": "모두의 알고리즘 with 파이썬","author": "이승찬","publisher": "길벗","pubdate": "2017-05-17T15:00:00.000Z","isbn": "9791160501728","category": "자료구조/알고리즘" }], "sameTitleOrAuthor": [ {"id": 180, "callSign": "I9.17.v1.c1","title": "모두의 알고리즘 with 파이썬", "author": "이승찬", "publisher": "길벗", "isbn": "9791160501728","category": "자료구조/알고리즘"},{"id": 181,"callSign": "I9.17.v1.c2","title": "모두의 알고리즘 with 파이썬","author": "이승찬","publisher": "길벗","isbn": "9791160501728","category": "자료구조/알고리즘"}]}
+   *         '200_case4':
+   *            description: 네이버 ISBN 검색결과있고, 집현전 DB에 ISBN가 같은게 없고, (같은 저자의 책 or 같은 제목의 책)이 있을 때
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: JSON
+   *                 description: 네이버 ISBN 검색결과가 없고, 집현전 DB에도 없을 때
+   *                 example: {"isbnInNaver": [ { "title": "모두의 파이썬 (20일 만에 배우는 프로그래밍 기초)", "link": "http://book.naver.com/bookdb/book_detail.php?bid=10541921",  "image": "https://bookthumb-phinf.pstatic.net/cover/105/419/10541921.jpg?type=m1&udate=20181102", "author": "이승찬", "price": "12000", "discount": "", "publisher": "길벗", "pubdate": "20160509", "isbn": "1186978899 9791186978894", "description": "즐겁게 시작하는 나의 첫 프로그래밍!\n\n프로그래밍을 한 번도 해본 적이 없어도 괜찮다. 파이썬이 무엇인지 몰라도 상관 없다. 《모두의 파이썬》은 어려운 개념과 복잡한 이론 설명은 최대한 줄이고, 초보자가 프로그래밍을 쉽게 배울 수 있도록 짧고 간단한 예제로 내용을 구성했다. \n\n처음부터 모든 것을 다... " }  ], "isbnInBookInfo": [], "sameTitleOrAuthor": [ { "id": 180,"callSign": "I9.17.v1.c1", "title": "모두의 알고리즘 with 파이썬", "author": "이승찬", "publisher": "길벗", "isbn": "9791160501728", "category": "자료구조/알고리즘" }, {"id": 181, "callSign": "I9.17.v1.c2", "title": "모두의 알고리즘 with 파이썬", "author": "이승찬", "publisher": "길벗", "isbn": "9791160501728", "category": "자료구조/알고리즘"}]}
+   *
+   */
+  .get('/create', authValidate(roleSet.librarian), createBookInfo);
