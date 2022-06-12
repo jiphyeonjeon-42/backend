@@ -451,73 +451,89 @@ router
    */
   .get('/search', authValidate(roleSet.librarian), search);
 
-router/**
-* @openapi
-* /api/books/create:
-*    post:
-*      description: 책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.
-*      tags:
-*      - books
-*      requestBody:
-*        content:
-*          application/json:
-*            schema:
-*              type: object
-*              properties:
-*                isbn:
-*                  type: string
-*                  example: 9788065960874
-*                categoryId:
-*                  type: integer
-*                  example: 1
-*                donator:
-*                  type: string
-*                  example: seongyle
-*                callSign:
-*                  type: string
-*                  example: e7.79.v2.c3
-*      responses:
-*         '200':
-*            description: 책 정보 정상적으로 insert됨.
-*            content:
-*             application/json:
-*               schema:
-*                 type: string
-*                 description: insert success
-*                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
-*         '400_case1':
-*            description: 클라이언트 오류.
-*            content:
-*             application/json:
-*              schema:
-*                type: json
-*                description: error decription
-*                example: { errorCode: 300 }
-*         '400_case2':
-*            description: DB오류
-*            content:
-*             application/json:
-*               schema:
-*                 type: json
-*                 description: slackId 중복
-*                 example: { errorCode: 301 }
-*         '400_case3':
-*            description: 서버오류
-*            content:
-*             application/json:
-*               schema:
-*                 type: json
-*                 description: naver open API에서 ISBN 검색결과가 없음.
-*                 example: { errorCode: 302 }
-*         '400_case4':
-*            description: naver openapi에서 못 찾음
-*            content:
-*             application/json:
-*               schema:
-*                 type: json
-*                 description: naver open API에서 ISBN 검색 자체 실패
-*                 example: { errorCode: 302 }
-*/
+router
+  /**
+   * @openapi
+   * /api/books/create:
+   *    post:
+   *      description: 책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.
+   *      tags:
+   *      - books
+   *      requestBody:
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                title:
+   *                  type: string
+   *                  example: "작별인사 (김영하 장편소설)"
+   *                isbn:
+   *                  type: string
+   *                  example: 9788065960874
+   *                author:
+   *                  type: string
+   *                  example: "김영하"
+   *                publisher:
+   *                  type: string
+   *                  example: "복복서가"
+   *                image:
+   *                  type: string
+   *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+   *                categoryId:
+   *                  type: integer
+   *                  example: 1
+   *                pubdate:
+   *                  type: string
+   *                  example: "20220502"
+   *                donator:
+   *                  type: string
+   *                  example: seongyle
+   *                callSign:
+   *                  type: string
+   *                  example: e7.79.v2.c3
+   *      responses:
+   *         '200':
+   *            description: 책 정보 정상적으로 insert됨.
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: string
+   *                 description: insert success
+   *                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
+   *         '400_case1':
+   *            description: 클라이언트 오류.
+   *            content:
+   *             application/json:
+   *              schema:
+   *                type: json
+   *                description: error decription
+   *                example: { errorCode: 300 }
+   *         '400_case2':
+   *            description: DB오류
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: json
+   *                 description: slackId 중복
+   *                 example: { errorCode: 301 }
+   *         '400_case3':
+   *            description: 서버오류
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: json
+   *                 description: naver open API에서 ISBN 검색결과가 없음.
+   *                 example: { errorCode: 302 }
+   *         '400_case4':
+   *            description: naver openapi에서 못 찾음
+   *            content:
+   *             application/json:
+   *               schema:
+   *                 type: json
+   *                 description: naver open API에서 ISBN 검색 자체 실패
+   *                 example: { errorCode: 302 }
+   */
   .post('/create', authValidate(roleSet.librarian), createBook);
 
 router
