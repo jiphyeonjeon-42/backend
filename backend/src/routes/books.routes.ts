@@ -328,14 +328,6 @@ router
    *                          type: boolean
    *                          example: 1
    *        '400':
-   *          description: id가 숫자가 아니다.
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: json
-   *                description: error decription
-   *                example: { errorCode: 300 }
-   *        '400':
    *          description: 유효하지않은 infoId 값.
    *          content:
    *            application/json:

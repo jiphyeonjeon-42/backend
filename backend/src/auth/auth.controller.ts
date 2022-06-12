@@ -8,7 +8,6 @@ import * as models from '../users/users.model';
 import {
   FtError, role, errCode, errMsg,
 } from './auth.type';
-import slack from './auth.slack';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
@@ -39,7 +38,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     if (user.items.length === 0) throw new FtError(410, errCode.noUser, errMsg.noUser);
     const result = {
       id: user.items[0].id,
-      intra: user.items[0].nickName.length === 0 ? user.items[0].email : user.items[0].nickName,
+      intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
       librarian: user.items[0].role === 2,
     };
     res.status(200).json(result);
@@ -100,16 +99,6 @@ export const intraAuthentication = async (req: Request, res: Response) : Promise
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(200).send();
-  } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
-  }
-};
-
-export const updateSlackList = async (req: Request, res: Response) : Promise<void> => {
-  try {
-    await slack.updateSlackID();
-    res.status(204).send();
   } catch (e: any) {
     if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
     else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });

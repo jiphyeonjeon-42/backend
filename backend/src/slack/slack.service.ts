@@ -1,0 +1,59 @@
+import { WebClient } from '@slack/web-api';
+import { ResultSetHeader } from 'mysql2';
+import { executeQuery } from '../mysql';
+import * as models from '../users/users.model';
+
+export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
+  const result : ResultSetHeader = await executeQuery(`
+    UPDATE USER
+    SET slack = ?
+    WHERE id = ?
+  `, [slackId, id]);
+  return result.affectedRows;
+};
+
+export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
+  const result : models.User[] = await executeQuery(`
+    SELECT *
+    FROM USER
+    WHERE intraId IS NOT NULL AND (slack IS NULL OR slack = '')
+  `);
+  return result;
+};
+
+// Read a token from the environment variables
+const token = process.env.BOT_USER_OAUTH_ACCESS_TOKEN;
+
+// Initialize
+const web = new WebClient(token);
+const userMap = new Map();
+
+export const updateSlackId = async (): Promise<void> => {
+  let searchUsers: any[] = [];
+  let cursor;
+  const authenticatedUser : models.User[] = await searchAuthenticatedUser();
+  if (authenticatedUser.length === 0) return;
+  while (cursor === undefined || cursor !== '') {
+    const response = await web.users.list({ cursor, limit: 1000 }) as any;
+    searchUsers = searchUsers.concat(response.members);
+    cursor = response.response_metadata.next_cursor;
+  }
+  searchUsers.forEach((user) => {
+    const { display_name: displayName } = user.profile;
+    const slackUserId = user.id;
+    userMap.set(displayName, slackUserId);
+  });
+  authenticatedUser.forEach((user) => {
+    if (userMap.has(user.nickname)) updateSlackIdUser(user.id, userMap.get(user.nickname));
+  });
+};
+
+export const findUser = (intraName: any) => (userMap.get(intraName));
+
+export const publishMessage = async (slackId: string, msg: string) => {
+  await web.chat.postMessage({
+    token,
+    channel: slackId,
+    text: msg,
+  });
+};
