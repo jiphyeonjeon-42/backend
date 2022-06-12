@@ -82,9 +82,9 @@ const searchByIsbn = async (isbn: string) => {
 
 export const createBook = async (book: types.CreateBookInfo) => {
   const {
-    isbn, categoryId, callSign,
+    title, author, publisher, isbn, categoryId, callSign, pubdate
   } = book;
-  if (!(isbn && categoryId && callSign)) {
+  if (!(title && author && categoryId && callSign && pubdate)) {
     throw new Error('300');
   }
   const isbnInBookInfo = (await executeQuery(
@@ -111,50 +111,26 @@ export const createBook = async (book: types.CreateBookInfo) => {
     throw new Error('301');
   }
 
-  const isbnData : any = await searchByIsbn(book.isbn);
-  if (isbnData === undefined) {
-    throw new Error('302');
-  }
-  const {
-    title, author, publisher, pubdate,
-  } = isbnData;
-  const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
-  // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
   if (isbnInBookInfo.length === 0) {
     await executeQuery(
       `
-    INSERT INTO book_info(
-      title,
-      author,
-      publisher,
-      isbn,
-      image,
-      categoryId,
-      publishedAt
-    ) VALUES (
-      ?,
-      ?,
-      ?,
-      ?,
-      ?,
-      (
-        SELECT
-          id
-        FROM category
-        WHERE name = ?
-      ),
-      ?
-    )`,
+    INSERT INTO book_info (
+      title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?
+      )
+      `,
       [
-        title,
-        author,
-        publisher,
-        book.isbn,
-        image,
+        book.title,
+        book.author,
+        book.publisher,
+        book.isbn ? book.isbn : "",
+        book.image,
         category,
-        pubdate,
+        book.categoryId,
+        book.pubdate,
       ],
     );
   }
@@ -179,16 +155,11 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM book_info
-        WHERE isbn = ?
+        WHERE (isbn = ? or title = ?) order by isbn LIMIT 1
       )
     )
   `,
-    [
-      book.donator,
-      book.donator,
-      book.callSign,
-      book.isbn,
-    ],
+    [book.donator, book.donator, book.callSign, book.isbn, book.title]
   );
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
