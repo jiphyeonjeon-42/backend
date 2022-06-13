@@ -62,7 +62,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
     if (!pwSchema.validate(String(password))) throw new Error(errorCode.invalidatePassword);
-    createUser(String(email), await bcrypt.hash(String(password), 10));
+    await createUser(String(email), await bcrypt.hash(String(password), 10));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
