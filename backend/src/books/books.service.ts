@@ -5,10 +5,14 @@ import * as models from './books.model';
 import * as types from './books.type';
 
 export const search = async (
-  query: string,
-  page: number,
-  limit: number,
+  searchInfo: types.SearchType,
 ) => {
+  const { query } = searchInfo;
+  const page = parseInt(searchInfo.page, 10);
+  const limit = parseInt(searchInfo.limit, 10);
+  if (!(query && page && limit)) {
+    throw new Error('300');
+  }
   const bookList = (await executeQuery(
     `
     SELECT
@@ -68,7 +72,7 @@ const searchByIsbn = async (isbn: string) => {
     )
     .then((res) => {
       // eslint-disable-next-line prefer-destructuring
-      book = res.data.items[0];
+      book = res.data.items;
     })
     .catch(() => {
       throw new Error('303');
@@ -77,6 +81,12 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
+  const {
+    title, author, publisher, isbn, categoryId, callSign, pubdate
+  } = book;
+  if (!(title && author && categoryId && callSign && pubdate)) {
+    throw new Error('300');
+  }
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
@@ -101,50 +111,26 @@ export const createBook = async (book: types.CreateBookInfo) => {
     throw new Error('301');
   }
 
-  const isbnData : any = await searchByIsbn(book.isbn);
-  if (isbnData === undefined) {
-    throw new Error('302');
-  }
-  const {
-    title, author, publisher, pubdate,
-  } = isbnData;
-  const image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
-  // 이미지는 네이버 api 보다 교보문고가 화질이 더 좋음.
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
   if (isbnInBookInfo.length === 0) {
     await executeQuery(
       `
-    INSERT INTO book_info(
-      title,
-      author,
-      publisher,
-      isbn,
-      image,
-      categoryId,
-      publishedAt
-    ) VALUES (
-      ?,
-      ?,
-      ?,
-      ?,
-      ?,
-      (
-        SELECT
-          id
-        FROM category
-        WHERE name = ?
-      ),
-      ?
-    )`,
+    INSERT INTO book_info (
+      title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?
+      )
+      `,
       [
-        title,
-        author,
-        publisher,
-        book.isbn,
-        image,
+        book.title,
+        book.author,
+        book.publisher,
+        book.isbn ? book.isbn : "",
+        book.image,
         category,
-        pubdate,
+        book.categoryId,
+        book.pubdate,
       ],
     );
   }
@@ -169,18 +155,61 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM book_info
-        WHERE isbn = ?
+        WHERE (isbn = ? or title = ?) order by isbn LIMIT 1
       )
     )
   `,
-    [
-      book.donator,
-      book.donator,
-      book.callSign,
-      book.isbn,
-    ],
+    [book.donator, book.donator, book.callSign, book.isbn, book.title]
   );
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
+};
+
+export const createBookInfo = async (isbnQuery: any) => {
+  const { isbn } = isbnQuery;
+  if (!isbn) {
+    throw new Error('2');
+  }
+  const isbnInBookInfo = (await executeQuery(
+    `
+    SELECT
+      book.callSign AS callSign,
+      book_info.title,
+      book_info.author,
+      book_info.publisher,
+      book_info.publishedAt as pubdate,
+      book_info.isbn,
+       (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category    
+    FROM book_info, book 
+    WHERE book_info.id = book.infoId AND isbn = ?
+  `,
+    [isbn],
+  )) as StringRows[];
+  const isbnInNaver: any = await searchByIsbn(isbn);
+  const sameTitleOrAuthor = await executeQuery(
+    `
+    SELECT
+      book.id AS id,
+      book.callSign AS callSign,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category
+    FROM book_info, book 
+    WHERE book_info.id = book.infoId AND
+    ( book_info.title like ? OR book_info.author like ?)
+  `,
+    [`%${isbnInNaver[0].title}%`, `%${isbnInNaver[0].author}%`],
+  );
+  return { isbnInNaver, isbnInBookInfo, sameTitleOrAuthor };
 };
 
 export const deleteBook = async (book: models.Book): Promise<boolean> => {
@@ -214,7 +243,12 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
   return true;
 };
 
-export const sortInfo = async (sort: string, limit: number) => {
+export const sortInfo = async (sortInfoquery: types.SortInfoType) => {
+  const { sort } = sortInfoquery;
+  const limit = parseInt(sortInfoquery.limit, 10);
+  if (!(sort && limit)) {
+    throw new Error('300');
+  }
   let ordering = '';
   switch (sort) {
     case 'popular':
@@ -255,12 +289,16 @@ export const sortInfo = async (sort: string, limit: number) => {
 };
 
 export const searchInfo = async (
-  query: string,
-  sort: string,
-  page: number,
-  limit: number,
-  category: string | null,
+  searchInfoType: types.SearchBookInfoQuery,
 ) => {
+  const {
+    query, sort, category,
+  } = searchInfoType;
+  const page = parseInt(searchInfoType.page, 10);
+  const limit = parseInt(searchInfoType.limit, 10);
+  if (!(query && page && limit)) {
+    throw new Error('300');
+  }
   let ordering = '';
   switch (sort) {
     case 'title':
@@ -350,7 +388,11 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getInfo = async (id: number) => {
+export const getInfo = async (idInfo: string) => {
+  const id = parseInt(idInfo, 10);
+  if (Number.isNaN(id)) {
+    throw new Error('300');
+  }
   const [bookSpec] = (await executeQuery(
     `
     SELECT
@@ -372,7 +414,9 @@ export const getInfo = async (id: number) => {
   `,
     [id],
   )) as models.BookInfo[];
-  if (bookSpec === undefined) { throw new Error('304'); }
+  if (bookSpec === undefined) {
+    throw new Error('304');
+  }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);
     bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
