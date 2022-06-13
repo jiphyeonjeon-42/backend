@@ -55,7 +55,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
       intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
       librarian: user.items[0].role === 2,
     };
-    res.status(200).json(result);
+    res.status(status.OK).json(result);
   } catch (error: any) {
     if (error instanceof ErrorResponse) next(error);
     const errorNumber = parseInt(error.message, 10);

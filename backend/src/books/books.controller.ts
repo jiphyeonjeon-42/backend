@@ -81,12 +81,15 @@ export const searchBookInfo = async (
     return res
       .status(status.OK)
       .json(await BooksService.searchInfo(
-        query, parseInt(page, 10), parseInt(limit, 10), sort, category));
+        query,
+        parseInt(page, 10),
+        parseInt(limit, 10),
+        sort,
+        category,
+      ));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
@@ -112,9 +115,7 @@ export const getInfoId: RequestHandler = async (
       .json(await BooksService.getInfo(req.params.id));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
@@ -141,9 +142,7 @@ export const sortInfo = async (
       .json(await BooksService.sortInfo(limit, sort));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
@@ -171,9 +170,7 @@ export const search = async (
       .json(await BooksService.search(query, page, limit));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));

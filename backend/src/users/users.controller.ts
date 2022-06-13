@@ -18,7 +18,7 @@ export const search = async (
   next: NextFunction,
 ) => {
   const nickname = String(req.query.nickname) ? String(req.query.nickname) : '';
-  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
+  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) - 1 : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
@@ -62,7 +62,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
     if (!pwSchema.validate(String(password))) throw new Error(errorCode.invalidatePassword);
-    if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
+    createUser(String(email), await bcrypt.hash(String(password), 10));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
@@ -76,7 +76,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
-  res.status(200).send(`${email} created!`);
+  res.status(status.OK).send(`${email} created!`);
 };
 
 export const update = async (

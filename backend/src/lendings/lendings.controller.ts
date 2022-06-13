@@ -104,7 +104,7 @@ export const returnBook: RequestHandler = async (
   next: NextFunction,
 ) => {
   const { id } = req.user as any;
-  if (!req.body.lendingId || req.body.condition) {
+  if (!req.body.lendingId || !req.body.condition) {
     next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
