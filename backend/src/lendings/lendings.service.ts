@@ -1,6 +1,6 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { logger } from '../utils/logger';
-import * as Models from '../users/users.model';
+import { Meta } from '../users/users.type';
 
 export const badRequest = '400';
 export const noUserId = '401';
@@ -239,7 +239,7 @@ export const search = async (
     FROM lending
     ${filterQuery}
   `);
-  const meta: Models.Meta = {
+  const meta: Meta = {
     totalItems: totalItems.length,
     itemCount: items.length,
     itemsPerPage: limit,

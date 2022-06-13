@@ -26,7 +26,7 @@ const updateSlackID = async () : Promise<void> => {
     userMap.set(real_name, slackUserId);
   });
   authenticatedUser.forEach((user) => {
-    if (userMap.has(user.nickName)) updateSlackIDUser(user.id, userMap.get(user.nickName));
+    if (userMap.has(user.nickname)) updateSlackIDUser(user.id, userMap.get(user.nickname));
   });
 };
 
