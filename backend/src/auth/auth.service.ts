@@ -3,7 +3,11 @@ import { executeQuery } from '../mysql';
 import { role } from './auth.type';
 import * as models from '../users/users.model';
 
-export const updateAuthenticationUser = async (id: number, intraId: number, nickName: string) : Promise<number> => {
+export const updateAuthenticationUser = async (
+  id: number,
+  intraId: number,
+  nickName: string,
+) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
     UPDATE USER
     SET intraId = ?, nickName = ?, role = ?
