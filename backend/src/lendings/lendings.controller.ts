@@ -101,7 +101,8 @@ export const lendingId: RequestHandler = async (
 export const returnBook: RequestHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction) => {
+  next: NextFunction,
+) => {
   const { id } = req.user as any;
   if (!req.body.lendingId || req.body.condition) {
     next(new ErrorResponse(parseInt(badRequest, 10), status.BAD_REQUEST));

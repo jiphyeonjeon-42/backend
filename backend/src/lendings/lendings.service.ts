@@ -20,8 +20,7 @@ export const create = async (
   bookId: number,
   librarianId: number,
   condition: string,
-): Promise<string> => {
-  let message = ok;
+): Promise<void> => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
@@ -99,20 +98,18 @@ export const create = async (
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
-      message = e.message;
+      throw e;
     }
   } finally {
     conn.release();
   }
-  return message;
 };
 
 export const returnBook = async (
   librarianId: number,
   lendingId: number,
   condition: string,
-): Promise<string> => {
-  let message = ok;
+) => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
@@ -161,15 +158,14 @@ export const returnBook = async (
     }
 
     await conn.commit();
-  } catch (e) {
+  } catch (error) {
     await conn.rollback();
-    if (e instanceof Error) {
-      message = e.message;
+    if (error instanceof Error) {
+      throw error;
     }
   } finally {
     conn.release();
   }
-  return message;
 };
 
 export const search = async (
