@@ -41,31 +41,9 @@ export const router = Router();
  *                type: object
  *                properties:
  *                  errorCode:
- *                    description: 클라이언트 오류
- *                    type: number
- *                    example: 500
- *        '400_case1':
- *          description: 해당하는 book info id 가 없음
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: error description
- *                    type: number
- *                    example: 510
- *        '400_case2':
- *          description: 대출 가능한 책
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: error description
- *                    type: number
- *                    example: 511
+ *                    description: 여러 가지 경우의 에러를 나타내는 코드
+ *                    type: integer
+ *                    example: 2
  */
 
 /**
@@ -124,7 +102,7 @@ export const router = Router();
  *                  image: https://image.kyobobook.co.kr/images/book/xlarge/959/x9788966260959.jpg
  *                  createdAt: 2021.08.02
  *                  endAt: 2021.09.23
- *        '400':
+ *        '401':
  *          description: 유저 정보가 정확하지 않음
  *          content:
  *            application/json:
@@ -134,7 +112,7 @@ export const router = Router();
  *                  errorCode:
  *                    description: 여러 가지 경우의 에러를 나타내는 코드
  *                    type: integer
- *                    example: 500
+ *                    example: 1
  * */
 
 /**
@@ -178,9 +156,9 @@ export const router = Router();
  *                  errorCode:
  *                    description: 대출되지 않은 책, 재예약의 경우 등 여러 가지 경우의 에러를 나타내는 코드
  *                    type: integer
- *                    example: 500
- *        '400_case1':
- *          description: bookInfoId가 유효하지 않음
+ *                    example: 3
+ *        '401':
+ *          description: 유저 정보가 정확하지 않음
  *          content:
  *            application/json:
  *              schema:
@@ -189,62 +167,7 @@ export const router = Router();
  *                  errorCode:
  *                    description: 여러 가지 경우의 에러를 나타내는 코드
  *                    type: integer
- *                    example: 501
- *        '400_case2':
- *          description: 대출 제한 중
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 502
- *        '400_case3':
- *          description: 대출 가능
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 503
- *        '400_case4':
- *          description: 이미 예약 중
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 504
- *        '400_case5':
- *          description: 이미 대출 중
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 505
- *        '400_case6':
- *          description: 두 개 이상 예약 중
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 506
+ *                    example: 1
  * */
 
 /**
@@ -371,12 +294,9 @@ export const router = Router();
  *          content:
  *            application/json:
  *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 500
+ *                type: string
+ *                description: error decription
+ *                example: query, page, limit, filter 중 하나에 유효하지 않은 value가 들어온 경우
  *        '401':
  *          description: 사서 권한 없는 요청
  * */
@@ -400,49 +320,16 @@ export const router = Router();
  *        '200':
  *          description: 예약 취소처리 완료
  *        '400':
- *          description: dto에러 잘못된 json key 1 존재하지 않는 예약 아이디
+ *          description: 에러코드 0 dto에러 잘못된 json key 1 존재하지 않는 예약 아이디
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
  *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
  *                    type: integer
- *                    example: 500
- *        '400_case1':
- *          description: 해당 유저 아님
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 507
- *        '400_case2':
- *          description: 예약 ID 존재하지 않음
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 508
- *        '400_case3':
- *          description: 예약 상태가 아님
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
- *                    type: integer
- *                    example: 509
+ *        '401':
+ *          description: 알 수 없는 사용자
  * */
 
 router

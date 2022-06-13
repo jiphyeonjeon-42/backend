@@ -2,10 +2,10 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
+import * as errorCode from '../errorCode';
 import ErrorResponse from '../errorResponse';
 import { logger } from '../utils/logger';
 import * as lendingsService from './lendings.service';
-import { badRequest } from './lendings.service';
 
 export const create: RequestHandler = async (
   req: Request,
@@ -14,7 +14,7 @@ export const create: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.userId || !req.body.bookId) {
-    next(new ErrorResponse(parseInt(badRequest, 10), status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     await lendingsService.create(
@@ -24,14 +24,14 @@ export const create: RequestHandler = async (
       req.body.condition,
     );
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 400 && errorCode < 500) {
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 400 && errorNumber < 500) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -54,20 +54,20 @@ export const search: RequestHandler = async (
   const sort = info.sort as string;
   const type = info.type as string ? info.type as string : 'all';
   if (!argumentCheck(sort, type)) {
-    next(new ErrorResponse(parseInt(badRequest, 10), status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     const result = await lendingsService.search(query, page, limit, sort, type);
     res.status(status.OK).json(result);
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 400 && errorCode < 500) {
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 400 && errorNumber < 500) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -80,19 +80,19 @@ export const lendingId: RequestHandler = async (
 ) => {
   const id = parseInt(req.params.id, 10);
   if (Number.isNaN(id)) {
-    next(new ErrorResponse(parseInt(badRequest, 10), status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     await lendingsService.lendingId(id);
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 400 && errorCode < 500) {
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 400 && errorNumber < 500) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -105,7 +105,7 @@ export const returnBook: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.lendingId || req.body.condition) {
-    next(new ErrorResponse(parseInt(badRequest, 10), status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     await lendingsService.returnBook(
@@ -114,14 +114,14 @@ export const returnBook: RequestHandler = async (
       req.body.condition,
     );
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 400 && errorCode < 500) {
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 400 && errorNumber < 500) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;

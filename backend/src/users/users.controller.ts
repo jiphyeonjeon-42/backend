@@ -10,8 +10,7 @@ import {
   updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
-
-export const invalidatePassword = '205';
+import * as errorCode from '../errorCode';
 
 export const search = async (
   req: Request,
@@ -23,7 +22,7 @@ export const search = async (
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
-  if (limit <= 0 || page < 0) next(new ErrorResponse(2, status.BAD_REQUEST));
+  if (limit <= 0 || page < 0) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   try {
     if (nickname === '') {
       items = await searchAllUsers(limit, page);
@@ -40,14 +39,14 @@ export const search = async (
       })));
     }
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 200 && errorCode < 300) {
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 200 && errorNumber < 300) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -55,26 +54,26 @@ export const search = async (
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   const pwSchema = new PasswordValidator();
+  if (!email || !password) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   try {
     pwSchema
       .is().min(10)
       .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
-    if (!pwSchema.validate(String(password))) throw new Error(invalidatePassword);
-    if (!email || !password) throw new Error('2');
+    if (!pwSchema.validate(String(password))) throw new Error(errorCode.invalidatePassword);
     if (email && password) createUser(String(email), await bcrypt.hash(String(password), 10));
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 200 && errorCode < 300) {
-      if (errorCode === 206) next(new ErrorResponse(errorCode, status.FORBIDDEN));
-      if (errorCode === 203) next(new ErrorResponse(errorCode, status.CONFLICT));
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 200 && errorNumber < 300) {
+      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
+      else if (errorNumber === 203) next(new ErrorResponse(error.message, status.CONFLICT));
+      else next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
   res.status(200).send(`${email} created!`);
@@ -89,11 +88,10 @@ export const update = async (
   const {
     nickname = '', intraId = '0', slack = '', role = '-1',
   } = req.body;
-
-  if (!id) next(new ErrorResponse(2, status.BAD_REQUEST));
+  if (!id) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (nickname === '' || !intraId || slack === '' || role === '-1') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   try {
-    if (nickname === '' || !intraId || slack === '' || role === '-1') throw new Error('202');
-    updateUserAuth(
+    await updateUserAuth(
       parseInt(id, 10),
       nickname,
       parseInt(intraId, 10),
@@ -102,16 +100,16 @@ export const update = async (
     );
     return res.status(204).send('success');
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 200 && errorCode < 300) {
-      if (errorCode === 206) next(new ErrorResponse(errorCode, status.FORBIDDEN));
-      if (errorCode === 204) next(new ErrorResponse(errorCode, status.CONFLICT));
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 200 && errorNumber < 300) {
+      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
+      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -126,9 +124,8 @@ export const myupdate = async (
   const {
     email = '', password = '0',
   } = req.body;
-
+  if (email === '' && password === '0') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   try {
-    if (email === '' && password === '0') throw new Error('202');
     if (email !== '' && password === '0') {
       updateUserEmail(parseInt(tokenId, 10), email);
     } else if (email === '' && password !== '0') {
@@ -143,16 +140,16 @@ export const myupdate = async (
       else updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
     } res.status(200).send('success');
   } catch (error: any) {
-    const errorCode = parseInt(error.message, 10);
-    if (errorCode >= 200 && errorCode < 300) {
-      if (errorCode === 206) next(new ErrorResponse(errorCode, status.FORBIDDEN));
-      if (errorCode === 204) next(new ErrorResponse(errorCode, status.CONFLICT));
-      next(new ErrorResponse(errorCode, status.BAD_REQUEST));
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 200 && errorNumber < 300) {
+      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
+      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(1, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(0, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
