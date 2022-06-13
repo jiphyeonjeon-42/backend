@@ -3,16 +3,13 @@ import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
+import * as errorCode from '../errorCode';
 
 export const search = async (
-  searchInfo: types.SearchType,
+  query: string,
+  page: number,
+  limit: number,
 ) => {
-  const { query } = searchInfo;
-  const page = parseInt(searchInfo.page, 10);
-  const limit = parseInt(searchInfo.limit, 10);
-  if (!(query && page && limit)) {
-    throw new Error('300');
-  }
   const bookList = (await executeQuery(
     `
     SELECT
@@ -75,7 +72,7 @@ const searchByIsbn = async (isbn: string) => {
       book = res.data.items;
     })
     .catch(() => {
-      throw new Error('303');
+      throw new Error(errorCode.isbnSearchFailed);
     });
   return (book);
 };
@@ -98,7 +95,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   )) as StringRows[];
 
   const searchBySlackID = (await executeQuery(
-    `
+    ` 
     SELECT
       id
     FROM user
@@ -108,7 +105,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   )) as StringRows[];
 
   if (searchBySlackID.length > 1) {
-    throw new Error('301');
+    throw new Error(errorCode.slackidOverlap);
   }
 
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
@@ -164,11 +161,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 
-export const createBookInfo = async (isbnQuery: any) => {
-  const { isbn } = isbnQuery;
-  if (!isbn) {
-    throw new Error('2');
-  }
+export const createBookInfo = async (isbn: string) => {
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
@@ -243,12 +236,10 @@ export const deleteBook = async (book: models.Book): Promise<boolean> => {
   return true;
 };
 
-export const sortInfo = async (sortInfoquery: types.SortInfoType) => {
-  const { sort } = sortInfoquery;
-  const limit = parseInt(sortInfoquery.limit, 10);
-  if (!(sort && limit)) {
-    throw new Error('300');
-  }
+export const sortInfo = async (
+  limit: number,
+  sort: string,
+) => {
   let ordering = '';
   switch (sort) {
     case 'popular':
@@ -289,16 +280,12 @@ export const sortInfo = async (sortInfoquery: types.SortInfoType) => {
 };
 
 export const searchInfo = async (
-  searchInfoType: types.SearchBookInfoQuery,
+  query: string,
+  page: number,
+  limit: number,
+  sort: string,
+  category: string,
 ) => {
-  const {
-    query, sort, category,
-  } = searchInfoType;
-  const page = parseInt(searchInfoType.page, 10);
-  const limit = parseInt(searchInfoType.limit, 10);
-  if (!(query && page && limit)) {
-    throw new Error('300');
-  }
   let ordering = '';
   switch (sort) {
     case 'title':
@@ -388,11 +375,7 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getInfo = async (idInfo: string) => {
-  const id = parseInt(idInfo, 10);
-  if (Number.isNaN(id)) {
-    throw new Error('300');
-  }
+export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(
     `
     SELECT
@@ -415,7 +398,7 @@ export const getInfo = async (idInfo: string) => {
     [id],
   )) as models.BookInfo[];
   if (bookSpec === undefined) {
-    throw new Error('304');
+    throw new Error(errorCode.noBookInfoId);
   }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);

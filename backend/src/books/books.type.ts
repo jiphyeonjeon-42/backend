@@ -22,9 +22,3 @@ export interface CreateBookInfo {
   donator: string;
   callSign: string;
 }
-
-export interface SearchType {
-    query: string;
-    page: string;
-    limit: string;
-}

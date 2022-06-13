@@ -1,4 +1,4 @@
-import ErrorResponse from '../errorResponse';
+import * as errorCode from '../errorCode';
 import { executeQuery } from '../mysql';
 import * as models from './users.model';
 import * as types from './users.type';
@@ -139,7 +139,7 @@ export const createUser = async (email: string, password: string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
   if (emailList.indexOf(email) !== -1) {
-    throw new ErrorResponse(203, 'email overlap');
+    throw new Error(errorCode.emailOverlap);
   }
   await executeQuery(`
     INSERT INTO user(
@@ -156,7 +156,7 @@ export const updateUserEmail = async (id: number, email:string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
   if (emailList.indexOf(email) !== -1) {
-    throw new ErrorResponse(203, 'email overlap');
+    throw new Error(errorCode.emailOverlap);
   }
   await executeQuery(`
   UPDATE user 
@@ -183,7 +183,7 @@ export const updateUserAuth = async (
   const nicknameList = await executeQuery(`
   SELECT nickname FROM user`);
   if (nicknameList.indexOf(nickname) !== -1) {
-    throw new ErrorResponse(204, 'nickname overlap');
+    throw new Error(errorCode.nicknameOverlap);
   }
   let setString = '';
   const queryParameters = [];
