@@ -1,5 +1,4 @@
 /* eslint no-console: "off" */
-import { FtTypes } from '../auth/auth.service';
 import { pool } from '../mysql';
 import * as UsersService from './users.service';
 
@@ -8,18 +7,21 @@ describe('UsersService', () => {
     pool.end();
   });
 
-  it('User jimin is', async () => {
-    expect(await UsersService.searchUserByIntraId('jimin', 5, 0)).toStrictEqual({
+  // searchUserByNickName
+  it('[searchUserByNickName] User hihi is', async () => {
+    expect(await UsersService.searchUserByNickName('seongyle3', 5, 0)).toStrictEqual({
       items: [
         {
-          id: 14,
-          login: 'jimin',
-          intra: 99994,
-          slack: 'U02LNNDRC9F',
-          penaltyAt: new Date(Date.parse('2021-12-07 20:06:18')),
-          librarian: 1,
-          createdAt: new Date(Date.parse('2021-12-07 20:06:18.991237')),
-          updatedAt: new Date(Date.parse('2021-12-07 20:06:18.991237')),
+          id: 1410,
+          email: 'example_role_1_3@gmail.com',
+          password: '1234',
+          nickname: 'seongyle3',
+          intraId: 3,
+          slack: null,
+          penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+          role: 1,
+          createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+          updatedAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
         },
       ],
       meta: {
@@ -32,22 +34,96 @@ describe('UsersService', () => {
     });
   });
 
-  // it('User is created and deleted', async () => {
-  //   const ftUserInfo: FtTypes = {
-  //     intra: 44444,
-  //     login: 'test',
-  //     imageURL: 'http://localhost:3000/img',
-  //   };
-  //   expect(await UsersService.deleteUserByIntra(ftUserInfo.intra)).toBe(false);
-  //   expect(await UsersService.createUser(ftUserInfo)).toEqual(
-  //     expect.objectContaining({
-  //       login: 'test',
-  //       intra: 44444,
-  //       slack: '0',
-  //       librarian: 0,
-  //       imageURL: 'http://localhost:3000/img',
-  //     }),
-  //   );
-  //   expect(await UsersService.deleteUserByIntra(ftUserInfo.intra)).toBe(true);
-  // });
+  // searchUserById
+  it('[searchUserById] User id 1414 (hihi) is', async () => {
+    expect(await UsersService.searchUserById(1414)).toStrictEqual(
+      {
+        items: [
+          {
+            id: 1414,
+            email: 'example_role1_7@gmail.com',
+            password: '4444',
+            nickname: 'hihi',
+            intraId: 44,
+            slack: 'dasdwqwe1132',
+            penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+            role: 1,
+            createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+            updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
+          },
+        ],
+      },
+    );
+  });
+
+  // searchUserByIntraId
+  it('[searchUserByIntraId] User intraId 44 (hihi) is', async () => {
+    expect(await UsersService.searchUserByIntraId(44)).toStrictEqual(
+      [
+        {
+          id: 1414,
+          email: 'example_role1_7@gmail.com',
+          password: '4444',
+          nickname: 'hihi',
+          intraId: 44,
+          slack: 'dasdwqwe1132',
+          penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+          role: 1,
+          createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+          updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
+        },
+      ],
+    );
+  });
+
+  // searchAllUsers
+  it('[searchAllUsers] 3 Users in page 6 are', async () => {
+    expect(await UsersService.searchAllUsers(3, 6)).toStrictEqual({
+      items: [
+        {
+          id: 1410,
+          email: 'example_role_1_3@gmail.com',
+          password: '1234',
+          nickname: 'seongyle3',
+          intraId: 3,
+          slack: null,
+          penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+          role: 1,
+          createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+          updatedAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+        },
+        {
+          id: 1411,
+          email: 'example_role1_4@gmail.com',
+          password: '1234',
+          nickname: 'seongyle4',
+          intraId: 4,
+          slack: null,
+          penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+          role: 1,
+          createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+          updatedAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+        },
+        {
+          id: 1412,
+          email: 'example_role_1_5@gmail.com',
+          password: '1234',
+          nickname: 'seongyle5',
+          intraId: 5,
+          slack: null,
+          penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+          role: 1,
+          createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+          updatedAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+        },
+      ],
+      meta: {
+        totalItems: 55,
+        itemCount: 3,
+        itemsPerPage: 3,
+        totalPages: 19,
+        currentPage: 7,
+      },
+    });
+  });
 });
