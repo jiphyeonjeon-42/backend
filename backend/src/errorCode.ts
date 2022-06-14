@@ -21,6 +21,7 @@ export const slackidOverlap = '301';
 export const noISBN = '302';
 export const isbnSearchFailed = '303';
 export const noBookInfoId = '304';
+export const callSignOverlap = '305';
 
 export const badRequest = '400';
 export const noUserId = '401';

@@ -79,7 +79,7 @@ const searchByIsbn = async (isbn: string) => {
 
 export const createBook = async (book: types.CreateBookInfo) => {
   const {
-    title, author, publisher, isbn, categoryId, callSign, pubdate
+    title, author, publisher, isbn, categoryId, callSign, pubdate,
   } = book;
   if (!(title && author && categoryId && callSign && pubdate)) {
     throw new Error('300');
@@ -108,6 +108,14 @@ export const createBook = async (book: types.CreateBookInfo) => {
     throw new Error(errorCode.slackidOverlap);
   }
 
+  const serachCallSign = (await executeQuery(`
+    SELECT id FROM book WHERE callSign = ?
+    `, [callSign])) as StringRows[];
+
+  if (serachCallSign.length > 1) {
+    throw new Error(errorCode.callSignOverlap);
+  }
+
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
 
   if (isbnInBookInfo.length === 0) {
@@ -123,7 +131,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
         book.title,
         book.author,
         book.publisher,
-        book.isbn ? book.isbn : "",
+        book.isbn ? book.isbn : '',
         book.image,
         category,
         book.categoryId,
@@ -156,7 +164,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       )
     )
   `,
-    [book.donator, book.donator, book.callSign, book.isbn, book.title]
+    [book.donator, book.donator, book.callSign, book.isbn, book.title],
   );
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
@@ -327,6 +335,7 @@ export const searchInfo = async (
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
+  // categoryList = {{}, categoryList};
   const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
   const bookList = (await executeQuery(
     `
