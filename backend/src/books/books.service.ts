@@ -79,7 +79,7 @@ const searchByIsbn = async (isbn: string) => {
 
 export const createBook = async (book: types.CreateBookInfo) => {
   const {
-    title, author, publisher, isbn, categoryId, callSign, pubdate,
+    title, author, categoryId, callSign, pubdate,
   } = book;
   if (!(title && author && categoryId && callSign && pubdate)) {
     throw new Error('300');
