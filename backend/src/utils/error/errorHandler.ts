@@ -8,6 +8,7 @@ export default function errorHandler(
   err: Error | ErrorResponse,
   req: Request,
   res: Response,
+  // eslint-disable-next-line no-unused-vars
   next: NextFunction,
 ) {
   let error: ErrorResponse;

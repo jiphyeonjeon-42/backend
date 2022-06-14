@@ -86,9 +86,11 @@ export const queryTest = async () => {
     `, [row.userId]) as unknown as lending[][];
     const newRow = row;
     [newRow.lending] = lendings;
+    // eslint-disable-next-line no-console
     console.log(lendings[0]);
     return newRow;
   }));
 
+  // eslint-disable-next-line no-console
   console.log(newRows);
 };
