@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as Status from 'http-status';
 import ErrorResponse from './errorResponse';
-import { logger } from './utils/logger';
+import { logger } from '../logger';
 import * as errorCode from './errorCode';
 
 export default function errorHandler(

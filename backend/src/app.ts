@@ -5,7 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 import router from './routes';
 import swaggerOptions from './swagger/swagger';
-import errorHandler from './errorHandler';
+import errorHandler from './utils/error/errorHandler';
 import { FtStrategy, JwtStrategy, FtAuthentication } from './auth/auth.strategy';
 import { morganMiddleware } from './utils/logger';
 

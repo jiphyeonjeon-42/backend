@@ -5,9 +5,9 @@ import * as usersService from '../users/users.service';
 import { role } from './auth.type';
 import { User } from '../users/users.model';
 import config from '../config';
-import ErrorResponse from '../errorResponse';
+import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
 const authValidate = (roles: role[]) => async (
   req: Request, res: Response, next: Function) : Promise<void> => {

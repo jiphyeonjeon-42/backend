@@ -3,7 +3,7 @@ import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
 export const search = async (
   query: string,

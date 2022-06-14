@@ -1,7 +1,7 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { logger } from '../utils/logger';
 import { Meta } from '../users/users.type';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
 export const create = async (
   userId: number,

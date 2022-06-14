@@ -1,4 +1,4 @@
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 import { executeQuery } from '../mysql';
 import * as models from './users.model';
 import * as types from './users.type';
