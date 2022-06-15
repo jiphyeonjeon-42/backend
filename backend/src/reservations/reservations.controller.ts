@@ -43,7 +43,7 @@ const filterCheck = (argument: string) => {
 export const search: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const info = req.query;
   const query = info.query as string ? info.query as string : '';
-  const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) - 1 : 0;
+  const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) : 0;
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
   if (!filterCheck(filter)) {

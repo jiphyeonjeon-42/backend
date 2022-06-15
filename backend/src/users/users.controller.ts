@@ -18,7 +18,7 @@ export const search = async (
   next: NextFunction,
 ) => {
   const nickname = String(req.query.nickname) ? String(req.query.nickname) : '';
-  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) - 1 : 0;
+  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
