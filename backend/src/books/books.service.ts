@@ -335,7 +335,6 @@ export const searchInfo = async (
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
-  // categoryList = {{}, categoryList};
   const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
   const bookList = (await executeQuery(
     `
