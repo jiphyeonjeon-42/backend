@@ -1,5 +1,5 @@
 import app from './app';
-import scheduler from './auth/auth.scheduler';
+import scheduler from './utils/scheduler';
 
 app.listen('3000', () => {
   console.log(`
