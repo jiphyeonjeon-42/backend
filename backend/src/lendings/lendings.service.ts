@@ -1,5 +1,4 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
-import { logger } from '../utils/logger';
 import { Meta } from '../users/users.type';
 import * as errorCode from '../errorCode';
 
@@ -163,7 +162,6 @@ export const search = async (
   sort:string,
   type: string,
 ) => {
-  logger.debug(`lending search query: ${query} page: ${page} limit: ${limit} sort: ${sort} type: ${type}`);
   let filterQuery;
   switch (type) {
     case 'user':
