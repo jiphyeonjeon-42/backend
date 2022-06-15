@@ -17,7 +17,7 @@ export const createBook = async (
     title, author, categoryId, callSign, pubdate,
   } = req.body;
   if (!(title && author && categoryId && callSign && pubdate)) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
