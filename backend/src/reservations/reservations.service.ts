@@ -1,4 +1,4 @@
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
 import { logger } from '../utils/logger';

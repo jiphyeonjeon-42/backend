@@ -8,9 +8,9 @@ import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
 import { role } from './auth.type';
 import slack from './auth.slack';
-import ErrorResponse from '../errorResponse';
+import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;

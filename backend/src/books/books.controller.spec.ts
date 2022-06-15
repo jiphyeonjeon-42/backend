@@ -1,7 +1,7 @@
 import * as status from 'http-status';
 import { pool } from '../mysql';
 import * as BooksController from './books.controller';
-import ErrorResponse from '../errorResponse';
+import ErrorResponse from '../utils/error/errorResponse';
 
 describe('BooksController', () => {
   afterAll(() => {

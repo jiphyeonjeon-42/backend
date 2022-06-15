@@ -2,8 +2,8 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
-import * as errorCode from '../errorCode';
-import ErrorResponse from '../errorResponse';
+import * as errorCode from '../utils/error/errorCode';
+import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as lendingsService from './lendings.service';
 

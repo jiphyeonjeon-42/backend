@@ -1,4 +1,4 @@
-import { searchAuthenticatedUser, updateSlackIDUser } from './auth.service';
+import { searchAuthenticatedUser, updateSlackIdUser } from '../slack/slack.service';
 import * as models from '../users/users.model';
 
 const { WebClient } = require('@slack/web-api');
@@ -26,7 +26,7 @@ const updateSlackID = async () : Promise<void> => {
     userMap.set(real_name, slackUserId);
   });
   authenticatedUser.forEach((user) => {
-    if (userMap.has(user.nickname)) updateSlackIDUser(user.id, userMap.get(user.nickname));
+    if (userMap.has(user.nickname)) updateSlackIdUser(user.id, userMap.get(user.nickname));
   });
 };
 

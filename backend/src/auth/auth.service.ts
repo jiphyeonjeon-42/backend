@@ -2,6 +2,7 @@ import { ResultSetHeader } from 'mysql2';
 import { executeQuery } from '../mysql';
 import { role } from './auth.type';
 
+// eslint-disable-next-line import/prefer-default-export
 export const updateAuthenticationUser = async (
   id: number,
   intraId: number,
