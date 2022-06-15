@@ -53,9 +53,7 @@ export const createBookInfo = async (
       .send(await BooksService.createBookInfo(isbn));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
