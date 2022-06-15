@@ -1,5 +1,5 @@
 import * as schedule from 'node-schedule';
-import slack from './auth.slack';
+import * as slack from '../slack/slack.service';
 
 export const midnightScheduler = () => {
   const rule = new schedule.RecurrenceRule();
@@ -7,7 +7,7 @@ export const midnightScheduler = () => {
   rule.hour = 0;
   rule.minute = 0;
   schedule.scheduleJob(rule, async () => {
-    await slack.updateSlackID();
+    await slack.updateSlackId();
   });
 };
 
