@@ -154,7 +154,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM book_info
-        WHERE (isbn = ? or title = ?) ORDER BY createdAt LIMIT 1
+        WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1
       )
     )
   `,
@@ -173,7 +173,7 @@ export const createBookInfo = async (isbn: string) => {
       book_info.publisher,
       book_info.publishedAt as pubdate,
       book_info.isbn,
-       (
+      (
         SELECT name
         FROM category
         WHERE id = book_info.categoryId
