@@ -1,26 +1,14 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { logger } from '../utils/logger';
-import * as Models from '../users/users.model';
-
-export const noUserId = '유저 없음';
-export const noPermission = '권한 없음';
-export const lendingOverload = '2권 이상 대출';
-export const lendingOverdue = '연체 중';
-export const onLending = '대출 중';
-export const onReservation = '예약된 책';
-export const lostBook = '분실';
-export const damagedBook = '파손';
-export const ok = 'ok';
-export const nonexistentLending = '존재하지 않는 대출';
-export const alreadyReturned = '이미 반납 처리된 대출';
+import { Meta } from '../users/users.type';
+import * as errorCode from '../errorCode';
 
 export const create = async (
   userId: number,
   bookId: number,
   librarianId: number,
   condition: string,
-): Promise<string> => {
-  let message = ok;
+): Promise<void> => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
@@ -31,16 +19,16 @@ export const create = async (
       FROM user
       WHERE id = ?
     `, [userId]);
-    if (!hasUser.length) { throw new Error(noUserId); }
+    if (!hasUser.length) { throw new Error(errorCode.noUserId); }
     // 유저 권한 없음
-    if (hasUser[0].role === 0) { throw new Error(noPermission); }
+    if (hasUser[0].role === 0) { throw new Error(errorCode.noPermission); }
     // 유저가 2권 이상 대출
     const numberOfLendings = await transactionExecuteQuery(`
       SELECT COUNT(*) as count
       FROM lending
       WHERE userId = ? AND returnedAt IS NULL;
     `, [userId]);
-    if (numberOfLendings[0].count >= 2) { throw new Error(lendingOverload); }
+    if (numberOfLendings[0].count >= 2) { throw new Error(errorCode.lendingOverload); }
 
     // 유저가 연체중 (패널티를 받았거나 대출중인 책이 반납기한을 넘겼을때)
     const hasPenalty = await transactionExecuteQuery(`
@@ -57,7 +45,7 @@ export const create = async (
       WHERE userId = ? AND returnedAt IS NULL
     `, [userId]);
     if (hasPenalty[0].penaltyEndDate >= new Date()
-      || isOverdue[0]?.overdue) { throw new Error(lendingOverdue); }
+      || isOverdue[0]?.overdue) { throw new Error(errorCode.lendingOverdue); }
 
     // 책이 대출되지 않은 상태인지
     const isNotLended = await transactionExecuteQuery(`
@@ -65,7 +53,7 @@ export const create = async (
       FROM lending
       WHERE bookId = ? AND returnedAt IS NULL
     `, [bookId]);
-    if (isNotLended.length !== 0) { throw new Error(onLending); }
+    if (isNotLended.length !== 0) { throw new Error(errorCode.onLending); }
 
     // 책이 분실, 파손이 아닌지
     const isLendableBook = await transactionExecuteQuery(`
@@ -74,9 +62,9 @@ export const create = async (
      WHERE id = ?
     `, [bookId]);
     if (isLendableBook[0].status === 1) {
-      throw new Error(damagedBook);
+      throw new Error(errorCode.damagedBook);
     } else if (isLendableBook[0].status === 2) {
-      throw new Error(lostBook);
+      throw new Error(errorCode.lostBook);
     }
 
     // 예약된 책이 아닌지
@@ -86,7 +74,7 @@ export const create = async (
       WHERE bookId = ? AND status = 0
     `, [bookId]);
     if (isNotReservedBook.length && isNotReservedBook[0].userId !== userId) {
-      throw new Error(onReservation);
+      throw new Error(errorCode.onReservation);
     }
 
     await transactionExecuteQuery(`
@@ -98,20 +86,18 @@ export const create = async (
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
-      message = e.message;
+      throw e;
     }
   } finally {
     conn.release();
   }
-  return message;
 };
 
 export const returnBook = async (
   librarianId: number,
   lendingId: number,
   condition: string,
-): Promise<string> => {
-  let message = ok;
+) => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
@@ -124,9 +110,9 @@ export const returnBook = async (
       WHERE id = ?
     `, [lendingId]);
     if (!lendingInfo || !lendingInfo[0]) {
-      throw new Error(nonexistentLending);
+      throw new Error(errorCode.nonexistentLending);
     } else if (lendingInfo[0].returnedAt) {
-      throw new Error(alreadyReturned);
+      throw new Error(errorCode.alreadyReturned);
     }
 
     await transactionExecuteQuery(`
@@ -160,15 +146,14 @@ export const returnBook = async (
     }
 
     await conn.commit();
-  } catch (e) {
+  } catch (error) {
     await conn.rollback();
-    if (e instanceof Error) {
-      message = e.message;
+    if (error instanceof Error) {
+      throw error;
     }
   } finally {
     conn.release();
   }
-  return message;
 };
 
 export const search = async (
@@ -242,7 +227,7 @@ export const search = async (
     FROM lending
     ${filterQuery}
   `);
-  const meta: Models.Meta = {
+  const meta: Meta = {
     totalItems: totalItems.length,
     itemCount: items.length,
     itemsPerPage: limit,

@@ -1,13 +1,16 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
+import * as status from 'http-status';
 import config from '../config';
 import * as usersService from '../users/users.service';
 import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
-import {
-  FtError, role, errCode, errMsg,
-} from './auth.type';
+import { role } from './auth.type';
+import slack from './auth.slack';
+import ErrorResponse from '../errorResponse';
+import { logger } from '../utils/logger';
+import * as errorCode from '../errorCode';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
@@ -18,51 +21,82 @@ export const getOAuth = (req: Request, res: Response) => {
   res.status(302).redirect(oauthUrl);
 };
 
-export const getToken = async (req: Request, res: Response): Promise<void> => {
+export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
-    if (user.length === 0) throw new FtError(401, errCode.noUser, errMsg.noUser);
+    if (user.length === 0) throw new ErrorResponse(errorCode.noUser, 401);
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
-  } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) next(error);
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber === 101) next(new ErrorResponse(error.message, status.UNAUTHORIZED));
+    if (errorNumber >= 100 && errorNumber < 200) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+    }
   }
 };
 
-export const getMe = async (req: Request, res: Response): Promise<void> => {
+export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.user as any;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
-    if (user.items.length === 0) throw new FtError(410, errCode.noUser, errMsg.noUser);
+    if (user.items.length === 0) {
+      throw new ErrorResponse(errorCode.noUser, 410);
+    }
     const result = {
       id: user.items[0].id,
       intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
       librarian: user.items[0].role === 2,
     };
-    res.status(200).json(result);
-  } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+    res.status(status.OK).json(result);
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) next(error);
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 100 && errorNumber < 300) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+    }
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id, password } = req.body;
-    if (!id || !password) throw new FtError(400, errCode.noInput, errMsg.noInput);
+    if (!id || !password) {
+      throw new ErrorResponse(errorCode.noInput, 400);
+    }
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
     const user: { items: models.User[] } = await usersService.searchUserByEmail(id);
-    if (user.items.length === 0) throw new FtError(401, errCode.noId, errMsg.noId);
+    if (user.items.length === 0) {
+      next(new ErrorResponse(errorCode.noId, 401));
+    }
     if (!bcrypt.compareSync(password, user.items[0].password)) {
-      throw new FtError(403, errCode.wrongPassword, errMsg.wrongPassword);
+      next(new ErrorResponse(errorCode.wrongPassword, 403));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(204).send();
-  } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) next(error);
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 100 && errorNumber < 200) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+    }
   }
 };
 
@@ -80,27 +114,62 @@ export const getIntraAuthentication = (req: Request, res: Response) => {
   res.status(302).redirect(oauthUrl);
 };
 
-export const intraAuthentication = async (req: Request, res: Response) : Promise<void> => {
+export const intraAuthentication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) : Promise<void> => {
   try {
     const { intraProfile, id } = req.user as any;
     const { intraId, nickName } = intraProfile;
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
-      throw new FtError(401, errCode.alreadyAuthenticated, errMsg.alreadyAuthenticated);
+      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
     }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
-    if (user.items.length === 0) throw new FtError(410, errCode.noUser, errMsg.noUser);
+    if (user.items.length === 0) {
+      next(new ErrorResponse(errorCode.noUser, 410));
+    }
     if (user.items[0].role !== role.user) {
-      throw new FtError(401, errCode.alreadyAuthenticated, errMsg.alreadyAuthenticated);
+      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
-      throw new FtError(401, errCode.queryExecutionFailed, errMsg.queryExecutionFailed);
+      next(new ErrorResponse(errorCode.nonAffected, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(200).send();
-  } catch (e: any) {
-    if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+  } catch (error: any) {
+    if (error instanceof ErrorResponse) next(error);
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 100 && errorNumber < 200) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+    }
+  }
+};
+
+export const updateSlackList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) : Promise<void> => {
+  try {
+    await slack.updateSlackID();
+    res.status(204).send('ok');
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 100 && errorNumber < 200) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+    } else {
+      logger.error(error.message);
+      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+    }
   }
 };

@@ -1,29 +1,10 @@
+import * as errorCode from '../errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import * as models from '../users/users.model';
+import { Meta } from '../users/users.type';
 import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
-export const ok = 'ok';
-
-// constants for create
-export const invalidInfoId = 'bookInfoId가 유효하지 않음';
-export const atPenalty = '대출 제한 중';
-export const notLended = '대출 가능';
-export const alreadyReserved = '이미 예약 중';
-export const alreadyLended = '이미 대출 중';
-export const moreThanTwoReservations = '두 개 이상 예약 중';
-
-// constants for cancel
-export const notMatchingUser = '해당 유저 아님';
-export const reservationNotExist = '예약 ID 존재하지 않음';
-export const notReserved = '예약 상태가 아님';
-
-// constants for cancel
-export const invalidBookInfoId = '해당하는 book info id 가 없음';
-export const availableLoan = '대출 가능한 책';
-
 export const create = async (userId: number, bookInfoId: number) => {
-  let message = ok;
   // bookInfoId가 유효한지 확인
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -33,7 +14,7 @@ export const create = async (userId: number, bookInfoId: number) => {
     WHERE id = ?;
   `, [bookInfoId]);
   if (!bookInfo.length) {
-    return invalidInfoId;
+    throw new Error(errorCode.invalidInfoId);
   }
   conn.beginTransaction();
   try {
@@ -44,7 +25,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE id = ?;
     `, [userId]);
     if (userPenalty.penaltyEndDate > new Date()) {
-      throw new Error(atPenalty);
+      throw new Error(errorCode.atPenalty);
     }
     // 현재 대출 중인 책이 연체 중인지 확인
     const overdueBooks = await transactionExecuteQuery(`
@@ -55,7 +36,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       ORDER BY createdAt ASC
     `, [userId]);
     if (overdueBooks?.[0]?.duedate < new Date()) {
-      throw new Error(atPenalty);
+      throw new Error(errorCode.atPenalty);
     }
     // bookInfoId가 모두 대출 중인지 확인
     const allBooks = await transactionExecuteQuery(`
@@ -72,7 +53,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE book.infoId = ? AND returnedAt IS NULL;
     `, [bookInfoId]) as [{bookId: number, returnedAt: Date}];
     if (allLendings.length !== allBooks.length) {
-      throw new Error(notLended);
+      throw new Error(errorCode.notLended);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
     const lendedBook = await transactionExecuteQuery(`
@@ -85,7 +66,7 @@ export const create = async (userId: number, bookInfoId: number) => {
         book.infoId = ?
     `, [userId, bookInfoId]);
     if (lendedBook.length) {
-      throw new Error(alreadyLended);
+      throw new Error(errorCode.alreadyLended);
     }
     // 이미 예약한 bookInfoId가 아닌지 확인
     const reservedBook = await transactionExecuteQuery(`
@@ -94,7 +75,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE bookInfoId = ? AND userId = ? AND status = 0;
     `, [bookInfoId, userId]);
     if (reservedBook.length) {
-      throw new Error(alreadyReserved);
+      throw new Error(errorCode.alreadyReserved);
     }
     // 예약한 횟수가 2회 미만인지 확인
     const reserved = await transactionExecuteQuery(`
@@ -103,7 +84,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE userId = ? AND status = 0;
     `, [userId]);
     if (reserved.length >= 2) {
-      throw new Error(moreThanTwoReservations);
+      throw new Error(errorCode.moreThanTwoReservations);
     }
     await transactionExecuteQuery(`
       INSERT INTO reservation (userId, bookInfoId)
@@ -113,12 +94,11 @@ export const create = async (userId: number, bookInfoId: number) => {
   } catch (e) {
     conn.rollback();
     if (e instanceof Error) {
-      message = e.message;
+      throw e;
     }
   } finally {
     conn.release();
   }
-  return message;
 };
 
 export const
@@ -181,7 +161,7 @@ export const
       ${filterQuery}
       HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
     `, [`%${query}%`, `%${query}%`, `%${query}%`]));
-    const meta :models.Meta = {
+    const meta : Meta = {
       totalItems: totalItems.length,
       itemCount: items.length,
       itemsPerPage: limit,
@@ -191,8 +171,7 @@ export const
     return { items, meta };
   };
 
-export const cancel = async (reservationId: number): Promise<string> => {
-  let message = ok;
+export const cancel = async (reservationId: number): Promise<void> => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
@@ -203,10 +182,10 @@ export const cancel = async (reservationId: number): Promise<string> => {
       WHERE id = ?;
     `, [reservationId]);
     if (!reservations.length) {
-      throw new Error(reservationNotExist);
+      throw new Error(errorCode.reservationNotExist);
     }
     if (reservations[0].status !== 0) {
-      throw new Error(notReserved);
+      throw new Error(errorCode.notReserved);
     }
     await transactionExecuteQuery(`
       UPDATE reservation
@@ -235,30 +214,26 @@ export const cancel = async (reservationId: number): Promise<string> => {
       }
       conn.commit();
     }
-  } catch (e) {
+  } catch (e: any) {
     conn.rollback();
-    if (e instanceof Error) {
-      message = e.message;
-    }
+    throw e;
   } finally {
     conn.release();
   }
-  return message;
 };
 
-export const userCancel = async (userId: number, reservationId: number): Promise<string> => {
+export const userCancel = async (userId: number, reservationId: number): Promise<void> => {
   const reservations = await executeQuery(`
     SELECT userId
     FROM reservation
     WHERE id = ?
   `, [reservationId]);
   if (!reservations.length) {
-    return reservationNotExist;
+    throw new Error(errorCode.reservationNotExist);
   }
   if (reservations[0].userId !== userId) {
-    return notMatchingUser;
+    throw new Error(errorCode.notMatchingUser);
   }
-  return cancel(reservationId);
 };
 
 export const count = async (bookInfoId: number) => {
@@ -268,7 +243,7 @@ export const count = async (bookInfoId: number) => {
     WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count === 0) {
-    return invalidBookInfoId;
+    throw new Error(errorCode.invalidBookInfoId);
   }
   const borrowedBookInfo = await executeQuery(`
     SELECT count(*) as count
@@ -278,7 +253,7 @@ export const count = async (bookInfoId: number) => {
     WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
-    return availableLoan;
+    throw new Error(errorCode.availableLoan);
   }
   logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`

@@ -5,12 +5,12 @@ import { role } from './auth.type';
 export const updateAuthenticationUser = async (
   id: number,
   intraId: number,
-  nickName: string,
+  nickname: string,
 ) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
     UPDATE USER
-    SET intraId = ?, nickName = ?, role = ?
+    SET intraId = ?, nickname = ?, role = ?
     WHERE id = ?
-  `, [intraId, nickName, role.cadet, id]);
+  `, [intraId, nickname, role.cadet, id]);
   return result.affectedRows;
 };

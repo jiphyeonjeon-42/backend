@@ -12,8 +12,13 @@ export interface SortInfoType {
 }
 
 export interface CreateBookInfo {
-    isbn: string;
-    donator: string;
-    categoryId: number
-    callSign: string;
+  title: string;
+  author: string;
+  publisher: string;
+  isbn?: string;
+  image?: string;
+  categoryId?: string;
+  pubdate?: string | Date;
+  donator: string;
+  callSign: string;
 }

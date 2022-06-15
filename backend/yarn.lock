@@ -4374,6 +4374,11 @@ passport@^0.5.2:
     passport-strategy "1.x.x"
     pause "0.0.1"
 
+password-validator@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/password-validator/-/password-validator-5.3.0.tgz#472b89997c71c185eb22b7917b225726b4d64577"
+  integrity sha512-Q+bSEM5pjokZqzWGoQaoylkeWeH4+9uMYlVImiPD0EOJClQ2RPBhrJ5h0OjhMKtwOmu5rRcLaTZo5Gk9RBl0ig==
+
 path-exists@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/path-exists/-/path-exists-3.0.0.tgz"
