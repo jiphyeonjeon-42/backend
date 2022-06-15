@@ -78,12 +78,6 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const {
-    title, author, categoryId, callSign, pubdate,
-  } = book;
-  if (!(title && author && categoryId && callSign && pubdate)) {
-    throw new Error('300');
-  }
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
@@ -110,7 +104,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
   const serachCallSign = (await executeQuery(`
     SELECT id FROM book WHERE callSign = ?
-    `, [callSign])) as StringRows[];
+    `, [book.callSign])) as StringRows[];
 
   if (serachCallSign.length > 1) {
     throw new Error(errorCode.callSignOverlap);
@@ -160,7 +154,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM book_info
-        WHERE (isbn = ? or title = ?) order by isbn LIMIT 1
+        WHERE (isbn = ? or title = ?) ORDER BY createdAt LIMIT 1
       )
     )
   `,
