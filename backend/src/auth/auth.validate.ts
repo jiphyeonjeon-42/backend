@@ -10,7 +10,10 @@ import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
 
 const authValidate = (roles: role[]) => async (
-  req: Request, res: Response, next: Function) : Promise<void> => {
+  req: Request,
+  res: Response,
+  next: Function,
+) : Promise<void> => {
   try {
     if (!req.cookies.access_token) {
       throw new ErrorResponse(errorCode.noToken, 401);

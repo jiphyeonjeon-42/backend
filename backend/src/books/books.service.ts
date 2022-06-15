@@ -79,7 +79,7 @@ const searchByIsbn = async (isbn: string) => {
 
 export const createBook = async (book: types.CreateBookInfo) => {
   const {
-    title, author, publisher, isbn, categoryId, callSign, pubdate
+    title, author, publisher, isbn, categoryId, callSign, pubdate,
   } = book;
   if (!(title && author && categoryId && callSign && pubdate)) {
     throw new Error('300');
@@ -123,7 +123,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
         book.title,
         book.author,
         book.publisher,
-        book.isbn ? book.isbn : "",
+        book.isbn ? book.isbn : '',
         book.image,
         category,
         book.categoryId,
@@ -156,7 +156,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       )
     )
   `,
-    [book.donator, book.donator, book.callSign, book.isbn, book.title]
+    [book.donator, book.donator, book.callSign, book.isbn, book.title],
   );
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
