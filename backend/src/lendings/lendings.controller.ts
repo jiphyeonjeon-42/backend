@@ -105,7 +105,7 @@ export const returnBook: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.lendingId || !req.body.condition) {
-    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     await lendingsService.returnBook(
