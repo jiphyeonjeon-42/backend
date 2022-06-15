@@ -269,15 +269,14 @@ export const sortInfo = async (
       book_info.createdAt as createdAt,
       book_info.updatedAt as updatedAt,
       COUNT(lending.id) as lendingCnt
-    FROM book_info, lending
-    WHERE book_info.id = lending.bookId
+    FROM book_info LEFT JOIN lending
+    ON book_info.id = lending.bookId
     GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
   `,
     [limit],
   )) as models.BookInfo[];
-
   return { items: bookList };
 };
 
