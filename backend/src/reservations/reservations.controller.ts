@@ -47,7 +47,7 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
   if (!filterCheck(filter)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -70,7 +70,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
   const { role, id } = req.user as any;
   const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     if (role === 3) {
@@ -93,7 +93,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
 export const count: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const bookInfoId = parseInt(req.query.bookInfo as string, 10);
   if (Number.isNaN(bookInfoId)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     const result = await reservationsService.count(bookInfoId);
@@ -119,7 +119,7 @@ export const userReservations: RequestHandler = async (
   const info = req.query;
   const userId = parseInt(info.id as string, 10);
   if (Number.isNaN(userId)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res

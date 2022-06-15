@@ -54,7 +54,7 @@ export const search: RequestHandler = async (
   const sort = info.sort as string;
   const type = info.type as string ? info.type as string : 'all';
   if (!argumentCheck(sort, type)) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     const result = await lendingsService.search(query, page, limit, sort, type);
@@ -80,7 +80,7 @@ export const lendingId: RequestHandler = async (
 ) => {
   const id = parseInt(req.params.id, 10);
   if (Number.isNaN(id)) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     await lendingsService.lendingId(id);
@@ -105,7 +105,7 @@ export const returnBook: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.lendingId || !req.body.condition) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
     await lendingsService.returnBook(
