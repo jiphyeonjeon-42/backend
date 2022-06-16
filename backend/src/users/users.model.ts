@@ -1,6 +1,10 @@
 export interface Lending {
   userId: number,
   bookInfoId: number,
+  lendDate: Date,
+  lendingCondition: number,
+  image: string,
+  author: string,
   title: string,
   duedate: Date,
   overDueDay: number,

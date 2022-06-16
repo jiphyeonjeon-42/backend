@@ -74,7 +74,9 @@ export const userReservations = async (userId: number) => {
       WHERE status = 0
         AND bookInfoId = reservedBookInfoId
         AND createdAt <= reservationDate) as ranking,
-    book_info.title as title
+    book_info.title as title,
+    book_info.author as author,
+    book_info.image as image
     FROM reservation
     LEFT JOIN book_info
     ON reservation.bookInfoId = book_info.id
