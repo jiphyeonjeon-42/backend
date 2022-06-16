@@ -9,7 +9,7 @@ const {
   combine, timestamp, printf, colorize,
 } = format;
 
-const logDir = 'logs';
+const logDir = '../../logs';
 
 const levels = {
   error: 0,

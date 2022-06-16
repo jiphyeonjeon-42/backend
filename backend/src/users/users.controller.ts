@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
-import ErrorResponse from '../errorResponse';
+import ErrorResponse from '../utils/error/errorResponse';
 import { User } from './users.model';
 import {
   createUser,
@@ -10,7 +10,7 @@ import {
   updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
 export const search = async (
   req: Request,

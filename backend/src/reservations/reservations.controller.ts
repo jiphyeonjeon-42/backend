@@ -1,11 +1,17 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import {
+  NextFunction, Request, RequestHandler, Response,
+} from 'express';
 import * as status from 'http-status';
 import * as reservationsService from './reservations.service';
-import ErrorResponse from '../errorResponse';
+import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../errorCode';
+import * as errorCode from '../utils/error/errorCode';
 
-export const create: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+export const create: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
@@ -26,6 +32,7 @@ export const create: RequestHandler = async (req: Request, res: Response, next: 
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
+  return 0;
 };
 
 const filterCheck = (argument: string) => {
@@ -63,7 +70,7 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
       logger.error(error.message);
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
-  }
+  } return 0;
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -87,7 +94,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
       logger.error(error.message);
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
-  }
+  } return 0;
 };
 
 export const count: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -108,7 +115,7 @@ export const count: RequestHandler = async (req: Request, res: Response, next: N
       logger.error(error.message);
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
-  }
+  } return 0;
 };
 
 export const userReservations: RequestHandler = async (
@@ -136,6 +143,5 @@ export const userReservations: RequestHandler = async (
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
-  const result = await reservationsService.userReservations(userId);
-  res.status(status.OK).json(result);
+  return 0;
 };
