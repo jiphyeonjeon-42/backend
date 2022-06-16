@@ -63,10 +63,9 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
   let items = (await executeQuery(
     `
     SELECT 
-    SQL_CALC_FOUND_ROWS
     id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
-    WHERE nickName LIKE ?
+    WHERE nickname LIKE ?
     LIMIT ?
     OFFSET ?;
   `,
@@ -74,8 +73,8 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
   )) as models.User[];
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
-  SELECT FOUND_ROWS() as totalItems;
-  `));
+  SELECT COUNT(*) as totalItems FROM user WHERE nickname LIKE ?;
+  `, [`%${nickname}%`]));
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
@@ -126,9 +125,9 @@ export const searchAllUsers = async (limit: number, page: number) => {
     OFFSET ?;
   `, [limit, limit * page])) as models.User[];
   items = await setOverDueDay(items);
-  const total = (await executeQuery(`
-  SELECT FOUND_ROWS() as totalItems;
-  `));
+  const total = await executeQuery(`
+  SELECT COUNT(*) as totalItems FROM user;
+  `);
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
