@@ -17,7 +17,7 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const nickname = String(req.query.nickname) ? String(req.query.nickname) : '';
+  const nickname = String(req.query.nickname) !== 'undefined' ? String(req.query.nickname) : '';
   const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
@@ -40,6 +40,7 @@ export const search = async (
           await userReservations(data.id),
       })));
     }
+    return res.json(items);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
