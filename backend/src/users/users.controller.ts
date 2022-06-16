@@ -22,7 +22,9 @@ export const search = async (
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
-  if (limit <= 0 || page < 0) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (limit <= 0 || page < 0) {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST))
+  }
   try {
     if (nickname === '') {
       items = await searchAllUsers(limit, page);
