@@ -313,7 +313,7 @@ export const searchInfo = async (
   const categoryList = (await executeQuery(
     `
     SELECT
-      IFNULL(category.name, "전체") AS name,
+      IFNULL(category.name, "ALL") AS name,
       count(name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
@@ -324,7 +324,7 @@ export const searchInfo = async (
       ) AND (
         ${categoryWhere}
       )
-    GROUP BY name WITH ROLLUP;
+    GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
