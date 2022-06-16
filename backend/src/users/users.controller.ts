@@ -23,7 +23,7 @@ export const search = async (
   let items;
 
   if (limit <= 0 || page < 0) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST))
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     if (nickname === '') {

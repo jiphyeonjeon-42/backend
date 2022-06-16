@@ -1,7 +1,10 @@
 export interface Lending {
   userId: number,
+  bookInfoId: number,
   title: string,
   duedate: Date,
+  overDueDay: number,
+  reservedNum: number,
 }
 
 export interface User {
