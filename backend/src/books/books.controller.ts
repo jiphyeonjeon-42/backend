@@ -17,7 +17,7 @@ export const createBook = async (
     title, author, categoryId, callSign, pubdate,
   } = req.body;
   if (!(title && author && categoryId && callSign && pubdate)) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -25,9 +25,7 @@ export const createBook = async (
       .send(await BooksService.createBook(req.body));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
@@ -45,7 +43,7 @@ export const createBookInfo = async (
 ) => {
   const isbn = req.query.isbnQuery ? req.query.isbnQuery as string : '';
   if (isbn === '') {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -53,9 +51,7 @@ export const createBookInfo = async (
       .send(await BooksService.createBookInfo(isbn));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
-    if (
-      errorNumber >= 300 && errorNumber < 400
-    ) {
+    if (errorNumber >= 300 && errorNumber < 400) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
@@ -75,7 +71,7 @@ export const searchBookInfo = async (
     query, page, limit, sort, category,
   } = req.query;
   if (!(query && page && limit)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -107,7 +103,7 @@ export const getInfoId: RequestHandler = async (
 ) => {
   const id = parseInt(String(req.params.id), 10);
   if (Number.isNaN(id)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -134,7 +130,7 @@ export const sortInfo = async (
   const sort = String(req.query.sort);
   const limit = parseInt(req.query.limit, 10);
   if (!(sort && limit)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res
@@ -162,7 +158,7 @@ export const search = async (
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
   if (!(query && page && limit)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     return res

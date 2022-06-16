@@ -17,12 +17,14 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const nickname = String(req.query.nickname) ? String(req.query.nickname) : '';
-  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) - 1 : 0;
+  const nickname = String(req.query.nickname) !== 'undefined' ? String(req.query.nickname) : '';
+  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
-  if (limit <= 0 || page < 0) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (limit <= 0 || page < 0) {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST))
+  }
   try {
     if (nickname === '') {
       items = await searchAllUsers(limit, page);
@@ -38,6 +40,7 @@ export const search = async (
           await userReservations(data.id),
       })));
     }
+    return res.json(items);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {

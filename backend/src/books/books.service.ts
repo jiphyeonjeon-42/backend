@@ -78,12 +78,6 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const {
-    title, author, publisher, isbn, categoryId, callSign, pubdate,
-  } = book;
-  if (!(title && author && categoryId && callSign && pubdate)) {
-    throw new Error('300');
-  }
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
@@ -106,6 +100,14 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
   if (searchBySlackID.length > 1) {
     throw new Error(errorCode.slackidOverlap);
+  }
+
+  const serachCallSign = (await executeQuery(`
+    SELECT id FROM book WHERE callSign = ?
+    `, [book.callSign])) as StringRows[];
+
+  if (serachCallSign.length > 1) {
+    throw new Error(errorCode.callSignOverlap);
   }
 
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
@@ -152,7 +154,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       (
         SELECT id
         FROM book_info
-        WHERE (isbn = ? or title = ?) order by isbn LIMIT 1
+        WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1
       )
     )
   `,
@@ -171,7 +173,7 @@ export const createBookInfo = async (isbn: string) => {
       book_info.publisher,
       book_info.publishedAt as pubdate,
       book_info.isbn,
-       (
+      (
         SELECT name
         FROM category
         WHERE id = book_info.categoryId
@@ -267,15 +269,14 @@ export const sortInfo = async (
       book_info.createdAt as createdAt,
       book_info.updatedAt as updatedAt,
       COUNT(lending.id) as lendingCnt
-    FROM book_info, lending
-    WHERE book_info.id = lending.bookId
+    FROM book_info LEFT JOIN lending
+    ON book_info.id = lending.bookId
     GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
   `,
     [limit],
   )) as models.BookInfo[];
-
   return { items: bookList };
 };
 
@@ -312,7 +313,7 @@ export const searchInfo = async (
   const categoryList = (await executeQuery(
     `
     SELECT
-      category.name AS name,
+      IFNULL(category.name, "전체") AS name,
       count(name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
@@ -323,7 +324,7 @@ export const searchInfo = async (
       ) AND (
         ${categoryWhere}
       )
-    GROUP BY name;
+    GROUP BY name WITH ROLLUP;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];

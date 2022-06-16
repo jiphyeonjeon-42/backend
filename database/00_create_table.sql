@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int NOT NULL AUTO_INCREMENT,
   `donator` varchar(255) NOT NULL,
-  `callSign` varchar(255) NOT NULL,
+  `callSign` varchar(255) NOT NULL UNIQUE,
   `status` int NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
