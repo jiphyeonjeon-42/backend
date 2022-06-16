@@ -545,7 +545,7 @@ router
    *      tags:
    *      - books
    *      parameters:
-   *      - name: isbn
+   *      - name: isbnQuery
    *        in: query
    *        description: isbn번호
    *        required: true
