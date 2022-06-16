@@ -1,5 +1,7 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
+import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
+import { formatDate } from '../utils/dateFormat';
 import * as errorCode from '../utils/error/errorCode';
 
 export const create = async (
@@ -13,14 +15,14 @@ export const create = async (
   try {
     await conn.beginTransaction();
     // 존재하는 유저인지 확인
-    const hasUser = await transactionExecuteQuery(`
+    const users = await transactionExecuteQuery(`
       SELECT *
       FROM user
       WHERE id = ?
     `, [userId]);
-    if (!hasUser.length) { throw new Error(errorCode.noUserId); }
+    if (!users.length) { throw new Error(errorCode.noUserId); }
     // 유저 권한 없음
-    if (hasUser[0].role === 0) { throw new Error(errorCode.noPermission); }
+    if (users[0].role === 0) { throw new Error(errorCode.noPermission); }
     // 유저가 2권 이상 대출
     const numberOfLendings = await transactionExecuteQuery(`
       SELECT COUNT(*) as count
@@ -81,7 +83,19 @@ export const create = async (
       VALUES (?, ?, ?, ?)
     `, [userId, bookId, librarianId, condition]);
 
+    const books: [{title: string}] = await transactionExecuteQuery(`
+      SELECT
+        title
+      FROM
+        book_info
+      LEFT JOIN book ON
+        book.infoId = book_info.id
+      WHERE
+        book.id = ?
+    `, [bookId]);
     await conn.commit();
+    const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    publishMessage(users[0].slack, `:robot_face: 집현전 봇 :robot_face:\n대출 하신 \`${books[0].title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
