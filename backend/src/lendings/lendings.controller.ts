@@ -83,7 +83,8 @@ export const lendingId: RequestHandler = async (
     return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
   }
   try {
-    await lendingsService.lendingId(id);
+    const result = await lendingsService.lendingId(id);
+    res.status(status.OK).json(result);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 400 && errorNumber < 500) {
@@ -108,11 +109,12 @@ export const returnBook: RequestHandler = async (
     return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
-    await lendingsService.returnBook(
+    const result = await lendingsService.returnBook(
       id,
       req.body.lendingId,
       req.body.condition,
     );
+    res.status(status.OK).json(result);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 400 && errorNumber < 500) {
