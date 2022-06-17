@@ -210,6 +210,9 @@ export const router = Router();
  *                  type: string
  *                role:
  *                  type: integer
+ *                penaltyEndDate:
+ *                  type: string
+ *                  example: 20220618
  *      responses:
  *        '200':
  *          description: 성공

@@ -99,29 +99,26 @@ export const update = async (
   next: NextFunction,
 ) => {
   const { id } = req.params;
-  const {
-    nickname = '', intraId = '0', slack = '', role = '-1',
-  } = req.body;
-  if (!id) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
-  }
-  if (nickname === '' || !intraId || slack === '' || role === '-1') {
+  const { nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '' } = req.body;
+  if (!id || !(nickname !== '' || intraId !== 0 || slack !== '' || role !== -1 || penaltyEndDate !== '')) {
     return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     await updateUserAuth(
       parseInt(id, 10),
       nickname,
-      parseInt(intraId, 10),
+      intraId,
       slack,
-      parseInt(role, 10),
+      role,
+      penaltyEndDate,
     );
     return res.status(204).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
-      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
-      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      if (errorNumber === 204) {
+        return next(new ErrorResponse(error.message, status.CONFLICT));
+      }
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
