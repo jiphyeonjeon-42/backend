@@ -167,18 +167,18 @@ export const searchAllUsers = async (limit: number, page: number) => {
 
 export const createUser = async (email: string, password: string) => {
   const emailList = await executeQuery(`
-  SELECT email FROM user`);
-  if (emailList.indexOf(email) !== -1) {
+  SELECT email FROM user WHERE email LIKE ?`, [email]);
+  if (emailList.length > 0) {
     throw new Error(errorCode.emailOverlap);
   }
   await executeQuery(`
     INSERT INTO user(
-      email, password, nickName
+      email, password
     )
     VALUES (
-      ?, ?, ?
+      ?, ?
     );
-  `, [email, password, '']);
+  `, [email, password]);
   return null;
 };
 
