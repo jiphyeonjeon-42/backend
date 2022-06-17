@@ -85,22 +85,22 @@ export const userReservations = async (userId: number) => {
   return reservationList;
 };
 
-export const searchUserByNickName = async (nickname: string, limit: number, page: number) => {
+export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit: number, page: number) => {
   let items = (await executeQuery(
     `
     SELECT 
     id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
-    WHERE nickname LIKE ?
+    WHERE (nickname LIKE ? or email Like ?)
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${nickname}%`, limit, limit * page],
+    [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`, limit, limit * page],
   )) as models.User[];
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
-  SELECT COUNT(*) as totalItems FROM user WHERE nickname LIKE ?;
-  `, [`%${nickname}%`]));
+  SELECT COUNT(*) as totalItems FROM user  WHERE (nickname LIKE ? or email Like ?);
+  `, [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`],));
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
