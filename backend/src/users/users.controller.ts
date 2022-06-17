@@ -52,20 +52,26 @@ export const search = async (
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
+  return 0;
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   const pwSchema = new PasswordValidator();
-  if (!email || !password) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (!email || !password) {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  }
   try {
     pwSchema
       .is().min(10)
       .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
-    if (!pwSchema.validate(String(password))) throw new Error(errorCode.invalidatePassword);
+    if (!pwSchema.validate(String(password))) {
+      return next(new ErrorResponse(errorCode.invalidatePassword, status.BAD_REQUEST));
+    }
     await createUser(String(email), await bcrypt.hash(String(password), 10));
+    return res.status(status.OK).send(`${email} created!`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
@@ -79,7 +85,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
-  res.status(status.OK).send(`${email} created!`);
+  return 0;
 };
 
 export const update = async (
@@ -91,8 +97,12 @@ export const update = async (
   const {
     nickname = '', intraId = '0', slack = '', role = '-1',
   } = req.body;
-  if (!id) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
-  if (nickname === '' || !intraId || slack === '' || role === '-1') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (!id) {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  }
+  if (nickname === '' || !intraId || slack === '' || role === '-1') {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  }
   try {
     await updateUserAuth(
       parseInt(id, 10),
@@ -127,7 +137,9 @@ export const myupdate = async (
   const {
     email = '', password = '0',
   } = req.body;
-  if (email === '' && password === '0') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (email === '' && password === '0') {
+    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  }
   try {
     if (email !== '' && password === '0') {
       updateUserEmail(parseInt(tokenId, 10), email);
@@ -155,4 +167,5 @@ export const myupdate = async (
       next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
     }
   }
+  return 0;
 };

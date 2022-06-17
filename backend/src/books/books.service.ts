@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
@@ -69,12 +70,18 @@ const searchByIsbn = async (isbn: string) => {
     )
     .then((res) => {
       // eslint-disable-next-line prefer-destructuring
-      book = res.data.items;
+      book = res.data.items[0];
+      book.isbn = book.isbn.split(' ')[1];
+      book.image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
+      delete book.price;
+      delete book.discount;
+      delete book.link;
+      delete book.description;
     })
     .catch(() => {
       throw new Error(errorCode.isbnSearchFailed);
     });
-  return (book);
+  return ([book]);
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
@@ -167,12 +174,13 @@ export const createBookInfo = async (isbn: string) => {
   const isbnInBookInfo = (await executeQuery(
     `
     SELECT
+      book.id AS id,
       book.callSign AS callSign,
-      book_info.title,
-      book_info.author,
-      book_info.publisher,
-      book_info.publishedAt as pubdate,
-      book_info.isbn,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      book_info.publishedAt AS pubdate,
       (
         SELECT name
         FROM category
@@ -193,6 +201,7 @@ export const createBookInfo = async (isbn: string) => {
       book_info.author AS author,
       book_info.publisher AS publisher,
       book_info.isbn AS isbn,
+      book_info.publishedAt AS pubdate,
       (
         SELECT name
         FROM category
@@ -313,7 +322,7 @@ export const searchInfo = async (
   const categoryList = (await executeQuery(
     `
     SELECT
-      IFNULL(category.name, "전체") AS name,
+      IFNULL(category.name, "ALL") AS name,
       count(name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
@@ -324,7 +333,7 @@ export const searchInfo = async (
       ) AND (
         ${categoryWhere}
       )
-    GROUP BY name WITH ROLLUP;
+    GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
