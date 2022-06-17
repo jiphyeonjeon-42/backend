@@ -89,7 +89,7 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
   let items = (await executeQuery(
     `
     SELECT 
-    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
+    id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
     WHERE nickname LIKE ?
     LIMIT ?
@@ -112,12 +112,13 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
 };
 
 export const searchUserById = async (id: number) => {
-  const items = (await executeQuery(`
+  let items = (await executeQuery(`
     SELECT 
-    *
+    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
     FROM user
     WHERE id=?;
   `, [id])) as models.User[];
+  items = await setOverDueDay(items);
   return { items };
 };
 
