@@ -2,7 +2,7 @@ export interface Lending {
   userId: number,
   bookInfoId: number,
   lendDate: Date,
-  lendingCondition: number,
+  lendingCondition: string,
   image: string,
   author: string,
   title: string,

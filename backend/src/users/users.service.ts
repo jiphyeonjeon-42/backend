@@ -89,7 +89,7 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
   let items = (await executeQuery(
     `
     SELECT 
-    id, email, nickname, intraId, slack, penaltyEndDate, role
+    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
     FROM user
     WHERE nickname LIKE ?
     LIMIT ?
