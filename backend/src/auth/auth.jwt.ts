@@ -15,7 +15,7 @@ export const issueJwt = (user: User) => {
   };
   const secretKey = config.jwt.secret;
   const options = {
-    expiresIn: '60m',
+    expiresIn: '480m',
     issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
   };
   return jwt.sign(payload, secretKey, options);
@@ -29,7 +29,7 @@ export const issueJwt = (user: User) => {
  *      httpOnly : 브라우저에서만 쿠키를 사용할 수 있게 설정
  *      secure : https 에서만 사용할 수 있도록 설정
  *      sameSite : 같은 도메인의에서만 쿠키를 사용할 수 있는 'strict' 값 설정
- *      expires: 밀리세컨드 값으로 설정해야하고, 1000 * 60 * 60 = 1시간으로 설정
+ *      expires: 밀리세컨드 값으로 설정해야하고, 1000 * 60 * 480 = 8시간으로 설정
  */
 export const saveJwt = async (req: Request, res: Response, user: User) : Promise<void> => {
   const token = issueJwt(user);
@@ -37,6 +37,6 @@ export const saveJwt = async (req: Request, res: Response, user: User) : Promise
     httpOnly: true,
     secure: true, // ANCHOR https 연결시에는 true로 설정해주어야함.
     sameSite: 'strict',
-    expires: new Date(new Date().getTime() + 1000 * 60 * 60),
+    expires: new Date(new Date().getTime() + 1000 * 60 * 480),
   });
 };
