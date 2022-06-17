@@ -21,6 +21,7 @@ const noonScheduler = () => {
   schedule.scheduleJob(rule, async () => {
     await notifications.notifyReservation();
     await notifications.notifyReturningReminder();
+    await notifications.notifyOverdue();
   });
 };
 

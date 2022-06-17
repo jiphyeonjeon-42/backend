@@ -83,9 +83,32 @@ export const notifyReturningReminder = async () => {
     LEFT JOIN user ON
       lending.userId = user.id
     WHERE
-      DATEDIFF(CURDATE(), lending.createdAt) = 11
+      DATEDIFF(CURDATE(), lending.createdAt) = 11 AND
+      lending.returnedAt IS NULL
   `);
   lendings.forEach(async (lending) => {
     publishMessage(lending.slack, `:robot_face: 집현전 봇 :robot_face:\n 대출하신 도서 \`${lending.title}\`의 반납 기한이 다가왔습니다. 3일 내로 반납해주시기 바랍니다.`);
+  });
+};
+
+export const notifyOverdue = async () => {
+  const lendings: [{title: string, slack: string}] = await executeQuery(`
+    SELECT
+      book_info.title,
+      user.slack
+    FROM
+      lending
+    LEFT JOIN book ON
+      lending.bookId = book.id
+    LEFT JOIN book_info ON
+      book.infoId = book_info.id
+    LEFT JOIN user ON
+      lending.userId = user.id
+    WHERE
+    DATEDIFF(CURDATE(), lending.createdAt) = 15 AND
+    lending.returnedAt IS NULL
+  `);
+  lendings.forEach(async (lending) => {
+    publishMessage(lending.slack, `:robot_face: 집현전 봇 :robot_face:\n 대출하신 도서 \`${lending.title}\`가 연체되었습니다. 빠른 시일 내에 반납해주시기 바랍니다.`);
   });
 };
