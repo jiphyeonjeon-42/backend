@@ -112,7 +112,7 @@ export const update = async (
       role,
       penaltyEndDate,
     );
-    return res.status(204).send('success');
+    return res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
