@@ -16,6 +16,8 @@ export const nonAffected = '110';
 export const emailOverlap = '203';
 export const nicknameOverlap = '204';
 export const invalidatePassword = '205';
+export const inValidRole = '206';
+export const slackOverlap = '207';
 
 export const slackidOverlap = '301';
 export const noISBN = '302';
