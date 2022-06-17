@@ -52,7 +52,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     }
     const result = {
       id: user.items[0].id,
-      intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
+      intra: user.items[0].nickname ? user.items[0].nickname : user.items[0].email,
       librarian: user.items[0].role === 2,
     };
     res.status(status.OK).json(result);
