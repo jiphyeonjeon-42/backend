@@ -6,7 +6,7 @@ import ErrorResponse from '../utils/error/errorResponse';
 import { User } from './users.model';
 import {
   createUser,
-  searchAllUsers, searchUserByNickName, updateUserAuth,
+  searchAllUsers, searchUserById, searchUserByNickName, updateUserAuth,
   updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
@@ -17,6 +17,7 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const id = String(req.query.id) !== 'undefined' ? Number(req.query.id) : 0;
   const nickname = String(req.query.nickname) !== 'undefined' ? String(req.query.nickname) : '';
   const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
@@ -26,11 +27,15 @@ export const search = async (
     return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
-    if (nickname === '') {
+    if (nickname === '' && id === 0) {
       items = await searchAllUsers(limit, page);
-    } else if (nickname) {
+    } else if (nickname !== '' && id === 0) {
       items = JSON.parse(JSON.stringify(
         await searchUserByNickName(nickname, limit, page),
+      ));
+    } else if (nickname === '' && id !== 0) {
+      items = JSON.parse(JSON.stringify(
+        await searchUserById(id),
       ));
     }
     if (items) {

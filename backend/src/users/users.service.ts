@@ -6,7 +6,14 @@ import * as types from './users.type';
 export const getLending = async () => {
   const items = await executeQuery(`
     SELECT
-    l.userId as userId, bi.title as title, DATE_ADD(l.createdAt, INTERVAL 14 DAY) as duedate
+    l.userId as userId,
+    l.createdAt as lendDate,
+    l.lendingCondition as lendingCondition,
+    bi.id as bookInfoId,
+    bi.title as title,
+    DATE_ADD(l.createdAt, INTERVAL 14 DAY) as duedate,
+    bi.image as image, 
+    bi.author as author
     FROM lending as l
     LEFT JOIN book as b
     on l.bookId = b.id
@@ -14,6 +21,23 @@ export const getLending = async () => {
     on b.infoid = bi.id
     where l.returnedAt is null;
   `) as models.Lending[];
+  await Promise.all(items.map(async (item: models.Lending, idx) => {
+    const rtnObj: models.Lending = Object.assign(item);
+    const reservedUserArr: any[] = await executeQuery(`
+    SELECT
+    *
+    FROM reservation 
+    where bookInfoId = ?;
+    `, [items[idx].bookInfoId]);
+    rtnObj.overDueDay = 0;
+    rtnObj.reservedNum = reservedUserArr.length;
+    const nowDate = new Date();
+    if (rtnObj.duedate < nowDate) {
+      rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
+        - rtnObj.duedate.getTime() / (1000 * 3600 * 24));
+    }
+    return rtnObj;
+  }));
   return { items };
 };
 
@@ -27,9 +51,9 @@ export const setOverDueDay = async (items: any) => {
       if (rtnObj.lendings.length) {
         const nowDate = new Date();
         rtnObj.lendings.forEach((lend: models.Lending) => {
-          if (lend.duedate > nowDate) {
-            rtnObj.overDueDay += Math.floor(lend.duedate.getTime() / (1000 * 3600 * 24)
-            - nowDate.getTime() / (1000 * 3600 * 24));
+          if (lend.duedate < nowDate) {
+            rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
+              - lend.duedate.getTime() / (1000 * 3600 * 24));
           }
         });
       }
@@ -50,7 +74,9 @@ export const userReservations = async (userId: number) => {
       WHERE status = 0
         AND bookInfoId = reservedBookInfoId
         AND createdAt <= reservationDate) as ranking,
-    book_info.title as title
+    book_info.title as title,
+    book_info.author as author,
+    book_info.image as image
     FROM reservation
     LEFT JOIN book_info
     ON reservation.bookInfoId = book_info.id
@@ -86,12 +112,13 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
 };
 
 export const searchUserById = async (id: number) => {
-  const items = (await executeQuery(`
+  let items = (await executeQuery(`
     SELECT 
-    *
+    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
     FROM user
     WHERE id=?;
   `, [id])) as models.User[];
+  items = await setOverDueDay(items);
   return { items };
 };
 
