@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int NOT NULL AUTO_INCREMENT,
   `donator` varchar(255) NOT NULL,
-  `callSign` varchar(255) NOT NULL UNIQUE,
+  `callSign` varchar(255) BINARY NOT NULL UNIQUE,
   `status` int NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
@@ -129,9 +129,9 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) NOT NULL UNIQUE,
+  `email` varchar(255) BINARY NOT NULL UNIQUE,
   `password` varchar(255) NOT NULL,
-  `nickname` varchar(255) DEFAULT NULL UNIQUE,
+  `nickname` varchar(255) DEFAULT NULL,
   `intraId` int DEFAULT NULL UNIQUE,
   `slack` varchar(255) DEFAULT NULL UNIQUE,
   `penaltyEndDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
