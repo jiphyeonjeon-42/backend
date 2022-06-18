@@ -5,6 +5,7 @@ import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
+import { logger } from '../utils/logger';
 
 export const search = async (
   query: string,
@@ -85,76 +86,33 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const isbnInBookInfo = (await executeQuery(
-    `
-    SELECT
-      isbn
-    FROM book_info
-    WHERE isbn = ?
-  `,
-    [book.isbn],
-  )) as StringRows[];
+  const isbnInBookInfo = (await executeQuery('SELECT isbn FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
 
-  const searchBySlackID = (await executeQuery(
-    ` 
-    SELECT
-      id
-    FROM user
-    WHERE nickname = ?
-  `,
-    [book.donator],
-  )) as StringRows[];
-
-  if (searchBySlackID.length > 1) {
-    throw new Error(errorCode.slackidOverlap);
+  const slackIdExits = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+  if (slackIdExits[0].cnt > 0) {
+    logger.warn(`${errorCode.slackidOverlap}: nickname이 중복입니다. 최신에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
-
-  const serachCallSign = (await executeQuery(`
-    SELECT id FROM book WHERE callSign = ?
-    `, [book.callSign])) as StringRows[];
-
+  const serachCallSign = (await executeQuery('SELECT id FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
   if (serachCallSign.length > 1) {
     throw new Error(errorCode.callSignOverlap);
   }
-
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-
   if (isbnInBookInfo.length === 0) {
     await executeQuery(
-      `
-    INSERT INTO book_info (
-      title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt
-      ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?
-      )
-      `,
-      [
-        book.title,
-        book.author,
-        book.publisher,
-        book.isbn ? book.isbn : '',
-        book.image,
-        category,
-        book.categoryId,
-        book.pubdate,
-      ],
+      `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [book.title, book.author, book.publisher, book.isbn ? book.isbn : '', book.image, category, book.categoryId, book.pubdate],
     );
   }
 
   await executeQuery(
     `
-    INSERT INTO book(
-      donator,
-      donatorId,
-      callSign,
-      status,
-      infoId
-    ) VALUES (
+    INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES (
       ?,
       (
         SELECT id
         FROM user
-        WHERE nickname = ?
+        WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1
       ),
       ?,
       0,
