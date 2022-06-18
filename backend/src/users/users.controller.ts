@@ -6,7 +6,7 @@ import ErrorResponse from '../utils/error/errorResponse';
 import { User } from './users.model';
 import {
   createUser,
-  searchAllUsers, searchUserById, searchUserByNickName, updateUserAuth,
+  searchAllUsers, searchUserById, searchUserBynicknameOrEmail, updateUserAuth,
   updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
@@ -17,8 +17,8 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const id = String(req.query.id) !== 'undefined' ? Number(req.query.id) : 0;
-  const nickname = String(req.query.nickname) !== 'undefined' ? String(req.query.nickname) : '';
+  const id = String(req.query.id) !== 'undefined' ? parseInt(String(req.query.id), 10) : 0;
+  const nicknameOrEmail = String(req.query.nicknameOrEmail) !== 'undefined' ? String(req.query.nicknameOrEmail) : '';
   const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
@@ -27,13 +27,13 @@ export const search = async (
     return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
-    if (nickname === '' && id === 0) {
+    if (nicknameOrEmail === '' && id === 0) {
       items = await searchAllUsers(limit, page);
-    } else if (nickname !== '' && id === 0) {
+    } else if (nicknameOrEmail !== '' && id === 0) {
       items = JSON.parse(JSON.stringify(
-        await searchUserByNickName(nickname, limit, page),
+        await searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
       ));
-    } else if (nickname === '' && id !== 0) {
+    } else if (nicknameOrEmail === '' && id !== 0) {
       items = JSON.parse(JSON.stringify(
         await searchUserById(id),
       ));
@@ -99,29 +99,26 @@ export const update = async (
   next: NextFunction,
 ) => {
   const { id } = req.params;
-  const {
-    nickname = '', intraId = '0', slack = '', role = '-1',
-  } = req.body;
-  if (!id) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
-  }
-  if (nickname === '' || !intraId || slack === '' || role === '-1') {
+  const { nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '' } = req.body;
+  if (!id || !(nickname !== '' || intraId !== 0 || slack !== '' || role !== -1 || penaltyEndDate !== '')) {
     return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
   }
   try {
     await updateUserAuth(
       parseInt(id, 10),
       nickname,
-      parseInt(intraId, 10),
+      intraId,
       slack,
-      parseInt(role, 10),
+      role,
+      penaltyEndDate,
     );
-    return res.status(204).send('success');
+    return res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
-      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
-      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      if (errorNumber === 204) {
+        return next(new ErrorResponse(error.message, status.CONFLICT));
+      }
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));

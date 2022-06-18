@@ -85,22 +85,22 @@ export const userReservations = async (userId: number) => {
   return reservationList;
 };
 
-export const searchUserByNickName = async (nickname: string, limit: number, page: number) => {
+export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit: number, page: number) => {
   let items = (await executeQuery(
     `
     SELECT 
     id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
-    WHERE nickname LIKE ?
+    WHERE (nickname LIKE ? or email Like ?)
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${nickname}%`, limit, limit * page],
+    [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`, limit, limit * page],
   )) as models.User[];
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
-  SELECT COUNT(*) as totalItems FROM user WHERE nickname LIKE ?;
-  `, [`%${nickname}%`]));
+  SELECT COUNT(*) as totalItems FROM user  WHERE (nickname LIKE ? or email Like ?);
+  `, [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`],));
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
@@ -209,11 +209,18 @@ export const updateUserAuth = async (
   intraId: number,
   slack: string,
   role: number,
+  penaltyEndDate: string,
 ) => {
-  const nicknameList = await executeQuery(`
-  SELECT nickname FROM user`);
-  if (nicknameList.indexOf(nickname) !== -1) {
+  const nicknameExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE nickname = ?`,[nickname],);
+  if (nicknameExist[0].cnt > 0) {
     throw new Error(errorCode.nicknameOverlap);
+  }
+  if (!(role >= 0 && role <= 3)) {
+    throw new Error(errorCode.inValidRole);
+  }
+  const slackExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE slack = ?`,[slack],);
+  if (slackExist[0].cnt > 0) {
+    throw new Error(errorCode.slackOverlap);
   }
   let setString = '';
   const queryParameters = [];
@@ -229,6 +236,9 @@ export const updateUserAuth = async (
   } if (role !== -1) {
     setString += 'role=?,';
     queryParameters.push(role);
+  } if (penaltyEndDate !== '') {
+    setString += 'penaltyEndDate=?,'
+    queryParameters.push(penaltyEndDate);
   }
   setString = setString.slice(0, -1);
   queryParameters.push(id);
