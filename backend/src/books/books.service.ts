@@ -86,45 +86,27 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const isbnInBookInfo = (await executeQuery('SELECT isbn FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
+  const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
 
-  const slackIdExits = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
-  if (slackIdExits[0].cnt > 0) {
+  const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+  if (slackIdExist[0].cnt > 1) {
     logger.warn(`${errorCode.slackidOverlap}: nickname이 중복입니다. 최신에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
-  const serachCallSign = (await executeQuery('SELECT id FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
-  if (serachCallSign.length > 1) {
+  const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
+  if (callSignExist[0].cnt > 0) {
     throw new Error(errorCode.callSignOverlap);
   }
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-  if (isbnInBookInfo.length === 0) {
+  if (isbnInBookInfo[0].cnt === 0) {
     await executeQuery(
       `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [book.title, book.author, book.publisher, book.isbn ? book.isbn : '', book.image, category, book.categoryId, book.pubdate],
     );
   }
-
-  await executeQuery(
-    `
-    INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES (
-      ?,
-      (
-        SELECT id
-        FROM user
-        WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1
-      ),
-      ?,
-      0,
-      (
-        SELECT id
-        FROM book_info
-        WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1
-      )
-    )
-  `,
-    [book.donator, book.donator, book.callSign, book.isbn, book.title],
-  );
+  await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
+    (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
+  `, [book.donator, book.donator, book.callSign, book.isbn, book.title]);
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 
