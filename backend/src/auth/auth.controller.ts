@@ -25,7 +25,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
   try {
     const { id } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
-    if (user.length === 0) throw new ErrorResponse(errorCode.noUser, 401);
+    if (user.length === 0) throw new ErrorResponse(errorCode.NO_USER, 401);
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
@@ -35,10 +35,10 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -48,11 +48,11 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     const { id } = req.user as any;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      throw new ErrorResponse(errorCode.noUser, 410);
+      throw new ErrorResponse(errorCode.NO_USER, 410);
     }
     const result = {
       id: user.items[0].id,
-      intra: user.items[0].nickname.length === 0 ? user.items[0].email : user.items[0].nickname,
+      intra: user.items[0].nickname ? user.items[0].nickname : user.items[0].email,
       librarian: user.items[0].role === 2,
     };
     res.status(status.OK).json(result);
@@ -62,10 +62,10 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     if (errorNumber >= 100 && errorNumber < 300) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -74,15 +74,15 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   try {
     const { id, password } = req.body;
     if (!id || !password) {
-      throw new ErrorResponse(errorCode.noInput, 400);
+      throw new ErrorResponse(errorCode.NO_INPUT, 400);
     }
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
     const user: { items: models.User[] } = await usersService.searchUserByEmail(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.noId, 401));
+      next(new ErrorResponse(errorCode.NO_ID, 401));
     }
     if (!bcrypt.compareSync(password, user.items[0].password)) {
-      next(new ErrorResponse(errorCode.wrongPassword, 403));
+      next(new ErrorResponse(errorCode.WRONG_PASSWORD, 403));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(204).send();
@@ -92,10 +92,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -124,18 +124,18 @@ export const intraAuthentication = async (
     const { intraId, nickName } = intraProfile;
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
-      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
+      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.noUser, 410));
+      next(new ErrorResponse(errorCode.NO_USER, 410));
     }
     if (user.items[0].role !== role.user) {
-      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
+      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
-      next(new ErrorResponse(errorCode.nonAffected, 401));
+      next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(200).send();
@@ -145,10 +145,10 @@ export const intraAuthentication = async (
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -166,10 +166,10 @@ export const updateSlackList = async (
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };

@@ -17,8 +17,8 @@ export const router = Router();
  *        - users
  *      parameters:
  *        - in: query
- *          name: nickname
- *          description: 검색할 유저의 nickname
+ *          name: nicknameOrEmail
+ *          description: 검색할 유저의 nickname or email
  *          schema:
  *            type: string
  *        - in: query
@@ -210,6 +210,9 @@ export const router = Router();
  *                  type: string
  *                role:
  *                  type: integer
+ *                penaltyEndDate:
+ *                  type: string
+ *                  example: 20220618
  *      responses:
  *        '200':
  *          description: 성공

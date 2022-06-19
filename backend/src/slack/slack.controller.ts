@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { FtError } from '../auth/auth.type';
+import * as status from 'http-status';
 import * as slack from './slack.service';
 
 export const updateSlackList = async (req: Request, res: Response) : Promise<void> => {

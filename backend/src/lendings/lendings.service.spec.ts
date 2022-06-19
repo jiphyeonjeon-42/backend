@@ -13,7 +13,7 @@ describe('LendingsService', () => {
 
   it('lend a book (success)', async () => {
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.noUserId);
+      .toBe(lendingsService.NO_USER_ID);
   });
   it('lend a book (noPermission)', async () => {
     userId = 1392;
@@ -25,31 +25,31 @@ describe('LendingsService', () => {
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
       .toBe(lendingsService.lendingOverload);
   });
-  it('lend a book (lendingOverdue)', async () => {
+  it('lend a book (LENDING_OVERDUE)', async () => {
     userId = 1418;
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.lendingOverdue);
+      .toBe(lendingsService.LENDING_OVERDUE);
   });
-  it('lend a book (onLending)', async () => {
+  it('lend a book (ON_LENDING)', async () => {
     userId = 1444;
     bookId = 1;
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.onLending);
+      .toBe(lendingsService.ON_LENDING);
   });
-  it('lend a book (onReservation)', async () => {
+  it('lend a book (ON_RESERVATION)', async () => {
     bookId = 82;
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.onReservation);
+      .toBe(lendingsService.ON_RESERVATION);
   });
-  it('lend a book (lostBook)', async () => {
+  it('lend a book (LOST_BOOK)', async () => {
     bookId = 859;
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.lostBook);
+      .toBe(lendingsService.LOST_BOOK);
   });
-  it('lend a book (damagedBook)', async () => {
+  it('lend a book (DAMAGED_BOOK)', async () => {
     bookId = 858;
     expect(await lendingsService.create(userId, bookId, librarianId, condition))
-      .toBe(lendingsService.damagedBook);
+      .toBe(lendingsService.DAMAGED_BOOK);
   });
 
   it('search lending record (success)', async () => {
@@ -156,14 +156,14 @@ describe('LendingsService', () => {
       .toBe(lendingsService.ok);
   });
 
-  it('return a book (alreadyReturned)', async () => {
+  it('return a book (ALREADY_RETURNED)', async () => {
     expect(await lendingsService.returnBook(librarianId, lendingId, condition))
-      .toBe(lendingsService.alreadyReturned);
+      .toBe(lendingsService.ALREADY_RETURNED);
   });
 
-  it('return a book (nonexistentLending)', async () => {
+  it('return a book (NONEXISTENT_LENDING)', async () => {
     lendingId = 1000;
     expect(await lendingsService.returnBook(librarianId, lendingId, condition))
-      .toBe(lendingsService.nonexistentLending);
+      .toBe(lendingsService.NONEXISTENT_LENDING);
   });
 });

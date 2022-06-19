@@ -6,7 +6,7 @@ import ErrorResponse from '../utils/error/errorResponse';
 import { User } from './users.model';
 import {
   createUser,
-  searchAllUsers, searchUserByNickName, updateUserAuth,
+  searchAllUsers, searchUserById, searchUserBynicknameOrEmail, updateUserAuth,
   updateUserEmail, updateUserPassword, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
@@ -17,20 +17,25 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const nickname = String(req.query.nickname) !== 'undefined' ? String(req.query.nickname) : '';
+  const id = String(req.query.id) !== 'undefined' ? parseInt(String(req.query.id), 10) : 0;
+  const nicknameOrEmail = String(req.query.nicknameOrEmail) !== 'undefined' ? String(req.query.nicknameOrEmail) : '';
   const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
   const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
   let items;
 
   if (limit <= 0 || page < 0) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST))
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (nickname === '') {
+    if (nicknameOrEmail === '' && id === 0) {
       items = await searchAllUsers(limit, page);
-    } else if (nickname) {
+    } else if (nicknameOrEmail !== '' && id === 0) {
       items = JSON.parse(JSON.stringify(
-        await searchUserByNickName(nickname, limit, page),
+        await searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
+      ));
+    } else if (nicknameOrEmail === '' && id !== 0) {
+      items = JSON.parse(JSON.stringify(
+        await searchUserById(id),
       ));
     }
     if (items) {
@@ -46,26 +51,32 @@ export const search = async (
     if (errorNumber >= 200 && errorNumber < 300) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
+  return 0;
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   const pwSchema = new PasswordValidator();
-  if (!email || !password) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (!email || !password) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   try {
     pwSchema
       .is().min(10)
       .is().max(42) /* eslint-disable-next-line newline-per-chained-call */
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
-    if (!pwSchema.validate(String(password))) throw new Error(errorCode.invalidatePassword);
+    if (!pwSchema.validate(String(password))) {
+      return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
+    }
     await createUser(String(email), await bcrypt.hash(String(password), 10));
+    return res.status(status.OK).send(`${email} created!`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
@@ -73,13 +84,13 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       else if (errorNumber === 203) next(new ErrorResponse(error.message, status.CONFLICT));
       else next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
-  res.status(status.OK).send(`${email} created!`);
+  return 0;
 };
 
 export const update = async (
@@ -88,31 +99,32 @@ export const update = async (
   next: NextFunction,
 ) => {
   const { id } = req.params;
-  const {
-    nickname = '', intraId = '0', slack = '', role = '-1',
-  } = req.body;
-  if (!id) next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
-  if (nickname === '' || !intraId || slack === '' || role === '-1') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  const { nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '' } = req.body;
+  if (!id || !(nickname !== '' || intraId !== 0 || slack !== '' || role !== -1 || penaltyEndDate !== '')) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   try {
     await updateUserAuth(
       parseInt(id, 10),
       nickname,
-      parseInt(intraId, 10),
+      intraId,
       slack,
-      parseInt(role, 10),
+      role,
+      penaltyEndDate,
     );
-    return res.status(204).send('success');
+    return res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
-      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
-      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      if (errorNumber === 204) {
+        return next(new ErrorResponse(error.message, status.CONFLICT));
+      }
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -127,7 +139,9 @@ export const myupdate = async (
   const {
     email = '', password = '0',
   } = req.body;
-  if (email === '' && password === '0') next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+  if (email === '' && password === '0') {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   try {
     if (email !== '' && password === '0') {
       updateUserEmail(parseInt(tokenId, 10), email);
@@ -149,10 +163,11 @@ export const myupdate = async (
       if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
+  return 0;
 };

@@ -6,7 +6,14 @@ import * as types from './users.type';
 export const getLending = async () => {
   const items = await executeQuery(`
     SELECT
-    l.userId as userId, bi.title as title, DATE_ADD(l.createdAt, INTERVAL 14 DAY) as duedate
+    l.userId as userId,
+    l.createdAt as lendDate,
+    l.lendingCondition as lendingCondition,
+    bi.id as bookInfoId,
+    bi.title as title,
+    DATE_ADD(l.createdAt, INTERVAL 14 DAY) as duedate,
+    bi.image as image, 
+    bi.author as author
     FROM lending as l
     LEFT JOIN book as b
     on l.bookId = b.id
@@ -14,6 +21,23 @@ export const getLending = async () => {
     on b.infoid = bi.id
     where l.returnedAt is null;
   `) as models.Lending[];
+  await Promise.all(items.map(async (item: models.Lending, idx) => {
+    const rtnObj: models.Lending = Object.assign(item);
+    const reservedUserArr: any[] = await executeQuery(`
+    SELECT
+    *
+    FROM reservation 
+    where bookInfoId = ?;
+    `, [items[idx].bookInfoId]);
+    rtnObj.overDueDay = 0;
+    rtnObj.reservedNum = reservedUserArr.length;
+    const nowDate = new Date();
+    if (rtnObj.duedate < nowDate) {
+      rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
+        - rtnObj.duedate.getTime() / (1000 * 3600 * 24));
+    }
+    return rtnObj;
+  }));
   return { items };
 };
 
@@ -27,9 +51,9 @@ export const setOverDueDay = async (items: any) => {
       if (rtnObj.lendings.length) {
         const nowDate = new Date();
         rtnObj.lendings.forEach((lend: models.Lending) => {
-          if (lend.duedate > nowDate) {
-            rtnObj.overDueDay += Math.floor(lend.duedate.getTime() / (1000 * 3600 * 24)
-            - nowDate.getTime() / (1000 * 3600 * 24));
+          if (lend.duedate < nowDate) {
+            rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
+              - lend.duedate.getTime() / (1000 * 3600 * 24));
           }
         });
       }
@@ -50,7 +74,9 @@ export const userReservations = async (userId: number) => {
       WHERE status = 0
         AND bookInfoId = reservedBookInfoId
         AND createdAt <= reservationDate) as ranking,
-    book_info.title as title
+    book_info.title as title,
+    book_info.author as author,
+    book_info.image as image
     FROM reservation
     LEFT JOIN book_info
     ON reservation.bookInfoId = book_info.id
@@ -59,19 +85,22 @@ export const userReservations = async (userId: number) => {
   return reservationList;
 };
 
-export const searchUserByNickName = async (nickname: string, limit: number, page: number) => {
-  let items = (await executeQuery(`
+export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit: number, page: number) => {
+  let items = (await executeQuery(
+    `
     SELECT 
-    *
+    id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
-    WHERE nickName LIKE ?
+    WHERE (nickname LIKE ? or email Like ?)
     LIMIT ?
     OFFSET ?;
-  `, [`%${nickname}%`, limit, limit * page])) as models.User[];
+  `,
+    [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`, limit, limit * page],
+  )) as models.User[];
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
-  SELECT FOUND_ROWS() as totalItems;
-  `));
+  SELECT COUNT(*) as totalItems FROM user  WHERE (nickname LIKE ? or email Like ?);
+  `, [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`],));
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
@@ -83,12 +112,13 @@ export const searchUserByNickName = async (nickname: string, limit: number, page
 };
 
 export const searchUserById = async (id: number) => {
-  const items = (await executeQuery(`
+  let items = (await executeQuery(`
     SELECT 
-    *
+    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
     FROM user
     WHERE id=?;
   `, [id])) as models.User[];
+  items = await setOverDueDay(items);
   return { items };
 };
 
@@ -116,15 +146,15 @@ export const searchAllUsers = async (limit: number, page: number) => {
   let items = (await executeQuery(`
     SELECT
     SQL_CALC_FOUND_ROWS
-    *
+    id, email, nickname, intraId, slack, penaltyEndDate, role
     FROM user
     LIMIT ?
     OFFSET ?;
   `, [limit, limit * page])) as models.User[];
   items = await setOverDueDay(items);
-  const total = (await executeQuery(`
-  SELECT FOUND_ROWS() as totalItems;
-  `));
+  const total = await executeQuery(`
+  SELECT COUNT(*) as totalItems FROM user;
+  `);
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
@@ -137,18 +167,18 @@ export const searchAllUsers = async (limit: number, page: number) => {
 
 export const createUser = async (email: string, password: string) => {
   const emailList = await executeQuery(`
-  SELECT email FROM user`);
-  if (emailList.indexOf(email) !== -1) {
-    throw new Error(errorCode.emailOverlap);
+  SELECT email FROM user WHERE email LIKE ?`, [email]);
+  if (emailList.length > 0) {
+    throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
     INSERT INTO user(
-      email, password, nickName
+      email, password
     )
     VALUES (
-      ?, ?, ?
+      ?, ?
     );
-  `, [email, password, '']);
+  `, [email, password]);
   return null;
 };
 
@@ -156,7 +186,7 @@ export const updateUserEmail = async (id: number, email:string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
   if (emailList.indexOf(email) !== -1) {
-    throw new Error(errorCode.emailOverlap);
+    throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
   UPDATE user 
@@ -179,11 +209,18 @@ export const updateUserAuth = async (
   intraId: number,
   slack: string,
   role: number,
+  penaltyEndDate: string,
 ) => {
-  const nicknameList = await executeQuery(`
-  SELECT nickname FROM user`);
-  if (nicknameList.indexOf(nickname) !== -1) {
-    throw new Error(errorCode.nicknameOverlap);
+  const nicknameExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE nickname = ?`,[nickname],);
+  if (nicknameExist[0].cnt > 0) {
+    throw new Error(errorCode.NICKNAME_OVERLAP);
+  }
+  if (!(role >= 0 && role <= 3)) {
+    throw new Error(errorCode.INVALID_ROLE);
+  }
+  const slackExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE slack = ?`,[slack],);
+  if (slackExist[0].cnt > 0) {
+    throw new Error(errorCode.SLACK_OVERLAP);
   }
   let setString = '';
   const queryParameters = [];
@@ -199,6 +236,9 @@ export const updateUserAuth = async (
   } if (role !== -1) {
     setString += 'role=?,';
     queryParameters.push(role);
+  } if (penaltyEndDate !== '') {
+    setString += 'penaltyEndDate=?,'
+    queryParameters.push(penaltyEndDate);
   }
   setString = setString.slice(0, -1);
   queryParameters.push(id);
