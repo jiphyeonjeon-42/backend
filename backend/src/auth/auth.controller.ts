@@ -25,7 +25,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
   try {
     const { id } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
-    if (user.length === 0) throw new ErrorResponse(errorCode.noUser, 401);
+    if (user.length === 0) throw new ErrorResponse(errorCode.NO_USER, 401);
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
@@ -48,7 +48,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     const { id } = req.user as any;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      throw new ErrorResponse(errorCode.noUser, 410);
+      throw new ErrorResponse(errorCode.NO_USER, 410);
     }
     const result = {
       id: user.items[0].id,
@@ -74,15 +74,15 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   try {
     const { id, password } = req.body;
     if (!id || !password) {
-      throw new ErrorResponse(errorCode.noInput, 400);
+      throw new ErrorResponse(errorCode.NO_INPUT, 400);
     }
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
     const user: { items: models.User[] } = await usersService.searchUserByEmail(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.noId, 401));
+      next(new ErrorResponse(errorCode.NO_ID, 401));
     }
     if (!bcrypt.compareSync(password, user.items[0].password)) {
-      next(new ErrorResponse(errorCode.wrongPassword, 403));
+      next(new ErrorResponse(errorCode.WRONG_PASSWORD, 403));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(204).send();
@@ -124,18 +124,18 @@ export const intraAuthentication = async (
     const { intraId, nickName } = intraProfile;
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
-      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
+      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.noUser, 410));
+      next(new ErrorResponse(errorCode.NO_USER, 410));
     }
     if (user.items[0].role !== role.user) {
-      next(new ErrorResponse(errorCode.alreadyAuthenticated, 401));
+      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
-      next(new ErrorResponse(errorCode.nonAffected, 401));
+      next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(200).send();

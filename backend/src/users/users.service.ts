@@ -169,7 +169,7 @@ export const createUser = async (email: string, password: string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user WHERE email LIKE ?`, [email]);
   if (emailList.length > 0) {
-    throw new Error(errorCode.emailOverlap);
+    throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
     INSERT INTO user(
@@ -186,7 +186,7 @@ export const updateUserEmail = async (id: number, email:string) => {
   const emailList = await executeQuery(`
   SELECT email FROM user`);
   if (emailList.indexOf(email) !== -1) {
-    throw new Error(errorCode.emailOverlap);
+    throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
   UPDATE user 
@@ -213,14 +213,14 @@ export const updateUserAuth = async (
 ) => {
   const nicknameExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE nickname = ?`,[nickname],);
   if (nicknameExist[0].cnt > 0) {
-    throw new Error(errorCode.nicknameOverlap);
+    throw new Error(errorCode.NICKNAME_OVERLAP);
   }
   if (!(role >= 0 && role <= 3)) {
-    throw new Error(errorCode.inValidRole);
+    throw new Error(errorCode.INVALID_ROLE);
   }
   const slackExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE slack = ?`,[slack],);
   if (slackExist[0].cnt > 0) {
-    throw new Error(errorCode.slackOverlap);
+    throw new Error(errorCode.SLACK_OVERLAP);
   }
   let setString = '';
   const queryParameters = [];

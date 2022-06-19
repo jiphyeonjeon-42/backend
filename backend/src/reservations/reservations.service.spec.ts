@@ -71,38 +71,38 @@ describe('ReservationsServices', () => {
   });
   let userId = 1418;
   let bookInfoId = 4;
-  it('book a book (atPenalty)', async () => {
+  it('book a book (AT_PENALTY)', async () => {
     const result = await reservationsService.create(userId, bookInfoId);
-    expect(result).toBe(reservationsService.atPenalty);
+    expect(result).toBe(reservationsService.AT_PENALTY);
   });
-  it('book a book (notLended)', async () => {
+  it('book a book (NOT_LENDED)', async () => {
     userId = 1402;
     bookInfoId = 64;
     const result = await reservationsService.create(userId, bookInfoId);
-    expect(result).toBe(reservationsService.notLended);
+    expect(result).toBe(reservationsService.NOT_LENDED);
   });
-  it('book a book (alreadyLended)', async () => {
+  it('book a book (ALREADY_LENDED)', async () => {
     userId = 1408;
     bookInfoId = 1;
     const result = await reservationsService.create(userId, bookInfoId);
-    expect(result).toBe(reservationsService.alreadyLended);
+    expect(result).toBe(reservationsService.ALREADY_LENDED);
   });
-  it('book a book (alreadyReserved)', async () => {
+  it('book a book (ALREADY_RESERVED)', async () => {
     userId = 1434;
     bookInfoId = 1;
     const result = await reservationsService.create(userId, bookInfoId);
-    expect(result).toBe(reservationsService.alreadyReserved);
+    expect(result).toBe(reservationsService.ALREADY_RESERVED);
   });
-  it('book a book (moreThanTwoReservations)', async () => {
+  it('book a book (MORE_THAN_TWO_RESERVATIONS)', async () => {
     userId = 1410;
     bookInfoId = 1;
     const result = await reservationsService.create(userId, bookInfoId);
-    expect(result).toBe(reservationsService.moreThanTwoReservations);
+    expect(result).toBe(reservationsService.MORE_THAN_TWO_RESERVATIONS);
   });
 
-  it('cancel a reservation (reservationNotExist)', async () => {
+  it('cancel a reservation (RESERVATION_NOT_EXIST)', async () => {
     const result = await reservationsService.cancel(1);
-    expect(result).toBe(reservationsService.reservationNotExist);
+    expect(result).toBe(reservationsService.RESERVATION_NOT_EXIST);
   });
 
   it('cancel a reservation (ok)', async () => {
@@ -126,16 +126,16 @@ describe('ReservationsServices', () => {
     bookInfoId = 4242;
   });
 
-  it('reservation count (invalidBookInfoId)', async () => {
+  it('reservation count (INVALID_BOOK_INFO_ID)', async () => {
     bookInfoId = 4242;
     expect(await reservationsService.count(bookInfoId))
-      .toBe(reservationsService.invalidBookInfoId);
+      .toBe(reservationsService.INVALID_BOOK_INFO_ID);
   });
 
-  it('reservation count (availableLoan)', async () => {
+  it('reservation count (AVAILABLE_LOAN)', async () => {
     bookInfoId = 1;
     expect(await reservationsService.count(bookInfoId))
-      .toBe(reservationsService.availableLoan);
+      .toBe(reservationsService.AVAILABLE_LOAN);
   });
 
   it('get user reservation', async () => {

@@ -79,7 +79,7 @@ const searchByIsbn = async (isbn: string) => {
       delete book.description;
     })
     .catch(() => {
-      throw new Error(errorCode.isbnSearchFailed);
+      throw new Error(errorCode.ISBN_SEARCH_FAILED);
     });
   return ([book]);
 };
@@ -106,7 +106,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   )) as StringRows[];
 
   if (searchBySlackID.length > 1) {
-    throw new Error(errorCode.slackidOverlap);
+    throw new Error(errorCode.SLACKID_OVERLAP);
   }
 
   const serachCallSign = (await executeQuery(`
@@ -114,7 +114,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
     `, [book.callSign])) as StringRows[];
 
   if (serachCallSign.length > 1) {
-    throw new Error(errorCode.callSignOverlap);
+    throw new Error(errorCode.CALL_SIGN_OVERLAP);
   }
 
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
@@ -408,7 +408,7 @@ export const getInfo = async (id: string) => {
     [id],
   )) as models.BookInfo[];
   if (bookSpec === undefined) {
-    throw new Error(errorCode.noBookInfoId);
+    throw new Error(errorCode.NO_BOOK_INFO_ID);
   }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);

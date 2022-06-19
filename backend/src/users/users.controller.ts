@@ -73,7 +73,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
     if (!pwSchema.validate(String(password))) {
-      return next(new ErrorResponse(errorCode.invalidatePassword, status.BAD_REQUEST));
+      return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
     }
     await createUser(String(email), await bcrypt.hash(String(password), 10));
     return res.status(status.OK).send(`${email} created!`);
