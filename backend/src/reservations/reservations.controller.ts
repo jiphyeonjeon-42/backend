@@ -15,7 +15,7 @@ export const create: RequestHandler = async (
   const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
-    next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     return res
@@ -26,10 +26,10 @@ export const create: RequestHandler = async (
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -54,7 +54,7 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
   if (!filterCheck(filter)) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     return res
@@ -65,10 +65,10 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
 };
@@ -77,7 +77,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
   const { role, id } = req.user as any;
   const reservationId = Number.parseInt(req.params.reservationId, 10);
   if (Number.isNaN(reservationId)) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     if (role === 3) {
@@ -89,10 +89,10 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
 };
@@ -100,7 +100,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
 export const count: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const bookInfoId = parseInt(req.query.bookInfo as string, 10);
   if (Number.isNaN(bookInfoId)) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     const result = await reservationsService.count(bookInfoId);
@@ -110,10 +110,10 @@ export const count: RequestHandler = async (req: Request, res: Response, next: N
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
 };
@@ -126,7 +126,7 @@ export const userReservations: RequestHandler = async (
   const info = req.query;
   const userId = parseInt(info.id as string, 10);
   if (Number.isNaN(userId)) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     return res
@@ -137,10 +137,10 @@ export const userReservations: RequestHandler = async (
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;

@@ -16,7 +16,7 @@ const authValidate = (roles: role[]) => async (
 ) : Promise<void> => {
   try {
     if (!req.cookies.access_token) {
-      throw new ErrorResponse(errorCode.noToken, 401);
+      throw new ErrorResponse(errorCode.NO_TOKEN, 401);
     }
     // 토큰 복호화
     const verifyCheck = verify(req.cookies.access_token, config.jwt.secret);
@@ -24,11 +24,11 @@ const authValidate = (roles: role[]) => async (
     const user: { items: User[] } = await usersService.searchUserById(id);
     // User가 없는 경우
     if (user.items.length === 0) {
-      throw new ErrorResponse(errorCode.noUser, 410);
+      throw new ErrorResponse(errorCode.NO_USER, 410);
     }
     // 권한이 있지 않은 경우
     if (!roles.includes(user.items[0].role)) {
-      throw new ErrorResponse(errorCode.noAuthorization, 403);
+      throw new ErrorResponse(errorCode.NO_AUTHORIZATION, 403);
     }
     req.user = { intraProfile: req.user, id, role: user.items[0].role };
     next();
@@ -40,10 +40,10 @@ const authValidate = (roles: role[]) => async (
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };

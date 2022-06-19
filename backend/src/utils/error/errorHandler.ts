@@ -15,7 +15,7 @@ export default function errorHandler(
   if (!(err instanceof ErrorResponse)) {
     logger.error(err);
     error = new ErrorResponse(
-      errorCode.unknownError,
+      errorCode.UNKNOWN_ERROR,
       Status.INTERNAL_SERVER_ERROR,
       '서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
     );

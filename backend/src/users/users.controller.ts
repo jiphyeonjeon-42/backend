@@ -24,7 +24,7 @@ export const search = async (
   let items;
 
   if (limit <= 0 || page < 0) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     if (nicknameOrEmail === '' && id === 0) {
@@ -51,10 +51,10 @@ export const search = async (
     if (errorNumber >= 200 && errorNumber < 300) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -64,7 +64,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
   const { email, password } = req.body;
   const pwSchema = new PasswordValidator();
   if (!email || !password) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     pwSchema
@@ -73,7 +73,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
       .symbols(1);
     if (!pwSchema.validate(String(password))) {
-      return next(new ErrorResponse(errorCode.invalidatePassword, status.BAD_REQUEST));
+      return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
     }
     await createUser(String(email), await bcrypt.hash(String(password), 10));
     return res.status(status.OK).send(`${email} created!`);
@@ -84,10 +84,10 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       else if (errorNumber === 203) next(new ErrorResponse(error.message, status.CONFLICT));
       else next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -101,7 +101,7 @@ export const update = async (
   const { id } = req.params;
   const { nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '' } = req.body;
   if (!id || !(nickname !== '' || intraId !== 0 || slack !== '' || role !== -1 || penaltyEndDate !== '')) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     await updateUserAuth(
@@ -121,10 +121,10 @@ export const update = async (
       }
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -140,7 +140,7 @@ export const myupdate = async (
     email = '', password = '0',
   } = req.body;
   if (email === '' && password === '0') {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     if (email !== '' && password === '0') {
@@ -163,10 +163,10 @@ export const myupdate = async (
       if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
