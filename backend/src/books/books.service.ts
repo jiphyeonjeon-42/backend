@@ -90,7 +90,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
   const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
   if (slackIdExist[0].cnt > 1) {
-    logger.warn(`${errorCode.slackidOverlap}: nickname이 중복입니다. 최신에 가입한 user의 ID로 기부가 기록됩니다.`);
+    logger.warn(`${errorCode.slackidOverlap}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
   const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
   if (callSignExist[0].cnt > 0) {
