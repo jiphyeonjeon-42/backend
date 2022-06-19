@@ -316,9 +316,6 @@ export const searchInfo = async (
     [category],
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
-  const categoryWhere = categoryName
-    ? `category.name = '${categoryName}'`
-    : 'TRUE';
   const categoryList = (await executeQuery(
     `
     SELECT
@@ -330,8 +327,6 @@ export const searchInfo = async (
       book_info.title LIKE ?
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
-      ) AND (
-        ${categoryWhere}
       )
     GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
   `,
