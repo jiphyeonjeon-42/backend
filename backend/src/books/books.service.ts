@@ -320,7 +320,7 @@ export const searchInfo = async (
     `
     SELECT
       IFNULL(category.name, "ALL") AS name,
-      count(name) AS count
+      count(category.name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
     WHERE (
@@ -328,11 +328,11 @@ export const searchInfo = async (
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
       )
-    GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
+    GROUP BY category.name WITH ROLLUP ORDER BY category.name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
-  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
+  const categoryHaving = categoryName ? `categoryEnum = '${categoryName}'` : 'TRUE';
   const bookList = (await executeQuery(
     `
     SELECT
@@ -369,7 +369,8 @@ export const searchInfo = async (
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
-  const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
+  const totalItems = categoryList[0].count;
+  console.log('totalItmes', totalItems);
   const meta = {
     totalItems,
     itemCount: bookList.length,
