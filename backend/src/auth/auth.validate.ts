@@ -40,10 +40,10 @@ const authValidate = (roles: role[]) => async (
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };

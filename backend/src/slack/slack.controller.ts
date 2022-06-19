@@ -8,6 +8,6 @@ export const updateSlackList = async (req: Request, res: Response) : Promise<voi
     res.status(204).send();
   } catch (e: any) {
     if (e instanceof FtError) res.status(e.statusCode).json({ code: e.errCode, message: e.message });
-    else res.status(500).json({ code: errCode.unknownError, message: errMsg.unknownError });
+    else res.status(500).json({ code: errCode.UNKNOWN_ERROR, message: errMsg.UNKNOWN_ERROR });
   }
 };

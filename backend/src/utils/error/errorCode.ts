@@ -1,6 +1,6 @@
-export const unknownError = '0';
-export const queryExecutionFailed = '1';
-export const invalidInput = '2';
+export const UNKNOWN_ERROR = '0';
+export const QUERY_EXECUTION_FAILED = '1';
+export const INVALID_INPUT = '2';
 
 export const noAuthorization = '100';
 export const noUser = '101';
