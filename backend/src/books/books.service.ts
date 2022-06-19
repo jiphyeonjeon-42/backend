@@ -316,24 +316,20 @@ export const searchInfo = async (
     [category],
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
-  const categoryWhere = categoryName
-    ? `category.name = '${categoryName}'`
-    : 'TRUE';
+  const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const categoryList = (await executeQuery(
     `
     SELECT
       IFNULL(category.name, "ALL") AS name,
-      count(name) AS count
+      count(category.name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
     WHERE (
       book_info.title LIKE ?
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
-      ) AND (
-        ${categoryWhere}
       )
-    GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
+    GROUP BY category.name WITH ROLLUP ORDER BY category.name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
@@ -374,7 +370,21 @@ export const searchInfo = async (
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
-  const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
+  const totalItems = (await executeQuery(
+    `
+    SELECT
+      count(category.name) AS count
+    FROM book_info
+    LEFT JOIN category ON book_info.categoryId = category.id
+    WHERE (
+      book_info.title LIKE ?
+      OR book_info.author LIKE ?
+      OR book_info.isbn LIKE ?
+      ) AND (${categoryWhere})
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+  ))[0].count as number;
+
   const meta = {
     totalItems,
     itemCount: bookList.length,
