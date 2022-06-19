@@ -316,6 +316,7 @@ export const searchInfo = async (
     [category],
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
+  const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const categoryList = (await executeQuery(
     `
     SELECT
@@ -332,7 +333,7 @@ export const searchInfo = async (
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
-  const categoryHaving = categoryName ? `categoryEnum = '${categoryName}'` : 'TRUE';
+  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
   const bookList = (await executeQuery(
     `
     SELECT
@@ -369,8 +370,21 @@ export const searchInfo = async (
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
-  const totalItems = categoryList[0].count;
-  console.log('totalItmes', totalItems);
+  const totalItems = (await executeQuery(
+    `
+    SELECT
+      count(category.name) AS count
+    FROM book_info
+    LEFT JOIN category ON book_info.categoryId = category.id
+    WHERE (
+      book_info.title LIKE ?
+      OR book_info.author LIKE ?
+      OR book_info.isbn LIKE ?
+      ) AND (${categoryWhere})
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+  ))[0].count as number;
+
   const meta = {
     totalItems,
     itemCount: bookList.length,
