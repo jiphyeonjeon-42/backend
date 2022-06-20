@@ -25,19 +25,9 @@ const noonScheduler = () => {
   });
 };
 
-const testScheduler = () => {
-  const rule = new schedule.RecurrenceRule();
-  rule.dayOfWeek = [0, new schedule.Range(0, 6)];
-  rule.hour = 21;
-  rule.minute = 24;
-  schedule.scheduleJob(rule, async () => {
-  });
-};
-
 export const scheduler = () => {
   midnightScheduler();
   noonScheduler();
-  testScheduler();
 };
 
 export default scheduler;
