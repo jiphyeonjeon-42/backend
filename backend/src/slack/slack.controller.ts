@@ -1,9 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
 import * as slack from './slack.service';
 import * as errorCode from '../utils/error/errorCode';
+import ErrorResponse from '../utils/error/errorResponse';
+import { logger } from '../utils/logger';
 
-export const updateSlackList = async (req: Request, res: Response) : Promise<void> => {
+export const updateSlackList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) : Promise<void> => {
   try {
     await slack.updateSlackId();
     res.status(204).send();
@@ -19,3 +25,5 @@ export const updateSlackList = async (req: Request, res: Response) : Promise<voi
     }
   }
 };
+
+export const black = '';
