@@ -25,7 +25,6 @@ router
    *      - name: query
    *        in: query
    *        description: 검색어
-   *        required: true
    *        schema:
    *          type: string
    *      - name: sort
