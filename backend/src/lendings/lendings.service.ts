@@ -191,7 +191,8 @@ export const search = async (
       filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
   }
   const orderQuery = sort === 'new' ? 'DESC' : 'ASC';
-  const items = await executeQuery(`
+  const items = await executeQuery(
+    `
     SELECT
       lending.id AS id,
       lendingCondition,
@@ -213,11 +214,14 @@ export const search = async (
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
     JOIN user AS user ON lending.userId = user.id
+    WHERE lending.returnedAt is NULL
     ${filterQuery}
     ORDER BY lending.createdAt ${orderQuery}
     LIMIT ?
     OFFSET ?
-  `, [limit, limit * page]);
+  `,
+    [limit, limit * page],
+  );
   const totalItems = await executeQuery(`
     SELECT
       lending.id,
@@ -237,6 +241,7 @@ export const search = async (
         WHERE id = bookId
       ) AS title
     FROM lending
+    WHERE lending.returnedAt is NULL
     ${filterQuery}
   `);
   const meta: Meta = {
