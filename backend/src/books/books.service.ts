@@ -80,7 +80,7 @@ const searchByIsbn = async (isbn: string) => {
       delete book.description;
     })
     .catch(() => {
-      throw new Error(errorCode.isbnSearchFailed);
+      throw new Error(errorCode.ISBN_SEARCH_FAILED);
     });
   return ([book]);
 };
@@ -90,11 +90,11 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
   const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
   if (slackIdExist[0].cnt > 1) {
-    logger.warn(`${errorCode.slackidOverlap}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
+    logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
   const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
   if (callSignExist[0].cnt > 0) {
-    throw new Error(errorCode.callSignOverlap);
+    throw new Error(errorCode.CALL_SIGN_OVERLAP);
   }
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
   if (isbnInBookInfo[0].cnt === 0) {
@@ -267,24 +267,20 @@ export const searchInfo = async (
     [category],
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
-  const categoryWhere = categoryName
-    ? `category.name = '${categoryName}'`
-    : 'TRUE';
+  const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const categoryList = (await executeQuery(
     `
     SELECT
       IFNULL(category.name, "ALL") AS name,
-      count(name) AS count
+      count(category.name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
     WHERE (
       book_info.title LIKE ?
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
-      ) AND (
-        ${categoryWhere}
       )
-    GROUP BY name WITH ROLLUP ORDER BY category.name ASC;
+    GROUP BY category.name WITH ROLLUP ORDER BY category.name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
@@ -325,7 +321,21 @@ export const searchInfo = async (
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
-  const totalItems = categoryList.reduce((prev, curr) => prev + curr.count, 0);
+  const totalItems = (await executeQuery(
+    `
+    SELECT
+      count(category.name) AS count
+    FROM book_info
+    LEFT JOIN category ON book_info.categoryId = category.id
+    WHERE (
+      book_info.title LIKE ?
+      OR book_info.author LIKE ?
+      OR book_info.isbn LIKE ?
+      ) AND (${categoryWhere})
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+  ))[0].count as number;
+
   const meta = {
     totalItems,
     itemCount: bookList.length,
@@ -359,7 +369,7 @@ export const getInfo = async (id: string) => {
     [id],
   )) as models.BookInfo[];
   if (bookSpec === undefined) {
-    throw new Error(errorCode.noBookInfoId);
+    throw new Error(errorCode.NO_BOOK_INFO_ID);
   }
   if (bookSpec.publishedAt) {
     const date = new Date(bookSpec.publishedAt);

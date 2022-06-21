@@ -14,7 +14,7 @@ export const create: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.userId || !req.body.bookId) {
-    next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     await lendingsService.create(
@@ -28,10 +28,10 @@ export const create: RequestHandler = async (
     if (errorNumber >= 400 && errorNumber < 500) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
@@ -54,7 +54,7 @@ export const search: RequestHandler = async (
   const sort = info.sort as string;
   const type = info.type as string ? info.type as string : 'all';
   if (!argumentCheck(sort, type)) {
-    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     const result = await lendingsService.search(query, page, limit, sort, type);
@@ -64,10 +64,10 @@ export const search: RequestHandler = async (
     if (errorNumber >= 400 && errorNumber < 500) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -80,7 +80,7 @@ export const lendingId: RequestHandler = async (
 ) => {
   const id = parseInt(req.params.id, 10);
   if (Number.isNaN(id)) {
-    return next(new ErrorResponse(errorCode.badRequest, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     const result = await lendingsService.lendingId(id);
@@ -90,10 +90,10 @@ export const lendingId: RequestHandler = async (
     if (errorNumber >= 400 && errorNumber < 500) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;
@@ -106,7 +106,7 @@ export const returnBook: RequestHandler = async (
 ) => {
   const { id } = req.user as any;
   if (!req.body.lendingId || !req.body.condition) {
-    return next(new ErrorResponse(errorCode.invalidInput, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     const result = await lendingsService.returnBook(
@@ -120,10 +120,10 @@ export const returnBook: RequestHandler = async (
     if (errorNumber >= 400 && errorNumber < 500) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.queryExecutionFailed, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
       logger.error(error.message);
-      next(new ErrorResponse(errorCode.unknownError, status.INTERNAL_SERVER_ERROR));
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
   return 0;

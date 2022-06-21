@@ -1,5 +1,7 @@
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
+import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
+import { formatDate } from '../utils/dateFormat';
 import * as errorCode from '../utils/error/errorCode';
 
 export const create = async (
@@ -13,21 +15,21 @@ export const create = async (
   try {
     await conn.beginTransaction();
     // 존재하는 유저인지 확인
-    const hasUser = await transactionExecuteQuery(`
+    const users = await transactionExecuteQuery(`
       SELECT *
       FROM user
       WHERE id = ?
     `, [userId]);
-    if (!hasUser.length) { throw new Error(errorCode.noUserId); }
+    if (!users.length) { throw new Error(errorCode.NO_USER_ID); }
     // 유저 권한 없음
-    if (hasUser[0].role === 0) { throw new Error(errorCode.noPermission); }
+    if (users[0].role === 0) { throw new Error(errorCode.NO_PERMISSION); }
     // 유저가 2권 이상 대출
     const numberOfLendings = await transactionExecuteQuery(`
       SELECT COUNT(*) as count
       FROM lending
       WHERE userId = ? AND returnedAt IS NULL;
     `, [userId]);
-    if (numberOfLendings[0].count >= 2) { throw new Error(errorCode.lendingOverload); }
+    if (numberOfLendings[0].count >= 2) { throw new Error(errorCode.LENDING_OVERLOAD); }
 
     // 유저가 연체중 (패널티를 받았거나 대출중인 책이 반납기한을 넘겼을때)
     const hasPenalty = await transactionExecuteQuery(`
@@ -44,7 +46,7 @@ export const create = async (
       WHERE userId = ? AND returnedAt IS NULL
     `, [userId]);
     if (hasPenalty[0].penaltyEndDate >= new Date()
-      || isOverdue[0]?.overdue) { throw new Error(errorCode.lendingOverdue); }
+      || isOverdue[0]?.overdue) { throw new Error(errorCode.LENDING_OVERDUE); }
 
     // 책이 대출되지 않은 상태인지
     const isNotLended = await transactionExecuteQuery(`
@@ -52,7 +54,7 @@ export const create = async (
       FROM lending
       WHERE bookId = ? AND returnedAt IS NULL
     `, [bookId]);
-    if (isNotLended.length !== 0) { throw new Error(errorCode.onLending); }
+    if (isNotLended.length !== 0) { throw new Error(errorCode.ON_LENDING); }
 
     // 책이 분실, 파손이 아닌지
     const isLendableBook = await transactionExecuteQuery(`
@@ -61,9 +63,9 @@ export const create = async (
      WHERE id = ?
     `, [bookId]);
     if (isLendableBook[0].status === 1) {
-      throw new Error(errorCode.damagedBook);
+      throw new Error(errorCode.DAMAGED_BOOK);
     } else if (isLendableBook[0].status === 2) {
-      throw new Error(errorCode.lostBook);
+      throw new Error(errorCode.LOST_BOOK);
     }
 
     // 예약된 책이 아닌지
@@ -73,7 +75,7 @@ export const create = async (
       WHERE bookId = ? AND status = 0
     `, [bookId]);
     if (isNotReservedBook.length && isNotReservedBook[0].userId !== userId) {
-      throw new Error(errorCode.onReservation);
+      throw new Error(errorCode.ON_RESERVATION);
     }
 
     await transactionExecuteQuery(`
@@ -81,7 +83,19 @@ export const create = async (
       VALUES (?, ?, ?, ?)
     `, [userId, bookId, librarianId, condition]);
 
+    const books: [{title: string}] = await transactionExecuteQuery(`
+      SELECT
+        title
+      FROM
+        book_info
+      LEFT JOIN book ON
+        book.infoId = book_info.id
+      WHERE
+        book.id = ?
+    `, [bookId]);
     await conn.commit();
+    const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    publishMessage(users[0].slack, `:robot_face: 집현전 봇 :robot_face:\n대출 하신 \`${books[0].title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
@@ -109,9 +123,9 @@ export const returnBook = async (
       WHERE id = ?
     `, [lendingId]);
     if (!lendingInfo || !lendingInfo[0]) {
-      throw new Error(errorCode.nonexistentLending);
+      throw new Error(errorCode.NONEXISTENT_LENDING);
     } else if (lendingInfo[0].returnedAt) {
-      throw new Error(errorCode.alreadyReturned);
+      throw new Error(errorCode.ALREADY_RETURNED);
     }
 
     await transactionExecuteQuery(`

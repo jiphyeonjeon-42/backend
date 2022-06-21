@@ -14,7 +14,7 @@ export const create = async (userId: number, bookInfoId: number) => {
     WHERE id = ?;
   `, [bookInfoId]);
   if (!bookInfo.length) {
-    throw new Error(errorCode.invalidInfoId);
+    throw new Error(errorCode.INVALID_INFO_ID);
   }
   conn.beginTransaction();
   try {
@@ -25,7 +25,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE id = ?;
     `, [userId]);
     if (userPenalty.penaltyEndDate > new Date()) {
-      throw new Error(errorCode.atPenalty);
+      throw new Error(errorCode.AT_PENALTY);
     }
     // 현재 대출 중인 책이 연체 중인지 확인
     const overdueBooks = await transactionExecuteQuery(`
@@ -36,7 +36,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       ORDER BY createdAt ASC
     `, [userId]);
     if (overdueBooks?.[0]?.duedate < new Date()) {
-      throw new Error(errorCode.atPenalty);
+      throw new Error(errorCode.AT_PENALTY);
     }
     // bookInfoId가 모두 대출 중인지 확인
     const allBooks = await transactionExecuteQuery(`
@@ -53,7 +53,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE book.infoId = ? AND returnedAt IS NULL;
     `, [bookInfoId]) as [{bookId: number, returnedAt: Date}];
     if (allLendings.length !== allBooks.length) {
-      throw new Error(errorCode.notLended);
+      throw new Error(errorCode.NOT_LENDED);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
     const lendedBook = await transactionExecuteQuery(`
@@ -66,7 +66,7 @@ export const create = async (userId: number, bookInfoId: number) => {
         book.infoId = ?
     `, [userId, bookInfoId]);
     if (lendedBook.length) {
-      throw new Error(errorCode.alreadyLended);
+      throw new Error(errorCode.ALREADY_LENDED);
     }
     // 이미 예약한 bookInfoId가 아닌지 확인
     const reservedBook = await transactionExecuteQuery(`
@@ -75,7 +75,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE bookInfoId = ? AND userId = ? AND status = 0;
     `, [bookInfoId, userId]);
     if (reservedBook.length) {
-      throw new Error(errorCode.alreadyReserved);
+      throw new Error(errorCode.ALREADY_RESERVED);
     }
     // 예약한 횟수가 2회 미만인지 확인
     const reserved = await transactionExecuteQuery(`
@@ -84,7 +84,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       WHERE userId = ? AND status = 0;
     `, [userId]);
     if (reserved.length >= 2) {
-      throw new Error(errorCode.moreThanTwoReservations);
+      throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
     }
     await transactionExecuteQuery(`
       INSERT INTO reservation (userId, bookInfoId)
@@ -182,10 +182,10 @@ export const cancel = async (reservationId: number): Promise<void> => {
       WHERE id = ?;
     `, [reservationId]);
     if (!reservations.length) {
-      throw new Error(errorCode.reservationNotExist);
+      throw new Error(errorCode.RESERVATION_NOT_EXIST);
     }
     if (reservations[0].status !== 0) {
-      throw new Error(errorCode.notReserved);
+      throw new Error(errorCode.NOT_RESERVED);
     }
     await transactionExecuteQuery(`
       UPDATE reservation
@@ -229,10 +229,10 @@ export const userCancel = async (userId: number, reservationId: number): Promise
     WHERE id = ?
   `, [reservationId]);
   if (!reservations.length) {
-    throw new Error(errorCode.reservationNotExist);
+    throw new Error(errorCode.RESERVATION_NOT_EXIST);
   }
   if (reservations[0].userId !== userId) {
-    throw new Error(errorCode.notMatchingUser);
+    throw new Error(errorCode.NO_MATCHING_USER);
   }
 };
 
@@ -243,7 +243,7 @@ export const count = async (bookInfoId: number) => {
     WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count === 0) {
-    throw new Error(errorCode.invalidBookInfoId);
+    throw new Error(errorCode.INVALID_BOOK_INFO_ID);
   }
   const borrowedBookInfo = await executeQuery(`
     SELECT count(*) as count
@@ -253,7 +253,7 @@ export const count = async (bookInfoId: number) => {
     WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
-    throw new Error(errorCode.availableLoan);
+    throw new Error(errorCode.AVAILABLE_LOAN);
   }
   logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
