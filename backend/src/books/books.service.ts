@@ -89,18 +89,19 @@ const searchByIsbn = async (isbn: string) => {
 export const createBook = async (book: types.CreateBookInfo) => {
   const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
 
-  const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
-  if (slackIdExist[0].cnt > 1) {
-    logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
-  }
   const callSignValidator = (callSign : string) => {
-    const regexConditon = new RegExp(/^[A-Oa-n][0-9]{1,}.[0-9]{2}.v[0-9]{1,}.c[0-9]{1,}$/);
+    const regexConditon = new RegExp(/^[A-Oa-n][0-9]{1,}\.[0-9]{2}\.v[0-9]{1,}\.c[0-9]{1,}$/);
     if (regexConditon.test(callSign) === false) {
       throw new Error(errorCode.INVALID_CALL_SIGN);
     }
   };
-
   callSignValidator(book.callSign);
+
+  const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+  if (slackIdExist[0].cnt > 1) {
+    logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
+  }
+
   const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
   if (callSignExist[0].cnt > 0) {
     throw new Error(errorCode.CALL_SIGN_OVERLAP);
