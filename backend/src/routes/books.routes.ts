@@ -510,15 +510,15 @@ router
    *                description: error decription
    *                example: { errorCode: 300 }
    *         '400_case2':
-   *            description: DB오류
+   *            description: callsign 형식이 유효하지 않습니다.
    *            content:
    *             application/json:
    *               schema:
    *                 type: json
-   *                 description: slackId 중복
-   *                 example: { errorCode: 301 }
+   *                 description: callsign 형식이 유효하지 않습니다.
+   *                 example: { errorCode: 306 }
    *         '400_case3':
-   *            description: 서버오류
+   *            description: naver open API에서 ISBN 검색결과가 없음.
    *            content:
    *             application/json:
    *               schema:
