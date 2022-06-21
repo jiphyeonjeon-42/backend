@@ -1,3 +1,4 @@
+/* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import { executeQuery } from '../mysql';
@@ -92,6 +93,14 @@ export const createBook = async (book: types.CreateBookInfo) => {
   if (slackIdExist[0].cnt > 1) {
     logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
+  const callSignValidator = (callSign : string) => {
+    const regexConditon = new RegExp(/^[A-Oa-n][0-9]{1,}.[0-9]{2}.v[0-9]{1,}.c[0-9]{1,}$/);
+    if (regexConditon.test(callSign) === false) {
+      throw new Error(errorCode.INVALID_CALL_SIGN);
+    }
+  };
+
+  callSignValidator(book.callSign);
   const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
   if (callSignExist[0].cnt > 0) {
     throw new Error(errorCode.CALL_SIGN_OVERLAP);
