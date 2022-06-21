@@ -1,3 +1,4 @@
+/* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import { executeQuery } from '../mysql';
@@ -5,6 +6,7 @@ import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
+import { logger } from '../utils/logger';
 
 export const search = async (
   query: string,
@@ -85,88 +87,47 @@ const searchByIsbn = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const isbnInBookInfo = (await executeQuery(
-    `
-    SELECT
-      isbn
-    FROM book_info
-    WHERE isbn = ?
-  `,
-    [book.isbn],
-  )) as StringRows[];
+  const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
 
-  const searchBySlackID = (await executeQuery(
-    ` 
-    SELECT
-      id
-    FROM user
-    WHERE nickname = ?
-  `,
-    [book.donator],
-  )) as StringRows[];
+  const callSignValidator = (callSign : string) => {
+    const regexConditon = new RegExp(/^[A-Oa-n][0-9]{1,}\.[0-9]{2}\.v[0-9]{1,}\.c[0-9]{1,}$/);
+    if (regexConditon.test(callSign) === false) {
+      throw new Error(errorCode.INVALID_CALL_SIGN);
+    }
+  };
+  callSignValidator(book.callSign);
 
-  if (searchBySlackID.length > 1) {
-    throw new Error(errorCode.SLACKID_OVERLAP);
+  const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+  if (slackIdExist[0].cnt > 1) {
+    logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
 
-  const serachCallSign = (await executeQuery(`
-    SELECT id FROM book WHERE callSign = ?
-    `, [book.callSign])) as StringRows[];
-
-  if (serachCallSign.length > 1) {
+  const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
+  if (callSignExist[0].cnt > 0) {
     throw new Error(errorCode.CALL_SIGN_OVERLAP);
   }
-
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-
-  if (isbnInBookInfo.length === 0) {
+  if (isbnInBookInfo[0].cnt === 0) {
     await executeQuery(
-      `
-    INSERT INTO book_info (
-      title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt
-      ) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?
-      )
-      `,
+      `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
+      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
       [
         book.title,
         book.author,
         book.publisher,
-        book.isbn ? book.isbn : '',
-        book.image,
+        book.isbn ? book.isbn : 'NOTEXIST',
+        book.isbn ? book.isbn : 'NOTEXIST',
+        book.image ? book.image : 'NOTEXIST',
+        book.image ? book.image : 'NOTEXIST',
         category,
         book.categoryId,
         book.pubdate,
       ],
     );
   }
-
-  await executeQuery(
-    `
-    INSERT INTO book(
-      donator,
-      donatorId,
-      callSign,
-      status,
-      infoId
-    ) VALUES (
-      ?,
-      (
-        SELECT id
-        FROM user
-        WHERE nickname = ?
-      ),
-      ?,
-      0,
-      (
-        SELECT id
-        FROM book_info
-        WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1
-      )
-    )
-  `,
-    [book.donator, book.donator, book.callSign, book.isbn, book.title],
-  );
+  await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
+    (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
+  `, [book.donator, book.donator, book.callSign, book.isbn, book.title]);
   return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
 };
 

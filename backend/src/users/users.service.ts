@@ -85,6 +85,7 @@ export const userReservations = async (userId: number) => {
   return reservationList;
 };
 
+// eslint-disable-next-line max-len
 export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit: number, page: number) => {
   let items = (await executeQuery(
     `
@@ -100,7 +101,7 @@ export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit
   items = await setOverDueDay(items);
   const total = (await executeQuery(`
   SELECT COUNT(*) as totalItems FROM user  WHERE (nickname LIKE ? or email Like ?);
-  `, [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`],));
+  `, [`%${nicknameOrEmail}%`, `%${nicknameOrEmail}%`]));
   const meta: types.Meta = {
     totalItems: total[0].totalItems,
     itemCount: items.length,
@@ -211,14 +212,14 @@ export const updateUserAuth = async (
   role: number,
   penaltyEndDate: string,
 ) => {
-  const nicknameExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE nickname = ?`,[nickname],);
+  const nicknameExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [nickname]);
   if (nicknameExist[0].cnt > 0) {
     throw new Error(errorCode.NICKNAME_OVERLAP);
   }
   if (!(role >= 0 && role <= 3)) {
     throw new Error(errorCode.INVALID_ROLE);
   }
-  const slackExist = await executeQuery(`SELECT COUNT(*) as cnt FROM user WHERE slack = ?`,[slack],);
+  const slackExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE slack = ?', [slack]);
   if (slackExist[0].cnt > 0) {
     throw new Error(errorCode.SLACK_OVERLAP);
   }
@@ -237,7 +238,7 @@ export const updateUserAuth = async (
     setString += 'role=?,';
     queryParameters.push(role);
   } if (penaltyEndDate !== '') {
-    setString += 'penaltyEndDate=?,'
+    setString += 'penaltyEndDate=?,';
     queryParameters.push(penaltyEndDate);
   }
   setString = setString.slice(0, -1);

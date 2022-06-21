@@ -52,7 +52,7 @@ CREATE TABLE `book_info` (
   `author` varchar(255) NOT NULL,
   `publisher` varchar(255) NOT NULL,
   `isbn` varchar(255) DEFAULT NULL,
-  `image` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `categoryEnum` varchar(255) DEFAULT NULL,
   `publishedAt` date DEFAULT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
