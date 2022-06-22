@@ -249,4 +249,6 @@ export const updateUserAuth = async (
   ${setString}
   where id=?
   `, queryParameters);
+  const updatedUser = await executeQuery('SELECT nickname, intraId, slack, role, penaltyEndDate FROM user where id = ?;', [id]);
+  return (updatedUser[0]);
 };
