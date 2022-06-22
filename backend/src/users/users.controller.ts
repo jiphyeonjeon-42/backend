@@ -99,7 +99,9 @@ export const update = async (
   next: NextFunction,
 ) => {
   const { id } = req.params;
-  const { nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '' } = req.body;
+  const {
+    nickname = '', intraId = 0, slack = '', role = -1, penaltyEndDate = '',
+  } = req.body;
   if (!id || !(nickname !== '' || intraId !== 0 || slack !== '' || role !== -1 || penaltyEndDate !== '')) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }

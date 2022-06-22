@@ -212,14 +212,14 @@ export const updateUserAuth = async (
   role: number,
   penaltyEndDate: string,
 ) => {
-  const nicknameExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [nickname]);
+  const nicknameExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ? and id != ?', [nickname, id]);
   if (nicknameExist[0].cnt > 0) {
     throw new Error(errorCode.NICKNAME_OVERLAP);
   }
   if (!(role >= 0 && role <= 3)) {
     throw new Error(errorCode.INVALID_ROLE);
   }
-  const slackExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE slack = ?', [slack]);
+  const slackExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE slack = ? and id != ?', [slack, id]);
   if (slackExist[0].cnt > 0) {
     throw new Error(errorCode.SLACK_OVERLAP);
   }
