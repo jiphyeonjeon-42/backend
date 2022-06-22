@@ -67,10 +67,11 @@ export const searchBookInfo = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const query = String(req.query.query) !== 'undefined' ? String(req.query.query) : '';
   const {
-    query, page, limit, sort, category,
+    page, limit, sort, category,
   } = req.query;
-  if (!(query && page && limit)) {
+  if (!(page && limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {

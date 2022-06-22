@@ -284,7 +284,7 @@ export const searchInfo = async (
       IFNULL(category.name, "ALL") AS name,
       count(category.name) AS count
     FROM book_info
-    LEFT JOIN category ON book_info.categoryId = category.id
+    RIGHT JOIN category ON book_info.categoryId = category.id
     WHERE (
       book_info.title LIKE ?
       OR book_info.author LIKE ?

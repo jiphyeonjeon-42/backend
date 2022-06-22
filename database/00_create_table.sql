@@ -53,11 +53,11 @@ CREATE TABLE `book_info` (
   `publisher` varchar(255) NOT NULL,
   `isbn` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `categoryEnum` varchar(255) DEFAULT NULL,
+  `categoryEnum` varchar(255) NOT NULL,
   `publishedAt` date DEFAULT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  `categoryId` int DEFAULT NULL,
+  `categoryId` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `categoryId` (`categoryId`),
   CONSTRAINT `book_info_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `category` (`id`)
