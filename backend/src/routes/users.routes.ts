@@ -53,7 +53,7 @@ export const router = Router();
  *                          description: 이메일
  *                          type: string
  *                          example: "kyungsle@gmail.com"
- *                        nickName:
+ *                        nickname:
  *                          description: 닉네임
  *                          type: string
  *                          example: "kyungsle"
