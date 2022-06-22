@@ -53,7 +53,7 @@ export const router = Router();
  *                          description: 이메일
  *                          type: string
  *                          example: "kyungsle@gmail.com"
- *                        nickName:
+ *                        nickname:
  *                          description: 닉네임
  *                          type: string
  *                          example: "kyungsle"
@@ -215,12 +215,32 @@ export const router = Router();
  *                  example: 20220618
  *      responses:
  *        '200':
- *          description: 성공
+ *          description: 수정된 유저 정보를 반환합니다.
  *          content:
  *            application/json:
  *              schema:
- *                type: string
- *                example: success
+ *                type: object
+ *                properties:
+ *                  nickname:
+ *                    description: 에러코드
+ *                    type: string
+ *                    example: jimin
+ *                  intraId:
+ *                    description: 인트라 ID
+ *                    type: string
+ *                    example: 10035
+ *                  slack:
+ *                    description: slack 맴버 변수
+ *                    type: string
+ *                    example: "U02LNNDRC9F"
+ *                  role:
+ *                    description: 유저의 권한
+ *                    type: string
+ *                    example: 2
+ *                  penaltyEbdDate:
+ *                     description: 패널티가 끝나는 날
+ *                     type: date
+ *                     example: 20220606
  *        '400':
  *          description: nickname, intraId, slack, role 중 아무것도 없습니다..
  *          content:

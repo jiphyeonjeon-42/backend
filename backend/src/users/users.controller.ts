@@ -106,7 +106,7 @@ export const update = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await updateUserAuth(
+    const updatedUser = await updateUserAuth(
       parseInt(id, 10),
       nickname,
       intraId,
@@ -114,7 +114,7 @@ export const update = async (
       role,
       penaltyEndDate,
     );
-    return res.status(200).send('success');
+    return res.status(200).json(updatedUser);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
