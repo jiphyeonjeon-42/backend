@@ -17,10 +17,10 @@ export const router = Router();
  *      description: 책 예약 대기 수를 확인한다.
  *      parameters:
  *      - in: query
- *        name: book-info
+ *        name: bookInfo
  *        schema:
  *            type: string
- *        description: book-info에 해당하는 예약 대기 수를 확인할 수 있다.
+ *        description: bookInfo에 해당하는 예약 대기 수를 확인할 수 있다.
  *      responses:
  *        '200':
  *          description: 예약 대기 정보를 반환한다.
