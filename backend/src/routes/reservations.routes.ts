@@ -177,6 +177,12 @@ export const router = Router();
  *                        status:
  *                          description: 예약 상태
  *                          type: integer
+ *                        userId:
+ *                          description: 유저 ID
+ *                          type: integer
+ *                        bookId:
+ *                          description: book id
+ *                          type: integer
  *                    example:
  *                      - reservationId: 2
  *                        login: "doby"
