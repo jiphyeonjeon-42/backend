@@ -29,9 +29,9 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
-    if (error instanceof ErrorResponse) next(error);
     const errorNumber = parseInt(error.message, 10);
-    if (errorNumber === 101) next(new ErrorResponse(error.message, status.UNAUTHORIZED));
+    if (errorNumber === 101) 
+      return next(new ErrorResponse(error.message, status.UNAUTHORIZED));
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
@@ -57,7 +57,6 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     };
     res.status(status.OK).json(result);
   } catch (error: any) {
-    if (error instanceof ErrorResponse) next(error);
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 300) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
@@ -79,15 +78,14 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
     const user: { items: models.User[] } = await usersService.searchUserByEmail(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.NO_ID, 401));
+      return next(new ErrorResponse(errorCode.NO_ID, 401));
     }
     if (!bcrypt.compareSync(password, user.items[0].password)) {
-      next(new ErrorResponse(errorCode.WRONG_PASSWORD, 403));
+      return next(new ErrorResponse(errorCode.WRONG_PASSWORD, 403));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(204).send();
   } catch (error: any) {
-    if (error instanceof ErrorResponse) next(error);
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
@@ -124,23 +122,22 @@ export const intraAuthentication = async (
     const { intraId, nickName } = intraProfile;
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
-      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
+      return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      next(new ErrorResponse(errorCode.NO_USER, 410));
+      return next(new ErrorResponse(errorCode.NO_USER, 410));
     }
     if (user.items[0].role !== role.user) {
-      next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
+      return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
-      next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
+      return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(200).send();
   } catch (error: any) {
-    if (error instanceof ErrorResponse) next(error);
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
