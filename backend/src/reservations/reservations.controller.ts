@@ -80,7 +80,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (role === 3) {
+    if (role === 2) {
       await reservationsService.cancel(reservationId);
     } else await reservationsService.userCancel(id, reservationId);
     return res.send(status.ok).json('ok');
