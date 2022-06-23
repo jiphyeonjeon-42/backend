@@ -233,6 +233,7 @@ export const userCancel = async (userId: number, reservationId: number): Promise
   if (reservations[0].userId !== userId) {
     throw new Error(errorCode.NO_MATCHING_USER);
   }
+  cancel(reservationId);
 };
 
 export const count = async (bookInfoId: number) => {
