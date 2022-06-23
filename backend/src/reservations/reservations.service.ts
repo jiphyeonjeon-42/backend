@@ -125,8 +125,8 @@ export const
           WHEN NOW() > user.penaltyEndDate THEN 0
           ELSE DATEDIFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
-        book.title,
-        book.image,
+        book_info.title,
+        book_info.image,
         (
           SELECT callSign
           FROM book
@@ -135,13 +135,11 @@ export const
         reservation.createdAt AS createdAt,
         reservation.endAt AS endAt,
         status
-        user.id AS userId,
-        book.id AS bookId
       FROM reservation
       LEFT JOIN user AS user ON reservation.userId = user.id
-      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
+      LEFT JOIN book_info AS book_info ON reservation.bookInfoId = book_info.id
       ${filterQuery}
-      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
+      HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
       LIMIT ?
       OFFSET ?
   `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
