@@ -134,10 +134,13 @@ export const
         ) AS callSign,
         reservation.createdAt AS createdAt,
         reservation.endAt AS endAt,
-        status
+        reservation.status,
+        user.id AS userID,
+        book.id AS bookId
       FROM reservation
       LEFT JOIN user ON reservation.userId = user.id
       LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
+      LEFT JOIN book ON book_info.id = book.infoId
       ${filterQuery}
       HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
       LIMIT ?
