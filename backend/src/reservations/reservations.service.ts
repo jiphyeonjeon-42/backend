@@ -123,8 +123,7 @@ export const
         user.nickname AS login,
         CASE
           WHEN NOW() > user.penaltyEndDate THEN 0
-          ELSE DATED
-          IFF(now(), user.penaltyEndDate)
+          ELSE DATEDIFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
         book.title,
         book.image,
@@ -136,6 +135,8 @@ export const
         reservation.createdAt AS createdAt,
         reservation.endAt AS endAt,
         status
+        user.id AS userId,
+        book.id AS bookId
       FROM reservation
       LEFT JOIN user AS user ON reservation.userId = user.id
       LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
