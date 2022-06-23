@@ -1,7 +1,6 @@
 import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
-import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
 export const create = async (userId: number, bookInfoId: number) => {
@@ -103,7 +102,6 @@ export const create = async (userId: number, bookInfoId: number) => {
 
 export const
   search = async (query:string, page: number, limit: number, filter: string) => {
-    logger.debug(`reservation search query: ${query} page: ${page} limit ${limit} filter ${filter}`);
     let filterQuery;
     switch (filter) {
       case 'waiting':
@@ -125,7 +123,8 @@ export const
         user.nickname AS login,
         CASE
           WHEN NOW() > user.penaltyEndDate THEN 0
-          ELSE DATEDIFF(now(), user.penaltyEndDate)
+          ELSE DATED
+          IFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
         book.title,
         book.image,
@@ -255,13 +254,11 @@ export const count = async (bookInfoId: number) => {
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
     throw new Error(errorCode.AVAILABLE_LOAN);
   }
-  logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
     FROM reservation
     WHERE bookInfoId = ? AND status = 0;
   `, [bookInfoId]);
-  logger.debug(`numberOfReservations: ${numberOfReservations[0].count}`);
   return numberOfReservations[0];
 };
 
@@ -279,7 +276,6 @@ export const reservationKeySubstitution = (obj: queriedReservationInfo): reserva
 };
 
 export const userReservations = async (userId: number) => {
-  logger.debug(`userReservations userId: ${userId}`);
   const reservationList = await executeQuery(`
     SELECT reservation.id as reservationId,
     reservation.bookInfoId as reservedBookInfoId,
@@ -298,6 +294,5 @@ export const userReservations = async (userId: number) => {
     WHERE reservation.userId = ? AND reservation.status = 0;
   `, [userId]) as [queriedReservationInfo];
   reservationList.forEach((obj) => reservationKeySubstitution(obj));
-  logger.debug(`reservationList: ${reservationList}`);
   return reservationList;
 };
