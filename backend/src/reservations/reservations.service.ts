@@ -123,8 +123,7 @@ export const
         user.nickname AS login,
         CASE
           WHEN NOW() > user.penaltyEndDate THEN 0
-          ELSE DATED
-          IFF(now(), user.penaltyEndDate)
+          ELSE DATEDIFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
         book_info.title,
         book_info.image,
