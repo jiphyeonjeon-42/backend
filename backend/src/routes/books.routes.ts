@@ -411,7 +411,7 @@ router
    *                          description: 카데고리
    *                          type: string
    *                          example: 기술교양
-   *                        isLenderable:
+   *                        isLendable:
    *                          description: 대출 가능 여부
    *                          type: boolean
    *                          example: 1
