@@ -21,19 +21,21 @@ export const search = async (
       book_info.author AS author,
       book_info.publisher AS publisher,
       book_info.isbn AS isbn,
+      book.callSign AS callSign,
+      book_info.image as image,
       (
         SELECT name
         FROM category
         WHERE id = book_info.categoryId
       ) AS category,
       (
-        IF ((
-          (select COUNT(*) from lending where (bookId = book.id and returnedAt is NULL) = 0)
-          and 
-          (select COUNT(*) from book where (id = book.id and status = 0) = 1) 
-          and
-          (select COUNT(*) from reservation where (bookId = book.id and status = 0) = 0)
-      ),TRUE,FALSE)
+        IF((
+            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
+            ), TRUE, FALSE)
       ) AS isLendable 
     FROM book_info, book 
     WHERE book_info.id = book.infoId AND
@@ -46,7 +48,21 @@ export const search = async (
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
 
-  const totalItems = bookList.length;
+  const totalItems = (await executeQuery(
+    `
+    SELECT
+      COUNT(*) AS count
+    FROM book_info
+    INNER JOIN book ON book_info.id = book.infoId
+    WHERE (
+      book_info.title LIKE ?
+      OR book_info.author LIKE ?
+      OR book_info.isbn LIKE ?
+      )
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+  ))[0].count as number;
+
   const meta = {
     totalItems,
     itemCount: bookList.length,
@@ -403,14 +419,14 @@ export const getInfo = async (id: string) => {
     eachBooks.map(async (eachBook) => {
       const isLendable = await executeQuery(
         `SELECT (
-          IF ((
-          (select COUNT(*) from lending where (bookId = ${eachBook.id} and returnedAt is NULL) = 0)
-          and 
-          (select COUNT(*) from book where (id = ${eachBook.id} and status = 0) = 1) 
-          and
-          (select COUNT(*) from reservation where (bookId = ${eachBook.id} and status = 0) = 0)),
-          TRUE,FALSE)
-          ) as isLendable`,
+        IF((
+             IF((select COUNT(*) from lending as l where l.bookId = ${eachBook.id} and l.returnedAt is NULL) = 0, TRUE, FALSE)
+             AND
+             IF((select COUNT(*) from book as b where (b.id = ${eachBook.id} and b.status = 0)) = 1, TRUE, FALSE)
+             AND
+             IF((select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) = 0, TRUE, FALSE)
+           ), TRUE, FALSE)
+        ) AS isLendable `,
       ).then((isLendableArr) => isLendableArr[0].isLendable);
       let dueDate;
       if (isLendable === 0) {

@@ -6,6 +6,7 @@ import * as reservationsService from './reservations.service';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
+import * as userUtils from '../users/users.utils';
 
 export const create: RequestHandler = async (
   req: Request,
@@ -80,7 +81,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (role === 2) {
+    if (userUtils.isLibrian(role)) {
       await reservationsService.cancel(reservationId);
     } else await reservationsService.userCancel(id, reservationId);
     return res.send(status.ok).json('ok');

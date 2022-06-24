@@ -411,10 +411,18 @@ router
    *                          description: 카데고리
    *                          type: string
    *                          example: 기술교양
-   *                        isLenderable:
+   *                        isLendable:
    *                          description: 대출 가능 여부
    *                          type: boolean
    *                          example: 1
+   *                        callSign:
+   *                          description: 청구 기호
+   *                          type: string
+   *                          example: "c1.99.v1.c1"
+   *                        image:
+   *                          description: 이미지 URL 주소
+   *                          type: string
+   *                          example: "이미지 주소"
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object
