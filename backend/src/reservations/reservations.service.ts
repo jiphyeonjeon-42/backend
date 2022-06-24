@@ -135,7 +135,7 @@ export const
         reservation.createdAt AS createdAt,
         reservation.endAt AS endAt,
         reservation.status,
-        user.id AS userID,
+        user.id AS userId,
         book.id AS bookId
       FROM reservation
       LEFT JOIN user ON reservation.userId = user.id
