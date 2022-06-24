@@ -71,7 +71,7 @@ export const searchBookInfo = async (
   const {
     page, limit, sort, category,
   } = req.query;
-  if (!(page && limit)) {
+  if (Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
@@ -158,7 +158,7 @@ export const search = async (
   const query = String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
-  if (!(query && page && limit)) {
+  if (query === 'undefined' || Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
