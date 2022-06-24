@@ -21,6 +21,8 @@ export const search = async (
       book_info.author AS author,
       book_info.publisher AS publisher,
       book_info.isbn AS isbn,
+      book.callSign AS callSign,
+      book_info.image as image,
       (
         SELECT name
         FROM category
