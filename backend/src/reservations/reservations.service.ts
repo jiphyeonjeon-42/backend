@@ -1,7 +1,6 @@
 import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
-import { logger } from '../utils/logger';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 
 export const create = async (userId: number, bookInfoId: number) => {
@@ -103,7 +102,6 @@ export const create = async (userId: number, bookInfoId: number) => {
 
 export const
   search = async (query:string, page: number, limit: number, filter: string) => {
-    logger.debug(`reservation search query: ${query} page: ${page} limit ${limit} filter ${filter}`);
     let filterQuery;
     switch (filter) {
       case 'waiting':
@@ -127,8 +125,8 @@ export const
           WHEN NOW() > user.penaltyEndDate THEN 0
           ELSE DATEDIFF(now(), user.penaltyEndDate)
         END AS penaltyDays,
-        book.title,
-        book.image,
+        book_info.title,
+        book_info.image,
         (
           SELECT callSign
           FROM book
@@ -136,12 +134,15 @@ export const
         ) AS callSign,
         reservation.createdAt AS createdAt,
         reservation.endAt AS endAt,
-        status
+        reservation.status,
+        user.id AS userId,
+        book.id AS bookId
       FROM reservation
-      LEFT JOIN user AS user ON reservation.userId = user.id
-      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
+      LEFT JOIN user ON reservation.userId = user.id
+      LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
+      LEFT JOIN book ON book_info.id = book.infoId
       ${filterQuery}
-      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
+      HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
       LIMIT ?
       OFFSET ?
   `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
@@ -234,6 +235,7 @@ export const userCancel = async (userId: number, reservationId: number): Promise
   if (reservations[0].userId !== userId) {
     throw new Error(errorCode.NO_MATCHING_USER);
   }
+  cancel(reservationId);
 };
 
 export const count = async (bookInfoId: number) => {
@@ -255,13 +257,11 @@ export const count = async (bookInfoId: number) => {
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
     throw new Error(errorCode.AVAILABLE_LOAN);
   }
-  logger.debug(`count bookInfoId: ${bookInfoId}`);
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
     FROM reservation
     WHERE bookInfoId = ? AND status = 0;
   `, [bookInfoId]);
-  logger.debug(`numberOfReservations: ${numberOfReservations[0].count}`);
   return numberOfReservations[0];
 };
 
@@ -279,7 +279,6 @@ export const reservationKeySubstitution = (obj: queriedReservationInfo): reserva
 };
 
 export const userReservations = async (userId: number) => {
-  logger.debug(`userReservations userId: ${userId}`);
   const reservationList = await executeQuery(`
     SELECT reservation.id as reservationId,
     reservation.bookInfoId as reservedBookInfoId,
@@ -298,6 +297,5 @@ export const userReservations = async (userId: number) => {
     WHERE reservation.userId = ? AND reservation.status = 0;
   `, [userId]) as [queriedReservationInfo];
   reservationList.forEach((obj) => reservationKeySubstitution(obj));
-  logger.debug(`reservationList: ${reservationList}`);
   return reservationList;
 };
