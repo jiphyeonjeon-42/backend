@@ -33,6 +33,17 @@ const authValidate = (roles: role[]) => async (
     req.user = { intraProfile: req.user, id, role: user.items[0].role };
     next();
   } catch (error: any) {
+    switch (error.message) {
+      // 토큰에 대한 오류를 판단합니다.
+      case 'INVALID_TOKEN':
+      case 'TOKEN_IS_ARRAY':
+      case 'NO_USER':
+        return next(new ErrorResponse(errorCode.TOKEN_NOT_VALID, status.UNAUTHORIZED));
+      case 'EXPIRED_TOKEN':
+        return next(new ErrorResponse(errorCode.EXPIRATION_TOKEN, status.GONE));
+      default:
+        break;
+    }
     if (error instanceof ErrorResponse) {
       next(error);
     }
