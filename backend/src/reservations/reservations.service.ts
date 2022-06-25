@@ -89,8 +89,9 @@ export const create = async (userId: number, bookInfoId: number) => {
       INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
+    const reservationPriorty : any = count(bookInfoId);
     conn.commit();
-    return count(bookInfoId);
+    return reservationPriorty;
   } catch (e) {
     conn.rollback();
     throw new Error(errorCode.QUERY_EXECUTION_FAILED);
