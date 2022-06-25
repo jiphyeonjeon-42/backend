@@ -98,7 +98,7 @@ export const router = Router();
  *                  errorCode:
  *                    description: 여러 가지 경우의 에러를 나타내는 코드
  *                    type: integer
- *                    example: 1
+ *                    example: 2
  * */
 
 /**
