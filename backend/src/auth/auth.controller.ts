@@ -25,11 +25,15 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
   try {
     const { id } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
-    if (user.length === 0) throw new ErrorResponse(errorCode.NO_USER, 401);
+    if (user.length === 0) {
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.NO_USER}"</script>`);
+      return;
+    }
     await authJwt.saveJwt(req, res, user[0]);
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
-    const errorNumber = parseInt(error.message, 10);
+    const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
     if (errorNumber === 101) 
       return next(new ErrorResponse(error.message, status.UNAUTHORIZED));
     if (errorNumber >= 100 && errorNumber < 200) {
@@ -122,22 +126,36 @@ export const intraAuthentication = async (
     const { intraId, nickName } = intraProfile;
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
-      return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`);
+      return;
+      // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      return next(new ErrorResponse(errorCode.NO_USER, 410));
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`);
+      return;
+      // return next(new ErrorResponse(errorCode.NO_USER, 410));
     }
     if (user.items[0].role !== role.user) {
-      return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`);
+      // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
-      return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NON_AFFECTED}"</script>`);
+      // return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
-    res.status(200).send();
+    res.status(status.OK)
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage"</script>`);
   } catch (error: any) {
+    res.status(status.BAD_REQUEST)
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${error.errorCode ? error.errorCode : error.message}"</script>`);
+    return;
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
