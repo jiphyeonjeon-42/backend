@@ -93,9 +93,7 @@ export const create = async (userId: number, bookInfoId: number) => {
     return count(bookInfoId);
   } catch (e) {
     conn.rollback();
-    if (e instanceof Error) {
-      throw e;
-    }
+    throw new Error(errorCode.QUERY_EXECUTION_FAILED);
   } finally {
     conn.release();
   }
@@ -218,7 +216,7 @@ export const cancel = async (reservationId: number): Promise<void> => {
     }
   } catch (e: any) {
     conn.rollback();
-    throw e;
+    throw new Error(errorCode.QUERY_EXECUTION_FAILED);
   } finally {
     conn.release();
   }
