@@ -89,12 +89,12 @@ export const create = async (userId: number, bookInfoId: number) => {
       INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
+    const reservationPriorty : any = count(bookInfoId);
     conn.commit();
+    return reservationPriorty;
   } catch (e) {
     conn.rollback();
-    if (e instanceof Error) {
-      throw e;
-    }
+    throw e;
   } finally {
     conn.release();
   }
