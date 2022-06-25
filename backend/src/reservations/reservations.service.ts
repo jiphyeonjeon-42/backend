@@ -90,6 +90,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       VALUES (?, ?)
     `, [userId, bookInfoId]);
     conn.commit();
+    return count(bookInfoId);
   } catch (e) {
     conn.rollback();
     if (e instanceof Error) {
