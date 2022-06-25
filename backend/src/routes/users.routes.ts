@@ -211,8 +211,8 @@ export const router = Router();
  *                role:
  *                  type: integer
  *                penaltyEndDate:
- *                  type: string
- *                  example: 20220618
+ *                  type: date
+ *                  example: 2022-06-18
  *      responses:
  *        '200':
  *          description: 수정된 유저 정보를 반환합니다.
@@ -239,8 +239,8 @@ export const router = Router();
  *                    example: 2
  *                  penaltyEbdDate:
  *                     description: 패널티가 끝나는 날
- *                     type: date
- *                     example: 20220606
+ *                     type: string
+ *                     example: 2022-06-18
  *        '400':
  *          description: nickname, intraId, slack, role 중 아무것도 없습니다..
  *          content:
