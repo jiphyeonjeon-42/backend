@@ -67,7 +67,7 @@ export const router = Router();
  *                  example: 34
  *      responses:
  *        '200':
- *          description: 예약 대기 정보를 반환한다.
+ *          description: 예약한 책에 걸려있는 예약수를 확인한다. (본인이 방금한거 포함)
  *          content:
  *            application/json:
  *              schema:
@@ -85,20 +85,20 @@ export const router = Router();
  *                type: object
  *                properties:
  *                  errorCode:
- *                    description: 대출되지 않은 책, 재예약의 경우 등 여러 가지 경우의 에러를 나타내는 코드
+ *                    description:
  *                    type: integer
- *                    example: 3
- *        '401':
- *          description: 유저 정보가 정확하지 않음
+ *                    example: 2
+*        '400_case2':
+ *          description:  예약에 실패한 경우
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
  *                  errorCode:
- *                    description: 여러 가지 경우의 에러를 나타내는 코드
+ *                    description:
  *                    type: integer
- *                    example: 2
+ *                    example: 502(패널티 기간 || 503(대출이 가능한 책) || 504(이미 예약중) || 505(이미 대출중), ... 
  * */
 
 /**
