@@ -16,13 +16,14 @@ export const create: RequestHandler = async (
   const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
-    next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
     return res
       .status(status.OK)
       .json(await reservationsService.create(id, req.body.bookInfoId));
   } catch (error: any) {
+    console.log("error", error);
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
