@@ -249,6 +249,6 @@ export const updateUserAuth = async (
   ${setString}
   where id=?
   `, queryParameters);
-  const updatedUser = await executeQuery('SELECT nickname, intraId, slack, role, penaltyEndDate FROM user where id = ?;', [id]);
+  const updatedUser = await executeQuery('SELECT nickname, intraId, slack, role, DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate FROM user where id = ?;', [id]);
   return (updatedUser[0]);
 };
