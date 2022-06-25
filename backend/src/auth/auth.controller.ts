@@ -150,8 +150,12 @@ export const intraAuthentication = async (
       // return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await authJwt.saveJwt(req, res, user.items[0]);
-    res.status(200).send();
+    res.status(status.OK)
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage"</script>`);
   } catch (error: any) {
+    res.status(status.BAD_REQUEST)
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${error.errorCode ? error.errorCode : error.message}"</script>`);
+    return;
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
