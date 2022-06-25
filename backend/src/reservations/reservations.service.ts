@@ -94,7 +94,7 @@ export const create = async (userId: number, bookInfoId: number) => {
     return reservationPriorty;
   } catch (e) {
     conn.rollback();
-    throw new Error(errorCode.QUERY_EXECUTION_FAILED);
+    throw e;
   } finally {
     conn.release();
   }
@@ -217,7 +217,7 @@ export const cancel = async (reservationId: number): Promise<void> => {
     }
   } catch (e: any) {
     conn.rollback();
-    throw new Error(errorCode.QUERY_EXECUTION_FAILED);
+    throw e;
   } finally {
     conn.release();
   }
