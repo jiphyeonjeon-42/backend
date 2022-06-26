@@ -7,7 +7,7 @@ import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
 import { role } from './auth.type';
-import slack from './auth.slack';
+import { updateSlackIdByUserId } from '../slack/slack.service';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
@@ -34,8 +34,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
-    if (errorNumber === 101) 
-      return next(new ErrorResponse(error.message, status.UNAUTHORIZED));
+    if (errorNumber === 101) { return next(new ErrorResponse(error.message, status.UNAUTHORIZED)); }
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
@@ -149,6 +148,7 @@ export const intraAuthentication = async (
         .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NON_AFFECTED}"</script>`);
       // return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
+    await updateSlackIdByUserId(user.items[0].id);
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(status.OK)
       .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage"</script>`);
@@ -156,27 +156,6 @@ export const intraAuthentication = async (
     res.status(status.BAD_REQUEST)
       .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${error.errorCode ? error.errorCode : error.message}"</script>`);
     return;
-    const errorNumber = parseInt(error.message, 10);
-    if (errorNumber >= 100 && errorNumber < 200) {
-      next(new ErrorResponse(error.message, status.BAD_REQUEST));
-    } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
-    } else {
-      logger.error(error.message);
-      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
-    }
-  }
-};
-
-export const updateSlackList = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) : Promise<void> => {
-  try {
-    await slack.updateSlackID();
-    res.status(204).send('ok');
-  } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
