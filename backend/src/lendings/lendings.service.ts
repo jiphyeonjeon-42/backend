@@ -200,20 +200,14 @@ export const search = async (
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
         ELSE DATEDIFF(now(), user.penaltyEndDate)
       END AS penaltyDays,
-      (
-          SELECT callSign
-          FROM book
-          WHERE id = bookId
-      ) as callSign,
-      (
-        SELECT title
-        FROM book_info
-        WHERE id = bookId
-      ) AS title,
+      book.callSign,
+      book_info.title,
       lending.createdAt AS createdAt,
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
-    JOIN user AS user ON lending.userId = user.id
+    JOIN user ON  user.id = lending.userId
+    JOIN book ON book.id = lending.bookId
+    JOIN book_info ON book_info.id = book.infoID
     WHERE lending.returnedAt is NULL
     ${filterQuery}
     ORDER BY lending.createdAt ${orderQuery}
@@ -265,17 +259,14 @@ export const lendingId = async (id:number) => {
       WHEN user.penaltyEndDate < NOW() THEN 0
       ELSE DATEDIFF(NOW(), user.penaltyEndDate)
     END AS penaltyDays,
-    (
-        SELECT callSign
-        FROM book
-        WHERE book.id = lending.bookId
-    ) as callSign,
-    book.title as title,
-    book.image as image,
+    book.callSign,
+    book_info.title as title,
+    book_info.image as image,
     DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y.%m.%d') AS dueDate
     FROM lending
     JOIN user AS user ON user.id = lending.userId
-    JOIN book_info AS book ON book.id = lending.bookId
+    JOIN book ON book.id = lending.bookId
+    JOIN book_info ON book_info.id = book.infoId
     WHERE lending.id = ?
   `, [id]);
   return data[0];
