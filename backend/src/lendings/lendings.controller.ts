@@ -48,7 +48,7 @@ export const search: RequestHandler = async (
   next: NextFunction,
 ) => {
   const info = req.query;
-  const query = info.query as string;
+  const query = String(info.query) !== 'undefined' ? String(info.query) : '';
   const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) : 0;
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const sort = info.sort as string;
