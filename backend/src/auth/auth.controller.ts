@@ -124,13 +124,6 @@ export const intraAuthentication = async (
   try {
     const { intraProfile, id } = req.user as any;
     const { intraId, nickName } = intraProfile;
-    const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
-    if (intraList.length !== 0) {
-      res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`);
-      return;
-      // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
-    }
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
       res.status(status.BAD_REQUEST)
@@ -140,7 +133,14 @@ export const intraAuthentication = async (
     }
     if (user.items[0].role !== role.user) {
       res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`);
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`);
+      // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
+    }
+    const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
+    if (intraList.length !== 0) {
+      res.status(status.BAD_REQUEST)
+        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ANOTHER_ACCOUNT_AUTHENTICATED}"</script>`);
+      return;
       // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
@@ -151,11 +151,8 @@ export const intraAuthentication = async (
     }
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(status.OK)
-      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage"</script>`);
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/auth"</script>`);
   } catch (error: any) {
-    res.status(status.BAD_REQUEST)
-      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${error.errorCode ? error.errorCode : error.message}"</script>`);
-    return;
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
