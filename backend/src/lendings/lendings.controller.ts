@@ -23,7 +23,7 @@ export const create: RequestHandler = async (
       id,
       req.body.condition,
     );
-    res.status(201).json();
+    res.status(201).end();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 400 && errorNumber < 500) {
