@@ -118,7 +118,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
     logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
 
-  const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
+  const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE binary(callSign) = ? ', [book.callSign])) as StringRows[];
   if (callSignExist[0].cnt > 0) {
     throw new Error(errorCode.CALL_SIGN_OVERLAP);
   }
