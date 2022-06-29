@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS `book`, `book_info`, `lending`,`reservation`,`returning`,`user`;

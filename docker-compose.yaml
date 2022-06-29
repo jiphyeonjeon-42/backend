@@ -2,6 +2,7 @@ version: '3'
 
 services:
   database:
+    platform: linux/x86_64
     container_name: database
     image: mysql:8.0
     environment:
@@ -14,7 +15,7 @@ services:
       - 3306:3306
     volumes:
       - ./database:/docker-entrypoint-initdb.d:ro
-      - db_data:/var/lib/mysql
+      - ./database/data:/var/lib/mysql
 
   migration:
     container_name: migration
@@ -27,5 +28,15 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+    volumes:
+      - ./backend/src:/src
+    command: ${MODE}
+    ports:
+      - 3000:3000
+    env_file: .env
 volumes:
   db_data:
