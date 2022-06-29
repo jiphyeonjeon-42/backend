@@ -34,9 +34,9 @@ export const issueJwt = (user: User) => {
 export const saveJwt = async (req: Request, res: Response, user: User) : Promise<void> => {
   const token = issueJwt(user);
   res.cookie('access_token', token, {
-    httpOnly: true,
-    secure: true, // ANCHOR https 연결시에는 true로 설정해주어야함.
-    sameSite: 'strict',
+    //httpOnly: true,
+    //secure: true, // ANCHOR https 연결시에는 true로 설정해주어야함.
+    sameSite: 'lax',
     expires: new Date(new Date().getTime() + 1000 * 60 * 480),
   });
 };

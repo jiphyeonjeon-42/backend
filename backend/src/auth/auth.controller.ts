@@ -109,9 +109,10 @@ export const logout = (req: Request, res: Response) => {
 export const getIntraAuthentication = (req: Request, res: Response) => {
   const clientId = config.client.id;
   const redirectURL = `${config.client.redirectURL}/api/auth/intraAuthentication`;
+  //const redirectURL = `${config.client.redirectURL}/api/auth/token`;
   const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectURL,
-  )}&response_type=code&}`;
+  )}&response_type=code`;
   res.status(302).redirect(oauthUrl);
 };
 

@@ -1,10 +1,12 @@
 import app from './app';
 import scheduler from './utils/scheduler';
 
-app.listen('3000', () => {
+const port = '3000'
+
+app.listen(port, () => {
   console.log(`
   ################################################
-  🛡️  Server listening on port: 3000🛡️
+  🛡️  Server listening on port: ${port}🛡️
   ################################################
     `);
   scheduler();

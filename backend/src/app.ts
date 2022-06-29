@@ -22,6 +22,7 @@ app.use(cors({
     'http://localhost:4242',
     'http://42library.kr',
     'https://42library.kr',
+    'http://42jip.com',
   ],
   credentials: true,
 }));

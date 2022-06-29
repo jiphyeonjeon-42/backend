@@ -9,7 +9,7 @@ export const updateAuthenticationUser = async (
   nickname: string,
 ) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
-    UPDATE USER
+    UPDATE user
     SET intraId = ?, nickname = ?, role = ?
     WHERE id = ?
   `, [intraId, nickname, role.cadet, id]);
