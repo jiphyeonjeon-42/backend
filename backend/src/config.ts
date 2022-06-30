@@ -15,8 +15,8 @@ const config = {
   client: {
     id: process.env.CLIENT_ID,
     secret: process.env.CLIENT_SECRET,
-    redirectURL: process.env.REDIRECT_URL ?? 'http://server.42library.kr',
-    clientURL: process.env.CLIENT_URL ?? 'http://42library.kr',
+    redirectURL: process.env.REDIRECT_URL ?? 'https://server.42library.kr',
+    clientURL: process.env.CLIENT_URL ?? 'https://42library.kr',
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'secret',

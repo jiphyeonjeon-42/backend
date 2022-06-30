@@ -6,6 +6,8 @@ import {
 } from '../auth/auth.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
+import config from '../config';
+import * as errorCode from '../utils/error/errorCode';
 
 export const path = '/auth';
 export const router = Router();
@@ -68,7 +70,7 @@ router.get('/oauth', getOAuth);
  *                  message:
  *                    type: string
  */
-router.get('/token', passport.authenticate('42', { session: false }), getToken);
+router.get('/token', passport.authenticate('42', { session: false, failureRedirect: `${config.client.clientURL}/login?errorCode=${errorCode.ACCESS_DENIED}` }), getToken);
 
 /**
  * @openapi
@@ -303,4 +305,4 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  *                  message:
  *                    type: string
  */
-router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false }), authValidate(roleSet.all), intraAuthentication);
+router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false, failureRedirect: `${config.client.clientURL}/mypage?errorCode=${errorCode.ACCESS_DENIED}` }), passport.authenticate('jwt', { session: false, failureRedirect: `${config.client.clientURL}/logout` }), intraAuthentication);
