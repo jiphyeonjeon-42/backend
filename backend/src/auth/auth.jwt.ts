@@ -36,7 +36,7 @@ export const saveJwt = async (req: Request, res: Response, user: User) : Promise
   res.cookie('access_token', token, {
     httpOnly: true,
     secure: config.mode === 'prod' ? true : false, // ANCHOR https 연결시에는 true로 설정해주어야함.
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
     domain: config.mode === 'prod' ? '42library.kr' : 'localhost',
     expires: new Date(new Date().getTime() + 1000 * 60 * 480),
