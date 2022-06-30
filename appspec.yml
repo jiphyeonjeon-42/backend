@@ -4,7 +4,8 @@ os: linux
 files:
   - source:  /
     destination: /home/ubuntu/backend-express
-    overwrite: yes
+    overwrite: true
+file_exists_behavior: OVERWRITE
 
 permissions:
   - object: /
