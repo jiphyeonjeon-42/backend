@@ -6,7 +6,7 @@ import { searchUserById } from '../users/users.service';
 
 export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
-    UPDATE USER
+    UPDATE user
     SET slack = ?
     WHERE id = ?
   `, [slackId, id]);
@@ -16,7 +16,7 @@ export const updateSlackIdUser = async (id: number, slackId: string) : Promise<n
 export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
   const result : models.User[] = await executeQuery(`
     SELECT *
-    FROM USER
+    FROM user
     WHERE intraId IS NOT NULL AND (slack IS NULL OR slack = '')
   `);
   return result;
