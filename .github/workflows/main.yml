@@ -10,7 +10,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: jipbackdeploy
-  CODE_DEPLOY_APPLICATION_NAME: jipcodedeployapp2
+  CODE_DEPLOY_APPLICATION_NAME: jipcodedeployapp
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: jipcodedeploygroup
   
 jobs:
@@ -53,7 +53,6 @@ jobs:
         aws deploy push \
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
-          #--ignore-hidden-files \
           --source .
           
     - name: Deploy to AWS EC2 from S3
