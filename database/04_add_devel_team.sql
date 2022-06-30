@@ -7,4 +7,4 @@ insert into jiphyeonjeon.user values ('6','example_role2_19@gmail.com','1234','j
 insert into jiphyeonjeon.user values ('7','example_role2_20@gmail.com','1234','jolim', '74906', 'U01BA6HPR9T', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
 insert into jiphyeonjeon.user values ('8','example_role2_21@gmail.com','1234','seongyle', '103894', 'U035MTLHXEF', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
 insert into jiphyeonjeon.user values ('9','example_role2_22@gmail.com','1234','chulee', '99900', 'U02KVE6JD2T', '2022-06-10 15:50:13','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
-insert into jiphyeonjeon.user values ('10','example_role2_23@gmail.com','1234','samin', '74856', 'U01B6H1UPE2', '2022-06-10 15:50:23','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
+insert into jiphyeonjeon.user values ('10','example_role2_23@gmail.com','1234','samin', '74856', 'U01B6H1UPE2', '2022-06-30 15:50:23','2','2022-06-10 15:50:13.771987','2022-06-10 15:50:13.771987');
