@@ -16,7 +16,7 @@ env:
 jobs:
   deploy:
     name: Deploy
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     environment: production
 
     steps:
