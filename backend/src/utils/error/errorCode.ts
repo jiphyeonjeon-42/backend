@@ -13,6 +13,7 @@ export const EXPIRATION_TOKEN = '108';
 export const TOKEN_NOT_VALID = '109';
 export const NON_AFFECTED = '110';
 export const ANOTHER_ACCOUNT_AUTHENTICATED = '111';
+export const ACCESS_DENIED = '112';
 
 export const EMAIL_OVERLAP = '203';
 export const NICKNAME_OVERLAP = '204';
