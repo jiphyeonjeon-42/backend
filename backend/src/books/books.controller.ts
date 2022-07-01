@@ -75,15 +75,17 @@ export const searchBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
+    const searchBookInfoResult = await BooksService.searchInfo(
+      query,
+      parseInt(page, 10),
+      parseInt(limit, 10),
+      sort,
+      category,
+    );
+    logger.info(`[api/books/info/search] ${JSON.stringify(searchBookInfoResult.items)}`);
     return res
       .status(status.OK)
-      .json(await BooksService.searchInfo(
-        query,
-        parseInt(page, 10),
-        parseInt(limit, 10),
-        sort,
-        category,
-      ));
+      .json(searchBookInfoResult);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
