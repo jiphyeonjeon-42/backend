@@ -19,11 +19,12 @@ export const create: RequestHandler = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
+    const createdReservation = await reservationsService.create(id, req.body.bookInfoId);
+    logger.info(`[api/reservations] userId: ${id} bookInfoId: ${bookInfoId}`);
     return res
       .status(status.OK)
-      .json(await reservationsService.create(id, req.body.bookInfoId));
+      .json(createdReservation);
   } catch (error: any) {
-    console.log("error", error);
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
