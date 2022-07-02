@@ -82,7 +82,7 @@ export const searchBookInfo = async (
       sort,
       category,
     );
-    logger.info(`[api/books/info/search] ${JSON.stringify(searchBookInfoResult.items)}`);
+    logger.info(`[ES_S] ${JSON.stringify(searchBookInfoResult.items)}`);
     return res
       .status(status.OK)
       .json(searchBookInfoResult);
