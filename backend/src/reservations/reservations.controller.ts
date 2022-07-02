@@ -20,7 +20,7 @@ export const create: RequestHandler = async (
   }
   try {
     const createdReservation = await reservationsService.create(id, req.body.bookInfoId);
-    logger.info(`[api/reservations] userId: ${id} bookInfoId: ${bookInfoId}`);
+    logger.info(`[ES_R] userId: ${id} bookInfoId: ${bookInfoId}`);
     return res
       .status(status.OK)
       .json(createdReservation);
