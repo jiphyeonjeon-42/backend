@@ -136,7 +136,7 @@ export const returnBook = async (
       WHERE id = ?
     `, [librarianId, condition, lendingId]);
 
-    // 예약된 책이 있다면 예약 부여, endAt 어떻게 처리하지..?
+    // 예약된 책이 있다면 예약 부여
     const isReserved = await transactionExecuteQuery(`
       SELECT *
       FROM reservation
