@@ -136,7 +136,7 @@ export const returnBook = async (
       WHERE id = ?
     `, [librarianId, condition, lendingId]);
 
-    // 예약된 책이 있다면 예약 부여, endAt 어떻게 처리하지..?
+    // 예약된 책이 있다면 예약 부여
     const isReserved = await transactionExecuteQuery(`
       SELECT *
       FROM reservation
@@ -156,8 +156,11 @@ export const returnBook = async (
           endAt =  DATE_ADD(NOW(), INTERVAL 3 DAY)
         WHERE id = ?
     `, [lendingInfo[0].bookId, isReserved[0].id]);
+      // 예약자에게 슬랙메시지 보내기
+      const slackIdReservedUser = (await transactionExecuteQuery('SELECT slack from user where id = ?', [isReserved[0].userId]))[0].slack;
+      const bookTitle = (await transactionExecuteQuery('SELECT title from book_info where id = (SELECT infoId FROM book WHERE id = ?)', [lendingInfo[0].bookId]))[0].title;
+      publishMessage(slackIdReservedUser, `:robot_face: 집현전 봇 :robot_face:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
     }
-
     await conn.commit();
   } catch (error) {
     await conn.rollback();
