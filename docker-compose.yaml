@@ -38,12 +38,13 @@ services:
 
   backend:
     container_name: backend
+    #image : node:16
     build:
       context: ./backend
     volumes:
-      - ./backend/src:/src
+      #- ./backend/src/:/src/
       - ./backend/logs:/logs/all/
-    command: ${MODE}
+    #command: ${MODE}
     ports:
       - 3000:3000
       #- 80:80
