@@ -1,14 +1,6 @@
 version: '3'
 
 services:
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    ports:
-      - 80:80
-
   database:
     platform: linux/x86_64
     container_name: database
@@ -42,11 +34,10 @@ services:
       context: ./backend
     volumes:
       - ./backend/src:/src
-      - ./backend/logs:/logs/all/
     command: ${MODE}
     ports:
       - 3000:3000
-      #- 80:80
+      - 80:80
     env_file: .env
 volumes:
   db_data:

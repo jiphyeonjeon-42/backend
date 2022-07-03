@@ -75,15 +75,17 @@ export const searchBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
+    const searchBookInfoResult = await BooksService.searchInfo(
+      query,
+      parseInt(page, 10),
+      parseInt(limit, 10),
+      sort,
+      category,
+    );
+    logger.info(`[ES_S] : ${JSON.stringify(searchBookInfoResult.items)}`);
     return res
       .status(status.OK)
-      .json(await BooksService.searchInfo(
-        query,
-        parseInt(page, 10),
-        parseInt(limit, 10),
-        sort,
-        category,
-      ));
+      .json(searchBookInfoResult);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -107,9 +109,11 @@ export const getInfoId: RequestHandler = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
+    const bookInfo = await BooksService.getInfo(req.params.id);
+    logger.info(`[ES_C] : ${JSON.stringify(bookInfo)}`);
     return res
       .status(status.OK)
-      .json(await BooksService.getInfo(req.params.id));
+      .json(bookInfo);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
