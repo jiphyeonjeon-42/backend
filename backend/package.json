@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "build": "tsc -p .",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
-    "prod": "tsc -p . && node dist/server.js",
+    "prod": "tsc -p . && nodemon --watch \\\"src/**/*.ts\\\" --exec \\\"ts-node\\\" src/server.ts",
     "test": "jest"
   },
   "devDependencies": {
