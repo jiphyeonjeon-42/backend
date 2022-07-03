@@ -89,6 +89,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
+    // eslint-disable-next-line no-use-before-define
     const reservationPriorty : any = count(bookInfoId);
     conn.commit();
     return reservationPriorty;
