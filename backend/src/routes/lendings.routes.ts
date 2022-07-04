@@ -280,7 +280,16 @@ router
  *                - condition
  *      responses:
  *        '200':
- *          description: 반납처리 완료
+ *          description: 반납처리 완료, 반납된 책이 예약이 되어있는지 알려줌
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  reservedBook:
+ *                    description: 반납된 책이 예약이 되어있는지 알려줌
+ *                    type: boolean
+ *                    example: true
  *        '400':
  *          description: 에러코드 0 dto에러 잘못된 json key, 1 db 에러 알 수 없는 lending id 등
  *          content:
