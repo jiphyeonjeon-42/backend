@@ -441,7 +441,7 @@ export const getInfo = async (id: string) => {
         LIMIT 1;
       `,
           [eachBook.id],
-        ).then((dueDateArr) => dueDateArr[0].dueDate);
+        ).then((dueDateArr) => (dueDateArr[0]?.dueDate ? dueDateArr[0].dueDate : '-'));
       } else {
         dueDate = '-';
       }
