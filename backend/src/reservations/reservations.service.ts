@@ -214,8 +214,8 @@ export const cancel = async (reservationId: number): Promise<void> => {
           WHERE id = ?
         `, [reservations[0].bookId, candidates[0].id]);
       }
-      conn.commit();
     }
+    conn.commit();
   } catch (e: any) {
     conn.rollback();
     throw e;
