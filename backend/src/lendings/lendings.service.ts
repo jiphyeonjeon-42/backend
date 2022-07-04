@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
@@ -162,6 +163,10 @@ export const returnBook = async (
       publishMessage(slackIdReservedUser, `:robot_face: 집현전 봇 :robot_face:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
     }
     await conn.commit();
+    if (isReserved && isReserved[0]) {
+      return ({ reservedBook: true });
+    }
+    return ({ reservedBook: false });
   } catch (error) {
     await conn.rollback();
     if (error instanceof Error) {
