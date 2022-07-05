@@ -51,7 +51,7 @@ CREATE TABLE `book_info` (
   `title` varchar(255) NOT NULL,
   `author` varchar(255) NOT NULL,
   `publisher` varchar(255) NOT NULL,
-  `isbn` varchar(255) DEFAULT NULL,
+  `isbn` varchar(255) DEFAULT NULL UNIQUE,
   `image` varchar(255) DEFAULT NULL,
   `categoryEnum` varchar(255) NOT NULL,
   `publishedAt` date DEFAULT NULL,
