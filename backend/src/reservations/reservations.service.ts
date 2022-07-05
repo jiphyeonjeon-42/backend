@@ -137,11 +137,10 @@ export const
         reservation.endAt AS endAt,
         reservation.status,
         user.id AS userId,
-        book.id AS bookId
+        reservation.bookId AS bookId
       FROM reservation
       LEFT JOIN user ON reservation.userId = user.id
       LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
-      LEFT JOIN book ON book_info.id = book.infoId
       ${filterQuery}
       HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
       LIMIT ?
