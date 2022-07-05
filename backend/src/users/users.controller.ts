@@ -155,8 +155,10 @@ export const myupdate = async (
         .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
         .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
         .symbols(1);
-      if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
-      else await updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
+      if (!pwSchema.validate(password)) {
+        return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
+      }
+      await updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
     } res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
