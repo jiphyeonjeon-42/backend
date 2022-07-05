@@ -184,9 +184,8 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const updateUserEmail = async (id: number, email:string) => {
-  const emailList = await executeQuery(`
-  SELECT email FROM user`);
-  if (emailList.indexOf(email) !== -1) {
+  const emailExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE email = ? and id != ?;', [email, id]);
+  if (emailExist[0].cnt > 0) {
     throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
