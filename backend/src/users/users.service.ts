@@ -228,19 +228,19 @@ export const updateUserAuth = async (
     setString += 'nickname=?,';
     queryParameters.push(nickname);
   } else {
-    setString += 'nickname=(SELECT NULL),';
+    setString += 'nickname=NULL,';
   }
   if (intraId) {
     setString += 'intraId=?,';
     queryParameters.push(intraId);
   } else {
-    setString += 'intraId=(SELECT NULL),';
+    setString += 'intraId=NULL,';
   }
   if (slack !== '') {
     setString += 'slack=?,';
     queryParameters.push(slack);
   } else {
-    setString += 'slack=(SELECT NULL),';
+    setString += 'slack=NULL,';
   }
   if (role !== -1) {
     setString += 'role=?,';
