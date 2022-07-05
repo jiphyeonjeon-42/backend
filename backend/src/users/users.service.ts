@@ -227,16 +227,26 @@ export const updateUserAuth = async (
   if (nickname !== '') {
     setString += 'nickname=?,';
     queryParameters.push(nickname);
-  } if (intraId) {
+  } else {
+    setString += 'nickname=NULL,';
+  }
+  if (intraId) {
     setString += 'intraId=?,';
     queryParameters.push(intraId);
-  } if (slack !== '') {
+  } else {
+    setString += 'intraId=NULL,';
+  }
+  if (slack !== '') {
     setString += 'slack=?,';
     queryParameters.push(slack);
-  } if (role !== -1) {
+  } else {
+    setString += 'slack=NULL,';
+  }
+  if (role !== -1) {
     setString += 'role=?,';
     queryParameters.push(role);
-  } if (penaltyEndDate !== '') {
+  }
+  if (penaltyEndDate !== '') {
     setString += 'penaltyEndDate=?,';
     queryParameters.push(penaltyEndDate);
   }
