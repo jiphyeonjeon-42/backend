@@ -74,15 +74,25 @@ export const create = async (
       SELECT *
       FROM reservation
       WHERE bookId = ? AND status = 0
-    `, [bookId]);
+      `, [bookId]);
+
     if (isNotReservedBook.length && isNotReservedBook[0].userId !== userId) {
       throw new Error(errorCode.ON_RESERVATION);
     }
 
     await transactionExecuteQuery(`
-      INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)
-      VALUES (?, ?, ?, ?)
+    INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)
+    VALUES (?, ?, ?, ?)
     `, [userId, bookId, librarianId, condition]);
+
+    // 예약 대출 시 상태값 reservation status 0 -> 1 변경
+    if (isNotReservedBook.length) {
+      await transactionExecuteQuery(`
+      UPDATE reservation
+      SET status = 1
+      WHERE id = ?
+      `, [isNotReservedBook[0].id]);
+    }
 
     const books: [{title: string}] = await transactionExecuteQuery(`
       SELECT
