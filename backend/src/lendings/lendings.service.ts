@@ -170,7 +170,7 @@ export const returnBook = async (
       // 예약자에게 슬랙메시지 보내기
       const slackIdReservedUser = (await transactionExecuteQuery('SELECT slack from user where id = ?', [isReserved[0].userId]))[0].slack;
       const bookTitle = (await transactionExecuteQuery('SELECT title from book_info where id = (SELECT infoId FROM book WHERE id = ?)', [lendingInfo[0].bookId]))[0].title;
-      publishMessage(slackIdReservedUser, `:robot_face: 집현전 봇 :robot_face:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
+      publishMessage(slackIdReservedUser, `:books: 예약 알림 :books:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
     }
     await conn.commit();
     if (isReserved && isReserved[0]) {
