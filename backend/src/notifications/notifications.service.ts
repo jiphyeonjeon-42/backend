@@ -20,7 +20,7 @@ export const notifyReservation = async () => {
         DATE(reservation.updatedAt) = CURDATE()
     `);
   reservations.forEach((reservation) => {
-    publishMessage(reservation.slack, `:books: 예약 알림 :books:\n예약하신 도서 \`${reservation.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
+    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
   });
 };
 
@@ -47,7 +47,7 @@ export const notifyReservationOverdue = async () => {
       DATEDIFF(CURDATE(), DATE(reservation.endAt)) = 1
   `);
   reservations.forEach(async (reservation) => {
-    publishMessage(reservation.slack, `:books: 예약 알림 :books:\n예약하신 도서 \`${reservation.title}\`의 예약이 만료되었습니다.`);
+    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 만료 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`의 예약이 만료되었습니다.`);
     const ranks: [{id: number, createdAt: Date}] = await executeQuery(`
       SELECT
         id,
@@ -87,7 +87,7 @@ export const notifyReturningReminder = async () => {
       lending.returnedAt IS NULL
   `);
   lendings.forEach(async (lending) => {
-    publishMessage(lending.slack, `:books: 반납 알림 :books:\n 대출하신 도서 \`${lending.title}\`의 반납 기한이 다가왔습니다. 3일 내로 반납해주시기 바랍니다.`);
+    publishMessage(lending.slack, `:jiphyeonjeon: 반납 알림 :jiphyeonjeon:\n 대출하신 도서 \`${lending.title}\`의 반납 기한이 다가왔습니다. 3일 내로 반납해주시기 바랍니다.`);
   });
 };
 
@@ -109,6 +109,6 @@ export const notifyOverdue = async () => {
     lending.returnedAt IS NULL
   `);
   lendings.forEach(async (lending) => {
-    publishMessage(lending.slack, `:books: 연체 알림 :books:\n 대출하신 도서 \`${lending.title}\`가 연체되었습니다. 빠른 시일 내에 반납해주시기 바랍니다.`);
+    publishMessage(lending.slack, `:jiphyeonjeon: 연체 알림 :jiphyeonjeon:\n 대출하신 도서 \`${lending.title}\`가 연체되었습니다. 빠른 시일 내에 반납해주시기 바랍니다.`);
   });
 };
