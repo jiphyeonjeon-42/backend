@@ -248,7 +248,7 @@ export const router = Router();
  *              schema:
  *                type: object
  *                properties:
- *                  errCode:
+ *                  errorCode:
  *                    type: integer
  *                    example: 200
  *        '500':

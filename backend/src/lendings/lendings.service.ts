@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
@@ -73,15 +74,25 @@ export const create = async (
       SELECT *
       FROM reservation
       WHERE bookId = ? AND status = 0
-    `, [bookId]);
+      `, [bookId]);
+
     if (isNotReservedBook.length && isNotReservedBook[0].userId !== userId) {
       throw new Error(errorCode.ON_RESERVATION);
     }
 
     await transactionExecuteQuery(`
-      INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)
-      VALUES (?, ?, ?, ?)
+    INSERT INTO lending (userId, bookId, lendingLibrarianId, lendingCondition)
+    VALUES (?, ?, ?, ?)
     `, [userId, bookId, librarianId, condition]);
+
+    // 예약 대출 시 상태값 reservation status 0 -> 1 변경
+    if (isNotReservedBook.length) {
+      await transactionExecuteQuery(`
+      UPDATE reservation
+      SET status = 1
+      WHERE id = ?
+      `, [isNotReservedBook[0].id]);
+    }
 
     const books: [{title: string}] = await transactionExecuteQuery(`
       SELECT
@@ -95,7 +106,7 @@ export const create = async (
     `, [bookId]);
     await conn.commit();
     const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-    publishMessage(users[0].slack, `:robot_face: 집현전 봇 :robot_face:\n대출 하신 \`${books[0].title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
+    publishMessage(users[0].slack, `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${books[0].title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
   } catch (e) {
     await conn.rollback();
     if (e instanceof Error) {
@@ -136,7 +147,7 @@ export const returnBook = async (
       WHERE id = ?
     `, [librarianId, condition, lendingId]);
 
-    // 예약된 책이 있다면 예약 부여, endAt 어떻게 처리하지..?
+    // 예약된 책이 있다면 예약 부여
     const isReserved = await transactionExecuteQuery(`
       SELECT *
       FROM reservation
@@ -156,9 +167,16 @@ export const returnBook = async (
           endAt =  DATE_ADD(NOW(), INTERVAL 3 DAY)
         WHERE id = ?
     `, [lendingInfo[0].bookId, isReserved[0].id]);
+      // 예약자에게 슬랙메시지 보내기
+      const slackIdReservedUser = (await transactionExecuteQuery('SELECT slack from user where id = ?', [isReserved[0].userId]))[0].slack;
+      const bookTitle = (await transactionExecuteQuery('SELECT title from book_info where id = (SELECT infoId FROM book WHERE id = ?)', [lendingInfo[0].bookId]))[0].title;
+      publishMessage(slackIdReservedUser, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
     }
-
     await conn.commit();
+    if (isReserved && isReserved[0]) {
+      return ({ reservedBook: true });
+    }
+    return ({ reservedBook: false });
   } catch (error) {
     await conn.rollback();
     if (error instanceof Error) {

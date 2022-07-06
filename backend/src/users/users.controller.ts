@@ -146,7 +146,7 @@ export const myupdate = async (
   }
   try {
     if (email !== '' && password === '0') {
-      updateUserEmail(parseInt(tokenId, 10), email);
+      await updateUserEmail(parseInt(tokenId, 10), email);
     } else if (email === '' && password !== '0') {
       const pwSchema = new PasswordValidator();
       pwSchema
@@ -155,14 +155,20 @@ export const myupdate = async (
         .has().lowercase() /* eslint-disable-next-line newline-per-chained-call */
         .has().digits(1) /* eslint-disable-next-line newline-per-chained-call */
         .symbols(1);
-      if (!pwSchema.validate(password)) res.status(400).send({ errCode: 205 });
-      else updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
+      if (!pwSchema.validate(password)) {
+        return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
+      }
+      await updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
     } res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
-      if (errorNumber === 206) next(new ErrorResponse(error.message, status.FORBIDDEN));
-      if (errorNumber === 204) next(new ErrorResponse(error.message, status.CONFLICT));
+      if (errorNumber === 206) {
+        return next(new ErrorResponse(error.message, status.FORBIDDEN));
+      }
+      if (errorNumber === 204) {
+        return next(new ErrorResponse(error.message, status.CONFLICT));
+      }
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));

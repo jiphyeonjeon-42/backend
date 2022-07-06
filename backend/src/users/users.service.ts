@@ -184,9 +184,8 @@ export const createUser = async (email: string, password: string) => {
 };
 
 export const updateUserEmail = async (id: number, email:string) => {
-  const emailList = await executeQuery(`
-  SELECT email FROM user`);
-  if (emailList.indexOf(email) !== -1) {
+  const emailExist = await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE email = ? and id != ?;', [email, id]);
+  if (emailExist[0].cnt > 0) {
     throw new Error(errorCode.EMAIL_OVERLAP);
   }
   await executeQuery(`
@@ -228,16 +227,26 @@ export const updateUserAuth = async (
   if (nickname !== '') {
     setString += 'nickname=?,';
     queryParameters.push(nickname);
-  } if (intraId) {
+  } else {
+    setString += 'nickname=NULL,';
+  }
+  if (intraId) {
     setString += 'intraId=?,';
     queryParameters.push(intraId);
-  } if (slack !== '') {
+  } else {
+    setString += 'intraId=NULL,';
+  }
+  if (slack !== '') {
     setString += 'slack=?,';
     queryParameters.push(slack);
-  } if (role !== -1) {
+  } else {
+    setString += 'slack=NULL,';
+  }
+  if (role !== -1) {
     setString += 'role=?,';
     queryParameters.push(role);
-  } if (penaltyEndDate !== '') {
+  }
+  if (penaltyEndDate !== '') {
     setString += 'penaltyEndDate=?,';
     queryParameters.push(penaltyEndDate);
   }

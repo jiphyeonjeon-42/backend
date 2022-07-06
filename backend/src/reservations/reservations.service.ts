@@ -89,6 +89,7 @@ export const create = async (userId: number, bookInfoId: number) => {
       INSERT INTO reservation (userId, bookInfoId)
       VALUES (?, ?)
     `, [userId, bookInfoId]);
+    // eslint-disable-next-line no-use-before-define
     const reservationPriorty : any = count(bookInfoId);
     conn.commit();
     return reservationPriorty;
@@ -136,11 +137,10 @@ export const
         reservation.endAt AS endAt,
         reservation.status,
         user.id AS userId,
-        book.id AS bookId
+        reservation.bookId AS bookId
       FROM reservation
       LEFT JOIN user ON reservation.userId = user.id
       LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
-      LEFT JOIN book ON book_info.id = book.infoId
       ${filterQuery}
       HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
       LIMIT ?
@@ -213,8 +213,8 @@ export const cancel = async (reservationId: number): Promise<void> => {
           WHERE id = ?
         `, [reservations[0].bookId, candidates[0].id]);
       }
-      conn.commit();
     }
+    conn.commit();
   } catch (e: any) {
     conn.rollback();
     throw e;
