@@ -7,12 +7,12 @@ export const create = async (userId: number, bookInfoId: number) => {
   // bookInfoId가 유효한지 확인
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
-  const bookInfo = await transactionExecuteQuery(`
-    SELECT *
-    FROM book_info
-    WHERE id = ?;
+  const numberOfBookInfo = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM book
+    WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
-  if (!bookInfo.length) {
+  if (numberOfBookInfo[0].count === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }
   conn.beginTransaction();
@@ -38,20 +38,14 @@ export const create = async (userId: number, bookInfoId: number) => {
       throw new Error(errorCode.AT_PENALTY);
     }
     // bookInfoId가 모두 대출 중인지 확인
-    const allBooks = await transactionExecuteQuery(`
-      SELECT id
-      FROM book
-      WHERE infoId = ?;
-    `, [bookInfoId]) as [{id: number}];
-    const allLendings = await transactionExecuteQuery(`
-      SELECT
-        lending.bookId as bookId,
-        lending.returnedAt as returnedAt
-      FROM lending
-      LEFT JOIN book ON book.id = lending.bookId
-      WHERE book.infoId = ? AND returnedAt IS NULL;
-    `, [bookInfoId]) as [{bookId: number, returnedAt: Date}];
-    if (allLendings.length !== allBooks.length) {
+    const borrowedBookInfo = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM book
+    LEFT JOIN lending
+    ON lending.bookId = book.id
+    WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
+  `, [bookInfoId]);
+    if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
       throw new Error(errorCode.NOT_LENDED);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
@@ -245,17 +239,17 @@ export const count = async (bookInfoId: number) => {
     WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count === 0) {
-    throw new Error(errorCode.INVALID_BOOK_INFO_ID);
+    throw new Error(errorCode.INVALID_INFO_ID);
   }
   const borrowedBookInfo = await executeQuery(`
-    SELECT count(*) as count
+    SELECT COUNT(*) as count
     FROM book
     LEFT JOIN lending
     ON lending.bookId = book.id
     WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
-    throw new Error(errorCode.AVAILABLE_LOAN);
+    throw new Error(errorCode.NOT_LENDED);
   }
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
