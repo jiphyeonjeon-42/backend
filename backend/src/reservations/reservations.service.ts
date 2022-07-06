@@ -245,17 +245,17 @@ export const count = async (bookInfoId: number) => {
     WHERE infoId = ? AND status = 0;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count === 0) {
-    throw new Error(errorCode.INVALID_BOOK_INFO_ID);
+    throw new Error(errorCode.INVALID_INFO_ID);
   }
   const borrowedBookInfo = await executeQuery(`
-    SELECT count(*) as count
+    SELECT COUNT(*) as count
     FROM book
     LEFT JOIN lending
     ON lending.bookId = book.id
     WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
-    throw new Error(errorCode.AVAILABLE_LOAN);
+    throw new Error(errorCode.NOT_LENDED);
   }
   const numberOfReservations = await executeQuery(`
     SELECT COUNT(*) as count
