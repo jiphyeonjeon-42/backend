@@ -90,7 +90,7 @@ export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit
   let items = (await executeQuery(
     `
     SELECT 
-    id, email, nickname, intraId, slack, penaltyEndDate, role
+    id, email, nickname, intraId, slack, DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate, role
     FROM user
     WHERE (nickname LIKE ? or email Like ?)
     LIMIT ?
@@ -115,7 +115,7 @@ export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit
 export const searchUserById = async (id: number) => {
   let items = (await executeQuery(`
     SELECT 
-    id, email, nickname, intraId, slack, penaltyEndDate, role, updatedAt
+    id, email, nickname, intraId, slack, DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate, role, updatedAt
     FROM user
     WHERE id=?;
   `, [id])) as models.User[];
@@ -146,8 +146,7 @@ export const searchUserByIntraId = async (intraId: number) => {
 export const searchAllUsers = async (limit: number, page: number) => {
   let items = (await executeQuery(`
     SELECT
-    SQL_CALC_FOUND_ROWS
-    id, email, nickname, intraId, slack, penaltyEndDate, role
+    id, email, nickname, intraId, slack, DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate, role
     FROM user
     LIMIT ?
     OFFSET ?;

@@ -19,7 +19,7 @@ export const create = async (userId: number, bookInfoId: number) => {
   try {
     // 연체 전적이 있는지 확인
     const userPenalty = await transactionExecuteQuery(`
-      SELECT penaltyEndDate
+      SELECT DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate
       FROM user
       WHERE id = ?;
     `, [userId]);
