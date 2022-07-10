@@ -216,7 +216,7 @@ export const search = async (
       lendingCondition,
       user.nickname AS login,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
-        ELSE DATEDIFF(now(), user.penaltyEndDate)
+        ELSE DATEDIFF(user.penaltyEndDate, now())
       END AS penaltyDays,
       book.callSign,
       book_info.title,
@@ -275,7 +275,7 @@ export const lendingId = async (id:number) => {
     user.nickname as login,
     CASE
       WHEN user.penaltyEndDate < NOW() THEN 0
-      ELSE DATEDIFF(NOW(), user.penaltyEndDate)
+      ELSE DATEDIFF(user.penaltyEndDate, NOW())
     END AS penaltyDays,
     book.callSign,
     book_info.title as title,
