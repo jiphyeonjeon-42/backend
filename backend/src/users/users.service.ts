@@ -173,10 +173,10 @@ export const createUser = async (email: string, password: string) => {
   }
   await executeQuery(`
     INSERT INTO user(
-      email, password
+      email, password, penaltyEndDate
     )
     VALUES (
-      ?, ?
+      ?, ?, DATE_SUB(NOW(), INTERVAL 1 DAY)
     );
   `, [email, password]);
   return null;
