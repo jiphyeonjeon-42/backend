@@ -23,18 +23,21 @@ export const getOAuth = (req: Request, res: Response) => {
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { id } = req.user as any;
+    const { id, nickName } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
     if (user.length === 0) {
-      res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.NO_USER}"</script>`);
-      return;
-    }
-    await authJwt.saveJwt(req, res, user[0]);
+      const email = `${nickName}@student.42seoul.kr`;
+      const password = Math.random().toString(36).slice(2); // 랜덤 비밀번호 설정
+      await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
+      const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
+      await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
+      await updateSlackIdByUserId(newUser.items[0].id);
+      await authJwt.saveJwt(req, res, newUser.items[0]);
+    } else { await authJwt.saveJwt(req, res, user[0]); }
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
-    if (errorNumber === 101) { return next(new ErrorResponse(error.message, status.UNAUTHORIZED)); }
+    if (errorNumber === 101) { next(new ErrorResponse(error.message, status.UNAUTHORIZED)); }
     if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
@@ -109,7 +112,7 @@ export const logout = (req: Request, res: Response) => {
 export const getIntraAuthentication = (req: Request, res: Response) => {
   const clientId = config.client.id;
   const redirectURL = `${config.client.redirectURL}/api/auth/intraAuthentication`;
-  //const redirectURL = `${config.client.redirectURL}/api/auth/token`;
+  // const redirectURL = `${config.client.redirectURL}/api/auth/token`;
   const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectURL,
   )}&response_type=code`;
