@@ -64,6 +64,6 @@ export const publishMessage = async (slackId: string, msg: string) => {
     channel: slackId,
     text: msg,
   }).catch((e) => {
-    console.log(e);
+    console.log("slack bot error", e);
   });
 };
