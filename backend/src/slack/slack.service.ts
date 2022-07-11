@@ -3,6 +3,7 @@ import { ResultSetHeader } from 'mysql2';
 import { executeQuery } from '../mysql';
 import * as models from '../users/users.model';
 import { searchUserById } from '../users/users.service';
+import { logger } from '../utils/logger';
 
 export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
@@ -63,5 +64,7 @@ export const publishMessage = async (slackId: string, msg: string) => {
     token,
     channel: slackId,
     text: msg,
+  }).catch((e) => {
+    logger.error(e);
   });
 };
