@@ -26,20 +26,26 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     const { id, nickName } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
     if (user.length === 0) {
-      const email = `${nickName}@student.42seoul.kr`;
-      const password = Math.random().toString(36).slice(2); // 랜덤 비밀번호 설정
-      await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
-      const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
-      await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
-      await updateSlackIdByUserId(newUser.items[0].id);
-      await authJwt.saveJwt(req, res, newUser.items[0]);
+      // 회원가입
+      try {
+        const email = `${nickName}@student.42seoul.kr`;
+        const password = Math.random().toString(36).slice(2); // 랜덤 비밀번호 설정
+        await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
+        const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
+        await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
+        await updateSlackIdByUserId(newUser.items[0].id);
+        await authJwt.saveJwt(req, res, newUser.items[0]);
+      } catch (error: any) {
+        res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
+        return;
+      }
     } else { await authJwt.saveJwt(req, res, user[0]); }
     res.status(302).redirect(`${config.client.clientURL}/auth`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
     if (errorNumber === 101) {
       next(new ErrorResponse(error.message, status.UNAUTHORIZED));
-    } else if (errorNumber >= 100 && errorNumber < 300) {
+    } else if (errorNumber >= 100 && errorNumber < 200) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
