@@ -36,8 +36,11 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
         await updateSlackIdByUserId(newUser.items[0].id);
         await authJwt.saveJwt(req, res, newUser.items[0]);
       } catch (error: any) {
-        res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
-        return;
+        const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
+        if (errorNumber === 203) {
+          res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
+          return;
+        }
       }
     } else { await authJwt.saveJwt(req, res, user[0]); }
     res.status(302).redirect(`${config.client.clientURL}/auth`);
