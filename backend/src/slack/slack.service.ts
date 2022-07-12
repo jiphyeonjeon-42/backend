@@ -41,12 +41,14 @@ export const updateSlackId = async (): Promise<void> => {
     cursor = response.response_metadata.next_cursor;
   }
   searchUsers.forEach((user) => {
-    const { display_name: displayName } = user.profile;
+    const { real_name: realName } = user.profile;
     const slackUserId = user.id;
-    userMap.set(displayName, slackUserId);
+    userMap.set(realName.toLowerCase(), slackUserId);
   });
   authenticatedUser.forEach((user) => {
-    if (userMap.has(user.nickname)) updateSlackIdUser(user.id, userMap.get(user.nickname));
+    if (userMap.has(user.nickname.toLowerCase())) {
+      updateSlackIdUser(user.id, userMap.get(user.nickname.toLowerCase()));
+    }
   });
 };
 
