@@ -10,9 +10,10 @@ export const FtStrategy = new FortyTwoStrategy(
     callbackURL: `${config.client.redirectURL}/api/auth/token`,
   },
   (accessToken: any, refreshToken: any, profile: any, cb: Function) => {
-    const { id } = profile._json; // eslint-disable-line no-underscore-dangle
+    const { id, login } = profile._json; // eslint-disable-line no-underscore-dangle
     const user = {
       id,
+      nickName: login,
     };
     cb(null, user);
   },

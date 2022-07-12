@@ -3,6 +3,7 @@ import { ResultSetHeader } from 'mysql2';
 import { executeQuery } from '../mysql';
 import * as models from '../users/users.model';
 import { searchUserById } from '../users/users.service';
+import { logger } from '../utils/logger';
 
 export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
@@ -40,12 +41,14 @@ export const updateSlackId = async (): Promise<void> => {
     cursor = response.response_metadata.next_cursor;
   }
   searchUsers.forEach((user) => {
-    const { display_name: displayName } = user.profile;
+    const { real_name: realName } = user.profile;
     const slackUserId = user.id;
-    userMap.set(displayName, slackUserId);
+    userMap.set(realName.toLowerCase(), slackUserId);
   });
   authenticatedUser.forEach((user) => {
-    if (userMap.has(user.nickname)) updateSlackIdUser(user.id, userMap.get(user.nickname));
+    if (userMap.has(user.nickname.toLowerCase())) {
+      updateSlackIdUser(user.id, userMap.get(user.nickname.toLowerCase()));
+    }
   });
 };
 
@@ -63,5 +66,7 @@ export const publishMessage = async (slackId: string, msg: string) => {
     token,
     channel: slackId,
     text: msg,
+  }).catch((e) => {
+    logger.error(e);
   });
 };
