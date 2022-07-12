@@ -39,7 +39,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
     if (errorNumber === 101) {
       next(new ErrorResponse(error.message, status.UNAUTHORIZED));
-    } else if (errorNumber >= 100 && errorNumber < 200) {
+    } else if (errorNumber >= 100 && errorNumber < 300) {
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
