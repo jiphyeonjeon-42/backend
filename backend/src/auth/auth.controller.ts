@@ -41,6 +41,8 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
           res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
           return;
         }
+        res.status(status.SERVICE_UNAVAILABLE).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.UNKNOWN_ERROR}"</script>`);
+        return;
       }
     } else { await authJwt.saveJwt(req, res, user[0]); }
     res.status(302).redirect(`${config.client.clientURL}/auth`);
