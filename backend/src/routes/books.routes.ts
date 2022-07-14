@@ -349,79 +349,6 @@ router
   .get('/info/:id', getInfoId);
 
 router
-/**
-   * @openapi
-   * /api/books/info/{id}:
-   *    get:
-   *      description: book테이블의 ID기준으로 책 한 종류의 정보를 가져온다.
-   *      tags:
-   *      - books
-   *      parameters:
-   *      - name: id
-   *        in: path
-   *        description: book 테이블의 id
-   *        schema:
-   *          type: integer
-   *      responses:
-   *        '200':
-   *          description: 조회 결과를 반환한다.
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: object
-   *                properties:
-   *                  id:
-   *                    description: book테이블의 id
-   *                    type: integer
-   *                    example: 4261
-   *                  title:
-   *                    description: 제목
-   *                    type: string
-   *                    example: 12가지 인생의 법칙
-   *                  author:
-   *                    description: 저자
-   *                    type: string
-   *                    example: 조던 B. 피터슨
-   *                  publisher:
-   *                    description: 출판사
-   *                    type: string
-   *                    example: 메이븐
-   *                  image:
-   *                    description: 이미지 주소
-   *                    type: string
-   *                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
-   *                  category:
-   *                    description: 카테고리
-   *                    type: string
-   *                    example: 프로그래밍
-   *                  publishedAt:
-   *                    description: 출판일자
-   *                    type: string
-   *                    example: 2018년 10월
-   *                  isbn:
-   *                    descriptoin: isbn
-   *                    type: string
-   *                    example: '9791196067694'
-   *                  callSign:
-   *                    description: 청구기호
-   *                    type: string
-   *                    example: h1.18.v1.c1
-   *                  donator:
-   *                    description: 책의 기부자
-   *                    type: string
-   *                    example: seongyle
-   *                  dueDate:
-   *                    description: 반납 예정 일자, 대출가능 시 '-'
-   *                    type: date
-   *                    example: 21.08.05
-   *                  isLendable:
-   *                    description: 책의 대출가능여부
-   *                    type: boolean
-   *                    example: 1
-   */
-  .get('/:id', getBookById);
-
-router
   /**
    * @openapi
    * /api/books/search:
@@ -670,3 +597,76 @@ router
    *
    */
   .get('/create', authValidate(roleSet.librarian), createBookInfo);
+
+router
+/**
+   * @openapi
+   * /api/books/{id}:
+   *    get:
+   *      description: book테이블의 ID기준으로 책 한 종류의 정보를 가져온다.
+   *      tags:
+   *      - books
+   *      parameters:
+   *      - name: id
+   *        in: path
+   *        description: book 테이블의 id
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '200':
+   *          description: 조회 결과를 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  id:
+   *                    description: book테이블의 id
+   *                    type: integer
+   *                    example: 4261
+   *                  title:
+   *                    description: 제목
+   *                    type: string
+   *                    example: 12가지 인생의 법칙
+   *                  author:
+   *                    description: 저자
+   *                    type: string
+   *                    example: 조던 B. 피터슨
+   *                  publisher:
+   *                    description: 출판사
+   *                    type: string
+   *                    example: 메이븐
+   *                  image:
+   *                    description: 이미지 주소
+   *                    type: string
+   *                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
+   *                  category:
+   *                    description: 카테고리
+   *                    type: string
+   *                    example: 프로그래밍
+   *                  publishedAt:
+   *                    description: 출판일자
+   *                    type: string
+   *                    example: 2018년 10월
+   *                  isbn:
+   *                    descriptoin: isbn
+   *                    type: string
+   *                    example: '9791196067694'
+   *                  callSign:
+   *                    description: 청구기호
+   *                    type: string
+   *                    example: h1.18.v1.c1
+   *                  donator:
+   *                    description: 책의 기부자
+   *                    type: string
+   *                    example: seongyle
+   *                  dueDate:
+   *                    description: 반납 예정 일자, 대출가능 시 '-'
+   *                    type: date
+   *                    example: 21.08.05
+   *                  isLendable:
+   *                    description: 책의 대출가능여부
+   *                    type: boolean
+   *                    example: 1
+   */
+  .get('/:id', getBookById);

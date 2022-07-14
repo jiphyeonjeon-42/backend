@@ -99,6 +99,33 @@ export const searchBookInfo = async (
   return 0;
 };
 
+export const getBookById: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const id = parseInt(String(req.params.id), 10);
+  if (Number.isNaN(id)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+  try {
+    const bookInfo = await BooksService.getBookById(req.params.id);
+    return res
+      .status(status.OK)
+      .json(bookInfo);
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error.message);
+    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};
+
 export const getInfoId: RequestHandler = async (
   req: Request,
   res: Response,
