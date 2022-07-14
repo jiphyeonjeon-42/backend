@@ -256,7 +256,7 @@ export const sortInfo = async (
       book_info.updatedAt as updatedAt,
       COUNT(lending.id) as lendingCnt
     FROM book_info LEFT JOIN lending
-    ON book_info.id = lending.bookId
+    ON book_info.id = (SELECT book.infoId FROM book WHERE lending.bookId = book.id LIMIT 1)
     GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
