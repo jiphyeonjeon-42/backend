@@ -401,6 +401,7 @@ export const getBookById = async (id: string) => {
     WHERE book.id = ?
     LIMIT 1;
     `, [id]))[0];
+  if (book.length === 0) { throw new Error(errorCode.NO_USER_ID); }
   return book;
 };
 
