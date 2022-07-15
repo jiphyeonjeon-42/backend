@@ -372,6 +372,39 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
+export const getBookById = async (id: string) => {
+  const book = (await executeQuery(`
+    SELECT
+      book.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      book.callSign AS callSign,
+      book_info.image as image,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      (
+        IF((
+            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
+            ), TRUE, FALSE)
+      ) AS isLendable 
+    FROM book_info JOIN book 
+    ON book_info.id = book.infoId
+    WHERE book.id = ?
+    LIMIT 1;
+    `, [id]))[0];
+  if (book === undefined) { throw new Error(errorCode.NO_BOOK_ID); }
+  return book;
+};
+
 export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(
     `

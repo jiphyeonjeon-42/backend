@@ -27,6 +27,7 @@ export const ISBN_SEARCH_FAILED = '303';
 export const NO_BOOK_INFO_ID = '304';
 export const CALL_SIGN_OVERLAP = '305';
 export const INVALID_CALL_SIGN = '306';
+export const NO_BOOK_ID = '307';
 
 export const NO_USER_ID = '401';
 export const NO_PERMISSION = '402';
