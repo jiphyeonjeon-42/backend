@@ -167,7 +167,7 @@ export const intraAuthentication = async (
     await updateSlackIdByUserId(user.items[0].id);
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(status.OK)
-      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/auth"</script>`);
+      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.INTRA_AUTHENTICATE_SUCCESS}"</script>`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {

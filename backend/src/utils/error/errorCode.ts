@@ -20,6 +20,7 @@ export const NICKNAME_OVERLAP = '204';
 export const INVALIDATE_PASSWORD = '205';
 export const INVALID_ROLE = '206';
 export const SLACK_OVERLAP = '207';
+export const INTRA_AUTHENTICATE_SUCCESS = '208';
 
 export const SLACKID_OVERLAP = '301';
 export const NO_ISBN = '302';
