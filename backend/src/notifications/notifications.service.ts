@@ -17,10 +17,11 @@ export const notifyReservation = async () => {
         book_info.id = reservation.bookInfoId
       WHERE
         reservation.status = 0 AND
-        DATE(reservation.updatedAt) = CURDATE()
+        DATE(reservation.updatedAt) = CURDATE() AND
+        DATE(reservation.createdAt) != CURDATE()
     `);
   reservations.forEach((reservation) => {
-    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`);
+    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.\n(현재 예약 기능에 버그가 있습니다. 집현전 웹사이트에서 해당 책이 비치되어있는지 확인해주세요.)`);
   });
 };
 
