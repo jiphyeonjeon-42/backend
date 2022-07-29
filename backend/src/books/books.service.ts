@@ -471,7 +471,8 @@ export const getInfo = async (id: string) => {
         `,
       ).then((isRentArr) => isRentArr[0].isRent);
       let dueDate;
-      if (isLendable === 0) {
+      // 대출이 가능한 책들이 비치중이 아닐 경우
+      if (eachBook.status === 0 && isLendable === 0) {
         dueDate = await executeQuery(
           `
         SELECT
