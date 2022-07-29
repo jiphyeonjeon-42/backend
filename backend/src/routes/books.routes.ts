@@ -289,7 +289,8 @@ router
    *                    example: 메이븐
    *                  image:
    *                    description: 이미지 주소
-   *                    type: string
+   *                    type:  string
+   *                    nullable: true
    *                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
    *                  category:
    *                    description: 카테고리
@@ -320,13 +321,22 @@ router
    *                        donator:
    *                          description: 책의 기부자
    *                          type: string
+   *                          nullable: true
    *                          example: seongyle
+   *                        status:
+   *                          description: 책의 상태 (0:양호 1:분실 2:파손 3:지정도서)
+   *                          type: number
+   *                          example: 1
    *                        dueDate:
    *                          description: 반납 예정 일자, 대출가능 시 '-'
    *                          type: date
    *                          example: 21.08.05
    *                        isLendable:
    *                          description: 책의 대출가능여부
+   *                          type: boolean
+   *                          example: 1
+   *                        isRent:
+   *                          description: 책의 예약 여부
    *                          type: boolean
    *                          example: 1
    *        '400_case1':
