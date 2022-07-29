@@ -440,7 +440,8 @@ export const getInfo = async (id: string) => {
     SELECT
       id,
       callSign,
-      donator
+      donator,
+      status
     FROM book
     WHERE
       infoId = ?
@@ -459,8 +460,16 @@ export const getInfo = async (id: string) => {
              AND
              IF((select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) = 0, TRUE, FALSE)
            ), TRUE, FALSE)
-        ) AS isLendable `,
+        ) AS isLendable`,
       ).then((isLendableArr) => isLendableArr[0].isLendable);
+      const isRent = await executeQuery(
+        `SELECT IF(
+            (select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) > 0, 
+            TRUE, 
+            FALSE
+            ) as isRent;
+        `,
+      ).then((isRentArr) => isRentArr[0].isRent);
       let dueDate;
       if (isLendable === 0) {
         dueDate = await executeQuery(
@@ -479,7 +488,9 @@ export const getInfo = async (id: string) => {
         dueDate = '-';
       }
       const { ...rest } = eachBook;
-      return { ...rest, dueDate, isLendable };
+      return {
+        ...rest, dueDate, isLendable, isRent,
+      };
     }),
   );
   bookSpec.books = books;
