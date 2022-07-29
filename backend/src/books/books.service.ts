@@ -462,14 +462,14 @@ export const getInfo = async (id: string) => {
            ), TRUE, FALSE)
         ) AS isLendable`,
       ).then((isLendableArr) => isLendableArr[0].isLendable);
-      const isRent = await executeQuery(
+      const isReserved = await executeQuery(
         `SELECT IF(
             (select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) > 0, 
             TRUE, 
             FALSE
-            ) as isRent;
+            ) as isReserved;
         `,
-      ).then((isRentArr) => isRentArr[0].isRent);
+      ).then((isReservedArr) => isReservedArr[0].isReserved);
       let dueDate;
       // 대출이 가능한 책들이 비치중이 아닐 경우
       if (eachBook.status === 0 && isLendable === 0) {
@@ -490,7 +490,7 @@ export const getInfo = async (id: string) => {
       }
       const { ...rest } = eachBook;
       return {
-        ...rest, dueDate, isLendable, isRent,
+        ...rest, dueDate, isLendable, isReserved,
       };
     }),
   );

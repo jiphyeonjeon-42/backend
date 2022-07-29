@@ -335,7 +335,7 @@ router
    *                          description: 책의 대출가능여부
    *                          type: boolean
    *                          example: 1
-   *                        isRent:
+   *                        isReserved:
    *                          description: 책의 예약 여부
    *                          type: boolean
    *                          example: 1
