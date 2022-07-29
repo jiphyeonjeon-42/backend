@@ -252,7 +252,7 @@ router
 router
   /**
    * @openapi
-   * /api/books/info/{infoid}:
+   * /api/books/info/{id}:
    *    get:
    *      description: book_info테이블의 ID기준으로 책 한 종류의 정보를 가져온다.
    *      tags:
