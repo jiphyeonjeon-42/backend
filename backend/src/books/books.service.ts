@@ -76,9 +76,8 @@ export const search = async (
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
   let searchResult;
-  const key = '19b9689292b566b4a70bb5803ba42203b8e3151d03770428ecf1934feafefc89';
   await axios
-    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${key}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
+    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${process.env.NATION_LIBRARY_KEY}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
     .then((res) => {
       searchResult = res.data.docs[0];
       const {
