@@ -147,6 +147,18 @@ export const returnBook = async (
       WHERE id = ?
     `, [librarianId, condition, lendingId]);
 
+    // 연체 반납이라면 penaltyEndDate부여
+    const today = new Date().setHours(0, 0, 0, 0);
+    const createdDate = new Date(lendingInfo[0].createdAt);
+    // eslint-disable-next-line max-len
+    const expecetReturnDate = new Date(createdDate.setDate(createdDate.getDate() + 14)).setHours(0, 0, 0, 0);
+    if (today > expecetReturnDate) {
+      const todayDate = new Date();
+      const overDueDays = (today - expecetReturnDate) / 1000 / 60 / 60 / 24;
+      // eslint-disable-next-line max-len
+      const confirmedPenaltyEndDate = new Date(todayDate.setDate(todayDate.getDate() + overDueDays)).toISOString().split('T')[0];
+      await transactionExecuteQuery(`UPDATE user set penaltyEndDate = "${confirmedPenaltyEndDate}" where id = ${lendingInfo[0].userId};`);
+    }
     // 예약된 책이 있다면 예약 부여
     const isReserved = await transactionExecuteQuery(`
       SELECT *
