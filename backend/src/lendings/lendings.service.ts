@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable consistent-return */
 import { makeExecuteQuery, executeQuery, pool } from '../mysql';
 import { publishMessage } from '../slack/slack.service';
@@ -155,8 +156,15 @@ export const returnBook = async (
     if (today > expecetReturnDate) {
       const todayDate = new Date();
       const overDueDays = (today - expecetReturnDate) / 1000 / 60 / 60 / 24;
+      let confirmedPenaltyEndDate;
+      const penaltyEndDateInDB = await transactionExecuteQuery(`SELECT DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate FROM user where id = ${lendingInfo[0].userId}`);
       // eslint-disable-next-line max-len
-      const confirmedPenaltyEndDate = new Date(todayDate.setDate(todayDate.getDate() + overDueDays)).toISOString().split('T')[0];
+      const originPenaltyEndDate = new Date(penaltyEndDateInDB[0].penaltyEndDate);
+      if (today < originPenaltyEndDate.setHours(0, 0, 0, 0)) {
+        confirmedPenaltyEndDate = new Date(originPenaltyEndDate.setDate(originPenaltyEndDate.getDate() + overDueDays)).toISOString().split('T')[0];
+      } else {
+        confirmedPenaltyEndDate = new Date(todayDate.setDate(todayDate.getDate() + overDueDays)).toISOString().split('T')[0];
+      }
       await transactionExecuteQuery(`UPDATE user set penaltyEndDate = "${confirmedPenaltyEndDate}" where id = ${lendingInfo[0].userId};`);
     }
     // 예약된 책이 있다면 예약 부여
