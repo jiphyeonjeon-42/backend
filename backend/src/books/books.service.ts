@@ -81,10 +81,11 @@ const getInfoInNationalLibrary = async (isbn: string) => {
     .then((res) => {
       searchResult = res.data.docs[0];
       const {
-        TITLE: title, TITLE_URL: image, AUTHOR: author, SUBJECT: category,
+        // eslint-disable-next-line max-len
+        TITLE: title, TITLE_URL: image, AUTHOR: author, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
       } = searchResult;
       book = {
-        title, image, author, category, isbn,
+        title, image, author, category, isbn, publisher, pubdate,
       };
     })
     .catch(() => {
