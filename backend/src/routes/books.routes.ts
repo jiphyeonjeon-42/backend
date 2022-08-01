@@ -576,7 +576,7 @@ router
    *               schema:
    *                 type: JSON
    *                 description: 국립중앙도서관에서 가지고 온 데이터를 보여줌. category는 십진분류의 대분류
-   *                 example: {"bookInfo": {  "title": "작별인사",  "image": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2022/04/07/9791191114225.jpg",  "author": "지은이: 김영하",  "category": "8"}}
+   *                 example: {"bookInfo": {  "title": "작별인사",  "image": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2022/04/07/9791191114225.jpg",  "author": "지은이: 김영하",  "category": "8", "publisher": "복복서가", "pubdate": "20220502"}}
    *
    */
   .get('/create', authValidate(roleSet.librarian), createBookInfo);
