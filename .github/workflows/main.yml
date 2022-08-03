@@ -39,6 +39,7 @@ jobs:
           BOT_USER_OAUTH_ACCESS_TOKEN=${{ secrets.BOT_USER_OAUTH_ACCESS_TOKEN }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
+          NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
           NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}" > .env
           
     - name: Configure AWS credentials
