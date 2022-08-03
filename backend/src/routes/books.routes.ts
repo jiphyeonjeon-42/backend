@@ -486,27 +486,35 @@ router
    *              properties:
    *                title:
    *                  type: string
+   *                  nullable: false
    *                  example: "작별인사 (김영하 장편소설)"
    *                isbn:
    *                  type: string
+   *                  nullable: false
    *                  example: 9788065960874
    *                author:
    *                  type: string
+   *                  nullable: false
    *                  example: "김영하"
    *                publisher:
    *                  type: string
+   *                  nullable: false
    *                  example: "복복서가"
    *                image:
    *                  type: string
+   *                  nullable: false
    *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
    *                categoryId:
    *                  type: integer
+   *                  nullable: false
    *                  example: 1
    *                pubdate:
    *                  type: string
+   *                  nullable: false
    *                  example: "20220502"
    *                donator:
    *                  type: string
+   *                  nullable: true
    *                  example: seongyle
    *      responses:
    *         '200':
@@ -514,25 +522,9 @@ router
    *            content:
    *             application/json:
    *               schema:
-   *                 type: string
-   *                 description: insert success
-   *                 example: { code: 200, message: 'DB에 insert 성공하였습니다.' }
-   *         '400_case1':
-   *            description: 클라이언트 오류.
-   *            content:
-   *             application/json:
-   *              schema:
-   *                type: json
-   *                description: error decription
-   *                example: { errorCode: 300 }
-   *         '400_case2':
-   *            description: callsign 형식이 유효하지 않습니다.
-   *            content:
-   *             application/json:
-   *               schema:
    *                 type: json
-   *                 description: callsign 형식이 유효하지 않습니다.
-   *                 example: { errorCode: 306 }
+   *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
+   *                 example: { callsign: 'c11.v1.c2' }
    *         '400_case3':
    *            description: naver open API에서 ISBN 검색결과가 없음.
    *            content:
@@ -540,14 +532,6 @@ router
    *               schema:
    *                 type: json
    *                 description: naver open API에서 ISBN 검색결과가 없음.
-   *                 example: { errorCode: 302 }
-   *         '400_case4':
-   *            description: naver openapi에서 못 찾음
-   *            content:
-   *             application/json:
-   *               schema:
-   *                 type: json
-   *                 description: naver open API에서 ISBN 검색 자체 실패
    *                 example: { errorCode: 302 }
    */
   .post('/create', authValidate(roleSet.librarian), createBook);
@@ -575,6 +559,7 @@ router
    *             application/json:
    *               schema:
    *                 type: JSON
+   *                 nullable: false
    *                 description: 국립중앙도서관에서 가지고 온 데이터를 보여줌. category는 십진분류의 대분류
    *                 example: {"bookInfo": {  "title": "작별인사",  "image": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2022/04/07/9791191114225.jpg",  "author": "지은이: 김영하",  "category": "8", "publisher": "복복서가", "pubdate": "20220502"}}
    *
