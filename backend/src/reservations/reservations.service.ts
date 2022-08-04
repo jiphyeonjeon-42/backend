@@ -2,6 +2,7 @@ import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
+import { publishMessage } from '../slack/slack.service';
 
 export const create = async (userId: number, bookInfoId: number) => {
   // bookInfoId가 유효한지 확인
@@ -171,10 +172,19 @@ export const cancel = async (reservationId: number): Promise<void> => {
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
   try {
-    const reservations = await transactionExecuteQuery(`
-      SELECT status, bookId
+    const reservations: {
+      status: number,
+      bookId: string,
+      title: string,
+    }[] = await transactionExecuteQuery(`
+      SELECT
+        reservation.status AS status,
+        reservation.bookId AS bookId,
+        book_info.title AS title
       FROM reservation
-      WHERE id = ?;
+      LEFT JOIN book_info
+      ON book_info.id = reservation.bookInfoId
+      WHERE reservation.id = ?
     `, [reservationId]);
     if (!reservations.length) {
       throw new Error(errorCode.RESERVATION_NOT_EXIST);
@@ -189,16 +199,20 @@ export const cancel = async (reservationId: number): Promise<void> => {
     `, [reservationId]);
     if (reservations[0].bookId) {
       const candidates = await transactionExecuteQuery(`
-        SELECT createdAt, id
+        SELECT
+          reservation.id AS id,
+          user.slack
         FROM reservation
+        LEFT JOIN user
+        ON user.id = reservation.userId
         WHERE
-          bookInfoId = (
+          reservation.bookInfoId = (
             SELECT infoId
             FROM book
             WHERE id = ?
           ) AND
-          status = 0
-        ORDER BY createdAt ASC;
+          reservation.status = 0
+        ORDER BY reservation.createdAt ASC;
       `, [reservations[0].bookId]);
       if (candidates.length) {
         await transactionExecuteQuery(`
@@ -207,6 +221,7 @@ export const cancel = async (reservationId: number): Promise<void> => {
           WHERE id = ?
         `, [reservations[0].bookId, candidates[0].id]);
       }
+      publishMessage(candidates[0].slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservations[0].title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요. (방문하시기 전에 비치 여부를 확인해주세요)`);
     }
     conn.commit();
   } catch (e: any) {

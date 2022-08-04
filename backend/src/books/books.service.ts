@@ -73,33 +73,25 @@ export const search = async (
   return { items: bookList, meta };
 };
 
-const searchByIsbn = async (isbn: string) => {
+const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
+  let searchResult;
   await axios
-    .get(
-      `
-  https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
-      {
-        headers: {
-          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
-          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
-        },
-      },
-    )
+    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${process.env.NATION_LIBRARY_KEY}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
     .then((res) => {
-      // eslint-disable-next-line prefer-destructuring
-      book = res.data.items[0];
-      book.isbn = book.isbn.split(' ')[1];
-      book.image = `https://image.kyobobook.co.kr/images/book/xlarge/${book.isbn.slice(-3)}/x${book.isbn}.jpg`;
-      delete book.price;
-      delete book.discount;
-      delete book.link;
-      delete book.description;
+      searchResult = res.data.docs[0];
+      const {
+        // eslint-disable-next-line max-len
+        TITLE: title, TITLE_URL: image, AUTHOR: author, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
+      } = searchResult;
+      book = {
+        title, image, author, category, isbn, publisher, pubdate,
+      };
     })
     .catch(() => {
       throw new Error(errorCode.ISBN_SEARCH_FAILED);
     });
-  return ([book]);
+  return (book);
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
@@ -148,80 +140,8 @@ export const createBook = async (book: types.CreateBookInfo) => {
 };
 
 export const createBookInfo = async (isbn: string) => {
-  const isbnInBookInfo = (await executeQuery(
-    `
-    SELECT
-      book.id AS id,
-      book.callSign AS callSign,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      book_info.isbn AS isbn,
-      book_info.publishedAt AS pubdate,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category    
-    FROM book_info, book 
-    WHERE book_info.id = book.infoId AND isbn = ?
-  `,
-    [isbn],
-  )) as StringRows[];
-  const isbnInNaver: any = await searchByIsbn(isbn);
-  const sameTitleOrAuthor = await executeQuery(
-    `
-    SELECT
-      book.id AS id,
-      book.callSign AS callSign,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      book_info.isbn AS isbn,
-      book_info.publishedAt AS pubdate,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category
-    FROM book_info, book 
-    WHERE book_info.id = book.infoId AND
-    ( book_info.title like ? OR book_info.author like ?)
-  `,
-    [`%${isbnInNaver[0].title}%`, `%${isbnInNaver[0].author}%`],
-  );
-  return { isbnInNaver, isbnInBookInfo, sameTitleOrAuthor };
-};
-
-export const deleteBook = async (book: models.Book): Promise<boolean> => {
-  const result = (await executeQuery(
-    `
-    SELECT *
-    FROM book
-    WHERE callSign = ?
-  `,
-    [book.callSign],
-  )) as models.BookEach[];
-  if (result.length === 0) {
-    return false;
-  }
-  await executeQuery(
-    `
-    DELETE FROM book
-    WHERE callSign = ?
-  `,
-    [book.callSign],
-  );
-  if (result.length === 1) {
-    await executeQuery(
-      `
-      DELETE FROM book_info
-      WHERE id = ?
-    `,
-      [result[0].infoId],
-    );
-  }
-  return true;
+  const bookInfo: any = await getInfoInNationalLibrary(isbn);
+  return { bookInfo };
 };
 
 export const sortInfo = async (
