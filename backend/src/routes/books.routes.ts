@@ -524,7 +524,7 @@ router
    *               schema:
    *                 type: json
    *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
-   *                 example: { callsign: 'c11.v1.c2' }
+   *                 example: { callsign: 'c11.22.v1.c2' }
    */
   .post('/create', authValidate(roleSet.librarian), createBook);
 
