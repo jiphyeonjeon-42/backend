@@ -1,37 +1,85 @@
-import { executeQuery } from '../mysql';
+import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { publishMessage } from '../slack/slack.service';
+
+const succeedReservation = async (reservation: {
+  bookId: number,
+  bookInfoId: number,
+}) => {
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  try {
+    const candidates: {
+      id: number
+      slack: string,
+      title: string,
+    }[] = await transactionExecuteQuery(`
+    SELECT
+      reservation.id AS id,
+      user.slack AS slack,
+      book_info.title AS title
+    FROM
+      reservation
+    LEFT JOIN user ON
+      user.id = reservation.userId
+    LEFT JOIN book_info ON
+      book_info.id = reservation.bookInfoId
+    WHERE
+      reservation.status = 0 AND
+      reservation.bookInfoId = ?
+    ORDER BY
+      reservation.createdAt DESC
+    LIMIT 1
+    `, [reservation.bookInfoId]);
+    if (candidates.length !== 0) {
+      await transactionExecuteQuery(`
+        UPDATE
+          reservation
+        SET
+          bookId = ?,
+          endAt = DATE_ADD(NOW(), INTERVAL 3 DAY)
+        WHERE
+          reservation.id = ?
+      `, [reservation.bookId, candidates[0].id]);
+      publishMessage(candidates[0].slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${candidates[0].title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요. (방문하시기 전에 비치 여부를 확인해주세요)`);
+    }
+  } catch (e) {
+    await conn.rollback();
+    if (e instanceof Error) {
+      throw e;
+    }
+  } finally {
+    conn.release();
+  }
+};
 
 export const notifyReservation = async () => {
   const reservations: [{
-      slack: string,
-      title: string
+      bookId: number,
+      bookInfoId: number,
     }] = await executeQuery(`
       SELECT
-        user.slack AS slack,
-        book_info.title AS title
+        reservation.bookId AS bookId,
+        reservation.bookInfoId AS bookInfoId
       FROM
         reservation
-      LEFT JOIN user ON
-        user.id = reservation.userId
-      LEFT JOIN book_info ON
-        book_info.id = reservation.bookInfoId
       WHERE
-        reservation.status = 0 AND
-        DATE(reservation.updatedAt) = CURDATE() AND
-        DATE(reservation.createdAt) != CURDATE()
+        reservation.status = 3 AND
+        DATE(reservation.updatedAt) = CURDATE()
     `);
-  reservations.forEach((reservation) => {
-    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.\n(현재 예약 기능에 버그가 있습니다. 집현전 웹사이트에서 해당 책이 비치되어있는지 확인해주세요.)`);
+  reservations.forEach(async (reservation) => {
+    if (reservation.bookId) {
+      succeedReservation(reservation);
+    }
   });
 };
 
 export const notifyReservationOverdue = async () => {
-  const reservations: [{
+  const reservations: {
     slack: string,
     title: string,
     bookId: number,
     bookInfoId: number,
-  }] = await executeQuery(`
+  }[] = await executeQuery(`
     SELECT
       user.slack AS slack,
       book_info.title AS title,
