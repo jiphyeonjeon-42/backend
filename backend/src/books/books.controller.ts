@@ -14,9 +14,9 @@ export const createBook = async (
   next: NextFunction,
 ) => {
   const {
-    title, author, categoryId, callSign, pubdate,
+    title, author, categoryId, pubdate,
   } = req.body;
-  if (!(title && author && categoryId && callSign && pubdate)) {
+  if (!(title && author && categoryId && pubdate)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {

@@ -20,5 +20,4 @@ export interface CreateBookInfo {
   categoryId?: string;
   pubdate?: string | Date;
   donator: string;
-  callSign: string;
 }
