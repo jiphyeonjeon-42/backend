@@ -95,26 +95,80 @@ const getInfoInNationalLibrary = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt FROM book_info WHERE isbn = ? ', [book.isbn])) as StringRows[];
+  let recommendCopyNum;
+  let recommendPrimaryNum;
+  let categoryAlpabet;
 
-  const callSignValidator = (callSign : string) => {
-    const regexConditon = new RegExp(/^[A-Oa-n][0-9]{1,}\.[0-9]{2}\.v[0-9]{1,}\.c[0-9]{1,}$/);
-    if (regexConditon.test(callSign) === false) {
-      throw new Error(errorCode.INVALID_CALL_SIGN);
-    }
-  };
-  callSignValidator(book.callSign);
-
+  const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt, isbn FROM book_info WHERE isbn = ?', [book.isbn])) as StringRows[];
   const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
   if (slackIdExist[0].cnt > 1) {
     logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
   }
 
-  const callSignExist = (await executeQuery('SELECT COUNT(*) as cnt FROM book WHERE callSign = ? ', [book.callSign])) as StringRows[];
-  if (callSignExist[0].cnt > 0) {
-    throw new Error(errorCode.CALL_SIGN_OVERLAP);
-  }
   const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
+  const getCategoryAlpabet = (categoryId : number) => {
+    switch (categoryId) {
+      case 1:
+        return 'K';
+      case 2:
+        return 'C';
+      case 3:
+        return 'O';
+      case 4:
+        return 'A';
+      case 5:
+        return 'I';
+      case 6:
+        return 'G';
+      case 7:
+        return 'J';
+      case 8:
+        return 'c';
+      case 9:
+        return 'F';
+      case 10:
+        return 'E';
+      case 11:
+        return 'e';
+      case 12:
+        return 'H';
+      case 13:
+        return 'd';
+      case 14:
+        return 'D';
+      case 15:
+        return 'k';
+      case 16:
+        return 'c';
+      case 17:
+        return 'B';
+      case 18:
+        return 'e';
+      case 19:
+        return 'n';
+      case 20:
+        return 'N';
+      case 21:
+        return 'j';
+      case 22:
+        return 'a';
+      case 23:
+        return 'f';
+      case 24:
+        return 'L';
+      case 25:
+        return 'b';
+      case 26:
+        return 'M';
+      case 27:
+        return 'i';
+      case 28:
+        return 'l';
+      default:
+        return 'ERROR';
+    }
+  };
+
   if (isbnInBookInfo[0].cnt === 0) {
     await executeQuery(
       `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
@@ -132,11 +186,19 @@ export const createBook = async (book: types.CreateBookInfo) => {
         book.pubdate,
       ],
     );
+    recommendPrimaryNum = (await executeQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
+    recommendCopyNum = 1;
+    categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
+  } else {
+    recommendPrimaryNum = (await executeQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendPrimaryNum;
+    recommendCopyNum = (await executeQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
+    categoryAlpabet = (await executeQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
   }
+  const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
   await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
     (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
-  `, [book.donator, book.donator, book.callSign, book.isbn, book.title]);
-  return ({ code: 200, message: 'DB에 insert 성공하였습니다.' });
+  `, [book.donator, book.donator, recommendCallSign, book.isbn, book.title]);
+  return ({ callsign: recommendCallSign });
 };
 
 export const createBookInfo = async (isbn: string) => {

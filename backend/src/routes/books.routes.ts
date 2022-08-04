@@ -505,7 +505,7 @@ router
    *                  nullable: false
    *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
    *                categoryId:
-   *                  type: integer
+   *                  type: string
    *                  nullable: false
    *                  example: 1
    *                pubdate:
@@ -525,14 +525,6 @@ router
    *                 type: json
    *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
    *                 example: { callsign: 'c11.v1.c2' }
-   *         '400_case3':
-   *            description: naver open API에서 ISBN 검색결과가 없음.
-   *            content:
-   *             application/json:
-   *               schema:
-   *                 type: json
-   *                 description: naver open API에서 ISBN 검색결과가 없음.
-   *                 example: { errorCode: 302 }
    */
   .post('/create', authValidate(roleSet.librarian), createBook);
 
