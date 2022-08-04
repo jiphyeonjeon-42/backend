@@ -505,7 +505,7 @@ router
    *                  nullable: false
    *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
    *                categoryId:
-   *                  type: integer
+   *                  type: string
    *                  nullable: false
    *                  example: 1
    *                pubdate:
