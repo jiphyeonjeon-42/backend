@@ -1,7 +1,7 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
-import { executeQuery } from '../mysql';
+import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import * as types from './books.type';
@@ -96,110 +96,123 @@ const getInfoInNationalLibrary = async (isbn: string) => {
 };
 
 export const createBook = async (book: types.CreateBookInfo) => {
-  let recommendCopyNum;
-  let recommendPrimaryNum;
-  let categoryAlpabet;
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  try {
+    await conn.beginTransaction();
+    let recommendCopyNum;
+    let recommendPrimaryNum;
+    let categoryAlpabet;
 
-  const isbnInBookInfo = (await executeQuery('SELECT COUNT(*) as cnt, isbn FROM book_info WHERE isbn = ?', [book.isbn])) as StringRows[];
-  const slackIdExist = (await executeQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
-  if (slackIdExist[0].cnt > 1) {
-    logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
-  }
-
-  const category = (await executeQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-  const getCategoryAlpabet = (categoryId : number) => {
-    switch (categoryId) {
-      case 1:
-        return 'K';
-      case 2:
-        return 'C';
-      case 3:
-        return 'O';
-      case 4:
-        return 'A';
-      case 5:
-        return 'I';
-      case 6:
-        return 'G';
-      case 7:
-        return 'J';
-      case 8:
-        return 'c';
-      case 9:
-        return 'F';
-      case 10:
-        return 'E';
-      case 11:
-        return 'e';
-      case 12:
-        return 'H';
-      case 13:
-        return 'd';
-      case 14:
-        return 'D';
-      case 15:
-        return 'k';
-      case 16:
-        return 'c';
-      case 17:
-        return 'B';
-      case 18:
-        return 'e';
-      case 19:
-        return 'n';
-      case 20:
-        return 'N';
-      case 21:
-        return 'j';
-      case 22:
-        return 'a';
-      case 23:
-        return 'f';
-      case 24:
-        return 'L';
-      case 25:
-        return 'b';
-      case 26:
-        return 'M';
-      case 27:
-        return 'i';
-      case 28:
-        return 'l';
-      default:
-        return 'ERROR';
+    const isbnInBookInfo = (await transactionExecuteQuery('SELECT COUNT(*) as cnt, isbn FROM book_info WHERE isbn = ?', [book.isbn])) as StringRows[];
+    const slackIdExist = (await transactionExecuteQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+    if (slackIdExist[0].cnt > 1) {
+      logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
     }
-  };
 
-  if (isbnInBookInfo[0].cnt === 0) {
-    await executeQuery(
-      `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
+    const category = (await transactionExecuteQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
+    const getCategoryAlpabet = (categoryId : number) => {
+      switch (categoryId) {
+        case 1:
+          return 'K';
+        case 2:
+          return 'C';
+        case 3:
+          return 'O';
+        case 4:
+          return 'A';
+        case 5:
+          return 'I';
+        case 6:
+          return 'G';
+        case 7:
+          return 'J';
+        case 8:
+          return 'c';
+        case 9:
+          return 'F';
+        case 10:
+          return 'E';
+        case 11:
+          return 'e';
+        case 12:
+          return 'H';
+        case 13:
+          return 'd';
+        case 14:
+          return 'D';
+        case 15:
+          return 'k';
+        case 16:
+          return 'c';
+        case 17:
+          return 'B';
+        case 18:
+          return 'e';
+        case 19:
+          return 'n';
+        case 20:
+          return 'N';
+        case 21:
+          return 'j';
+        case 22:
+          return 'a';
+        case 23:
+          return 'f';
+        case 24:
+          return 'L';
+        case 25:
+          return 'b';
+        case 26:
+          return 'M';
+        case 27:
+          return 'i';
+        case 28:
+          return 'l';
+        default:
+          return 'ERROR';
+      }
+    };
+
+    if (isbnInBookInfo[0].cnt === 0) {
+      await transactionExecuteQuery(
+        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
       VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
-      [
-        book.title,
-        book.author,
-        book.publisher,
-        book.isbn ? book.isbn : 'NOTEXIST',
-        book.isbn ? book.isbn : 'NOTEXIST',
-        book.image ? book.image : 'NOTEXIST',
-        book.image ? book.image : 'NOTEXIST',
-        category,
-        book.categoryId,
-        book.pubdate,
-      ],
-    );
-    recommendPrimaryNum = (await executeQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
-    recommendCopyNum = 1;
-    categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
-  } else {
-    recommendPrimaryNum = (await executeQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendPrimaryNum;
-    recommendCopyNum = (await executeQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
-    categoryAlpabet = (await executeQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
-  }
-  const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
-  await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
+        [
+          book.title,
+          book.author,
+          book.publisher,
+          book.isbn ? book.isbn : 'NOTEXIST',
+          book.isbn ? book.isbn : 'NOTEXIST',
+          book.image ? book.image : 'NOTEXIST',
+          book.image ? book.image : 'NOTEXIST',
+          category,
+          book.categoryId,
+          book.pubdate,
+        ],
+      );
+      recommendPrimaryNum = (await transactionExecuteQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
+      recommendCopyNum = 1;
+      categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
+    } else {
+      recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendPrimaryNum;
+      recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
+      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
+    }
+    const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
+    await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
     (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
   `, [book.donator, book.donator, recommendCallSign, book.isbn, book.title]);
-  return ({ callsign: recommendCallSign });
+    return ({ callsign: recommendCallSign });
+  } catch (error) {
+    await conn.rollback();
+    if (error instanceof Error) {
+      throw error;
+    }
+  } finally {
+    conn.release();
+  }
+  return (new Error('308'));
 };
 
 export const createBookInfo = async (isbn: string) => {
