@@ -597,6 +597,7 @@ router
    *                        example: "9791191114225"
    *                      publisher:
    *                        description: 출판사
+   *                        nullable: false
    *                        type: string
    *                        example: "복복서가"
    *                      pubdate:
