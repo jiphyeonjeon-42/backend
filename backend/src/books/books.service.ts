@@ -170,7 +170,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
         case 28:
           return 'l';
         default:
-          return 'ERROR';
+          throw new Error(errorCode.INVALID_CATEGORY_ID);
       }
     };
 
@@ -191,13 +191,13 @@ export const createBook = async (book: types.CreateBookInfo) => {
           book.pubdate,
         ],
       );
+      categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
       recommendPrimaryNum = (await transactionExecuteQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
       recommendCopyNum = 1;
-      categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
     } else {
+      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
       recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendPrimaryNum;
       recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
-      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
     }
     const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
@@ -212,7 +212,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
   } finally {
     conn.release();
   }
-  return (new Error('308'));
+  return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
 };
 
 export const createBookInfo = async (isbn: string) => {
