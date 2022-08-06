@@ -95,6 +95,29 @@ const getInfoInNationalLibrary = async (isbn: string) => {
   return (book);
 };
 
+const getAuthorInNaver = async (isbn: string) => {
+  let author;
+  await axios
+    .get(
+      `
+  https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
+      {
+        headers: {
+          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
+          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+        },
+      },
+    )
+    .then((res) => {
+      // eslint-disable-next-line prefer-destructuring
+      author = res.data.items[0].author;
+    })
+    .catch(() => {
+      throw new Error(errorCode.ISBN_SEARCH_FAILED_IN_NAVER);
+    });
+  return (author);
+};
+
 export const createBook = async (book: types.CreateBookInfo) => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -217,6 +240,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
 export const createBookInfo = async (isbn: string) => {
   const bookInfo: any = await getInfoInNationalLibrary(isbn);
+  bookInfo.author = await getAuthorInNaver(isbn);
   return { bookInfo };
 };
 
