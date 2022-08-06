@@ -82,8 +82,9 @@ const getInfoInNationalLibrary = async (isbn: string) => {
       searchResult = res.data.docs[0];
       const {
         // eslint-disable-next-line max-len
-        TITLE: title, TITLE_URL: image, AUTHOR: author, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
+        TITLE: title, AUTHOR: author, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
       } = searchResult;
+      const image = `https://image.kyobobook.co.kr/images/book/xlarge/${isbn.slice(-3)}/x${isbn}.jpg`;
       book = {
         title, image, author, category, isbn, publisher, pubdate,
       };
