@@ -533,7 +533,7 @@ router
    *                    type: json
    *                    example : { errorCode: 308 }
    *         '실패 케이스 2':
-   *              description: 보내줌 카테고리 ID에 해당하는 callsign을 찾을 수 없음
+   *              description: 보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음
    *              content:
    *                application/json:
    *                  schema:
@@ -605,6 +605,20 @@ router
    *                        type: string
    *                        format: date
    *                        example: "20220502"
+   *        '실패 케이스 1':
+   *            description: 국립중앙 도서관 API에서 ISBN 검색이 실패
+   *            content:
+   *              application/json:
+   *                schema:
+   *                  type: json
+   *                  example: { errorCode : 303 }
+   *        '실패 케이스 2':
+   *            description: 네이버 책검색 API에서 ISBN 검색이 실패
+   *            content:
+   *              application/json:
+   *                schema:
+   *                  type: json
+   *                  example: { errorCode : 310 }
    */
   .get('/create', authValidate(roleSet.librarian), createBookInfo);
 
