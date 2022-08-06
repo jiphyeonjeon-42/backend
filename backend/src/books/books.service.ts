@@ -118,6 +118,69 @@ const getAuthorInNaver = async (isbn: string) => {
   return (author);
 };
 
+const getCategoryAlpabet = (categoryId : number) => {
+  switch (categoryId) {
+    case 1:
+      return 'K';
+    case 2:
+      return 'C';
+    case 3:
+      return 'O';
+    case 4:
+      return 'A';
+    case 5:
+      return 'I';
+    case 6:
+      return 'G';
+    case 7:
+      return 'J';
+    case 8:
+      return 'c';
+    case 9:
+      return 'F';
+    case 10:
+      return 'E';
+    case 11:
+      return 'e';
+    case 12:
+      return 'H';
+    case 13:
+      return 'd';
+    case 14:
+      return 'D';
+    case 15:
+      return 'k';
+    case 16:
+      return 'c';
+    case 17:
+      return 'B';
+    case 18:
+      return 'e';
+    case 19:
+      return 'n';
+    case 20:
+      return 'N';
+    case 21:
+      return 'j';
+    case 22:
+      return 'a';
+    case 23:
+      return 'f';
+    case 24:
+      return 'L';
+    case 25:
+      return 'b';
+    case 26:
+      return 'M';
+    case 27:
+      return 'i';
+    case 28:
+      return 'l';
+    default:
+      throw new Error(errorCode.INVALID_CATEGORY_ID);
+  }
+};
+
 export const createBook = async (book: types.CreateBookInfo) => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -134,68 +197,6 @@ export const createBook = async (book: types.CreateBookInfo) => {
     }
 
     const category = (await transactionExecuteQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-    const getCategoryAlpabet = (categoryId : number) => {
-      switch (categoryId) {
-        case 1:
-          return 'K';
-        case 2:
-          return 'C';
-        case 3:
-          return 'O';
-        case 4:
-          return 'A';
-        case 5:
-          return 'I';
-        case 6:
-          return 'G';
-        case 7:
-          return 'J';
-        case 8:
-          return 'c';
-        case 9:
-          return 'F';
-        case 10:
-          return 'E';
-        case 11:
-          return 'e';
-        case 12:
-          return 'H';
-        case 13:
-          return 'd';
-        case 14:
-          return 'D';
-        case 15:
-          return 'k';
-        case 16:
-          return 'c';
-        case 17:
-          return 'B';
-        case 18:
-          return 'e';
-        case 19:
-          return 'n';
-        case 20:
-          return 'N';
-        case 21:
-          return 'j';
-        case 22:
-          return 'a';
-        case 23:
-          return 'f';
-        case 24:
-          return 'L';
-        case 25:
-          return 'b';
-        case 26:
-          return 'M';
-        case 27:
-          return 'i';
-        case 28:
-          return 'l';
-        default:
-          throw new Error(errorCode.INVALID_CATEGORY_ID);
-      }
-    };
 
     if (isbnInBookInfo[0].cnt === 0) {
       await transactionExecuteQuery(
@@ -223,7 +224,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
       recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
     }
     const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
-    await executeQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
+    await transactionExecuteQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
     (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
   `, [book.donator, book.donator, recommendCallSign, book.isbn, book.title]);
     return ({ callsign: recommendCallSign });
