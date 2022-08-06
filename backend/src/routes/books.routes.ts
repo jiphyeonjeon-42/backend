@@ -539,6 +539,13 @@ router
    *                  schema:
    *                    type: json
    *                    example : { errorCode: 309 }
+   *         '실패 케이스 3':
+   *              description: 입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 311 }
    */
   .post('/create', authValidate(roleSet.librarian), createBook);
 

@@ -8,6 +8,14 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
+const pubdateFormatValidator = (pubdate : string) => {
+  const regexConditon = (/^[0-9]{8}$/);
+  if (regexConditon.test(pubdate) === false) {
+    return false;
+  }
+  return true;
+};
+
 export const createBook = async (
   req: Request,
   res: Response,
@@ -18,6 +26,9 @@ export const createBook = async (
   } = req.body;
   if (!(title && author && categoryId && pubdate)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+  if (pubdateFormatValidator(pubdate) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   try {
     return res
