@@ -490,7 +490,7 @@ router
    *                  example: "작별인사 (김영하 장편소설)"
    *                isbn:
    *                  type: string
-   *                  nullable: false
+   *                  nullable: true
    *                  example: 9788065960874
    *                author:
    *                  type: string
@@ -502,7 +502,7 @@ router
    *                  example: "복복서가"
    *                image:
    *                  type: string
-   *                  nullable: false
+   *                  nullable: true
    *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
    *                categoryId:
    *                  type: string
