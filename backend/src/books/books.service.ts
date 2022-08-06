@@ -81,12 +81,11 @@ const getInfoInNationalLibrary = async (isbn: string) => {
     .then((res) => {
       searchResult = res.data.docs[0];
       const {
-        // eslint-disable-next-line max-len
-        TITLE: title, AUTHOR: author, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
+        TITLE: title, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
       } = searchResult;
       const image = `https://image.kyobobook.co.kr/images/book/xlarge/${isbn.slice(-3)}/x${isbn}.jpg`;
       book = {
-        title, image, author, category, isbn, publisher, pubdate,
+        title, image, category, isbn, publisher, pubdate,
       };
     })
     .catch(() => {
