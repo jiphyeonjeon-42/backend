@@ -223,9 +223,14 @@ export const createBook = async (book: types.CreateBookInfo) => {
       recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
     }
     const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
-    await transactionExecuteQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
-    (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
-  `, [book.donator, book.donator, recommendCallSign, book.isbn, book.title]);
+    await transactionExecuteQuery(`INSERT INTO book (donator, donatorId, callSign, status, infoId) VALUES
+    ((SELECT IF (? != 'NOTEXIST', ?, NULL)),(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
+  `, [book.donator ? book.donator : 'NOTEXIST',
+      book.donator ? book.donator : 'NOTEXIST',
+      book.donator,
+      recommendCallSign,
+      book.isbn,
+      book.title]);
     await conn.commit();
     return ({ callsign: recommendCallSign });
   } catch (error) {
