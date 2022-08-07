@@ -219,13 +219,14 @@ export const createBook = async (book: types.CreateBookInfo) => {
       recommendCopyNum = 1;
     } else {
       categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
-      recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendPrimaryNum;
+      recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendPrimaryNum;
       recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
     }
     const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await transactionExecuteQuery(`INSERT INTO book(donator,donatorId,callSign,status,infoId) VALUES
     (?,(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
   `, [book.donator, book.donator, recommendCallSign, book.isbn, book.title]);
+    await conn.commit();
     return ({ callsign: recommendCallSign });
   } catch (error) {
     await conn.rollback();
