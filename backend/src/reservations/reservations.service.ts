@@ -220,8 +220,8 @@ export const cancel = async (reservationId: number): Promise<void> => {
           SET bookId = ?, endAt = DATE_ADD(NOW(), INTERVAL 3 DAY)
           WHERE id = ?
         `, [reservations[0].bookId, candidates[0].id]);
+        publishMessage(candidates[0].slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservations[0].title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요. (방문하시기 전에 비치 여부를 확인해주세요)`);
       }
-      publishMessage(candidates[0].slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservations[0].title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요. (방문하시기 전에 비치 여부를 확인해주세요)`);
     }
     conn.commit();
   } catch (e: any) {
