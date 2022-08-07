@@ -30,7 +30,7 @@ export const createBook = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -56,7 +56,7 @@ export const createBookInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -93,7 +93,7 @@ export const searchBookInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -120,7 +120,7 @@ export const getBookById: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -148,7 +148,7 @@ export const getInfoId: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -175,7 +175,7 @@ export const sortInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -203,7 +203,7 @@ export const search = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;

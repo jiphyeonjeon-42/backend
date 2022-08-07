@@ -31,7 +31,7 @@ export const create: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -67,7 +67,7 @@ export const search: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -93,7 +93,7 @@ export const lendingId: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -123,7 +123,7 @@ export const returnBook: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }

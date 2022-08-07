@@ -55,7 +55,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -81,7 +81,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -110,7 +110,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -175,7 +175,7 @@ export const intraAuthentication = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }

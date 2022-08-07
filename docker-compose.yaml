@@ -43,7 +43,7 @@ services:
       context: ./backend
     volumes:
       #- ./backend/src/:/src/
-      - ./backend/logs:/logs/all/
+      - ./backend/logs:/logs
     #command: ${MODE}
     ports:
       - 3000:3000

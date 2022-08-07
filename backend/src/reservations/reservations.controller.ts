@@ -31,7 +31,7 @@ export const create: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
@@ -70,7 +70,7 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
@@ -94,7 +94,7 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
@@ -115,7 +115,7 @@ export const count: RequestHandler = async (req: Request, res: Response, next: N
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   } return 0;
@@ -142,7 +142,7 @@ export const userReservations: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     } else {
-      logger.error(error.message);
+      logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
