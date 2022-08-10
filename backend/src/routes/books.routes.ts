@@ -490,7 +490,7 @@ router
    *                  example: "작별인사 (김영하 장편소설)"
    *                isbn:
    *                  type: string
-   *                  nullable: false
+   *                  nullable: true
    *                  example: 9788065960874
    *                author:
    *                  type: string
@@ -502,7 +502,7 @@ router
    *                  example: "복복서가"
    *                image:
    *                  type: string
-   *                  nullable: false
+   *                  nullable: true
    *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
    *                categoryId:
    *                  type: string
@@ -524,7 +524,28 @@ router
    *               schema:
    *                 type: json
    *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
-   *                 example: { callsign: 'c11.v1.c2' }
+   *                 example: { callsign: 'c11.22.v1.c2' }
+   *         '실패 케이스 1':
+   *              description: 예상치 못한 에러로 책 정보 insert에 실패함.
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 308 }
+   *         '실패 케이스 2':
+   *              description: 보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 309 }
+   *         '실패 케이스 3':
+   *              description: 입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 311 }
    */
   .post('/create', authValidate(roleSet.librarian), createBook);
 
@@ -545,16 +566,67 @@ router
    *          type: string
    *          example: 9791191114225
    *      responses:
-   *         '200':
-   *            description: 국립중앙도서관에서 ISBN으로 검색한뒤에 책정보를 반환
+   *        '200':
+   *          description: 국립중앙도서관에서 ISBN으로 검색한뒤에 책정보를 반환
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                description: ISBN으로 국립중앙도서관에서 검색후에 정보를 반환, 이미지는 교보문고에서 가지고 옴
+   *                properties:
+   *                  bookInfo:
+   *                    type: object
+   *                    properties:
+   *                      title:
+   *                        description: 책의 제목
+   *                        nullable: false
+   *                        type: string
+   *                        example: "작별인사"
+   *                      image:
+   *                        description: 책 표지 이미지 주소
+   *                        nullable: true
+   *                        type: string
+   *                        example: "http://image.kyobobook.co.kr/images/book/xlarge/225/x9791191114225.jpg"
+   *                      author:
+   *                        description: 저자
+   *                        nullable: false
+   *                        type: string
+   *                        example: "지은이: 김영하"
+   *                      category:
+   *                        description: 십진분류법상 대분류
+   *                        nullable: true
+   *                        type: string
+   *                        example: "8"
+   *                      isbn:
+   *                        description: ISBN 번호
+   *                        nullable: false
+   *                        type: string
+   *                        example: "9791191114225"
+   *                      publisher:
+   *                        description: 출판사
+   *                        nullable: false
+   *                        type: string
+   *                        example: "복복서가"
+   *                      pubdate:
+   *                        description: 출판일자
+   *                        nullable: false
+   *                        type: string
+   *                        format: date
+   *                        example: "20220502"
+   *        '실패 케이스 1':
+   *            description: 국립중앙 도서관 API에서 ISBN 검색이 실패
    *            content:
-   *             application/json:
-   *               schema:
-   *                 type: JSON
-   *                 nullable: false
-   *                 description: 국립중앙도서관에서 가지고 온 데이터를 보여줌. category는 십진분류의 대분류
-   *                 example: {"bookInfo": {  "title": "작별인사",  "image": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2022/04/07/9791191114225.jpg",  "author": "지은이: 김영하",  "category": "8", "publisher": "복복서가", "pubdate": "20220502"}}
-   *
+   *              application/json:
+   *                schema:
+   *                  type: json
+   *                  example: { errorCode : 303 }
+   *        '실패 케이스 2':
+   *            description: 네이버 책검색 API에서 ISBN 검색이 실패
+   *            content:
+   *              application/json:
+   *                schema:
+   *                  type: json
+   *                  example: { errorCode : 310 }
    */
   .get('/create', authValidate(roleSet.librarian), createBookInfo);
 
