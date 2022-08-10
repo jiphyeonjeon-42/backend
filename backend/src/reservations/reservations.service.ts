@@ -198,10 +198,10 @@ export const cancel = async (reservationId: number): Promise<void> => {
       WHERE id = ?;
     `, [reservationId]);
     if (reservations[0].bookId) {
-      const candidates = await transactionExecuteQuery(`
+      const candidates: {id: number, slack: string}[] = await transactionExecuteQuery(`
         SELECT
           reservation.id AS id,
-          user.slack
+          user.slack AS slack
         FROM reservation
         LEFT JOIN user
         ON user.id = reservation.userId

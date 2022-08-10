@@ -6,7 +6,7 @@ import path from 'path';
 import morgan from 'morgan';
 
 const {
-  combine, timestamp, printf, colorize,
+  combine, timestamp, printf, colorize, errors,
 } = format;
 
 const logDir = '../../logs';
@@ -35,6 +35,7 @@ const level = () => {
 };
 
 const logFormat = combine(
+  errors({ stack: true }),
   timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   printf((info) => {
     if (info.stack) {
