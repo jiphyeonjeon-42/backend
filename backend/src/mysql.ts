@@ -25,7 +25,7 @@ export const executeQuery = async (queryText: string, values: any[] = []): Promi
     [result] = queryResult;
   } catch (e) {
     if (e instanceof Error) {
-      logger.error(e.message);
+      logger.error(e);
       throw new Error('DB error');
     }
     throw e;
@@ -49,7 +49,7 @@ export const makeExecuteQuery = (connection: mysql.PoolConnection) => async (
     [result] = queryResult;
   } catch (e) {
     if (e instanceof Error) {
-      logger.error(e.message);
+      logger.error(e);
       throw new Error(DBError);
     }
     throw e;

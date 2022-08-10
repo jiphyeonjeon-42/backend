@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `book`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `book` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `donator` varchar(255) NOT NULL,
+  `donator` varchar(255) DEFAULT NULL,
   `callSign` varchar(255) BINARY NOT NULL UNIQUE,
   `status` int NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),

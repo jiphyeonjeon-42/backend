@@ -8,6 +8,14 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
+const pubdateFormatValidator = (pubdate : string) => {
+  const regexConditon = (/^[0-9]{8}$/);
+  if (regexConditon.test(pubdate) === false) {
+    return false;
+  }
+  return true;
+};
+
 export const createBook = async (
   req: Request,
   res: Response,
@@ -18,6 +26,9 @@ export const createBook = async (
   } = req.body;
   if (!(title && author && categoryId && pubdate)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+  if (pubdateFormatValidator(pubdate) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   try {
     return res
@@ -30,7 +41,7 @@ export const createBook = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -56,7 +67,7 @@ export const createBookInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -93,7 +104,7 @@ export const searchBookInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -120,7 +131,7 @@ export const getBookById: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -148,7 +159,7 @@ export const getInfoId: RequestHandler = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -175,7 +186,7 @@ export const sortInfo = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -203,7 +214,7 @@ export const search = async (
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
-    logger.error(error.message);
+    logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
