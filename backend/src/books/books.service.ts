@@ -36,8 +36,8 @@ export const search = async (
             AND
             IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
             ), TRUE, FALSE)
-      ) AS isLendable 
-    FROM book_info, book 
+      ) AS isLendable
+    FROM book_info, book
     WHERE book_info.id = book.infoId AND
     (book_info.title like ?
       OR book_info.author like ?
@@ -199,7 +199,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
     if (isbnInBookInfo[0].cnt === 0) {
       await transactionExecuteQuery(
-        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt) 
+        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt)
       VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
         [
           book.title,
@@ -218,9 +218,9 @@ export const createBook = async (book: types.CreateBookInfo) => {
       recommendPrimaryNum = (await transactionExecuteQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
       recommendCopyNum = 1;
     } else {
-      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].categoryAlpabet;
+      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].categoryAlpabet;
       recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendPrimaryNum;
-      recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ?)', [book.isbn]))[0].recommendCopyNum;
+      recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendCopyNum;
     }
     const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await transactionExecuteQuery(`INSERT INTO book (donator, donatorId, callSign, status, infoId) VALUES
@@ -421,8 +421,8 @@ export const getBookById = async (id: string) => {
             AND
             IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
             ), TRUE, FALSE)
-      ) AS isLendable 
-    FROM book_info JOIN book 
+      ) AS isLendable
+    FROM book_info JOIN book
     ON book_info.id = book.infoId
     WHERE book.id = ?
     LIMIT 1;
@@ -490,8 +490,8 @@ export const getInfo = async (id: string) => {
       ).then((isLendableArr) => isLendableArr[0].isLendable);
       const isReserved = await executeQuery(
         `SELECT IF(
-            (select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) > 0, 
-            TRUE, 
+            (select COUNT(*) from reservation as r where (r.bookId = ${eachBook.id} and status = 0)) > 0,
+            TRUE,
             FALSE
             ) as isReserved;
         `,
