@@ -363,7 +363,7 @@ router
    * @openapi
    * /api/books/search:
    *    get:
-   *      description: 사서용 책 정보를 검색하여 가져온다. 책이 대출할 수 있는지 확인 할 수 있음
+   *      description: 정보를 검색하여 가져온다. 책이 대출할 수 있는지 확인 할 수 있음
    *      tags:
    *      - books
    *      parameters:
@@ -468,7 +468,7 @@ router
    *                description: error decription
    *                example: { errorCode: 300 }
    */
-  .get('/search', authValidate(roleSet.librarian), search);
+  .get('/search', search);
 
 router
   /**
