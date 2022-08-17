@@ -150,7 +150,7 @@ const getCategoryAlpabet = (categoryId : number) => {
     case 15:
       return 'k';
     case 16:
-      return 'c';
+      return 'g';
     case 17:
       return 'B';
     case 18:
