@@ -23,8 +23,9 @@ export const getReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  reviewService.getReview();
-  return res.status(status.OK).json({ review: 'blala' });
+  const bookInfoId = req?.params?.bookInfoId
+  const reviews = await reviewService.getReview(bookInfoId);
+  return res.status(status.OK).json(reviews);
 };
 
 export const updateReview = async (
