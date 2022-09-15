@@ -48,7 +48,7 @@ router
    *      parameters:
    *      - name: bookInfoId
    *        in: path
-   *        description: book_info 테이블의 id값이 들어오면, 해당 책에 대한 리뷰를 보여준다. all이라면, 모든 리뷰를 보여준다.
+   *        description: book_info 테이블의 id값이 들어오면, 해당 책에 대한 리뷰를 보여준다. 경로에 {bookInfoId}가 없다면 모든 리뷰를 보여준다.
    *      responses:
    *         '200':
    *            content:
