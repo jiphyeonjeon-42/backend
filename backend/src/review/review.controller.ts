@@ -2,7 +2,7 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
-// import * as reservationsService from './reservations.service';
+import * as reviewService from './review.service';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
@@ -21,7 +21,7 @@ export const getReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('getreview');
+  reviewService.getReview();
   return res.status(status.OK).json({ review: 'blala' });
 };
 
@@ -30,7 +30,7 @@ export const updateReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('update review');
+  reviewService.updateReview();
   return res.status(status.OK).send();
 };
 
