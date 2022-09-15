@@ -70,6 +70,7 @@ router
    *                    example: "2022-09-14"
    */
   .get('/:bookInfoId', /* authValidate(roleSet.all),*/ getReview);
+  router.get('/', /* authValidate(roleSet.all),*/ getReview);
 
 
   router

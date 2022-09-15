@@ -7,11 +7,11 @@ export const createReview = async (bookInfoId: number, commentText: string) => {
   console.log(`${bookInfoId} ${commentText}`);
 };
 
-export const getReview = async (bookInfoId: number | string) => {
+export const getReview = async (bookInfoId: string | undefined) => {
   console.log('get review');
-  console.log(`${bookInfoId}`);
+  console.log(`${bookInfoId}`, typeof(bookInfoId));
   let reviews;
-  if (bookInfoId === 'all') {
+  if (bookInfoId === undefined) {
     reviews = [{
       reviewer: 'seongyle',
       commentText: 'blabla',
