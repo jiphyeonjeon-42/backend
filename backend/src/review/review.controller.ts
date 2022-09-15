@@ -23,7 +23,7 @@ export const getReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const bookInfoId = req?.params?.bookInfoId
+  const bookInfoId = req?.params?.bookInfoId;
   const reviews = await reviewService.getReview(bookInfoId);
   return res.status(status.OK).json(reviews);
 };
@@ -42,6 +42,7 @@ export const deleteReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log('delete review');
+  const reviewId = req?.params?.reviewId;
+  await reviewService.deleteReview(parseInt(reviewId, 10));
   return res.status(status.OK).send();
 };

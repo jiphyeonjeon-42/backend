@@ -34,7 +34,7 @@ router
    *         '201':
    *            description: 리뷰가 DB에 정상적으로 insert됨.
    */
-  .post('/create', /* authValidate(roleSet.all),*/ createReview);
+  .post('/', /* authValidate(roleSet.all),*/ createReview);
 
 
   router
@@ -109,8 +109,8 @@ router
 router
 /**
    * @openapi
-   * /api/review/delete/{reviewId}:
-   *    post:
+   * /api/review/{reviewId}:
+   *    delete:
    *      description: 책 리뷰를 삭제한다.
    *      tags:
    *      - review
@@ -129,4 +129,4 @@ router
    *                  type: json
    *                  example: { errorCode : 600 }
    */
-  .post('/delete/:reviewId', /* authValidate(roleSet.all),*/ deleteReview);
+  .delete('/:reviewId', /* authValidate(roleSet.all),*/ deleteReview);

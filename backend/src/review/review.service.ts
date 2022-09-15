@@ -38,6 +38,7 @@ export const updateReview = async () => {
   console.log('update review');
 };
 
-export const deleteReview = async () => {
+export const deleteReview = async (reviewId: number) => {
   console.log('deleteReview');
+  console.log(`${reviewId} should be soft deleted`);
 };
