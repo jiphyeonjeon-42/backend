@@ -12,7 +12,9 @@ export const createReview = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(`${req.body.bookInfoId}, ${req.body.commentText} create reivew`);
+  const bookInfoId = req?.body?.bookInfoId;
+  const commentText = req?.body?.commentText;
+  reviewService.createReview(bookInfoId, commentText);
   return res.status(status.CREATED).send();
 };
 
