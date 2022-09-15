@@ -56,7 +56,7 @@ router
    *              schema:
    *                type: object
    *                properties:
-   *                  book_info_id:
+   *                  bookInfoId:
    *                    description: book_info 테이블의 id값
    *                    type: integer
    *                    example: 4261
