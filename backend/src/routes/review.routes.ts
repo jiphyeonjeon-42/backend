@@ -11,7 +11,7 @@ export const router = Router();
 router
 /**
    * @openapi
-   * /api/review/create:
+   * /api/review/:
    *    post:
    *      description: 책 리뷰를 작성한다.
    *      tags:
