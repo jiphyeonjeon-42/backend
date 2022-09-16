@@ -40,34 +40,41 @@ router
   router
 /**
    * @openapi
-   * /api/review/{bookInfoId}:
+   * /api/review/:
    *    get:
    *      description: 책 리뷰를 반환한다.
    *      tags:
    *      - review
    *      parameters:
    *      - name: bookInfoId
-   *        in: path
-   *        description: book_info 테이블의 id값이 들어오면, 해당 책에 대한 리뷰를 보여준다. 경로에 {bookInfoId}가 없다면 모든 리뷰를 보여준다.
-   *        allowEmptyValue: true
+   *        in: query
+   *        description: book_info 테이블의 id값이 들어오면, 해당 책에 대한 리뷰를 보여준다.
+   *        required: false
+   *      - name: userId
+   *        in: query
+   *        description: user 테이블의 id값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
+   *        required: false
    *      responses:
-   *         '200':
-   *            content:
-   *            application/json:
-   *              schema:
-   *                type: object
-   *                properties:
-   *                  bookInfoId:
-   *                    description: book_info 테이블의 id값
-   *                    type: integer
-   *                    example: 4261
-   *                  reviewer:
-   *                    description: 작성자
-   *                    type: string
-   *                    example: yena
-   *                  createdAt:
-   *                    type: date
-   *                    example: "2022-09-14"
+   *        '200':
+   *           content:
+   *             application/json:
+   *               schema:
+   *                 type: object
+   *                 properties:
+   *                   bookInfoId:
+   *                     description: book_info 테이블의 id값
+   *                     type: integer
+   *                     nullable: false
+   *                     example: 4261
+   *                   reviewer:
+   *                     description: 작성자
+   *                     type: string
+   *                     nullable: false
+   *                     example: yena
+   *                   createdAt:
+   *                     type: date
+   *                     nullable: false
+   *                     example: "2022-09-14"
    */
   .get('/:bookInfoId', /* authValidate(roleSet.all),*/ getReview);
   router.get('/', /* authValidate(roleSet.all),*/ getReview);
@@ -76,11 +83,15 @@ router
   router
 /**
    * @openapi
-   * /api/review/update:
+   * /api/review/{reviewId}:
    *    patch:
    *      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다.
    *      tags:
    *      - review
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: 삭제할 review ID
    *      requestBody:
    *        content:
    *          application/json:
@@ -106,7 +117,7 @@ router
    *                  type: json
    *                  example: { errorCode : 600 }
    */
-  .patch('/update', /* authValidate(roleSet.all),*/ updateReview);
+  .patch('/:reviewId', /* authValidate(roleSet.all),*/ updateReview);
 
 router
 /**
