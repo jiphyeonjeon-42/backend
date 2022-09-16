@@ -17,6 +17,7 @@ router
    *      tags:
    *      - review
    *      requestBody:
+   *        required: true
    *        content:
    *          application/json:
    *            schema:
@@ -25,10 +26,12 @@ router
    *                bookInfoId:
    *                  type: integer
    *                  nullable: false
+   *                  required: true
    *                  example: 42
    *                commentText:
    *                  type: string
    *                  nullable: false
+   *                  required: true
    *                  example: "책이 좋네요."
    *      responses:
    *         '201':
@@ -89,10 +92,12 @@ router
    *      tags:
    *      - review
    *      parameters:
-   *      - name: bookInfoId
+   *      - name: reviewId
    *        in: path
-   *        description: 삭제할 review ID
+   *        description: 수정할 review ID
+   *        required: true
    *      requestBody:
+   *        required: true
    *        content:
    *          application/json:
    *            schema:
@@ -129,6 +134,7 @@ router
    *      - review
    *      parameters:
    *      - name: reviewId
+   *        required: true
    *        in: path
    *        description: 들어온 reviewId에 해당하는 리뷰를 삭제한다. 사서와 작성자만 삭제할 수 있다.
    *      responses:
