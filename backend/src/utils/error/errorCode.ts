@@ -54,3 +54,5 @@ export const MORE_THAN_TWO_RESERVATIONS = '506';
 export const NO_MATCHING_USER = '507';
 export const RESERVATION_NOT_EXIST = '508';
 export const NOT_RESERVED = '509';
+
+export const UNAUTHORIZED = '600';
