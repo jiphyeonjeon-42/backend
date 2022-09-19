@@ -92,6 +92,7 @@ router
  *        description: 대출 기록에서 검색할 단어
  *        schema:
  *          type: string
+ *          enum: [user, title, callSign, bookId]
  *          example: 파이썬
  *      - name: type
  *        in: query
