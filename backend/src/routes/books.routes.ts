@@ -7,6 +7,9 @@ import {
   createBook,
   createBookInfo,
   getBookById,
+  createLike,
+  deleteLike,
+  getLikeInfo
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -702,3 +705,131 @@ router
    *                    example: 1
    */
   .get('/:id', getBookById);
+
+  router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    post:
+   *      tags:
+   *      - like
+   *      summary: Add a new like to the book
+   *      operationId: addLike
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '401':
+   *          description: Failed By Empty Token
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *        '404':
+   *          description: Failed By Wrong BookId
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *        '200':
+   *          description: Success
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   */
+   .post('/info/:bookInfoId/like', createLike);
+
+router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    delete:
+   *      tags:
+   *       - like
+   *      summary: Delete a like
+   *      operationId: deleteLike
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '401':
+   *          description: Failed By Empty Token
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *        '404':
+   *          description: Failed By Wrong BookId
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Error'
+   *        '200':
+   *          description: Success
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   */
+   .delete('/info/:bookInfoId/like', deleteLike);
+
+router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    get:
+   *      tags:
+   *      - like
+   *      summary: Get like info
+   *      description: Get info about likenum and whether user press like button
+   *      operationId: findLikeInfo
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '200':
+   *          description: successful operation
+   *          content:
+   *            application/json:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   *            application/xml:
+   *              schema:
+   *                $ref: '#/components/schemas/Like'
+   * #       '200':
+   * #         description: Success But Empty Token
+   *        '404':
+   *          description: Failed By Wrong BookId
+   */
+   .get('/info/:bookInfoId/like', getLikeInfo);
