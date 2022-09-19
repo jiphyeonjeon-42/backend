@@ -219,3 +219,93 @@ export const search = async (
   }
   return 0;
 };
+
+export const createLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // parameters
+  const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
+
+  if (!bookInfoId) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+
+  // 로직수행 및 에러처리
+  try {
+    return res.status(status.CREATED).send(await BooksService.createLike(bookInfoId));
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error.message);
+    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};
+
+export const deleteLike = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const parameter = String(req?.params);
+  const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
+
+  // parameter 검증
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+
+  // 로직수행 및 에러처리
+  try {
+    return res.status(status.OK).send(await BooksService.deleteLike(bookInfoId));
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error.message);
+    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};
+
+export const getLikeInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // parameters
+  // 왜 string으로 파싱후 int로...?
+  const parameter = String(req?.params);
+  const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
+
+  // console.log("GetLikeInfo");
+  // console.log("query: ", parameter);
+  // console.log("bookInfoId: ", bookInfoId);
+
+  // parameter 검증
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+
+  // 로직수행 및 에러처리
+  try {
+    return res.status(status.OK).json(await BooksService.getLikeInfo(bookInfoId));
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error.message);
+    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};

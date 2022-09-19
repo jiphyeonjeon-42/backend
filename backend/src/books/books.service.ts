@@ -523,3 +523,21 @@ export const getInfo = async (id: string) => {
   bookSpec.books = books;
   return bookSpec;
 };
+
+export const createLike = async (bookInfoId: number) => {
+  const message = "Like(" + bookInfoId.toString() + ")를 생성합니다."
+  console.log(message)
+  return ({ code: 200, message });
+};
+
+export const deleteLike = async (bookInfoId: number) => {
+  const message = "Like(" + bookInfoId.toString() + ")를 삭제합니다."
+  console.log(message)
+  return ({ code: 200, message });
+};
+
+export const getLikeInfo = async (bookInfoId: number) => {
+  const message = "Like(" + bookInfoId.toString() + ")를 가져옵니다."
+  console.log(message)
+  return ({ code: 200, message });
+};
