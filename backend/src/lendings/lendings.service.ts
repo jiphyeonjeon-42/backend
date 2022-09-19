@@ -226,10 +226,10 @@ export const search = async (
       filterQuery = `HAVING callSign LIKE '%${query}%'`;
       break;
     case 'bookId':
-      filterQuery = `HAVING bookId LIKE ${query}`;
+      filterQuery = `and lending.bookId = ${query}`;
       break;
     default:
-      filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}% OR bookId LIKE ${query}'`;
+      filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
   }
   const orderQuery = sort === 'new' ? 'DESC' : 'ASC';
   const items = await executeQuery(
@@ -246,7 +246,7 @@ export const search = async (
       lending.createdAt AS createdAt,
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
-    JOIN user ON  user.id = lending.userId
+    JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
     WHERE lending.returnedAt is NULL
