@@ -98,7 +98,7 @@ router
  *        description: query를 조회할 항목
  *        schema:
  *          type: string
- *          enum: [user, title, callSign]
+ *          enum: [user, title, callSign, bookId]
  *      responses:
  *        '200':
  *          description: 대출 기록을 반환한다.
