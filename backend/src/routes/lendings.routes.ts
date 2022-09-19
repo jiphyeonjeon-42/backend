@@ -89,7 +89,7 @@ router
  *          default: new
  *      - name: query
  *        in: query
- *        description: 대출 기록에서 검색할 단어
+ *        description: 대출 기록에서 검색할 단어, 검색 가능한 필드 [user, title, callSign, bookId]
  *        schema:
  *          type: string
  *          example: 파이썬
