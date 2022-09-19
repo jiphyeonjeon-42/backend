@@ -225,8 +225,11 @@ export const search = async (
     case 'callSign':
       filterQuery = `HAVING callSign LIKE '%${query}%'`;
       break;
+    case 'bookId':
+      filterQuery = `HAVING bookId LIKE ${query}`;
+      break;
     default:
-      filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
+      filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}% OR bookId LIKE ${query}'`;
   }
   const orderQuery = sort === 'new' ? 'DESC' : 'ASC';
   const items = await executeQuery(
