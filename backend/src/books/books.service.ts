@@ -524,20 +524,53 @@ export const getInfo = async (id: string) => {
   return bookSpec;
 };
 
-export const createLike = async (bookInfoId: number) => {
-  const message = "Like(" + bookInfoId.toString() + ")를 생성합니다."
+export const createLike = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 생성합니다."
   console.log(message)
+
+  // bookInfoId가 유효한지 확인한다.
+  // "SELECT  * FROM book_Info WHERE id = [bookInfoId]"
+
+  // 사용자가 해당 책에 좋아요를 이미 눌렀는지?
+  // SELECT * FROM LIKES WHERE userId = [userId]
+
+  // 좋아요 튜플 생성
+
   return ({ code: 200, message });
 };
 
-export const deleteLike = async (bookInfoId: number) => {
-  const message = "Like(" + bookInfoId.toString() + ")를 삭제합니다."
+export const deleteLike = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 삭제합니다."
   console.log(message)
+
+  // bookInfoId가 유효한지 확인한다.
+
+  // 좋아요 튜플을 삭제할 SQL문을 실행한다.
+  /*
+    if (삭제한 튜플이 존재함)
+      정상종료
+    else
+      return ({ errorCode : 603});
+  */
+
   return ({ code: 200, message });
 };
 
-export const getLikeInfo = async (bookInfoId: number) => {
-  const message = "Like(" + bookInfoId.toString() + ")를 가져옵니다."
+export const getLikeInfo = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 가져옵니다."
   console.log(message)
-  return ({ code: 200, message });
+
+  // bookInfoId가 유효한지 확인한다.
+
+  // "SELECT * FROM LIKES WHERE bookInfoId=[bookInfoId]"
+
+  /*
+  for(좋아요튜플배열)
+  {
+    if (i번째 좋아요 튜플의 작성자 == 로그인한 사용자)
+      isLiked = true;
+  }
+  likeNum = 좋아요튜플배열의 길이
+  */
+  return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
 };
