@@ -265,7 +265,7 @@ export const sortInfo = async (
   let lendingCntCondition = '';
   switch (sort) {
     case 'popular':
-      lendingCntCondition = 'WHERE lending.createdAt >= date_sub(now(), interval 42 day)';
+      lendingCntCondition = 'and lending.createdAt >= date_sub(now(), interval 42 day)';
       break;
     default:
       lendingCntCondition = '';
