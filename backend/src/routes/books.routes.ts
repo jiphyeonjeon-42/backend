@@ -723,35 +723,38 @@ router
    *        schema:
    *          type: integer
    *      responses:
-   *        '401':
-   *          description: Failed By Empty Token
+   *        '실패 케이스 1':
+   *          description: bookInfoId가 유효하지 않음
    *          content:
    *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *            application/xml:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *        '404':
-   *          description: Failed By Wrong BookId
+   *                type: json
+   *                example : { errorCode: 601}
+   *        '실패 케이스 2':
+   *          description: 중복된 like데이터가 이미 존재함.
    *          content:
    *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *            application/xml:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
+   *                type: json
+   *                example : { errorCode: 602}
    *        '200':
    *          description: Success
    *          content:
    *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Like'
-   *            application/xml:
-   *              schema:
-   *                $ref: '#/components/schemas/Like'
+   *                type: object
+   *                description: 성공했을 때 생성된 like 데이터를 반환합니다.
+   *                properties:
+   *                  userId:
+   *                   type: integer
+   *                   description: 좋아요를 누른 유저의 id
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                example : { userId: 123, bookInfoId: 456 }
    */
    .post('/info/:bookInfoId/like', createLike);
+   //.post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
 
 router
 /**
@@ -770,35 +773,40 @@ router
    *        schema:
    *          type: integer
    *      responses:
-   *        '401':
-   *          description: Failed By Empty Token
-   *          content:
-   *            application/json:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *            application/xml:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *        '404':
-   *          description: Failed By Wrong BookId
-   *          content:
-   *            application/json:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
-   *            application/xml:
-   *              schema:
-   *                $ref: '#/components/schemas/Error'
    *        '200':
    *          description: Success
    *          content:
    *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Like'
-   *            application/xml:
+   *                type: object
+   *                example : { "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 }
+   *                properties:
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                  isLiked:
+   *                   type: bool
+   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
+   *                  likeNum:
+   *                   type: integer
+   *                   description: 이 책에 눌린 좋아요의 수
+   *        'errorcase-1':
+   *          description: bookInfoId가 유효하지 않음
+   *          content:
+   *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Like'
+   *                type: json
+   *                example : { errorCode: 601}
+   *        'errorcase-2':
+   *          description: 존재하지 않는 좋아요데이터를 삭제하려 함.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 603}
    */
    .delete('/info/:bookInfoId/like', deleteLike);
+//   .delete('/info/:bookInfoId/like', authValidate(roleSet.service), deleteLike);
 
 router
 /**
@@ -823,13 +831,26 @@ router
    *          content:
    *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Like'
-   *            application/xml:
+   *                type: json
+   *                description: 책에 대한 좋아요 정보를 가져옵니다.
+   *                example : { "bookInfoId": 123, "isLiked" : true, "likeNum" : 15 }
+   *                properties:
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                  isLiked:
+   *                   type: bool
+   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
+   *                  likeNum:
+   *                   type: integer
+   *                   description: 이 책에 눌린 좋아요의 수
+   *        'errorcase-1':
+   *          description: bookInfoId가 유효하지 않음
+   *          content:
+   *            application/json:
    *              schema:
-   *                $ref: '#/components/schemas/Like'
-   * #       '200':
-   * #         description: Success But Empty Token
-   *        '404':
-   *          description: Failed By Wrong BookId
+   *                type: json
+   *                example : { errorCode: 601}
    */
    .get('/info/:bookInfoId/like', getLikeInfo);
+   //.get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
