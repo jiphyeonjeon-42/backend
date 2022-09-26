@@ -165,7 +165,7 @@ router
    * @openapi
    * /api/books/info:
    *    get:
-   *      description: 책 정보를 기준에 따라 정렬한다.
+   *      description: 책 정보를 기준에 따라 정렬한다. 정렬기준이 popular일 경우 당일으로부터 42일간 인기순으로 한다.
    *      tags:
    *      - books
    *      parameters:
