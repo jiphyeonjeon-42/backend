@@ -262,6 +262,14 @@ export const sortInfo = async (
     default:
       ordering = 'ORDER BY book_info.createdAt DESC';
   }
+  let lendingCntCondition = '';
+  switch (sort) {
+    case 'popular':
+      lendingCntCondition = 'WHERE lending.createdAt >= date_sub(now(), interval 42 day)';
+      break;
+    default:
+      lendingCntCondition = '';
+  }
 
   const bookList = (await executeQuery(
     `
@@ -283,6 +291,7 @@ export const sortInfo = async (
       COUNT(lending.id) as lendingCnt
     FROM book_info LEFT JOIN lending
     ON book_info.id = (SELECT book.infoId FROM book WHERE lending.bookId = book.id LIMIT 1)
+    ${lendingCntCondition}
     GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
