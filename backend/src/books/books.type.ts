@@ -21,3 +21,18 @@ export interface CreateBookInfo {
   pubdate?: string | Date;
   donator: string;
 }
+
+export interface ModifyBookInfo {
+  id: number;
+  title: string;
+  author: string;
+  publisher: string;
+  isbn?: string;
+  image?: string;
+  category?: string;
+  publishedAt?: Date;
+  callSign: string;
+  donator?: string;
+  dueDate: Date;
+  pubdate?: string | Date;
+}
