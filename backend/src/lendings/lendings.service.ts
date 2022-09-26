@@ -225,6 +225,9 @@ export const search = async (
     case 'callSign':
       filterQuery = `HAVING callSign LIKE '%${query}%'`;
       break;
+    case 'bookId':
+      filterQuery = `and lending.bookId = ${query}`;
+      break;
     default:
       filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
   }
@@ -243,7 +246,7 @@ export const search = async (
       lending.createdAt AS createdAt,
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
-    JOIN user ON  user.id = lending.userId
+    JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
     WHERE lending.returnedAt is NULL

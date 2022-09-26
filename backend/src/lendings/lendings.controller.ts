@@ -38,8 +38,7 @@ export const create: RequestHandler = async (
 };
 
 const argumentCheck = (sort:string, type:string) => {
-  if (sort !== 'new' && sort !== 'old') { return 0; }
-  if (type !== 'user' && type !== 'title' && type !== 'callSign' && type !== 'all') { return 0; }
+  if (type !== 'user' && type !== 'title' && type !== 'callSign' && type !== 'all' && type !== 'bookId') { return 0; }
   return 1;
 };
 
