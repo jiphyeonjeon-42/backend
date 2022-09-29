@@ -316,3 +316,40 @@ export const getLikeInfo = async (
   }
   return 0;
 };
+
+
+export const updateBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const bookInfoId = parseInt(req.params.bookInfoId, 10);
+  // TODO: 에러코드 상세화
+  if (bookInfoId <= 0 || bookInfoId === NaN)
+    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
+  // TODO: data 제대로 되게 처리
+  const {
+    title, author, categoryId, pubdate, 
+  } = req.body;
+  if (!(title && author && categoryId && pubdate)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+  if (pubdateFormatValidator(pubdate) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
+  }
+  try {
+    return res
+      .status(status.OK)
+      .send(await BooksService.updateBook(req.body, bookInfoId));
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error);
+    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};
