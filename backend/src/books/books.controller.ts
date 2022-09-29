@@ -318,7 +318,7 @@ export const getLikeInfo = async (
 };
 
 
-export const updateBook = async (
+export const updateBookInfo = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -340,7 +340,7 @@ export const updateBook = async (
   try {
     return res
       .status(status.OK)
-      .send(await BooksService.updateBook(req.body, bookInfoId));
+      .send(await BooksService.updateBookInfo(req.body, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {

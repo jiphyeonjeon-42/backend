@@ -10,7 +10,7 @@ import {
   createLike,
   deleteLike,
   getLikeInfo,
-  updateBook
+  updateBookInfo
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -937,4 +937,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBook);
+.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBookInfo);

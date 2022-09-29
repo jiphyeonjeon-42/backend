@@ -584,7 +584,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
 };
 
-export const updateBook = async (book: types.UpdateBookInfo, bookInfoId: number) => {
+export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: number) => {
   let title = book?.title?.trim();
   const result = await executeQuery("UPDATE book_info set title = ? where id = ?", [title, bookInfoId]);
   return ({result});
