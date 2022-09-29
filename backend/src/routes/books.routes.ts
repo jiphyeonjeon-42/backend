@@ -9,7 +9,8 @@ import {
   getBookById,
   createLike,
   deleteLike,
-  getLikeInfo
+  getLikeInfo,
+  updateBook
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -851,3 +852,89 @@ router
    *                example : { errorCode: 601}
    */
    .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
+
+
+router
+/**
+ * @openapi
+ * /api/books/update/{bookInfoId}:
+ *    patch:
+ *      description: 책 정보를 수정한다. book_info table만 수정.
+ *      tags:
+ *      - books
+ *      parameters:
+ *      - name: bookInfoId
+ *        in: path
+ *        description: book_info Id
+ *        schema:
+ *          type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                title:
+ *                  type: string
+ *                  nullable: false
+ *                  example: "작별인사 (김영하 장편소설)"
+ *                isbn:
+ *                  type: string
+ *                  nullable: true
+ *                  example: 9788065960874
+ *                author:
+ *                  type: string
+ *                  nullable: false
+ *                  example: "김영하"
+ *                publisher:
+ *                  type: string
+ *                  nullable: false
+ *                  example: "복복서가"
+ *                image:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+ *                categoryId:
+ *                  type: string
+ *                  nullable: false
+ *                  example: 1
+ *                pubdate:
+ *                  type: string
+ *                  nullable: false
+ *                  example: "20220502"
+ *                donator:
+ *                  type: string
+ *                  nullable: true
+ *                  example: seongyle
+ *      responses:
+ *         '200':
+ *            description: 책 정보 정상적으로 insert됨.
+ *            content:
+ *             application/json:
+ *               schema:
+ *                 type: json
+ *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
+ *                 example: { callsign: 'c11.22.v1.c2' }
+ *         '실패 케이스 1':
+ *              description: 예상치 못한 에러로 책 정보 insert에 실패함.
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 308 }
+ *         '실패 케이스 2':
+ *              description: 보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 309 }
+ *         '실패 케이스 3':
+ *              description: 입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 311 }
+ */
+.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBook);
