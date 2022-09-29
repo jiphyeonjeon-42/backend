@@ -78,13 +78,18 @@ export const searchBookInfo = async (
   res: Response,
   next: NextFunction,
 ) => {
+  // URI에 있는 파라미터/쿼리 변수에 저장
   const query = String(req.query.query) !== 'undefined' ? String(req.query.query) : '';
   const {
     page, limit, sort, category,
   } = req.query;
+
+  // 유효한 인자인지 파악
   if (Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
+
+  // 서비스단 실행.
   try {
     const searchBookInfoResult = await BooksService.searchInfo(
       query,
@@ -227,6 +232,7 @@ export const createLike = async (
 ) => {
   // parameters
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
+  const { id } = req.user as any;
 
   if (!bookInfoId) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
@@ -234,7 +240,7 @@ export const createLike = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.CREATED).send(await BooksService.createLike(bookInfoId));
+    return res.status(status.CREATED).send(await BooksService.createLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -253,6 +259,7 @@ export const deleteLike = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
@@ -262,7 +269,7 @@ export const deleteLike = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).send(await BooksService.deleteLike(bookInfoId));
+    return res.status(status.OK).send(await BooksService.deleteLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -282,7 +289,7 @@ export const getLikeInfo = async (
   next: NextFunction,
 ) => {
   // parameters
-  // 왜 string으로 파싱후 int로...?
+  const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
@@ -296,7 +303,7 @@ export const getLikeInfo = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).json(await BooksService.getLikeInfo(bookInfoId));
+    return res.status(status.OK).json(await BooksService.getLikeInfo(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
