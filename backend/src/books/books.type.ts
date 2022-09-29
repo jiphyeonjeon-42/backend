@@ -22,17 +22,13 @@ export interface CreateBookInfo {
   donator: string;
 }
 
-export interface ModifyBookInfo {
+export interface UpdateBookInfo {
   id: number;
   title: string;
   author: string;
   publisher: string;
   isbn?: string;
   image?: string;
-  category?: string;
-  publishedAt?: Date;
-  callSign: string;
-  donator?: string;
-  dueDate: Date;
+  categoryId?: string;
   pubdate?: string | Date;
 }
