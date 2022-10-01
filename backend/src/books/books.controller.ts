@@ -4,6 +4,7 @@ import {
 import * as status from 'http-status';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
+import { isNullish } from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
@@ -324,23 +325,28 @@ export const updateBookInfo = async (
   next: NextFunction,
 ) => {
   const bookInfoId = parseInt(req.params.bookInfoId, 10);
-  // TODO: 에러코드 상세화
   if (bookInfoId <= 0 || bookInfoId === NaN)
     return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
   // TODO: data 제대로 되게 처리
-  const {
-    title, author, categoryId, pubdate, 
+  let {
+    title,
+    author,
+    publisher,
+    isbn,
+    image,
+    categoryId,
+    pubdate
   } = req.body;
-  if (!(title && author && categoryId && pubdate)) {
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  if (!(title || author || publisher || isbn || image || categoryId || pubdate)) {
+    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
   }
   if (pubdateFormatValidator(pubdate) === false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
+  
   try {
-    return res
-      .status(status.OK)
-      .send(await BooksService.updateBookInfo(req.body, bookInfoId));
+    await BooksService.updateBookInfo(req.body, bookInfoId);
+    return res.status(status.NO_CONTENT).send()
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -349,7 +355,7 @@ export const updateBookInfo = async (
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
     logger.error(error);
-    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+    next(new ErrorResponse(errorCode.FAIL_PATCH_BOOK_BY_UNEXPECTED, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
 };
