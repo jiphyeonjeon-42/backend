@@ -23,10 +23,9 @@ export interface CreateBookInfo {
 }
 
 export interface UpdateBookInfo {
-  id: number;
-  title: string;
-  author: string;
-  publisher: string;
+  title?: string;
+  author?: string;
+  publisher?: string;
   isbn?: string;
   image?: string;
   categoryId?: string;
