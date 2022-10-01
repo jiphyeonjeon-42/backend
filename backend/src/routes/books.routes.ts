@@ -866,6 +866,7 @@ router
  *      - name: bookInfoId
  *        in: path
  *        description: book_info Id
+ *        required: true
  *        schema:
  *          type: integer
  *      requestBody:
@@ -876,61 +877,56 @@ router
  *              properties:
  *                title:
  *                  type: string
- *                  nullable: false
+ *                  nullable: true
  *                  example: "작별인사 (김영하 장편소설)"
+ *                author:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "김영하"
+ *                publisher:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "복복서가"
  *                isbn:
  *                  type: string
  *                  nullable: true
  *                  example: 9788065960874
- *                author:
- *                  type: string
- *                  nullable: false
- *                  example: "김영하"
- *                publisher:
- *                  type: string
- *                  nullable: false
- *                  example: "복복서가"
  *                image:
  *                  type: string
  *                  nullable: true
  *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
  *                categoryId:
  *                  type: string
- *                  nullable: false
+ *                  nullable: true
  *                  example: 1
  *                pubdate:
  *                  type: string
- *                  nullable: false
- *                  example: "20220502"
- *                donator:
- *                  type: string
  *                  nullable: true
- *                  example: seongyle
+ *                  example: "20200505"
  *      responses:
- *         '200':
- *            description: 책 정보 정상적으로 insert됨.
+ *         '204':
+ *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
  *            content:
- *             application/json:
+ *             application:
  *               schema:
- *                 type: json
- *                 description: 성공했을 때 삽인된 callsign 값을 반환합니다.
- *                 example: { callsign: 'c11.22.v1.c2' }
+ *                 type: 
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
  *         '실패 케이스 1':
- *              description: 예상치 못한 에러로 책 정보 insert에 실패함.
+ *              description: 예상치 못한 에러로 책 정보 patch에 실패함.
  *              content:
  *                application/json:
  *                  schema:
  *                    type: json
- *                    example : { errorCode: 308 }
+ *                    example : { errorCode: 312 }
  *         '실패 케이스 2':
- *              description: 보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음
+ *              description: 수정할 DATA가 적어도 한 개는 필요함. 수정할 DATA가 없음"
  *              content:
  *                application/json:
  *                  schema:
  *                    type: json
- *                    example : { errorCode: 309 }
+ *                    example : { errorCode: 313 }
  *         '실패 케이스 3':
- *              description: 입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+ *              description: 입력한 PUBDATE가 알맞은 형식이 아님. 기대하는 형식 "20220807"
  *              content:
  *                application/json:
  *                  schema:
