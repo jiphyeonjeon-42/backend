@@ -583,8 +583,29 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   */
   return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
 };
-// TODO: patch 기능 추가 예정
+
 export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: number) => {
-  console.log("🚀 ~ file: books.service.ts ~ line 588 ~ updateBookInfo ~ book", book)
-  await executeQuery("UPDATE book_info set title = ? where id = ?", [book.title, bookInfoId]);
+  let updateString = '';
+  const queryParam = [];
+  var bookInfoObject: any = {
+  } = book
+
+  for (let key in bookInfoObject) {
+    let value = bookInfoObject[key];
+    if (key !== '') {
+      updateString += `${key } = ?,`
+      queryParam.push(value)
+    } else if (key === null){
+      updateString += `${key} = NULL,`
+    } else {
+      // if (key === undefined) 
+    } 
+  }
+  updateString = updateString.slice(0,-1)
+  await executeQuery(`
+  UPDATE book_info 
+  SET 
+  ${updateString} 
+  WHERE id = ${bookInfoId}
+  `, queryParam);
 };
