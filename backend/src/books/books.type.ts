@@ -29,5 +29,5 @@ export interface UpdateBookInfo {
   isbn?: string;
   image?: string;
   categoryId?: string;
-  pubdate?: string | Date;
+  publishedAt?: string | Date;
 }
