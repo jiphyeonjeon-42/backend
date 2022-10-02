@@ -327,7 +327,6 @@ export const updateBookInfo = async (
   const bookInfoId = parseInt(req.params.bookInfoId, 10);
   if (bookInfoId <= 0 || bookInfoId === NaN)
     return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
-  // TODO: data 제대로 되게 처리
   let {
     title,
     author,
@@ -340,10 +339,17 @@ export const updateBookInfo = async (
   if (!(title || author || publisher || isbn || image || categoryId || pubdate)) {
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
   }
-  if (pubdateFormatValidator(pubdate) === false) {
+  if (!isNullish(title)) { title.trim(); }
+  if (!isNullish(author)) { author.trim(); }
+  if (!isNullish(publisher)) { publisher.trim(); }
+  if (!isNullish(isbn)) { isbn.trim(); }
+  if (!isNullish(image)) { image.trim(); }
+  if (!isNullish(categoryId)) { categoryId.trim(); }
+  if (!isNullish(pubdate) && pubdateFormatValidator(pubdate)) {
+    pubdate.trim();
+  } else if (!pubdateFormatValidator(pubdate)) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
-  
   try {
     await BooksService.updateBookInfo(req.body, bookInfoId);
     return res.status(status.NO_CONTENT).send()
