@@ -334,9 +334,9 @@ export const updateBookInfo = async (
     isbn,
     image,
     categoryId,
-    pubdate
+    publishedAt
   } = req.body;
-  if (!(title || author || publisher || isbn || image || categoryId || pubdate)) {
+  if (!(title || author || publisher || isbn || image || categoryId || publishedAt)) {
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
   }
   if (isNullish(title) == false) { req.body.title = title.trim(); }
@@ -345,9 +345,9 @@ export const updateBookInfo = async (
   if (isNullish(isbn) == false) { req.body.isbn = isbn.trim(); }
   if (isNullish(image) == false) { req.body.image = image.trim(); }
   if (isNullish(categoryId) == false) { req.body.categoryId = categoryId.trim(); }
-  if (isNullish(pubdate) == false && pubdateFormatValidator(pubdate)) {
-    req.body.pubdate = pubdate.trim();
-  } else if (pubdateFormatValidator(pubdate) == false) {
+  if (isNullish(publishedAt) == false && pubdateFormatValidator(publishedAt)) {
+    req.body.publishedAt = publishedAt.trim();
+  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   try {
