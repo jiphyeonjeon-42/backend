@@ -899,7 +899,7 @@ router
  *                  type: string
  *                  nullable: true
  *                  example: 1
- *                pubdate:
+ *                publishedAt:
  *                  type: string
  *                  nullable: true
  *                  example: "20200505"
@@ -926,7 +926,7 @@ router
  *                    type: json
  *                    example : { errorCode: 313 }
  *         '실패 케이스 3':
- *              description: 입력한 PUBDATE가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+ *              description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
  *              content:
  *                application/json:
  *                  schema:
