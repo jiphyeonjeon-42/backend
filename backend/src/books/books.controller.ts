@@ -339,15 +339,15 @@ export const updateBookInfo = async (
   if (!(title || author || publisher || isbn || image || categoryId || pubdate)) {
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
   }
-  if (!isNullish(title)) { title.trim(); }
-  if (!isNullish(author)) { author.trim(); }
-  if (!isNullish(publisher)) { publisher.trim(); }
-  if (!isNullish(isbn)) { isbn.trim(); }
-  if (!isNullish(image)) { image.trim(); }
-  if (!isNullish(categoryId)) { categoryId.trim(); }
-  if (!isNullish(pubdate) && pubdateFormatValidator(pubdate)) {
-    pubdate.trim();
-  } else if (!pubdateFormatValidator(pubdate)) {
+  if (isNullish(title) == false) { req.body.title = title.trim(); }
+  if (isNullish(author) == false) { req.body.author = author.trim(); }
+  if (isNullish(publisher) == false) { req.body.publisher = publisher.trim(); }
+  if (isNullish(isbn) == false) { req.body.isbn = isbn.trim(); }
+  if (isNullish(image) == false) { req.body.image = image.trim(); }
+  if (isNullish(categoryId) == false) { req.body.categoryId = categoryId.trim(); }
+  if (isNullish(pubdate) == false && pubdateFormatValidator(pubdate)) {
+    req.body.pubdate = pubdate.trim();
+  } else if (pubdateFormatValidator(pubdate) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   try {
