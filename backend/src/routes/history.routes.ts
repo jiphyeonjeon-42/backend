@@ -51,28 +51,37 @@ router
    *           type: integer
    *       responses:
    *         '200':
-   *            content:
-   *              application/json:
-   *                schema:
-   *                  type: object
-   *                  properties:
-   *                    bookInfoId:
-   *                      description: book_info 테이블의 id값
-   *                      type: integer
-   *                      nullable: false
-   *                      example: 42
-   *                    renter:
-   *                      description: 대출자
-   *                      type: string
-   *                      nullable: false
-   *                      example: yena
-   *                    returnAt:
-   *                      type: date
-   *                      nullable: true
-   *                      example: "2022-09-25"
-   *                    status:
-   *                      type: integer
-   *                      nullable: false
-   *                      example: 0
+   *          description: 대출 기록을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    type: array
+   *                    example: [{"id": 135,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","createdAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z"}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","createdAt": "2022-10-28T10:24:57.708Z","dueDate": "2022-11-11T10:24:57.708Z"}]
+   *                  meta:
+   *                    type: object
+   *                    properties:
+   *                      totalItems:
+   *                          example: 25
+   *                      itemCount:
+   *                            example: 5
+   *                      itemsPerPage:
+   *                            example: 5
+   *                      totalPages:
+   *                            example: 5
+   *                      currentPage:
+   *                            example: 1
+   *         '401':
+   *           description: 사서권한 없은 유저가 전체 대출/반납 기록을 조회하려고 함
+   *           content:
+   *             application/json:
+   *               schema:
+   *                 type: object
+   *                 properties:
+   *                   errorCode:
+   *                     type: integer
+   *                     example: 700
    */
   .get('/', authValidate(roleSet.all), history);
