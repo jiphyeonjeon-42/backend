@@ -44,6 +44,7 @@ export const history = async (
       book.callSign,
       book_info.title,
       lending.createdAt AS createdAt,
+      lending.returnedAt AS returnedAt,
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
     JOIN user ON user.id = lending.userId
