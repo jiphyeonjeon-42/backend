@@ -19,6 +19,7 @@ export const history = async (
   // eslint-disable-next-line max-len
   const limit = parseInt(req.query.limit as string, 10) ? parseInt(req.query.limit as string, 10) : 5;
   const type = String(req.query.type) !== 'undefined' ? String(req.query.type) : 'all';
+  const { id: userId, role: userRole } = req.user as any;
 
   if (Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
@@ -27,12 +28,11 @@ export const history = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   // 사서 권한 확인
-  if (who === 'all') {
-    
+  if (who === 'all' && userRole !== 2) {
+    return next(new ErrorResponse(errorCode.UNAUTHORIZED, status.UNAUTHORIZED));
   }
-
   try {
-    const result = await historyService.history(query, who, type, page, limit);
+    const result = await historyService.history(query, who, userId, type, page, limit);
     return res.status(status.OK).json(result);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -44,4 +44,5 @@ export const history = async (
     logger.error(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
+  return 0;
 };
