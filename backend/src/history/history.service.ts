@@ -5,6 +5,7 @@ import { Meta } from '../users/users.type';
 export const history = async (
   query: string,
   who: string,
+  userId: number,
   type: string,
   page: number,
   limit: number,
@@ -25,6 +26,10 @@ export const history = async (
       break;
     default:
       filterQuery = `and (user.nickname LIKE '%${query}%' OR book_info.title LIKE '%${query}%' OR book.callSign LIKE '%${query}%')`;
+  }
+
+  if (who === 'my') {
+    filterQuery += `and lending.userId = ${userId}`;
   }
 
   const items = await executeQuery(
