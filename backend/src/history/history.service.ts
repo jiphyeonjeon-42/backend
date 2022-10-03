@@ -71,6 +71,7 @@ export const history = async (
     JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
+    ${filterQuery}
   `);
   const meta: Meta = {
     totalItems: totalItems.length,
