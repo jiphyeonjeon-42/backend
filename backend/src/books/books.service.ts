@@ -597,15 +597,13 @@ export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: num
       queryParam.push(value)
     } else if (key === null){
       updateString += `${key} = NULL,`
-    } else {
-      // if (key === undefined) 
-    } 
+    }
   }
   updateString = updateString.slice(0,-1)
   await executeQuery(`
-  UPDATE book_info 
-  SET 
-  ${updateString} 
-  WHERE id = ${bookInfoId}
-  `, queryParam);
+    UPDATE book_info 
+    SET 
+    ${updateString} 
+    WHERE id = ${bookInfoId}
+    `, queryParam);
 };
