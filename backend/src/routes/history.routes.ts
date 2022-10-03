@@ -30,6 +30,13 @@ router
    *         required: false
    *         schema:
    *           type: string
+   *       - name: type
+   *         in: query
+   *         description: 어떤 값들로 검색하고 싶은지 결정하는 필터
+   *         required: false
+   *         schema:
+   *           type: string
+   *           enum: [user, title, callsign, bookId]
    *       - name: page
    *         in: query
    *         description: 페이지 수
