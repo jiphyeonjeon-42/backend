@@ -20,7 +20,7 @@ router
    *       - name: who
    *         in: query
    *         description: 대출/반납의 기록 범위
-   *         required: false
+   *         required: true
    *         schema:
    *           type: string
    *           enum: [all, my]
