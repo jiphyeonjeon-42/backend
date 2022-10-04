@@ -57,4 +57,4 @@ export const NO_MATCHING_USER = '507';
 export const RESERVATION_NOT_EXIST = '508';
 export const NOT_RESERVED = '509';
 
-export const UNAUTHORIZED = '600';
+export const UNAUTHORIZED = '700';
