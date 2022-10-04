@@ -9,7 +9,8 @@ import {
   getBookById,
   createLike,
   deleteLike,
-  getLikeInfo
+  getLikeInfo,
+  updateBookInfo
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -851,3 +852,85 @@ router
    *                example : { errorCode: 601}
    */
    .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
+
+
+router
+/**
+ * @openapi
+ * /api/books/update/{bookInfoId}:
+ *    patch:
+ *      description: 책 정보를 수정한다. book_info table만 수정.
+ *      tags:
+ *      - books
+ *      parameters:
+ *      - name: bookInfoId
+ *        in: path
+ *        description: book_info Id
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                title:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "작별인사 (김영하 장편소설)"
+ *                author:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "김영하"
+ *                publisher:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "복복서가"
+ *                isbn:
+ *                  type: string
+ *                  nullable: true
+ *                  example: 9788065960874
+ *                image:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+ *                categoryId:
+ *                  type: string
+ *                  nullable: true
+ *                  example: 1
+ *                publishedAt:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "20200505"
+ *      responses:
+ *         '204':
+ *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
+ *            content:
+ *             application:
+ *               schema:
+ *                 type: 
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
+ *         '실패 케이스 1':
+ *              description: 예상치 못한 에러로 책 정보 patch에 실패함.
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 312 }
+ *         '실패 케이스 2':
+ *              description: 수정할 DATA가 적어도 한 개는 필요함. 수정할 DATA가 없음"
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 313 }
+ *         '실패 케이스 3':
+ *              description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 311 }
+ */
+.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBookInfo);

@@ -4,6 +4,7 @@ import {
 import * as status from 'http-status';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
+import { isNullish } from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
@@ -313,6 +314,54 @@ export const getLikeInfo = async (
     }
     logger.error(error.message);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+};
+
+
+export const updateBookInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const bookInfoId = parseInt(req.params.bookInfoId, 10);
+  if (bookInfoId <= 0 || bookInfoId === NaN)
+    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
+  let {
+    title,
+    author,
+    publisher,
+    isbn,
+    image,
+    categoryId,
+    publishedAt
+  } = req.body;
+  if (!(title || author || publisher || isbn || image || categoryId || publishedAt)) {
+    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
+  }
+  if (isNullish(title) == false) { req.body.title = title.trim(); }
+  if (isNullish(author) == false) { req.body.author = author.trim(); }
+  if (isNullish(publisher) == false) { req.body.publisher = publisher.trim(); }
+  if (isNullish(isbn) == false) { req.body.isbn = isbn.trim(); }
+  if (isNullish(image) == false) { req.body.image = image.trim(); }
+  if (isNullish(categoryId) == false) { req.body.categoryId = categoryId.trim(); }
+  if (isNullish(publishedAt) == false && pubdateFormatValidator(publishedAt)) {
+    req.body.publishedAt = publishedAt.trim();
+  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
+    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
+  }
+  try {
+    await BooksService.updateBookInfo(req.body, bookInfoId);
+    return res.status(status.NO_CONTENT).send()
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    } else if (error.message === 'DB error') {
+      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    }
+    logger.error(error);
+    next(new ErrorResponse(errorCode.FAIL_PATCH_BOOK_BY_UNEXPECTED, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
 };

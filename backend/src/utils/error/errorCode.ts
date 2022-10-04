@@ -33,6 +33,8 @@ export const FAIL_CREATE_BOOK_BY_UNEXPECTED = '308';
 export const INVALID_CATEGORY_ID = '309';
 export const ISBN_SEARCH_FAILED_IN_NAVER = '310';
 export const INVALID_PUBDATE_FORNAT = '311';
+export const FAIL_PATCH_BOOK_BY_UNEXPECTED = '312';
+export const NO_BOOK_INFO_DATA = '313';
 
 export const NO_USER_ID = '401';
 export const NO_PERMISSION = '402';
