@@ -150,7 +150,7 @@ const getCategoryAlpabet = (categoryId : number) => {
     case 15:
       return 'k';
     case 16:
-      return 'c';
+      return 'g';
     case 17:
       return 'B';
     case 18:
@@ -262,6 +262,14 @@ export const sortInfo = async (
     default:
       ordering = 'ORDER BY book_info.createdAt DESC';
   }
+  let lendingCntCondition = '';
+  switch (sort) {
+    case 'popular':
+      lendingCntCondition = 'and lending.createdAt >= date_sub(now(), interval 42 day)';
+      break;
+    default:
+      lendingCntCondition = '';
+  }
 
   const bookList = (await executeQuery(
     `
@@ -283,6 +291,7 @@ export const sortInfo = async (
       COUNT(lending.id) as lendingCnt
     FROM book_info LEFT JOIN lending
     ON book_info.id = (SELECT book.infoId FROM book WHERE lending.bookId = book.id LIMIT 1)
+    ${lendingCntCondition}
     GROUP BY book_info.id
     ${ordering}
     LIMIT ?;
@@ -522,4 +531,79 @@ export const getInfo = async (id: string) => {
   );
   bookSpec.books = books;
   return bookSpec;
+};
+
+export const createLike = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 생성합니다."
+  console.log(message)
+
+  // bookInfoId가 유효한지 확인한다.
+  // "SELECT  * FROM book_Info WHERE id = [bookInfoId]"
+
+  // 사용자가 해당 책에 좋아요를 이미 눌렀는지?
+  // SELECT * FROM LIKES WHERE userId = [userId]
+
+  // 좋아요 튜플 생성
+
+  return ({ code: 200, message });
+};
+
+export const deleteLike = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 삭제합니다."
+  console.log(message)
+
+  // bookInfoId가 유효한지 확인한다.
+
+  // 좋아요 튜플을 삭제할 SQL문을 실행한다.
+  /*
+    if (삭제한 튜플이 존재함)
+      정상종료
+    else
+      return ({ errorCode : 603});
+  */
+
+  return ({ code: 200, message });
+};
+
+export const getLikeInfo = async (userId: number, bookInfoId: number) => {
+  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 가져옵니다."
+  console.log(message)
+
+  // bookInfoId가 유효한지 확인한다.
+
+  // "SELECT * FROM LIKES WHERE bookInfoId=[bookInfoId]"
+
+  /*
+  for(좋아요튜플배열)
+  {
+    if (i번째 좋아요 튜플의 작성자 == 로그인한 사용자)
+      isLiked = true;
+  }
+  likeNum = 좋아요튜플배열의 길이
+  */
+  return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
+};
+
+export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: number) => {
+  let updateString = '';
+  const queryParam = [];
+  var bookInfoObject: any = {
+  } = book
+
+  for (let key in bookInfoObject) {
+    let value = bookInfoObject[key];
+    if (key !== '') {
+      updateString += `${key } = ?,`
+      queryParam.push(value)
+    } else if (key === null){
+      updateString += `${key} = NULL,`
+    }
+  }
+  updateString = updateString.slice(0,-1)
+  await executeQuery(`
+    UPDATE book_info 
+    SET 
+    ${updateString} 
+    WHERE id = ${bookInfoId}
+    `, queryParam);
 };

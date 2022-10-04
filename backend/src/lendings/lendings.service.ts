@@ -217,16 +217,19 @@ export const search = async (
   let filterQuery;
   switch (type) {
     case 'user':
-      filterQuery = `HAVING login LIKE '%${query}%'`;
+      filterQuery = `and user.nickname LIKE '%${query}%'`;
       break;
     case 'title':
-      filterQuery = `HAVING title LIKE '%${query}%'`;
+      filterQuery = `and book_info.title LIKE '%${query}%'`;
       break;
     case 'callSign':
-      filterQuery = `HAVING callSign LIKE '%${query}%'`;
+      filterQuery = `and book.callSign LIKE '%${query}%'`;
+      break;
+    case 'bookId':
+      filterQuery = `and lending.bookId = '${query}'`;
       break;
     default:
-      filterQuery = `HAVING login LIKE '%${query}%' OR title LIKE '%${query}%' OR callSign LIKE '%${query}%'`;
+      filterQuery = `and (user.nickname LIKE '%${query}%' OR book_info.title LIKE '%${query}%' OR book.callSign LIKE '%${query}%')`;
   }
   const orderQuery = sort === 'new' ? 'DESC' : 'ASC';
   const items = await executeQuery(
@@ -243,7 +246,7 @@ export const search = async (
       lending.createdAt AS createdAt,
       DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
-    JOIN user ON  user.id = lending.userId
+    JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
     WHERE lending.returnedAt is NULL
@@ -256,23 +259,20 @@ export const search = async (
   );
   const totalItems = await executeQuery(`
     SELECT
-      lending.id,
-      (
-        SELECT nickname
-        FROM user
-        WHERE id = userId
-      ) AS login,
-      (
-        SELECT callSign
-        FROM book
-        WHERE id = bookId
-      ) AS callSign,
-      (
-        SELECT title
-        FROM book_info
-        WHERE id = bookId
-      ) AS title
+      lending.id AS id,
+      lendingCondition,
+      user.nickname AS login,
+      CASE WHEN NOW() > user.penaltyEndDate THEN 0
+        ELSE DATEDIFF(user.penaltyEndDate, now())
+      END AS penaltyDays,
+      book.callSign,
+      book_info.title,
+      lending.createdAt AS createdAt,
+      DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
     FROM lending
+    JOIN user ON user.id = lending.userId
+    JOIN book ON book.id = lending.bookId
+    JOIN book_info ON book_info.id = book.infoID
     WHERE lending.returnedAt is NULL
     ${filterQuery}
   `);

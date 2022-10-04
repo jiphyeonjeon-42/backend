@@ -7,6 +7,10 @@ import {
   createBook,
   createBookInfo,
   getBookById,
+  createLike,
+  deleteLike,
+  getLikeInfo,
+  updateBookInfo
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -162,7 +166,7 @@ router
    * @openapi
    * /api/books/info:
    *    get:
-   *      description: 책 정보를 기준에 따라 정렬한다.
+   *      description: 책 정보를 기준에 따라 정렬한다. 정렬기준이 popular일 경우 당일으로부터 42일간 인기순으로 한다.
    *      tags:
    *      - books
    *      parameters:
@@ -702,3 +706,231 @@ router
    *                    example: 1
    */
   .get('/:id', getBookById);
+
+  router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    post:
+   *      tags:
+   *      - like
+   *      summary: Add a new like to the book
+   *      operationId: addLike
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '실패 케이스 1':
+   *          description: bookInfoId가 유효하지 않음
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 601}
+   *        '실패 케이스 2':
+   *          description: 중복된 like데이터가 이미 존재함.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 602}
+   *        '200':
+   *          description: Success
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                description: 성공했을 때 생성된 like 데이터를 반환합니다.
+   *                properties:
+   *                  userId:
+   *                   type: integer
+   *                   description: 좋아요를 누른 유저의 id
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                example : { userId: 123, bookInfoId: 456 }
+   */
+   .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
+
+router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    delete:
+   *      tags:
+   *       - like
+   *      summary: Delete a like
+   *      operationId: deleteLike
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '200':
+   *          description: Success
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                example : { "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 }
+   *                properties:
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                  isLiked:
+   *                   type: bool
+   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
+   *                  likeNum:
+   *                   type: integer
+   *                   description: 이 책에 눌린 좋아요의 수
+   *        'errorcase-1':
+   *          description: bookInfoId가 유효하지 않음
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 601}
+   *        'errorcase-2':
+   *          description: 존재하지 않는 좋아요데이터를 삭제하려 함.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 603}
+   */
+  .delete('/info/:bookInfoId/like', authValidate(roleSet.service), deleteLike);
+
+router
+/**
+   * @openapi
+   * /api/books/info/{bookInfoId}/like:
+   *    get:
+   *      tags:
+   *      - like
+   *      summary: Get like info
+   *      description: Get info about likenum and whether user press like button
+   *      operationId: findLikeInfo
+   *      parameters:
+   *      - name: bookInfoId
+   *        in: path
+   *        description: book_info 테이블의 id
+   *        required: true
+   *        schema:
+   *          type: integer
+   *      responses:
+   *        '200':
+   *          description: successful operation
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                description: 책에 대한 좋아요 정보를 가져옵니다.
+   *                example : { "bookInfoId": 123, "isLiked" : true, "likeNum" : 15 }
+   *                properties:
+   *                  bookInfoId:
+   *                   type: integer
+   *                   description: 좋아요할 bookInfo의 id
+   *                  isLiked:
+   *                   type: bool
+   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
+   *                  likeNum:
+   *                   type: integer
+   *                   description: 이 책에 눌린 좋아요의 수
+   *        'errorcase-1':
+   *          description: bookInfoId가 유효하지 않음
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: json
+   *                example : { errorCode: 601}
+   */
+   .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
+
+
+router
+/**
+ * @openapi
+ * /api/books/update/{bookInfoId}:
+ *    patch:
+ *      description: 책 정보를 수정한다. book_info table만 수정.
+ *      tags:
+ *      - books
+ *      parameters:
+ *      - name: bookInfoId
+ *        in: path
+ *        description: book_info Id
+ *        required: true
+ *        schema:
+ *          type: integer
+ *      requestBody:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                title:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "작별인사 (김영하 장편소설)"
+ *                author:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "김영하"
+ *                publisher:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "복복서가"
+ *                isbn:
+ *                  type: string
+ *                  nullable: true
+ *                  example: 9788065960874
+ *                image:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+ *                categoryId:
+ *                  type: string
+ *                  nullable: true
+ *                  example: 1
+ *                publishedAt:
+ *                  type: string
+ *                  nullable: true
+ *                  example: "20200505"
+ *      responses:
+ *         '204':
+ *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
+ *            content:
+ *             application:
+ *               schema:
+ *                 type: 
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
+ *         '실패 케이스 1':
+ *              description: 예상치 못한 에러로 책 정보 patch에 실패함.
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 312 }
+ *         '실패 케이스 2':
+ *              description: 수정할 DATA가 적어도 한 개는 필요함. 수정할 DATA가 없음"
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 313 }
+ *         '실패 케이스 3':
+ *              description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+ *              content:
+ *                application/json:
+ *                  schema:
+ *                    type: json
+ *                    example : { errorCode: 311 }
+ */
+.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBookInfo);
