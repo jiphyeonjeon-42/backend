@@ -38,6 +38,7 @@ export const history = async (
       lending.id AS id,
       lendingCondition,
       user.nickname AS login,
+      lending.returningCondition,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
         ELSE DATEDIFF(user.penaltyEndDate, now())
       END AS penaltyDays,
@@ -61,6 +62,7 @@ export const history = async (
       lending.id AS id,
       lendingCondition,
       user.nickname AS login,
+      lending.returningCondition,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
         ELSE DATEDIFF(user.penaltyEndDate, now())
       END AS penaltyDays,
