@@ -2,7 +2,7 @@ import { executeQuery } from '../mysql';
 import { Meta } from '../users/users.type';
 
 // eslint-disable-next-line import/prefer-default-export
-export const history = async (
+export const histories = async (
   query: string,
   who: string,
   userId: number,

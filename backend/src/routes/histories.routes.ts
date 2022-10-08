@@ -1,21 +1,21 @@
 import { Router } from 'express';
 import {
-  history,
-} from '../history/history.controller';
+  histories,
+} from '../histories/histories.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
-export const path = '/history';
+export const path = '/histories';
 export const router = Router();
 
 router
   /**
    * @openapi
-   * /api/history:
+   * /api/histories:
    *     get:
    *       description: 현재까지의 대출 기록을 최신순으로 가져온다. 사서라면 모든 사용자의 기록을, 사서가 아니라면 본인의 기록만 볼  수 있다.
    *       tags:
-   *       - history
+   *       - histories
    *       parameters:
    *       - name: who
    *         in: query
@@ -64,6 +64,7 @@ router
    *                    type: object
    *                    properties:
    *                      totalItems:
+   *                          description: 전체 아이템의 수
    *                          example: 25
    *                      itemCount:
    *                            example: 5
@@ -84,4 +85,4 @@ router
    *                     type: integer
    *                     example: 700
    */
-  .get('/', authValidate(roleSet.all), history);
+  .get('/', authValidate(roleSet.all), histories);

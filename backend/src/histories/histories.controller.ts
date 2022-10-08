@@ -2,13 +2,13 @@ import {
   NextFunction, Request, Response,
 } from 'express';
 import * as status from 'http-status';
-import * as historyService from './history.service';
+import * as historiesService from './histories.service';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
 
 // eslint-disable-next-line import/prefer-default-export
-export const history = async (
+export const histories = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -32,7 +32,7 @@ export const history = async (
     return next(new ErrorResponse(errorCode.UNAUTHORIZED, status.UNAUTHORIZED));
   }
   try {
-    const result = await historyService.history(query, who, userId, type, page, limit);
+    const result = await historiesService.histories(query, who, userId, type, page, limit);
     return res.status(status.OK).json(result);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
