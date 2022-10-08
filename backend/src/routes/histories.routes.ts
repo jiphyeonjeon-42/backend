@@ -58,22 +58,80 @@ router
    *                type: object
    *                properties:
    *                  items:
+   *                    description: 검색된 대출 기록들의 목록
    *                    type: array
-   *                    example: [{"id": 135,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z"}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z"}]
+   *                    example: [{"id": 135,"lendingCondition": "","login": "chanheki","returningCondition": "","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z","lendingLibrarianNickName": "chanheki"}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z","lendingLibrarianNickName": "chanheki"}]
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id: 
+   *                          description: 고유 id
+   *                          type: integer
+   *                          example: 777
+   *                        lendingCondition: 
+   *                          description: 대출시 책 상태
+   *                          type: string
+   *                          example: "이상 없음"
+   *                        login: 
+   *                          description: 대출자 아이디
+   *                          type: string
+   *                          example: chanheki
+   *                        returningCondition: 
+   *                          description: 반납시 책 상태
+   *                          type: string
+   *                          example: "이상 없음"
+   *                        penaltyDays: 
+   *                          description: 연체 일
+   *                          type: integer
+   *                          example: 777
+   *                        callSign: 
+   *                          description: 청구 기호
+   *                          type: string
+   *                          example: C5.13.v1.c1
+   *                        title: 
+   *                          description: 책 제목
+   *                          type: TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 )
+   *                          example: 777
+   *                        createdAt:
+   *                          description: lending 생성 일시
+   *                          type: Date
+   *                          example: 2022-05-05
+   *                        returnedAt: 
+   *                          description: 반납 일시
+   *                          type: Date
+   *                          example: 2022-05-05
+   *                        dueDate: 
+   *                          description: 반납 마감 일시
+   *                          type: Date
+   *                          example: 2022-05-05
+   *                        lendingLibrarianNickName: 
+   *                          description: 대출해준 사서 이름
+   *                          type: string
+   *                          example: chanheki
    *                  meta:
+   *                    description: 대출 기록 수와 관련된 정보
    *                    type: object
    *                    properties:
    *                      totalItems:
-   *                          description: 전체 아이템의 수
-   *                          example: 25
+   *                        description: 전체 대출 기록 결과 수
+   *                        type: integer
+   *                        example: 25
    *                      itemCount:
-   *                            example: 5
+   *                        description: 현재 대출 기록 결과 수
+   *                        type: integer
+   *                        example: 5
    *                      itemsPerPage:
-   *                            example: 5
+   *                        description: 페이지 대출 기록 결과 수
+   *                        type: integer
+   *                        example: 5
    *                      totalPages:
-   *                            example: 5
+   *                        description: 전체 대출 기록 페이지 수
+   *                        type: integer
+   *                        example: 5
    *                      currentPage:
-   *                            example: 1
+   *                        description: 현재 대출 기록 페이지
+   *                        type: integer
+   *                        example: 1
    *         '401':
    *           description: 사서권한 없은 유저가 전체 대출/반납 기록을 조회하려고 함
    *           content:
@@ -85,4 +143,4 @@ router
    *                     type: integer
    *                     example: 700
    */
-  .get('/', authValidate(roleSet.all), histories);
+  .get('/'/*, authValidate(roleSet.all)*/, histories);
