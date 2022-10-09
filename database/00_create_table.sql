@@ -36,7 +36,7 @@ CREATE TABLE `book` (
   KEY `FK_donator_id_from_user` (`donatorId`),
   CONSTRAINT `FK_493671e9872dfd0ec4b35c628a2` FOREIGN KEY (`infoId`) REFERENCES `book_info` (`id`),
   CONSTRAINT `FK_donator_id_from_user` FOREIGN KEY (`donatorId`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=859 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
