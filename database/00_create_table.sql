@@ -61,7 +61,7 @@ CREATE TABLE `book_info` (
   PRIMARY KEY (`id`),
   KEY `categoryId` (`categoryId`),
   CONSTRAINT `book_info_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +91,7 @@ CREATE TABLE `lending` (
   CONSTRAINT `FK_a8128ea55eede64ab4cf5a39fd2` FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_f2adde8c7d298210c39c500d966` FOREIGN KEY (`lendingLibrarianId`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_returningLibrarianId` FOREIGN KEY (`returningLibrarianId`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +117,7 @@ CREATE TABLE `reservation` (
   CONSTRAINT `FK_529dceb01ef681127fef04d755d` FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_c82001439df87b04c529f301f6e` FOREIGN KEY (`bookId`) REFERENCES `book` (`id`),
   CONSTRAINT `FK_bookInfo` FOREIGN KEY (`bookInfoId`) REFERENCES `book_info` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
