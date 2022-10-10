@@ -165,15 +165,15 @@ CREATE TABLE `reviews` (
   `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `updatedUserId` int NOT NULL,
-  `isDelete` boolean NOT NULL,
-  `deleteUser` int DEFAULT NULL,
+  `isDelete` boolean NOT NULL DEFAULT FALSE,
+  `deleteUserId` int DEFAULT NULL,
   `content` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_529dceb01ef681127fef04d755d3` (`userId`),
   KEY `FK_bookInfo2` (`bookInfoId`),
   CONSTRAINT `FK_529dceb01ef681127fef04d755d3` FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_bookInfo2` FOREIGN KEY (`bookInfoId`) REFERENCES `book_info` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1500 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
