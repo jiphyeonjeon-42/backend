@@ -12,19 +12,30 @@ export const createReviews = async (
     res: Response,
     next: NextFunction,
 ) => {
+  const userId = req.user as any;
   const bookInfoId = req?.body?.bookInfoId;
   const commentText = req?.body?.commentText;
-  reviewsService.createReviews(bookInfoId, commentText);
+  reviewsService.createReviews(userId, bookInfoId, commentText);
   return res.status(status.CREATED).send();
 };
 
 export const getReviews = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
-  const bookInfoId = req?.params?.bookInfoId;
-  const reviews = await reviewsService.getReviews(bookInfoId);
+  const bookInfoId = parseInt(String(req?.query?.bookInfoId));
+  const userId = parseInt(String(req?.query?.userId));
+  const reviewId = parseInt(String(req?.query?.reviewId));
+  const sort = String(req?.query?.sort);
+
+  const reviews = await reviewsService.getReviews
+  (
+    bookInfoId,
+    userId,
+    reviewId,
+    sort
+  );
   return res.status(status.OK).json(reviews);
 };
 
@@ -42,7 +53,8 @@ export const deleteReviews = async (
     res: Response,
     next: NextFunction,
 ) => {
-  const reviewsId = req?.params?.revieswId;
-  await reviewsService.deleteReviews(parseInt(reviewsId, 10));
+  const deleteUser = req.user as any;
+  const reviewsId = req?.params?.reviewsId;
+  await reviewsService.deleteReviews(parseInt(reviewsId, 10), deleteUser);
   return res.status(status.OK).send();
 };
