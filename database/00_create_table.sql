@@ -153,6 +153,27 @@ CREATE TABLE `category` (
   `name` varchar(255) NOT NULL UNIQUE
 );
 
+--
+-- Table structure for table `reviews`
+--
+DROP TABLE IF EXISTS `reviews`;
+CREATE TABLE `reviews` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `bookInfoId` int  NOT NULL,
+  `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  `updateUserId` int NOT NULL,
+  `isDeleted` boolean NOT NULL DEFAULT FALSE,
+  `deleteUserId` int DEFAULT NULL,
+  `content` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_529dceb01ef681127fef04d755d3` (`userId`),
+  KEY `FK_bookInfo2` (`bookInfoId`),
+  CONSTRAINT `FK_529dceb01ef681127fef04d755d3` FOREIGN KEY (`userId`) REFERENCES `user` (`id`),
+  CONSTRAINT `FK_bookInfo2` FOREIGN KEY (`bookInfoId`) REFERENCES `book_info` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
