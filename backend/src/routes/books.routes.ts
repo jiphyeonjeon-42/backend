@@ -857,52 +857,62 @@ router
 router
 /**
  * @openapi
- * /api/books/update/{bookInfoId}:
+ * /api/books/update:
  *    patch:
  *      description: 책 정보를 수정한다. book_info table만 수정.
  *      tags:
  *      - books
- *      parameters:
- *      - name: bookInfoId
- *        in: path
- *        description: book_info Id
- *        required: true
- *        schema:
- *          type: integer
  *      requestBody:
  *        content:
  *          application/json:
  *            schema:
  *              type: object
  *              properties:
+ *                bookInfoId:
+ *                  description: bookInfoId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
  *                title:
+ *                  description: 제목
  *                  type: string
  *                  nullable: true
  *                  example: "작별인사 (김영하 장편소설)"
  *                author:
+ *                  description: 저자
  *                  type: string
  *                  nullable: true
  *                  example: "김영하"
  *                publisher:
+ *                  description: 출판사
  *                  type: string
  *                  nullable: true
  *                  example: "복복서가"
- *                isbn:
- *                  type: string
- *                  nullable: true
- *                  example: 9788065960874
- *                image:
- *                  type: string
- *                  nullable: true
- *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
- *                categoryId:
- *                  type: string
- *                  nullable: true
- *                  example: 1
  *                publishedAt:
+ *                  description: 출판연월
  *                  type: string
  *                  nullable: true
  *                  example: "20200505"
+ *                image:
+ *                  description: 표지이미지
+ *                  type: string
+ *                  nullable: true
+ *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+ *                bookId:
+ *                  description: bookId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
+ *                callSign:
+ *                  description: 청구기호
+ *                  type: string
+ *                  nullable: true
+ *                  example: h1.18.v1.c1
+ *                status:
+ *                  description: 도서 상태
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 0
  *      responses:
  *         '204':
  *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
@@ -933,4 +943,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBookInfo);
+.patch('/update'/*, authValidate(roleSet.librarian)*/, updateBookInfo);
