@@ -23,12 +23,17 @@ export interface CreateBookInfo {
 }
 
 export interface UpdateBookInfo {
+  id: number;
   title?: string;
   author?: string;
   publisher?: string;
   publishedAt?: string | Date;
   image?: string;
   categoryId?: string;
+}
+
+export interface UpdateBook {
+  id: number;
   callSign: string;
-  status: number;
+  Status: number;
 }
