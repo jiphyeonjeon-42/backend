@@ -584,26 +584,52 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
 };
 
-export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: number) => {
-  let updateString = '';
-  const queryParam = [];
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
+  let updateBookInfoString = '';
+  let updateBookString = '';
+  const queryBookInfoParam = [];
+  const queryBookParam = [];
   var bookInfoObject: any = {
+  } = bookInfo
+  var bookObject: any = {
   } = book
 
   for (let key in bookInfoObject) {
     let value = bookInfoObject[key];
-    if (key !== '') {
-      updateString += `${key } = ?,`
-      queryParam.push(value)
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookInfoString += `${key } = ?,`
+      queryBookInfoParam.push(value)
     } else if (key === null){
-      updateString += `${key} = NULL,`
+      updateBookInfoString += `${key} = NULL,`
     }
   }
-  updateString = updateString.slice(0,-1)
+
+  for (let key in bookObject) {
+    let value = bookObject[key];
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookString += `${key } = ?,`
+      queryBookParam.push(value)
+    } else if (key === null){
+      updateBookString += `${key} = NULL,`
+    }
+  }
+
+  updateBookInfoString = updateBookInfoString.slice(0,-1)
+  updateBookString = updateBookString.slice(0,-1)
+
   await executeQuery(`
     UPDATE book_info 
     SET 
-    ${updateString} 
+    ${updateBookInfoString} 
     WHERE id = ${bookInfoId}
-    `, queryParam);
+    `, queryBookInfoParam);
+
+  await executeQuery(`
+    UPDATE book 
+    SET 
+    ${updateBookString} 
+    WHERE id = ${bookId} ;
+    `, queryBookParam);
 };
