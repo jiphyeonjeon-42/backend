@@ -26,8 +26,9 @@ export interface UpdateBookInfo {
   title?: string;
   author?: string;
   publisher?: string;
-  isbn?: string;
+  publishedAt?: string | Date;
   image?: string;
   categoryId?: string;
-  publishedAt?: string | Date;
+  callSign: string;
+  status: number;
 }
