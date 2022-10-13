@@ -859,7 +859,7 @@ router
  * @openapi
  * /api/books/update:
  *    patch:
- *      description: 책 정보를 수정한다. book_info table만 수정.
+ *      description: 책 정보를 수정합니다. book_info / book table 
  *      tags:
  *      - books
  *      requestBody:
@@ -915,21 +915,21 @@ router
  *                  example: 0
  *      responses:
  *         '204':
- *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
+ *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
  *            content:
  *             application:
  *               schema:
  *                 type: 
- *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환.
  *         '실패 케이스 1':
- *              description: 예상치 못한 에러로 책 정보 patch에 실패함.
+ *              description: 예상치 못한 에러로 책 정보 patch에 실패.
  *              content:
  *                application/json:
  *                  schema:
  *                    type: json
  *                    example : { errorCode: 312 }
  *         '실패 케이스 2':
- *              description: 수정할 DATA가 적어도 한 개는 필요함. 수정할 DATA가 없음"
+ *              description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
  *              content:
  *                application/json:
  *                  schema:
