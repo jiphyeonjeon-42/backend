@@ -9,9 +9,9 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
-const pubdateFormatValidator = (pubdate : string) => {
+const pubdateFormatValidator = (pubdate : String | Date) => {
   const regexConditon = (/^[0-9]{8}$/);
-  if (regexConditon.test(pubdate) === false) {
+  if (regexConditon.test(String(pubdate)) === false) {
     return false;
   }
   return true;
@@ -351,15 +351,15 @@ export const updateBookInfo = async (
           bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
 
-  // if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
-  // if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
-  // if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
-  // if (isNullish(bookInfo.image) == false) { bookInfo.image.trim(); }
-  // if (isNullish(bookInfo.publishedAt) == false && pubdateFormatValidator(bookInfo.publishedAt)) {
-  //   bookInfo.publishedAt.trim();
-  // } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
-  //   return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
-  // }
+  if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
+  if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
+  if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
+  if (isNullish(bookInfo.image) == false) { bookInfo.image.trim(); }
+  if (isNullish(bookInfo.publishedAt) == false && pubdateFormatValidator(bookInfo.publishedAt)) {
+    String(bookInfo.publishedAt).trim();
+  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
+    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
+  }
   if (isNullish(book.callSign) == false) { book.callSign.trim(); }
   if (bookStatusFormatValidator(book.Status) == false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
