@@ -233,7 +233,7 @@ export const createLike = async (
 ) => {
   // parameters
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
-  const { id } = req.user as any;
+  const id = req.user as any;
 
   if (!bookInfoId) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
@@ -241,6 +241,7 @@ export const createLike = async (
 
   // 로직수행 및 에러처리
   try {
+    // 결과에 따라 오류status를 반환해야함
     return res.status(status.CREATED).send(await BooksService.createLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -250,6 +251,7 @@ export const createLike = async (
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
     logger.error(error.message);
+    console.log(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -260,7 +262,7 @@ export const deleteLike = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { id } = req.user as any;
+  const id = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
@@ -290,7 +292,7 @@ export const getLikeInfo = async (
   next: NextFunction,
 ) => {
   // parameters
-  const { id } = req.user as any;
+  const id = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
