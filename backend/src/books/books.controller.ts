@@ -272,7 +272,8 @@ export const deleteLike = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).send(await BooksService.deleteLike(id, bookInfoId));
+    await BooksService.deleteLike(id, bookInfoId);
+    return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {

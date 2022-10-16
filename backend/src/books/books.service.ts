@@ -582,6 +582,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   } finally {
     conn.release();
   }
+  return { userId, bookInfoId };
 };
 
 export const deleteLike = async (userId: number, bookInfoId: number) => {
