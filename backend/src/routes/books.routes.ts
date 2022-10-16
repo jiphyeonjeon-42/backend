@@ -754,7 +754,7 @@ router
    *                   description: 좋아요할 bookInfo의 id
    *                example : { userId: 123, bookInfoId: 456 }
    */
-   .post('/info/:bookInfoId/like', /*authValidate(roleSet.service),*/ createLike);
+   .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
 
 router
 /**
@@ -805,7 +805,7 @@ router
    *                type: json
    *                example : { errorCode: 603}
    */
-  .delete('/info/:bookInfoId/like', /*authValidate(roleSet.service),*/ deleteLike);
+  .delete('/info/:bookInfoId/like', authValidate(roleSet.service), deleteLike);
 
 router
 /**
@@ -851,7 +851,7 @@ router
    *                type: json
    *                example : { errorCode: 601}
    */
-   .get('/info/:bookInfoId/like', /*authValidate(roleSet.all),*/ getLikeInfo);
+   .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
 
 
 router
@@ -933,4 +933,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update/:bookInfoId'/*, authValidate(roleSet.librarian)*/, updateBookInfo);
+.patch('/update/:bookInfoId', authValidate(roleSet.librarian), updateBookInfo);
