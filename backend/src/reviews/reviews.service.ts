@@ -81,8 +81,30 @@ export const getReviews = async (bookInfoId: number, userId: number, reviewId: n
   return (reviews);
 };
 
-export const updateReviews= async () => {
-  console.log('update reviews');
+export const getReviewsUserId = async (
+    reviewsId : number,
+) => {
+  const reviewsUserId = await executeQuery(`
+    SELECT 
+      userId 
+    FROM reviews 
+    WHERE id = ? 
+    `, [reviewsId]);
+  return reviewsUserId[0].userId;
+};
+
+export const updateReviews = async (
+    reviewsId : number,
+    userId : number,
+    content : string,
+) => {
+  await executeQuery(`
+    UPDATE reviews 
+    SET 
+      content = ?, 
+      updateUserId = ? 
+    WHERE id = ?
+    `, [content, userId, reviewsId]);
 };
 
 export const deleteReviews = async (reviewId: number, deleteUser: number) => {
