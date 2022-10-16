@@ -859,7 +859,7 @@ router
  * @openapi
  * /api/books/update:
  *    patch:
- *      description: 책 정보를 수정합니다. book_info / book table 
+ *      description: 책 정보를 수정합니다. book_info table or book table 
  *      tags:
  *      - books
  *      requestBody:
