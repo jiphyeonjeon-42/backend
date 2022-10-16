@@ -773,23 +773,13 @@ router
    *        schema:
    *          type: integer
    *      responses:
-   *        '200':
-   *          description: Success
+   *        '204':
+   *          description: No Content
    *          content:
    *            application/json:
    *              schema:
-   *                type: object
-   *                example : { "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 }
-   *                properties:
-   *                  bookInfoId:
-   *                   type: integer
-   *                   description: 좋아요할 bookInfo의 id
-   *                  isLiked:
-   *                   type: bool
-   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
-   *                  likeNum:
-   *                   type: integer
-   *                   description: 이 책에 눌린 좋아요의 수
+   *                type:
+   *                description:
    *        'errorcase-1':
    *          description: bookInfoId가 유효하지 않음
    *          content:
