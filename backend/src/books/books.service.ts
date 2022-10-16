@@ -534,18 +534,7 @@ export const getInfo = async (id: string) => {
 };
 
 export const createLike = async (userId: number, bookInfoId: number) => {
-  // for debug
-  if (userId === undefined)
-    userId = 1;
-
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 생성합니다."
-  console.log(message)
-
-  // DB 사용 초기화
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-
-  // bookInfoId가 유효한지 확인
+  // bookInfo 유효검증
   const numberOfBookInfo = await executeQuery(`
   SELECT COUNT(*) as count
   FROM book_info
@@ -553,26 +542,22 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   `, [bookInfoId]);
   if (numberOfBookInfo.count == 0)
     throw new Error(errorCode.INVALID_INFO_ID_LIKES);
-
-  // 사용자가 해당 책에 좋아요를 이미 눌렀는지?
-  // 좋아요데이터가 존재하되 isDeleted가 false인 경우 이미 누름
+  // 중복 like 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
   WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  console.log("LikeArray : ", LikeArray);
-  // isDeleted와 false를 ===으로 비교하면 검사가 잘 안됨..
   if (LikeArray.length != 0 && LikeArray[0].isDeleted == false)
     throw new Error(errorCode.ALREADY_LIKES);
-
+  // create
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
-
-  // 좋아요 튜플 생성
   try {
     if (LikeArray.length == 0)
     {
-      // 튜플생성
+      // 새로운 튜플 생성
       await transactionExecuteQuery(`
         INSERT INTO likes(
           userId,
@@ -583,7 +568,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
     }
     else
     {
-      // 튜플수정
+      // 삭제된 튜플 복구
       await transactionExecuteQuery(`
         UPDATE likes
         SET
@@ -597,23 +582,10 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   } finally {
     conn.release();
   }
-
-  //return ({ code: 200, message });
 };
 
 export const deleteLike = async (userId: number, bookInfoId: number) => {
-  // for debug
-  if (userId === undefined)
-    userId = 1;
-
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 삭제합니다."
-  console.log(message)
-
-  // DB 사용 초기화
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-
-  // bookInfoId가 유효한지 확인
+  // bookInfo 유효검증
   const numberOfBookInfo = await executeQuery(`
   SELECT COUNT(*) as count
   FROM book_info
@@ -621,19 +593,19 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count == 0)
     throw new Error(errorCode.INVALID_INFO_ID_LIKES);
-
-  // 삭제할 수 있는지 확인(튜플이 없거나 이미 삭제처리되었는 지 확인)
+  // like 존재여부 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
   WHERE id = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  console.log("LikeArray : ", LikeArray);
   if (LikeArray.length != 0 && LikeArray[0].isDeleted == true)
     throw new Error(errorCode.NONEXISTENT_LIKES);
-
-  // 삭제
+  // delete
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
+    // 튜플 상태값을 수정하는 soft delete
     await transactionExecuteQuery(`
       UPDATE likes
       SET
@@ -646,19 +618,10 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   } finally {
     conn.release();
   }
-
-  return ({ code: 200, message });
 };
 
 export const getLikeInfo = async (userId: number, bookInfoId: number) => {
-  // for debug
-  if (userId === undefined)
-  userId = 1;
-
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 가져옵니다."
-  console.log(message)
-
-  // bookInfoId가 유효한지 확인
+  // bookInfo 유효검증
   const numberOfBookInfo = await executeQuery(`
   SELECT COUNT(*) as count
   FROM book_info
@@ -666,21 +629,17 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   `, [bookInfoId]);
   if (numberOfBookInfo[0].count == 0)
     throw new Error(errorCode.INVALID_INFO_ID_LIKES);
-
-  // LikeArray 가져오기
+  // (userId, bookInfoId)인 like 데이터 확인
   const LikeArray = await executeQuery(`
   SELECT userId, isDeleted
   FROM likes
   WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  console.log("LikeArray : ", LikeArray);
-
   let isLiked = false;
   LikeArray.forEach((like: any) => {
     if (like.userId == userId)
       isLiked = true;
   });
-
   return ({ "bookInfoId": bookInfoId, "isLiked" : isLiked, "likeNum" : LikeArray.length });
 };
 
