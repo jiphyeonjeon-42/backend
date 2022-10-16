@@ -589,9 +589,9 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
   let updateBookString = '';
   const queryBookInfoParam = [];
   const queryBookParam = [];
-  var bookInfoObject: any = {
+  let bookInfoObject: any = {
   } = bookInfo
-  var bookObject: any = {
+  let bookObject: any = {
   } = book
 
   for (let key in bookInfoObject) {
