@@ -23,8 +23,16 @@ export const createReviews = async (
   const userId = req.user as any;
   const bookInfoId = req?.body?.bookInfoId;
   const commentText = req?.body?.commentText;
-  reviewsService.createReviews(userId, bookInfoId, commentText);
-  return res.status(status.CREATED).send();
+  try {
+    reviewsService.createReviews(userId, bookInfoId, commentText);
+    return res.status(status.CREATED).send();
+  } catch (error : any) {
+    if (error.message === errorCode.INVALID_INPUT_REVIEWS_CONTENT) {
+      await err(errorCode.INVALID_INPUT_REVIEWS, 400, next);
+    } else {
+      await err(errorCode.UNKNOWN_ERROR, 500, next);
+    }
+  }
 };
 
 export const getReviews = async (
@@ -86,8 +94,20 @@ export const deleteReviews = async (
     res: Response,
     next: NextFunction,
 ) => {
+  let reviewsId;
   const deleteUser = req.user as any;
-  const reviewsId = req?.params?.reviewsId;
-  await reviewsService.deleteReviews(parseInt(reviewsId, 10), deleteUser);
-  return res.status(status.OK).send();
+
+  try {
+    reviewsId = await errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
+    await reviewsService.deleteReviews(reviewsId, deleteUser);
+    return res.status(status.OK).send();
+  } catch (error : any) {
+    if (error.message === errorCode.NOT_FOUND_REVIEWS) {
+      await err(errorCode.NOT_FOUND_REVIEWS, 404, next);
+    } else if (error.message === errorCode.UNAUTHORIZED_REVIEWS) {
+      await err(errorCode.UNAUTHORIZED_REVIEWS, 401, next);
+    } else {
+      await err(errorCode.UNKNOWN_ERROR, 500, next);
+    }
+  }
 };
