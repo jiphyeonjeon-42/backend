@@ -943,4 +943,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update'/*, authValidate(roleSet.librarian)*/, updateBookInfo);
+.patch('/update', authValidate(roleSet.librarian), updateBookInfo);
