@@ -38,15 +38,17 @@ export const create = async (userId: number, bookInfoId: number) => {
     if (overdueBooks?.[0]?.duedate < new Date()) {
       throw new Error(errorCode.AT_PENALTY);
     }
-    // bookInfoId가 모두 대출 중인지 확인
-    const borrowedBookInfo = await executeQuery(`
+    // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
+    const cantReservBookInfo = await executeQuery(`
     SELECT COUNT(*) as count
     FROM book
-    LEFT JOIN lending
-    ON lending.bookId = book.id
-    WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
+    LEFT JOIN lending ON lending.bookId = book.id
+    LEFT JOIN reservation ON reservation.bookId = lending.bookId
+    WHERE
+      book.infoId = ? AND book.status = 0 AND
+      (lending.returnedAt IS NULL OR reservation.status = 0);
   `, [bookInfoId]);
-    if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
+    if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
       throw new Error(errorCode.NOT_LENDED);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
@@ -256,14 +258,17 @@ export const count = async (bookInfoId: number) => {
   if (numberOfBookInfo[0].count === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }
-  const borrowedBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book
-    LEFT JOIN lending
-    ON lending.bookId = book.id
-    WHERE book.infoId = ? AND book.status = 0 AND returnedAt IS NULL;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count > borrowedBookInfo[0].count) {
+  // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
+  const cantReservBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book
+  LEFT JOIN lending ON lending.bookId = book.id
+  LEFT JOIN reservation ON reservation.bookId = lending.bookId
+  WHERE
+    book.infoId = ? AND book.status = 0 AND
+    (lending.returnedAt IS NULL OR reservation.status = 0);
+`, [bookInfoId]);
+  if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
     throw new Error(errorCode.NOT_LENDED);
   }
   const numberOfReservations = await executeQuery(`
