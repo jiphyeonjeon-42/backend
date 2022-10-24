@@ -4,12 +4,13 @@ import {
 } from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
+import {wrapAsyncController} from '../middlewares/wrapAsyncController';
 
 export const path = '/reviews';
 export const router = Router();
 
 router
-    /**
+  /**
      * @openapi
      * /api/reviews:
      *    post:
@@ -56,7 +57,7 @@ router
      *                    value :
      *                      errorCode: 109
      */
-    .post('/', authValidate(roleSet.all), createReviews);
+    .post('/', authValidate(roleSet.all), wrapAsyncController(createReviews));
 
 router
     /**
@@ -224,7 +225,7 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/', authValidate(roleSet.librarian), getReviews);
+    .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
 
 router
     /**
@@ -295,7 +296,7 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .patch('/:reviewsId', authValidate(roleSet.all), updateReviews);
+    .patch('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
 
 router
     /**
@@ -355,4 +356,4 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .delete('/:reviewsId', authValidate(roleSet.all), deleteReviews);
+    .delete('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(deleteReviews));

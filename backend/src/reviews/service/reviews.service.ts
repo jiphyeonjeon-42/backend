@@ -1,5 +1,4 @@
 import * as reviewsRepository from '../repository/reviews.repository';
-import * as bookInfoReviewsRepository from "../../book-info-reviews/repository/bookInfoReviews.repository";
 
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
   await reviewsRepository.createReviews(userId, bookInfoId, content);
@@ -12,7 +11,7 @@ export const getReviewsPage = async (
   sort: 'asc' | 'desc',
 ) => {
   const items = await reviewsRepository.getReviewsPage(bookInfoId, userId, page, sort);
-  const counts = await reviewsRepository.getPageCounts(bookInfoId, userId);
+  const counts = await reviewsRepository.getReviewsCounts(bookInfoId, userId);
   const meta = {
     totalItems: counts,
     itemsPerPage: 10,

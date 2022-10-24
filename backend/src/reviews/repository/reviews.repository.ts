@@ -58,7 +58,7 @@ export const getReviewsPage = async (bookInfoId: number, userId: number, page: n
   return (reviews);
 };
 
-export const getPageCounts = async (bookInfoId: number, userId: number) => {
+export const getReviewsCounts = async (bookInfoId: number, userId: number) => {
   const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
   const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
   const counts = await executeQuery(`
@@ -107,38 +107,4 @@ export const deleteReviews = async (reviewId: number, deleteUser: number) => {
         deleteUserId = ?
       WHERE id = ?
     `, [true, deleteUser, reviewId]);
-};
-
-export const deleteReviews2 = async (reviewId: number, deleteUser: number) => {
-  // reviewId 유효 체크 + 삭제 권한 체크
-  const numberOfReview = await executeQuery(`
-    SELECT id
-    FROM reviews
-    WHERE id = ?;
-  `, [reviewId]);
-  if (numberOfReview.length === 0)
-    throw new Error(errorCode.NOT_FOUND_REVIEWS);
-  else if (numberOfReview[0].id != deleteUser /*&& !is_librarian(deleteUser) */)
-    throw new Error(errorCode.UNAUTHORIZED_REVIEWS);
-
-  // DB 사용 초기화
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-
-  try {
-    await transactionExecuteQuery(`
-      UPDATE reviews
-      SET
-        isDeleted = ?,
-        deleteUserId = ?
-      WHERE id = ?
-    `, [true, deleteUser, reviewId]);
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-    throw error;
-  } finally {
-    conn.release();
-  }
 };
