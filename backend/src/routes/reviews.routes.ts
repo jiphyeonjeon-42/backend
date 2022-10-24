@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   createReviews, updateReviews, getReviews, deleteReviews
-} from '../reviews/reviews.controller';
+} from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
@@ -28,7 +28,7 @@ router
      *                  nullable: false
      *                  required: true
      *                  example: 42
-     *                commentText:
+     *                content:
      *                  type: string
      *                  nullable: false
      *                  required: true
@@ -56,7 +56,7 @@ router
      *                    value :
      *                      errorCode: 109
      */
-    .post('/', /* authValidate(roleSet.all),*/ createReviews);
+    .post('/', authValidate(roleSet.all), createReviews);
 
 router
     /**
@@ -224,7 +224,7 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/:bookInfoId', /* authValidate(roleSet.all),*/ getReviews);
+    .get('/', authValidate(roleSet.librarian), getReviews);
 
 router
     /**
@@ -355,4 +355,4 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .delete('/:reviewsId', /* authValidate(roleSet.all),*/ deleteReviews);
+    .delete('/:reviewsId', authValidate(roleSet.all), deleteReviews);

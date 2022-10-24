@@ -1,6 +1,5 @@
-import * as errorCode from '../utils/error/errorCode';
-import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import { Meta } from '../users/users.type';
+import * as errorCode from '../../utils/error/errorCode';
+import { executeQuery, makeExecuteQuery, pool } from '../../mysql';
 
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
   // bookInfoId가 유효한지 확인
@@ -9,9 +8,7 @@ export const createReviews = async (userId: number, bookInfoId: number, content:
     FROM book_info
     WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0)
-    throw new Error(errorCode.INVALID_INPUT_REVIEWS);
-
+  if (numberOfBookInfo[0].count === 0) {throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
@@ -34,47 +31,64 @@ export const createReviews = async (userId: number, bookInfoId: number, content:
   }
 };
 
-export const getReviews = async (bookInfoId: number, userId: number, reviewId: number, sort: string) => {
-  // 인자체크
-  let bookInfoIdQuery = (isNaN(bookInfoId)) ? "" : `AND reviews.bookInfoId = ${bookInfoId}`;
-  let userIdQueryQuery = (isNaN(userId)) ? "" : `AND reviews.userId = ${userId}`;
-  let reviewIdQuery = (isNaN(reviewId)) ? "" : `AND reviews.id = ${reviewId}`;
-  let sortQuery = (sort === undefined || (sort != "DESC" && sort != "ASC")) ? "" : `ORDER BY reviews.createdAt ${sort}`;
-  let reviews;
-  reviews = await executeQuery(`
+export const getReviewsPage = async (bookInfoId: number, userId: number, page: number, sort: 'asc' | 'desc') => {
+  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
+  const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
+  const sortQuery = `ORDER BY reviews.id ${sort}`;
+
+  const reviews = await executeQuery(`
   SELECT
-    reviews.id,
-    reviews.userId,
+    reviews.id as reviewsId,
+    reviews.userId as reviewerId,
     reviews.bookInfoId,
-    user.nickname,
-    reviews.content
+    reviews.content,
+    reviews.createdAt,
+    book_info.title,
+    user.nickname
   FROM reviews
   JOIN user ON user.id = reviews.userId
+  JOIN book_info ON reviews.bookInfoId = book_info.id  
   WHERE reviews.isDeleted = false
     ${bookInfoIdQuery}
-    ${userIdQueryQuery}
-    ${reviewIdQuery}
+    ${userIdQuery}
     ${sortQuery}
-  `);
+  LIMIT 10 
+  OFFSET ?
+  `, [page * 10]);
   return (reviews);
 };
 
+export const getPageCounts = async (bookInfoId: number, userId: number) => {
+  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
+  const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
+  const counts = await executeQuery(`
+  SELECT
+    COUNT(*) as counts
+  FROM reviews
+  WHERE reviews.isDeleted = false
+    ${bookInfoIdQuery}
+    ${userIdQuery}
+  `);
+  return (counts[0].counts);
+};
+
 export const getReviewsUserId = async (
-    reviewsId : number,
+  reviewsId : number,
 ) => {
   const reviewsUserId = await executeQuery(`
     SELECT
       userId
     FROM reviews
-    WHERE id = ?
+    WHERE id = ? 
+    AND isDeleted = false
     `, [reviewsId]);
   return reviewsUserId[0].userId;
 };
 
 export const updateReviews = async (
-    reviewsId : number,
-    userId : number,
-    content : string,
+  reviewsId : number,
+  userId : number,
+  content : string,
 ) => {
   await executeQuery(`
     UPDATE reviews
@@ -86,6 +100,16 @@ export const updateReviews = async (
 };
 
 export const deleteReviews = async (reviewId: number, deleteUser: number) => {
+  await executeQuery(`
+      UPDATE reviews
+      SET
+        isDeleted = ?,
+        deleteUserId = ?
+      WHERE id = ?
+    `, [true, deleteUser, reviewId]);
+};
+
+export const deleteReviews2 = async (reviewId: number, deleteUser: number) => {
   // reviewId 유효 체크 + 삭제 권한 체크
   const numberOfReview = await executeQuery(`
     SELECT id
