@@ -200,7 +200,7 @@ export const createBook = async (book: types.CreateBookInfo) => {
     if (isbnInBookInfo[0].cnt === 0) {
       await transactionExecuteQuery(
         `INSERT INTO book_info (title, author, publisher, isbn, image, categoryId, publishedAt)
-      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
+      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?)`,
         [
           book.title,
           book.author,
