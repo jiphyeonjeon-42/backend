@@ -209,7 +209,6 @@ export const createBook = async (book: types.CreateBookInfo) => {
           book.isbn ? book.isbn : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
-          category,
           book.categoryId,
           book.pubdate,
         ],
