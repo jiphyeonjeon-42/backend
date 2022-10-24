@@ -57,4 +57,10 @@ export const NO_MATCHING_USER = '507';
 export const RESERVATION_NOT_EXIST = '508';
 export const NOT_RESERVED = '509';
 
+export const INVALID_INPUT_REVIEWS = '800';
+export const UNAUTHORIZED_REVIEWS = '801';
+export const NOT_FOUND_REVIEWS = '804';
+export const INVALID_INPUT_REVIEWS_ID = '810';
+export const INVALID_INPUT_REVIEWS_CONTENT = '811';
+
 export const UNAUTHORIZED = '700';
