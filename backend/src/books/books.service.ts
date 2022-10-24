@@ -199,8 +199,8 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
     if (isbnInBookInfo[0].cnt === 0) {
       await transactionExecuteQuery(
-        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt)
-      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
+        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryId, publishedAt)
+      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?)`,
         [
           book.title,
           book.author,
@@ -209,7 +209,6 @@ export const createBook = async (book: types.CreateBookInfo) => {
           book.isbn ? book.isbn : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
-          category,
           book.categoryId,
           book.pubdate,
         ],
