@@ -15,7 +15,7 @@ export const getReviewsPage = async (
   const meta = {
     totalItems: counts,
     itemsPerPage: 10,
-    totalPages: parseInt(String(counts / 10), 10),
+    totalPages: parseInt(String(counts / 10 + 1), 10),
     firstPage: page === 0,
     finalPage: page === parseInt(String(counts / 10), 10),
     currentPage: page,
