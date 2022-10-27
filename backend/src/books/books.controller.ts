@@ -9,9 +9,16 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
-const pubdateFormatValidator = (pubdate : string) => {
+const pubdateFormatValidator = (pubdate : String | Date) => {
   const regexConditon = (/^[0-9]{8}$/);
-  if (regexConditon.test(pubdate) === false) {
+  if (regexConditon.test(String(pubdate)) === false) {
+    return false;
+  }
+  return true;
+};
+
+const bookStatusFormatValidator = (bookStatus : number) => {
+  if (bookStatus < 0 || bookStatus > 2) {
     return false;
   }
   return true;
@@ -324,34 +331,41 @@ export const updateBookInfo = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const bookInfoId = parseInt(req.params.bookInfoId, 10);
-  if (bookInfoId <= 0 || bookInfoId === NaN)
-    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
-  let {
-    title,
-    author,
-    publisher,
-    isbn,
-    image,
-    categoryId,
-    publishedAt
-  } = req.body;
-  if (!(title || author || publisher || isbn || image || categoryId || publishedAt)) {
-    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
+  let bookInfo: types.UpdateBookInfo = {
+    id: req.body.bookInfoId,
+    title: req.body.title,
+    author: req.body.author,
+    publisher: req.body.publisher,
+    image: req.body.image,
+    publishedAt: req.body.publishedAt
   }
-  if (isNullish(title) == false) { req.body.title = title.trim(); }
-  if (isNullish(author) == false) { req.body.author = author.trim(); }
-  if (isNullish(publisher) == false) { req.body.publisher = publisher.trim(); }
-  if (isNullish(isbn) == false) { req.body.isbn = isbn.trim(); }
-  if (isNullish(image) == false) { req.body.image = image.trim(); }
-  if (isNullish(categoryId) == false) { req.body.categoryId = categoryId.trim(); }
-  if (isNullish(publishedAt) == false && pubdateFormatValidator(publishedAt)) {
-    req.body.publishedAt = publishedAt.trim();
+  let book: types.UpdateBook = {
+    id: req.body.bookId,
+    callSign: req.body.callSign,
+    Status: req.body.status,
+  }
+  
+  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN )
+    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
+  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image || 
+          bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
+    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
+
+  if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
+  if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
+  if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
+  if (isNullish(bookInfo.image) == false) { bookInfo.image.trim(); }
+  if (isNullish(bookInfo.publishedAt) == false && pubdateFormatValidator(bookInfo.publishedAt)) {
+    String(bookInfo.publishedAt).trim();
   } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
+  if (isNullish(book.callSign) == false) { book.callSign.trim(); }
+  if (bookStatusFormatValidator(book.Status) == false) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   try {
-    await BooksService.updateBookInfo(req.body, bookInfoId);
+    await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
     return res.status(status.NO_CONTENT).send()
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

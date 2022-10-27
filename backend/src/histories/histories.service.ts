@@ -2,7 +2,7 @@ import { executeQuery } from '../mysql';
 import { Meta } from '../users/users.type';
 
 // eslint-disable-next-line import/prefer-default-export
-export const history = async (
+export const histories = async (
   query: string,
   who: string,
   userId: number,
@@ -38,14 +38,18 @@ export const history = async (
       lending.id AS id,
       lendingCondition,
       user.nickname AS login,
+      lending.returningCondition,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
         ELSE DATEDIFF(user.penaltyEndDate, now())
       END AS penaltyDays,
       book.callSign,
       book_info.title,
-      lending.createdAt AS createdAt,
-      lending.returnedAt AS returnedAt,
-      DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
+      DATE_FORMAT(lending.createdAt, '%Y-%m-%d') AS createdAt,
+      DATE_FORMAT(lending.returnedAt, '%Y-%m-%d') AS returnedAt,
+      DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate,
+      (
+        SELECT nickname from user where user.id = lendingLibrarianId
+      ) as lendingLibrarianNickName
     FROM lending
     JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
@@ -61,13 +65,14 @@ export const history = async (
       lending.id AS id,
       lendingCondition,
       user.nickname AS login,
+      lending.returningCondition,
       CASE WHEN NOW() > user.penaltyEndDate THEN 0
         ELSE DATEDIFF(user.penaltyEndDate, now())
       END AS penaltyDays,
       book.callSign,
       book_info.title,
-      lending.createdAt AS createdAt,
-      DATE_ADD(lending.createdAt, interval 14 day) AS dueDate
+      DATE_FORMAT(lending.createdAt, '%Y-%m-%d') AS createdAt,
+      DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate
     FROM lending
     JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
