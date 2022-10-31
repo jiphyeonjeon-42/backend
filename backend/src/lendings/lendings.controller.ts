@@ -17,13 +17,13 @@ export const create: RequestHandler = async (
     next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await lendingsService.create(
+    const duedate = await lendingsService.create(
       req.body.userId,
       req.body.bookId,
       id,
       req.body.condition,
     );
-    res.status(201).end();
+    res.status(200).json(duedate);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 400 && errorNumber < 500) {

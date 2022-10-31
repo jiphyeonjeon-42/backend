@@ -31,10 +31,6 @@ passport.use('42', FtStrategy);
 passport.use('42Auth', FtAuthentication);
 passport.use('jwt', JwtStrategy);
 
-app.get('/welcome', (req: Request, res: Response) => {
-  res.send('welcome!');
-});
-
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
 app.use(
