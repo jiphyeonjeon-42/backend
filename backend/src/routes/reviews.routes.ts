@@ -14,7 +14,7 @@ router
      * @openapi
      * /api/reviews:
      *    post:
-     *      description: 책 리뷰를 작성한다.
+     *      description: 책 리뷰를 작성한다. content 길이는 10글자 이상 100글자 이하로 입력하여야 한다.
      *      tags:
      *      - reviews
      *      requestBody:
@@ -33,10 +33,20 @@ router
      *                  type: string
      *                  nullable: false
      *                  required: true
-     *                  example: "책이 좋네요."
+     *                  example: "책이 좋네요 열글자."
      *      responses:
      *         '201':
      *            description: 리뷰가 DB에 정상적으로 insert됨.
+     *         '400':
+     *            description: 잘못된 요청.
+     *            content:
+     *              application/json:
+     *                schema:
+     *                  type: object
+     *                examples:
+     *                  유효하지 않은 content 길이 :
+     *                    value:
+     *                      errorCode: 801
      *         '401':
      *            description: 권한 없음.
      *            content:
@@ -232,7 +242,7 @@ router
      * @openapi
      * /api/reviews/{reviewsId}:
      *    patch:
-     *      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다.
+     *      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다. content 길이는 10글자 이상 100글자 이하로 입력하여야 한다.
      *      tags:
      *      - reviews
      *      parameters:
@@ -249,8 +259,8 @@ router
      *              properties:
      *                content:
      *                  type: string
-     *                  nullable: false
-     *                  example: "책이 좋네요."
+     *                  nullable: false경
+     *                  example: "책이 좋네요 열글자."
      *      responses:
      *         '200':
      *            description: 리뷰가 DB에 정상적으로 update됨.
@@ -263,6 +273,9 @@ router
      *                 적절하지 않는 reviewsId 값:
      *                   value:
      *                     errorCode: 800
+     *                 유효하지 않은 content 길이 :
+     *                   value:
+     *                     errorCode: 801
      *         '401':
      *            description: 권한 없음.
      *            content:
@@ -303,14 +316,14 @@ router
      * @openapi
      * /api/reviews/{reviewsId}:
      *    delete:
-     *      description: 책 리뷰를 삭제한다.
+     *      description: 책 리뷰를 삭제한다. 작성자와 사서 권한이 있는 사용자만 삭제할 수 있다.
      *      tags:
      *      - reviews
      *      parameters:
      *      - name: reviewsId
      *        required: true
      *        in: path
-     *        description: 들어온 reviewsId에 해당하는 리뷰를 삭제한다. 사서와 작성자만 삭제할 수 있다.
+     *        description: 들어온 reviewsId에 해당하는 리뷰를 삭제한다.
      *      responses:
      *         '200':
      *            description: 리뷰가 DB에서 정상적으로 delete됨.
