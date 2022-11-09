@@ -88,6 +88,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
+// eslint-disable-next-line consistent-return
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id, password } = req.body;
