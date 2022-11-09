@@ -90,12 +90,18 @@ router.get('/token', passport.authenticate('42', { session: false, failureRedire
  *                  id:
  *                    description: 로그인한 유저의 PK
  *                    type: integer
+ *                    example: 42
  *                  intra:
- *                    description: 인트라 아이디 또는 Email
+ *                    description: 인트라 아이디 (인트라아이디가 없다면 email)
  *                    type: string
+ *                    example: seongyle
  *                  librarian:
  *                    description: 사서 여부
  *                    type: boolean
+ *                  email:
+ *                    decription: email
+ *                    type: string
+ *                    example: seongyle@student.42seoul.kr
  *        '401':
  *          description: 토큰이 없을 경우 에러
  *          content:
