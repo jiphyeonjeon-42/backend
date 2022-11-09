@@ -210,10 +210,11 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const query = String(req.query.query);
+  const query = String(req.query.query) === 'undefined' ? " " : String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
-  if (query === 'undefined' || Number.isNaN(page) || Number.isNaN(limit)) {
+
+  if (Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
