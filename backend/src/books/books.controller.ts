@@ -18,7 +18,7 @@ const pubdateFormatValidator = (pubdate : String | Date) => {
 };
 
 const bookStatusFormatValidator = (bookStatus : number) => {
-  if (bookStatus < 0 || bookStatus > 2) {
+  if (bookStatus < 0 || bookStatus > 3) {
     return false;
   }
   return true;
@@ -338,7 +338,8 @@ export const updateBookInfo = async (
     author: req.body.author,
     publisher: req.body.publisher,
     image: req.body.image,
-    publishedAt: req.body.publishedAt
+    publishedAt: req.body.publishedAt,
+    categoryId: req.body.categoryId
   }
   let book: types.UpdateBook = {
     id: req.body.bookId,
