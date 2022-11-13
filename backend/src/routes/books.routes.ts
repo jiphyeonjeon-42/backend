@@ -873,6 +873,11 @@ router
  *                  type: integer
  *                  nullable: false
  *                  example: 1
+ *                categoryId:
+ *                  description: categoryId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
  *                title:
  *                  description: 제목
  *                  type: string
