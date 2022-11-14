@@ -347,12 +347,12 @@ export const updateBookInfo = async (
     Status: req.body.status,
   }
   
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN )
-    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
+  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN)
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image || 
           bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
-
+    
   if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
   if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
   if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
@@ -368,7 +368,7 @@ export const updateBookInfo = async (
   }
   try {
     await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
-    return res.status(status.NO_CONTENT).send()
+    return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
