@@ -72,6 +72,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
       id: user.items[0].id,
       intra: user.items[0].nickname ? user.items[0].nickname : user.items[0].email,
       librarian: user.items[0].role === 2,
+      email: user.items[0].email,
     };
     res.status(status.OK).json(result);
   } catch (error: any) {
@@ -87,6 +88,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
+// eslint-disable-next-line consistent-return
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id, password } = req.body;

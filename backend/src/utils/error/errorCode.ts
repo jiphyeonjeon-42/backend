@@ -1,6 +1,7 @@
 export const UNKNOWN_ERROR = '0';
 export const QUERY_EXECUTION_FAILED = '1';
 export const INVALID_INPUT = '2';
+export const CLIENT_AUTH_FAILED = '42';
 
 export const NO_AUTHORIZATION = '100';
 export const NO_USER = '101';
@@ -64,3 +65,5 @@ export const INVALID_INPUT_REVIEWS_ID = '810';
 export const INVALID_INPUT_REVIEWS_CONTENT = '811';
 
 export const UNAUTHORIZED = '700';
+
+export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.'

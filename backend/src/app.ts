@@ -8,6 +8,7 @@ import swaggerOptions from './swagger/swagger';
 import errorHandler from './utils/error/errorHandler';
 import { FtStrategy, JwtStrategy, FtAuthentication } from './auth/auth.strategy';
 import { morganMiddleware } from './utils/logger';
+import errorConverter from './utils/error/errorConverter';
 
 const app: express.Application = express();
 const cors = require('cors');
@@ -43,5 +44,6 @@ app.use(
 app.use('/api', router);
 
 // 에러 핸들러
+app.use(errorConverter);
 app.use(errorHandler);
 export default app;

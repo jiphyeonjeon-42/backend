@@ -16,13 +16,15 @@ export const search = async (
   const bookList = (await executeQuery(
     `
     SELECT
-      book.id AS id,
+      book_info.id AS bookInfoId,
       book_info.title AS title,
       book_info.author AS author,
       book_info.publisher AS publisher,
       book_info.isbn AS isbn,
       book.callSign AS callSign,
-      book_info.image as image,
+      book_info.image AS image,
+      book.id AS bookId,
+      book.status AS status,
       (
         SELECT name
         FROM category
@@ -597,7 +599,7 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
     let value = bookInfoObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookInfoString += `${key } = ?,`
+      updateBookInfoString += `${key} = ?,`
       queryBookInfoParam.push(value)
     } else if (key === null){
       updateBookInfoString += `${key} = NULL,`
@@ -608,15 +610,15 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
     let value = bookObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookString += `${key } = ?,`
+      updateBookString += `${key} = ?,`
       queryBookParam.push(value)
     } else if (key === null){
       updateBookString += `${key} = NULL,`
     }
   }
 
-  updateBookInfoString = updateBookInfoString.slice(0,-1)
-  updateBookString = updateBookString.slice(0,-1)
+  updateBookInfoString = updateBookInfoString.slice(0, -1);
+  updateBookString = updateBookString.slice(0, -1);
 
   await executeQuery(`
     UPDATE book_info 

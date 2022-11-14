@@ -374,7 +374,7 @@ router
    *      - name: query
    *        in: query
    *        description: 검색어
-   *        required: true
+   *        required: false
    *        schema:
    *          type: string
    *      - name: page
@@ -403,7 +403,7 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *                        id:
+   *                        bookInfoId:
    *                          description: 고유 id
    *                          type: integer
    *                          example: 340
@@ -423,14 +423,6 @@ router
    *                          description: 책의 isbn
    *                          type: string
    *                          example: 9791195982394
-   *                        category:
-   *                          description: 카데고리
-   *                          type: string
-   *                          example: 기술교양
-   *                        isLendable:
-   *                          description: 대출 가능 여부
-   *                          type: boolean
-   *                          example: 1
    *                        callSign:
    *                          description: 청구 기호
    *                          type: string
@@ -439,6 +431,22 @@ router
    *                          description: 이미지 URL 주소
    *                          type: string
    *                          example: "이미지 주소"
+   *                        bookId:
+   *                          description: Book Id
+   *                          type: integer
+   *                          example: "1"
+   *                        status:
+   *                          description: Book status 
+   *                          type: integer
+   *                          example: "2"
+   *                        category:
+   *                          description: 카데고리
+   *                          type: string
+   *                          example: 기술교양
+   *                        isLendable:
+   *                          description: 대출 가능 여부
+   *                          type: boolean
+   *                          example: 1
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object
@@ -870,6 +878,11 @@ router
  *              properties:
  *                bookInfoId:
  *                  description: bookInfoId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
+ *                categoryId:
+ *                  description: categoryId
  *                  type: integer
  *                  nullable: false
  *                  example: 1
