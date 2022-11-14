@@ -353,11 +353,11 @@ export const updateBookInfo = async (
           bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
     
-  if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
-  if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
-  if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
-  if (isNullish(bookInfo.image) == false) { bookInfo.image.trim(); }
-  if (isNullish(bookInfo.publishedAt) == false && pubdateFormatValidator(bookInfo.publishedAt)) {
+  if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
+  if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
+  if (!isNullish(bookInfo.publisher)) { bookInfo.publisher.trim(); }
+  if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
+  if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
   } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
