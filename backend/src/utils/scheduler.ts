@@ -7,17 +7,19 @@ const midnightScheduler = () => {
   rule.dayOfWeek = [0, new schedule.Range(0, 6)];
   rule.hour = 0;
   rule.minute = 42;
+  rule.tz = 'Asia/Seoul';
   schedule.scheduleJob(rule, async () => {
     await slack.updateSlackId();
     await notifications.notifyReservationOverdue();
   });
 };
 
-const noonScheduler = () => {
+const morningScheduler = () => {
   const rule = new schedule.RecurrenceRule();
   rule.dayOfWeek = [0, new schedule.Range(0, 6)];
-  rule.hour = 12;
-  rule.minute = 0;
+  rule.hour = 9;
+  rule.minute = 42;
+  rule.tz = 'Asia/Seoul';
   schedule.scheduleJob(rule, async () => {
     await notifications.notifyReservation();
     await notifications.notifyReturningReminder();
@@ -27,7 +29,7 @@ const noonScheduler = () => {
 
 export const scheduler = () => {
   midnightScheduler();
-  noonScheduler();
+  morningScheduler();
 };
 
 export default scheduler;
