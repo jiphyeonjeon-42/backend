@@ -374,7 +374,7 @@ router
    *      - name: query
    *        in: query
    *        description: 검색어
-   *        required: true
+   *        required: false
    *        schema:
    *          type: string
    *      - name: page
@@ -870,6 +870,11 @@ router
  *              properties:
  *                bookInfoId:
  *                  description: bookInfoId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
+ *                categoryId:
+ *                  description: categoryId
  *                  type: integer
  *                  nullable: false
  *                  example: 1

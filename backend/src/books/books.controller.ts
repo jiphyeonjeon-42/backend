@@ -18,7 +18,7 @@ const pubdateFormatValidator = (pubdate : String | Date) => {
 };
 
 const bookStatusFormatValidator = (bookStatus : number) => {
-  if (bookStatus < 0 || bookStatus > 2) {
+  if (bookStatus < 0 || bookStatus > 3) {
     return false;
   }
   return true;
@@ -210,10 +210,11 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const query = String(req.query.query);
+  const query = String(req.query.query) === 'undefined' ? " " : String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
-  if (query === 'undefined' || Number.isNaN(page) || Number.isNaN(limit)) {
+
+  if (Number.isNaN(page) || Number.isNaN(limit)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
@@ -337,7 +338,8 @@ export const updateBookInfo = async (
     author: req.body.author,
     publisher: req.body.publisher,
     image: req.body.image,
-    publishedAt: req.body.publishedAt
+    publishedAt: req.body.publishedAt,
+    categoryId: req.body.categoryId
   }
   let book: types.UpdateBook = {
     id: req.body.bookId,
@@ -345,17 +347,17 @@ export const updateBookInfo = async (
     Status: req.body.status,
   }
   
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN )
-    return next (new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST))
+  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN)
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image || 
           bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
     return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
-
-  if (isNullish(bookInfo.title) == false) { bookInfo.title.trim(); }
-  if (isNullish(bookInfo.author) == false) { bookInfo.author.trim(); }
-  if (isNullish(bookInfo.publisher) == false) { bookInfo.publisher.trim(); }
-  if (isNullish(bookInfo.image) == false) { bookInfo.image.trim(); }
-  if (isNullish(bookInfo.publishedAt) == false && pubdateFormatValidator(bookInfo.publishedAt)) {
+    
+  if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
+  if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
+  if (!isNullish(bookInfo.publisher)) { bookInfo.publisher.trim(); }
+  if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
+  if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
   } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
@@ -366,7 +368,7 @@ export const updateBookInfo = async (
   }
   try {
     await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
-    return res.status(status.NO_CONTENT).send()
+    return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
