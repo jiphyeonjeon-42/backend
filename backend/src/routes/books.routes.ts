@@ -419,6 +419,10 @@ router
    *                          description: 출판사
    *                          type: string
    *                          example: DigitalNew
+   *                        publishedAt:
+   *                          description: 출판일자
+   *                          type: string
+   *                          example: 20181009
    *                        isbn:
    *                          description: 책의 isbn
    *                          type: string
