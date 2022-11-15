@@ -427,6 +427,10 @@ router
    *                          description: 책의 isbn
    *                          type: string
    *                          example: 9791195982394
+   *                        categoryId:
+   *                          description: 카데고리 Id
+   *                          type: integer
+   *                          example: 5
    *                        category:
    *                          description: 카데고리
    *                          type: string
