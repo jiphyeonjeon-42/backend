@@ -403,18 +403,18 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *                        id:
-   *                          description: 고유 id
+   *                        bookInfoId:
+   *                          description: 고유 bookInfo id
    *                          type: integer
-   *                          example: 340
+   *                          example: 55
    *                        title:
    *                          description: 제목
    *                          type: string
-   *                          example: "한눈에 보이는 무료 글꼴 가이드: 영어편"
+   *                          example: "chanheki search"
    *                        author:
    *                          description: 저자
    *                          type: string
-   *                          example: 탁연상
+   *                          example: 김찬희
    *                        publisher:
    *                          description: 출판사
    *                          type: string
@@ -422,11 +422,27 @@ router
    *                        publishedAt:
    *                          description: 출판일자
    *                          type: string
-   *                          example: 20181009
+   *                          example: 20200505
    *                        isbn:
    *                          description: 책의 isbn
    *                          type: string
    *                          example: 9791195982394
+   *                        callSign:
+   *                          description: 청구 기호
+   *                          type: string
+   *                          example: "c1.99.v1.c9"
+   *                        image:
+   *                          description: 이미지 URL 주소
+   *                          type: string
+   *                          example: "이미지 주소"
+   *                        bookId:
+   *                          description: Book Id
+   *                          type: integer
+   *                          example: "1"
+   *                        status:
+   *                          description: Book status 
+   *                          type: integer
+   *                          example: "2"
    *                        categoryId:
    *                          description: 카데고리 Id
    *                          type: integer
@@ -439,14 +455,6 @@ router
    *                          description: 대출 가능 여부
    *                          type: boolean
    *                          example: 1
-   *                        callSign:
-   *                          description: 청구 기호
-   *                          type: string
-   *                          example: "c1.99.v1.c1"
-   *                        image:
-   *                          description: 이미지 URL 주소
-   *                          type: string
-   *                          example: "이미지 주소"
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object

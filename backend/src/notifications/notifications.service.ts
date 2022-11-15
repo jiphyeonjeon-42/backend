@@ -154,7 +154,7 @@ export const notifyOverdue = async () => {
     LEFT JOIN user ON
       lending.userId = user.id
     WHERE
-    DATEDIFF(CURDATE(), lending.createdAt) = 15 AND
+    DATEDIFF(CURDATE(), lending.createdAt) >= 15 AND
     lending.returnedAt IS NULL
   `);
   lendings.forEach(async (lending) => {
