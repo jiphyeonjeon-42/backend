@@ -26,6 +26,7 @@ export const search = async (
       book_info.image AS image,
       book.id AS bookId,
       book.status AS status,
+      book_info.categoryId AS categoryId,
       (
         SELECT name
         FROM category
