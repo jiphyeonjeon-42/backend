@@ -20,6 +20,7 @@ export const search = async (
       book_info.title AS title,
       book_info.author AS author,
       book_info.publisher AS publisher,
+      book_info.publishedAt AS publishedAt,
       book_info.isbn AS isbn,
       book.callSign AS callSign,
       book_info.image AS image,
