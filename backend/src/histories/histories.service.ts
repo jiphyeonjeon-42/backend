@@ -49,7 +49,10 @@ export const histories = async (
       DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate,
       (
         SELECT nickname from user where user.id = lendingLibrarianId
-      ) as lendingLibrarianNickName
+      ) as lendingLibrarianNickName,
+      (
+        SELECT nickname from user where user.id = returningLibrarianId
+      ) as returningLibrarianNickname
     FROM lending
     JOIN user ON user.id = lending.userId
     JOIN book ON book.id = lending.bookId
