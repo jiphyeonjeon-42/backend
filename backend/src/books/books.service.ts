@@ -20,11 +20,13 @@ export const search = async (
       book_info.title AS title,
       book_info.author AS author,
       book_info.publisher AS publisher,
+      DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
       book_info.isbn AS isbn,
       book.callSign AS callSign,
       book_info.image AS image,
       book.id AS bookId,
       book.status AS status,
+      book_info.categoryId AS categoryId,
       (
         SELECT name
         FROM category

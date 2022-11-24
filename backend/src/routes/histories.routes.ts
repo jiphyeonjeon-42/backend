@@ -143,4 +143,4 @@ router
    *                     type: integer
    *                     example: 700
    */
-  .get('/'/*, authValidate(roleSet.all)*/, histories);
+  .get('/', authValidate(roleSet.all), histories);
