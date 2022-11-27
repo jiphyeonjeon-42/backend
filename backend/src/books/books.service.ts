@@ -550,8 +550,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   FROM likes
   WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === false)
-  { throw new Error(errorCode.ALREADY_LIKES); }
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === false) { throw new Error(errorCode.ALREADY_LIKES); }
   // create
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -591,14 +590,14 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo[0].count == 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
   // like 존재여부 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
   WHERE id = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length != 0 && LikeArray[0].isDeleted == true) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === true) { throw new Error(errorCode.NONEXISTENT_LIKES); }
   // delete
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -625,7 +624,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo[0].count == 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
   // (userId, bookInfoId)인 like 데이터 확인
   const LikeArray = await executeQuery(`
   SELECT userId, isDeleted
@@ -634,7 +633,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   `, [userId, bookInfoId]);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
-    if (like.userId == userId) { isLiked = true; }
+    if (like.userId === userId) { isLiked = true; }
   });
   return ({ bookInfoId, isLiked, likeNum: LikeArray.length });
 };
