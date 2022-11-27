@@ -11,9 +11,10 @@ export const create = async (
   bookId: number,
   librarianId: number,
   condition: string,
-): Promise<void> => {
+) => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
   try {
     await conn.beginTransaction();
     // 존재하는 유저인지 확인
@@ -106,7 +107,6 @@ export const create = async (
         book.id = ?
     `, [bookId]);
     await conn.commit();
-    const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
     publishMessage(users[0].slack, `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${books[0].title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
   } catch (e) {
     await conn.rollback();
@@ -116,6 +116,7 @@ export const create = async (
   } finally {
     conn.release();
   }
+  return ({ dueDate: formatDate(dueDate) });
 };
 
 export const returnBook = async (

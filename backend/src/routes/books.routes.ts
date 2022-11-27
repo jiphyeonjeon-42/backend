@@ -374,7 +374,7 @@ router
    *      - name: query
    *        in: query
    *        description: 검색어
-   *        required: true
+   *        required: false
    *        schema:
    *          type: string
    *      - name: page
@@ -403,7 +403,7 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *                        id:
+   *                        bookInfoId:
    *                          description: 고유 id
    *                          type: integer
    *                          example: 340
@@ -423,14 +423,6 @@ router
    *                          description: 책의 isbn
    *                          type: string
    *                          example: 9791195982394
-   *                        category:
-   *                          description: 카데고리
-   *                          type: string
-   *                          example: 기술교양
-   *                        isLendable:
-   *                          description: 대출 가능 여부
-   *                          type: boolean
-   *                          example: 1
    *                        callSign:
    *                          description: 청구 기호
    *                          type: string
@@ -439,6 +431,22 @@ router
    *                          description: 이미지 URL 주소
    *                          type: string
    *                          example: "이미지 주소"
+   *                        bookId:
+   *                          description: Book Id
+   *                          type: integer
+   *                          example: "1"
+   *                        status:
+   *                          description: Book status
+   *                          type: integer
+   *                          example: "2"
+   *                        category:
+   *                          description: 카데고리
+   *                          type: string
+   *                          example: 기술교양
+   *                        isLendable:
+   *                          description: 대출 가능 여부
+   *                          type: boolean
+   *                          example: 1
    *                  meta:
    *                    description: 책 수와 관련된 정보
    *                    type: object
@@ -847,69 +855,89 @@ router
 router
 /**
  * @openapi
- * /api/books/update/{bookInfoId}:
+ * /api/books/update:
  *    patch:
- *      description: 책 정보를 수정한다. book_info table만 수정.
+ *      description: 책 정보를 수정합니다. book_info table or book table
  *      tags:
  *      - books
- *      parameters:
- *      - name: bookInfoId
- *        in: path
- *        description: book_info Id
- *        required: true
- *        schema:
- *          type: integer
  *      requestBody:
  *        content:
  *          application/json:
  *            schema:
  *              type: object
  *              properties:
+ *                bookInfoId:
+ *                  description: bookInfoId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
+ *                categoryId:
+ *                  description: categoryId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
  *                title:
+ *                  description: 제목
  *                  type: string
  *                  nullable: true
  *                  example: "작별인사 (김영하 장편소설)"
  *                author:
+ *                  description: 저자
  *                  type: string
  *                  nullable: true
  *                  example: "김영하"
  *                publisher:
+ *                  description: 출판사
  *                  type: string
  *                  nullable: true
  *                  example: "복복서가"
- *                isbn:
- *                  type: string
- *                  nullable: true
- *                  example: 9788065960874
- *                image:
- *                  type: string
- *                  nullable: true
- *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
- *                categoryId:
- *                  type: string
- *                  nullable: true
- *                  example: 1
  *                publishedAt:
+ *                  description: 출판연월
  *                  type: string
  *                  nullable: true
  *                  example: "20200505"
+ *                image:
+ *                  description: 표지이미지
+ *                  type: string
+ *                  nullable: true
+ *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+ *                bookId:
+ *                  description: bookId
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 1
+ *                callSign:
+ *                  description: 청구기호
+ *                  type: string
+ *                  nullable: true
+ *                  example: h1.18.v1.c1
+ *                status:
+ *                  description: 도서 상태
+ *                  type: integer
+ *                  nullable: false
+ *                  example: 0
  *      responses:
  *         '204':
- *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환합니다.
+ *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
  *            content:
  *             application:
  *               schema:
+<<<<<<< HEAD
  *                 type:
  *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
+=======
+ *                 type:
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환.
+>>>>>>> develop
  *         '실패 케이스 1':
- *              description: 예상치 못한 에러로 책 정보 patch에 실패함.
+ *              description: 예상치 못한 에러로 책 정보 patch에 실패.
  *              content:
  *                application/json:
  *                  schema:
  *                    type: json
  *                    example : { errorCode: 312 }
  *         '실패 케이스 2':
- *              description: 수정할 DATA가 적어도 한 개는 필요함. 수정할 DATA가 없음"
+ *              description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
  *              content:
  *                application/json:
  *                  schema:
@@ -923,4 +951,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update/:bookInfoId', authValidate(roleSet.librarian), updateBookInfo);
+.patch('/update', authValidate(roleSet.librarian), updateBookInfo);

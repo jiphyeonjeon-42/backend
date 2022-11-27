@@ -16,13 +16,15 @@ export const search = async (
   const bookList = (await executeQuery(
     `
     SELECT
-      book.id AS id,
+      book_info.id AS bookInfoId,
       book_info.title AS title,
       book_info.author AS author,
       book_info.publisher AS publisher,
       book_info.isbn AS isbn,
       book.callSign AS callSign,
-      book_info.image as image,
+      book_info.image AS image,
+      book.id AS bookId,
+      book.status AS status,
       (
         SELECT name
         FROM category
@@ -199,8 +201,8 @@ export const createBook = async (book: types.CreateBookInfo) => {
 
     if (isbnInBookInfo[0].cnt === 0) {
       await transactionExecuteQuery(
-        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryEnum, categoryId, publishedAt)
-      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?, ?)`,
+        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryId, publishedAt)
+      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?)`,
         [
           book.title,
           book.author,
@@ -209,7 +211,6 @@ export const createBook = async (book: types.CreateBookInfo) => {
           book.isbn ? book.isbn : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
           book.image ? book.image : 'NOTEXIST',
-          category,
           book.categoryId,
           book.pubdate,
         ],
@@ -644,26 +645,52 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ "bookInfoId": bookInfoId, "isLiked" : isLiked, "likeNum" : LikeArray.length });
 };
 
-export const updateBookInfo = async (book: types.UpdateBookInfo, bookInfoId: number) => {
-  let updateString = '';
-  const queryParam = [];
-  var bookInfoObject: any = {
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
+  let updateBookInfoString = '';
+  let updateBookString = '';
+  const queryBookInfoParam = [];
+  const queryBookParam = [];
+  let bookInfoObject: any = {
+  } = bookInfo
+  let bookObject: any = {
   } = book
 
   for (let key in bookInfoObject) {
     let value = bookInfoObject[key];
-    if (key !== '') {
-      updateString += `${key } = ?,`
-      queryParam.push(value)
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookInfoString += `${key} = ?,`
+      queryBookInfoParam.push(value)
     } else if (key === null){
-      updateString += `${key} = NULL,`
+      updateBookInfoString += `${key} = NULL,`
     }
   }
-  updateString = updateString.slice(0,-1)
+
+  for (let key in bookObject) {
+    let value = bookObject[key];
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookString += `${key} = ?,`
+      queryBookParam.push(value)
+    } else if (key === null){
+      updateBookString += `${key} = NULL,`
+    }
+  }
+
+  updateBookInfoString = updateBookInfoString.slice(0, -1);
+  updateBookString = updateBookString.slice(0, -1);
+
   await executeQuery(`
     UPDATE book_info
     SET
-    ${updateString}
+    ${updateBookInfoString}
     WHERE id = ${bookInfoId}
-    `, queryParam);
+    `, queryBookInfoParam);
+
+  await executeQuery(`
+    UPDATE book
+    SET
+    ${updateBookString}
+    WHERE id = ${bookId} ;
+    `, queryBookParam);
 };

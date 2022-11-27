@@ -16,5 +16,6 @@ router.use(reservations.path, reservations.router);
 router.use(users.path, users.router);
 router.use(histories.path, histories.router);
 router.use(reviews.path, reviews.router);
+router.use(histories.path, histories.router);
 
 export default router;

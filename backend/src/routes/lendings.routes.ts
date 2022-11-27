@@ -38,8 +38,16 @@ router
  *                - userId
  *                - condition
  *      responses:
- *        '201':
- *          description: 대출기록 생성완료
+ *        '200':
+ *          description: 생성된 대출기록의 반납일자를 반환.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  dueDate:
+ *                    type: date | string
+ *                    example: 2022-12-12
  *        '400':
  *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
  *          content:
