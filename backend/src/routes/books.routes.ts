@@ -10,7 +10,7 @@ import {
   createLike,
   deleteLike,
   getLikeInfo,
-  updateBookInfo
+  updateBookInfo,
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -723,7 +723,7 @@ router
    */
   .get('/:id', getBookById);
 
-  router
+router
 /**
    * @openapi
    * /api/books/info/{bookInfoId}/like:
@@ -770,7 +770,7 @@ router
    *                   description: 좋아요할 bookInfo의 id
    *                example : { userId: 123, bookInfoId: 456 }
    */
-   .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
+  .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
 
 router
 /**
@@ -857,8 +857,7 @@ router
    *                type: json
    *                example : { errorCode: 601}
    */
-   .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
-
+  .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
 
 router
 /**
@@ -930,13 +929,8 @@ router
  *            content:
  *             application:
  *               schema:
-<<<<<<< HEAD
- *                 type:
- *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
-=======
  *                 type:
  *                 description: 성공했을 때 http 상태코드 204 값을 반환.
->>>>>>> develop
  *         '실패 케이스 1':
  *              description: 예상치 못한 에러로 책 정보 patch에 실패.
  *              content:
@@ -959,4 +953,4 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-.patch('/update', authValidate(roleSet.librarian), updateBookInfo);
+  .patch('/update', authValidate(roleSet.librarian), updateBookInfo);
