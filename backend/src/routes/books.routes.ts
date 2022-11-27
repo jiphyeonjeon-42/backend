@@ -440,7 +440,7 @@ router
    *                          type: integer
    *                          example: "1"
    *                        status:
-   *                          description: Book status 
+   *                          description: Book status
    *                          type: integer
    *                          example: "2"
    *                        categoryId:
@@ -789,23 +789,13 @@ router
    *        schema:
    *          type: integer
    *      responses:
-   *        '200':
-   *          description: Success
+   *        '204':
+   *          description: No Content
    *          content:
    *            application/json:
    *              schema:
-   *                type: object
-   *                example : { "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 }
-   *                properties:
-   *                  bookInfoId:
-   *                   type: integer
-   *                   description: 좋아요할 bookInfo의 id
-   *                  isLiked:
-   *                   type: bool
-   *                   description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
-   *                  likeNum:
-   *                   type: integer
-   *                   description: 이 책에 눌린 좋아요의 수
+   *                type:
+   *                description:
    *        'errorcase-1':
    *          description: bookInfoId가 유효하지 않음
    *          content:
@@ -875,7 +865,7 @@ router
  * @openapi
  * /api/books/update:
  *    patch:
- *      description: 책 정보를 수정합니다. book_info table or book table 
+ *      description: 책 정보를 수정합니다. book_info table or book table
  *      tags:
  *      - books
  *      requestBody:
@@ -940,8 +930,13 @@ router
  *            content:
  *             application:
  *               schema:
- *                 type: 
+<<<<<<< HEAD
+ *                 type:
+ *                 description: 성공했을 때 http 상태코드 204 값을 반환합니다.
+=======
+ *                 type:
  *                 description: 성공했을 때 http 상태코드 204 값을 반환.
+>>>>>>> develop
  *         '실패 케이스 1':
  *              description: 예상치 못한 에러로 책 정보 patch에 실패.
  *              content:
