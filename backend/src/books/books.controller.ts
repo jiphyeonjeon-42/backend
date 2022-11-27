@@ -210,7 +210,7 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const query = String(req.query.query) === 'undefined' ? " " : String(req.query.query);
+  const query = String(req.query.query) === 'undefined' ? ' ' : String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
 
@@ -241,7 +241,7 @@ export const createLike = async (
 ) => {
   // parameters
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
-  const id = req.user as any;
+  const { id } = req.user as any;
 
   if (!bookInfoId) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
@@ -259,7 +259,6 @@ export const createLike = async (
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
     logger.error(error.message);
-    console.log(error);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
@@ -270,13 +269,12 @@ export const deleteLike = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const id = req.user as any;
+  const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
 
   // 로직수행 및 에러처리
   try {
@@ -301,7 +299,7 @@ export const getLikeInfo = async (
   next: NextFunction,
 ) => {
   // parameters
-  const id = req.user as any;
+  const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
@@ -310,8 +308,7 @@ export const getLikeInfo = async (
   // console.log("bookInfoId: ", bookInfoId);
 
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
 
   // 로직수행 및 에러처리
   try {
@@ -329,33 +326,30 @@ export const getLikeInfo = async (
   return 0;
 };
 
-
 export const updateBookInfo = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  let bookInfo: types.UpdateBookInfo = {
+  const bookInfo: types.UpdateBookInfo = {
     id: req.body.bookInfoId,
     title: req.body.title,
     author: req.body.author,
     publisher: req.body.publisher,
     image: req.body.image,
     publishedAt: req.body.publishedAt,
-    categoryId: req.body.categoryId
-  }
-  let book: types.UpdateBook = {
+    categoryId: req.body.categoryId,
+  };
+  const book: types.UpdateBook = {
     id: req.body.bookId,
     callSign: req.body.callSign,
     Status: req.body.status,
-  }
-  
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN)
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
-  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image || 
-          bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
-    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
-    
+  };
+
+  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
   if (!isNullish(bookInfo.publisher)) { bookInfo.publisher.trim(); }
