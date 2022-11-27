@@ -60,35 +60,35 @@ router
    *                  items:
    *                    description: 검색된 대출 기록들의 목록
    *                    type: array
-   *                    example: [{"id": 135,"lendingCondition": "","login": "chanheki","returningCondition": "","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z","lendingLibrarianNickName": "chanheki"}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z","lendingLibrarianNickName": "chanheki"}]
+   *                    example: [{"id": 135,"lendingCondition": "","login": "chanheki","returningCondition": "","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname" : null}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname": "seongyle" }]
    *                    items:
    *                      type: object
    *                      properties:
-   *                        id: 
+   *                        id:
    *                          description: 고유 id
    *                          type: integer
    *                          example: 777
-   *                        lendingCondition: 
+   *                        lendingCondition:
    *                          description: 대출시 책 상태
    *                          type: string
    *                          example: "이상 없음"
-   *                        login: 
+   *                        login:
    *                          description: 대출자 아이디
    *                          type: string
    *                          example: chanheki
-   *                        returningCondition: 
+   *                        returningCondition:
    *                          description: 반납시 책 상태
    *                          type: string
    *                          example: "이상 없음"
-   *                        penaltyDays: 
+   *                        penaltyDays:
    *                          description: 연체 일
    *                          type: integer
    *                          example: 777
-   *                        callSign: 
+   *                        callSign:
    *                          description: 청구 기호
    *                          type: string
    *                          example: C5.13.v1.c1
-   *                        title: 
+   *                        title:
    *                          description: 책 제목
    *                          type: TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 )
    *                          example: 777
@@ -96,18 +96,22 @@ router
    *                          description: lending 생성 일시
    *                          type: Date
    *                          example: 2022-05-05
-   *                        returnedAt: 
+   *                        returnedAt:
    *                          description: 반납 일시
    *                          type: Date
    *                          example: 2022-05-05
-   *                        dueDate: 
+   *                        dueDate:
    *                          description: 반납 마감 일시
    *                          type: Date
    *                          example: 2022-05-05
-   *                        lendingLibrarianNickName: 
+   *                        lendingLibrarianNickName:
    *                          description: 대출해준 사서 이름
    *                          type: string
    *                          example: chanheki
+   *                        returningLibrarianNickname:
+   *                          decripttion: 반납해준 사서 이름(없으면 null)
+   *                          type: string
+   *                          example: seongyle
    *                  meta:
    *                    description: 대출 기록 수와 관련된 정보
    *                    type: object
