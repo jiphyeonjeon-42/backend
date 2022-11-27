@@ -303,10 +303,6 @@ export const getLikeInfo = async (
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
-  // console.log("GetLikeInfo");
-  // console.log("query: ", parameter);
-  // console.log("bookInfoId: ", bookInfoId);
-
   // parameter 검증
   if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
 
