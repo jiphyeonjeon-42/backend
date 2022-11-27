@@ -543,23 +543,21 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo.count == 0)
-    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
+  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
   // 중복 like 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
   WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length != 0 && LikeArray[0].isDeleted == false)
-    throw new Error(errorCode.ALREADY_LIKES);
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === false)
+  { throw new Error(errorCode.ALREADY_LIKES); }
   // create
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
   try {
-    if (LikeArray.length == 0)
-    {
+    if (LikeArray.length === 0) {
       // 새로운 튜플 생성
       await transactionExecuteQuery(`
         INSERT INTO likes(
@@ -568,9 +566,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
           isDeleted
         )VALUES (?, ?, ?)
       `, [userId, bookInfoId, false]);
-    }
-    else
-    {
+    } else {
       // 삭제된 튜플 복구
       await transactionExecuteQuery(`
         UPDATE likes
@@ -595,16 +591,14 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo[0].count == 0)
-    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
+  if (numberOfBookInfo[0].count == 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
   // like 존재여부 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
   WHERE id = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length != 0 && LikeArray[0].isDeleted == true)
-    throw new Error(errorCode.NONEXISTENT_LIKES);
+  if (LikeArray.length != 0 && LikeArray[0].isDeleted == true) { throw new Error(errorCode.NONEXISTENT_LIKES); }
   // delete
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -631,8 +625,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo[0].count == 0)
-    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
+  if (numberOfBookInfo[0].count == 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
   // (userId, bookInfoId)인 like 데이터 확인
   const LikeArray = await executeQuery(`
   SELECT userId, isDeleted
@@ -641,10 +634,9 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   `, [userId, bookInfoId]);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
-    if (like.userId == userId)
-      isLiked = true;
+    if (like.userId == userId) { isLiked = true; }
   });
-  return ({ "bookInfoId": bookInfoId, "isLiked" : isLiked, "likeNum" : LikeArray.length });
+  return ({ bookInfoId, isLiked, likeNum: LikeArray.length });
 };
 
 export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
@@ -652,30 +644,30 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
   let updateBookString = '';
   const queryBookInfoParam = [];
   const queryBookParam = [];
-  let bookInfoObject: any = {
-  } = bookInfo
-  let bookObject: any = {
-  } = book
+  const bookInfoObject: any = {
+  } = bookInfo;
+  const bookObject: any = {
+  } = book;
 
-  for (let key in bookInfoObject) {
-    let value = bookInfoObject[key];
+  for (const key in bookInfoObject) {
+    const value = bookInfoObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookInfoString += `${key} = ?,`
-      queryBookInfoParam.push(value)
-    } else if (key === null){
-      updateBookInfoString += `${key} = NULL,`
+      updateBookInfoString += `${key} = ?,`;
+      queryBookInfoParam.push(value);
+    } else if (key === null) {
+      updateBookInfoString += `${key} = NULL,`;
     }
   }
 
-  for (let key in bookObject) {
-    let value = bookObject[key];
+  for (const key in bookObject) {
+    const value = bookObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookString += `${key} = ?,`
-      queryBookParam.push(value)
-    } else if (key === null){
-      updateBookString += `${key} = NULL,`
+      updateBookString += `${key} = ?,`;
+      queryBookParam.push(value);
+    } else if (key === null) {
+      updateBookString += `${key} = NULL,`;
     }
   }
 
