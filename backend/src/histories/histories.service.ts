@@ -44,6 +44,7 @@ export const histories = async (
       END AS penaltyDays,
       book.callSign,
       book_info.title,
+      book_info.id AS bookInfoId,
       DATE_FORMAT(lending.createdAt, '%Y-%m-%d') AS createdAt,
       DATE_FORMAT(lending.returnedAt, '%Y-%m-%d') AS returnedAt,
       DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate,
@@ -75,6 +76,7 @@ export const histories = async (
       END AS penaltyDays,
       book.callSign,
       book_info.title,
+      book_info.id AS bookInfoId,
       DATE_FORMAT(lending.createdAt, '%Y-%m-%d') AS createdAt,
       DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate
     FROM lending
