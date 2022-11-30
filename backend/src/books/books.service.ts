@@ -601,6 +601,7 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   // delete
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
   try {
     // 튜플 상태값을 수정하는 soft delete
     await transactionExecuteQuery(`
