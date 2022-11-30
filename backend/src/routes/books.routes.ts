@@ -857,7 +857,7 @@ router
    *                type: json
    *                example : { errorCode: 601}
    */
-  .get('/info/:bookInfoId/like', authValidate(roleSet.all), getLikeInfo);
+  .get('/info/:bookInfoId/like', getLikeInfo);
 
 router
 /**
