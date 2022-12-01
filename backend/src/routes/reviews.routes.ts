@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-  createReviews, updateReviews, getReviews, deleteReviews
+  createReviews, updateReviews, getReviews, deleteReviews, patchReviews,
 } from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import {wrapAsyncController} from '../middlewares/wrapAsyncController';
+import { wrapAsyncController } from '../middlewares/wrapAsyncController';
 
 export const path = '/reviews';
 export const router = Router();
@@ -251,7 +251,7 @@ router
     /**
      * @openapi
      * /api/reviews/{reviewsId}:
-     *    patch:
+     *    put:
      *      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다. content 길이는 10글자 이상 100글자 이하로 입력하여야 한다.
      *      tags:
      *      - reviews
@@ -308,6 +308,9 @@ router
      *                  토큰 userId와 리뷰 userID 불일치 && 사서 권한 없음 :
      *                    value :
      *                      errorCode: 801
+     *                  토큰 Disabled Reviews는 수정할 수 없음. :
+     *                    value :
+     *                      errorCode: 805
      *         '404':
      *            description: 존재하지 않는 reviewsId.
      *            content:
@@ -319,7 +322,28 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .patch('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+    .put('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+
+    router
+    /**
+     * @openapi
+     * /api/reviews/{reviewsId}:
+     *    patch:
+     *      description: 책 리뷰의 비활성화 여부를 토글 방식으로 변환
+     *      tags:
+     *      - reviews
+     *      parameters:
+     *      - name: reviewsId
+     *        in: path
+     *        description: 수정할 reviews ID
+     *        required: true
+     *      requestBody:
+     *        required: false
+     *      responses:
+     *         '200':
+     *            description: 리뷰가 DB에 정상적으로 fetch됨.
+     */
+    .patch('/:reviewsId', authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
 
 router
     /**

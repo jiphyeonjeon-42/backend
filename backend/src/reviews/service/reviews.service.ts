@@ -1,4 +1,5 @@
 import * as reviewsRepository from '../repository/reviews.repository';
+import * as errorCheck from './utils/errorCheck';
 
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
   await reviewsRepository.createReviews(userId, bookInfoId, content);
@@ -35,9 +36,18 @@ export const updateReviews = async (
   userId : number,
   content : string,
 ) => {
+  const reviewsUserId = await errorCheck.updatePossibleCheck(reviewsId);
+  errorCheck.idAndTokenIdSameCheck(reviewsUserId, userId);
   await reviewsRepository.updateReviews(reviewsId, userId, content);
 };
 
 export const deleteReviews = async (reviewId: number, deleteUser: number) => {
   await reviewsRepository.deleteReviews(reviewId, deleteUser);
+};
+
+export const patchReviews = async (
+  reviewsId : number,
+  userId : number,
+) => {
+  await reviewsRepository.patchReviews(reviewsId, userId);
 };

@@ -2,7 +2,6 @@ import * as errorCode from '../../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../../mysql';
 
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
-  // bookInfoId가 유효한지 확인
   const numberOfBookInfo = await executeQuery(`
     SELECT COUNT(*) as count
     FROM book_info
@@ -43,6 +42,8 @@ export const getReviewsPage = async (bookInfoId: number, userId: number, page: n
     reviews.bookInfoId,
     reviews.content,
     reviews.createdAt,
+    reviews.disabled,
+    reviews.disabledUserId,
     book_info.title,
     user.nickname
   FROM reviews
@@ -85,6 +86,20 @@ export const getReviewsUserId = async (
   return reviewsUserId[0].userId;
 };
 
+export const getReviews = async (
+  reviewsId : number,
+) => {
+  const result: any = await executeQuery(`
+    SELECT
+      userId,
+      disabled
+    FROM reviews
+    WHERE id = ? 
+    AND isDeleted = false
+    `, [reviewsId]);
+  return result;
+};
+
 export const updateReviews = async (
   reviewsId : number,
   userId : number,
@@ -107,4 +122,17 @@ export const deleteReviews = async (reviewId: number, deleteUser: number) => {
         deleteUserId = ?
       WHERE id = ?
     `, [true, deleteUser, reviewId]);
+};
+
+export const patchReviews = async (
+  reviewsId : number,
+  userId : number,
+) => {
+  await executeQuery(`
+    UPDATE reviews
+    SET
+      disabled = IF(disabled=TRUE, FALSE, TRUE),
+      disabledUserId = IF(disabled=FALSE, NULL, ?)
+    WHERE id = ?
+    `, [userId, reviewsId]);
 };

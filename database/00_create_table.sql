@@ -167,6 +167,8 @@ CREATE TABLE `reviews` (
   `isDeleted` boolean NOT NULL DEFAULT FALSE,
   `deleteUserId` int DEFAULT NULL,
   `content` varchar(255) NOT NULL,
+  `disabled` boolean NOT NULL DEFAULT FALSE,
+  `disabledUserId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_529dceb01ef681127fef04d755d3` (`userId`),
   KEY `FK_bookInfo2` (`bookInfoId`),
