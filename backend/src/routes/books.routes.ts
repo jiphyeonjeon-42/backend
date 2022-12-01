@@ -13,6 +13,7 @@ import {
   updateBookInfo,
 } from '../books/books.controller';
 import authValidate from '../auth/auth.validate';
+import authValidateDefaultNullUser from '../auth/auth.validateDefaultNullUser';
 import { roleSet } from '../auth/auth.type';
 
 export const path = '/books';
@@ -857,7 +858,7 @@ router
    *                type: json
    *                example : { errorCode: 601}
    */
-  .get('/info/:bookInfoId/like', getLikeInfo);
+  .get('/info/:bookInfoId/like', authValidateDefaultNullUser(roleSet.all), getLikeInfo);
 
 router
 /**
