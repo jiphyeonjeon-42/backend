@@ -235,7 +235,7 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
+    .get('/', authValidate(roleSet.all), wrapAsyncController(getReviews));
 
 router
     /**
