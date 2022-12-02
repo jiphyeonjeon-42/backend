@@ -65,9 +65,10 @@ export const NONEXISTENT_LIKES = '603';
 export const INVALID_INPUT_REVIEWS = '800';
 export const UNAUTHORIZED_REVIEWS = '801';
 export const NOT_FOUND_REVIEWS = '804';
+export const DISABLED_REVIEWS = '805';
 export const INVALID_INPUT_REVIEWS_ID = '810';
 export const INVALID_INPUT_REVIEWS_CONTENT = '811';
 
 export const UNAUTHORIZED = '700';
 
-export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.'
+export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';

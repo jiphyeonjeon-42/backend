@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-  createReviews, updateReviews, getReviews, deleteReviews
+  createReviews, updateReviews, getReviews, deleteReviews, patchReviews,
 } from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import {wrapAsyncController} from '../middlewares/wrapAsyncController';
+import { wrapAsyncController } from '../middlewares/wrapAsyncController';
 
 export const path = '/reviews';
 export const router = Router();
@@ -87,6 +87,14 @@ router
      *        in: query
      *        description: user 테이블의 id값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
      *        required: false
+     *      - name: title
+     *        in: query
+     *        description: book-info 테이블의 title값이 들어오면, 해당 title의 리뷰를 보여준다.
+     *        required: false
+     *      - name: intraId
+     *        in: query
+     *        description: user 테이블의 intraId값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
+     *        required: false
      *      - name: page
      *        in: query
      *        description: 해당하는 페이지를 보여준다.
@@ -109,81 +117,101 @@ router
      *                      reviewsId : 1,
      *                      reviewerId : 100,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung1,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "sechung",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 2,
      *                      reviewerId : 101,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung2,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 3,
      *                      reviewerId : 102,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung3,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 4,
      *                      reviewerId : 103,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung4,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 5,
      *                      reviewerId : 104,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung5,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 6,
      *                      reviewerId : 105,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung6,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 7,
      *                      reviewerId : 106,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung7,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 8,
      *                      reviewerId : 107,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung8,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 9,
      *                      reviewerId : 108,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung9,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 10,
      *                      reviewerId : 109,
      *                      bookInfoId: 1,
-     *                      title: 클린코드,
-     *                      nickname : sechung10,
-     *                      content : hello,
+     *                      content : "hello",
+     *                      createdAt: "2022-11-09T06:56:15.640Z",
+     *                      title: "클린코드",
+     *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      ]
      *                    "meta": {
@@ -241,7 +269,7 @@ router
     /**
      * @openapi
      * /api/reviews/{reviewsId}:
-     *    patch:
+     *    put:
      *      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다. content 길이는 10글자 이상 100글자 이하로 입력하여야 한다.
      *      tags:
      *      - reviews
@@ -298,6 +326,9 @@ router
      *                  토큰 userId와 리뷰 userID 불일치 && 사서 권한 없음 :
      *                    value :
      *                      errorCode: 801
+     *                  토큰 Disabled Reviews는 수정할 수 없음. :
+     *                    value :
+     *                      errorCode: 805
      *         '404':
      *            description: 존재하지 않는 reviewsId.
      *            content:
@@ -309,7 +340,28 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .patch('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+    .put('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+
+    router
+    /**
+     * @openapi
+     * /api/reviews/{reviewsId}:
+     *    patch:
+     *      description: 책 리뷰의 비활성화 여부를 토글 방식으로 변환
+     *      tags:
+     *      - reviews
+     *      parameters:
+     *      - name: reviewsId
+     *        in: path
+     *        description: 수정할 reviews ID
+     *        required: true
+     *      requestBody:
+     *        required: false
+     *      responses:
+     *         '200':
+     *            description: 리뷰가 DB에 정상적으로 fetch됨.
+     */
+    .patch('/:reviewsId', authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
 
 router
     /**
