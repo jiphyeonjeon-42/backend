@@ -9,6 +9,16 @@ export const sortParse = (
 
 export const pageParse = (
   page : number,
-) : number => {
-  return Number.isNaN(page) ? 0 : page;
-};
+) : number => (Number.isNaN(page) ? 0 : page);
+
+export const titleParse = (
+  title : any,
+) : string => (title === undefined || null) ? '' : title.trim();
+
+export const intraIdParse = (
+  intraId : any,
+) : string => ((intraId === undefined || null) ? '' : intraId.trim());
+
+export const disabledParse = (
+  disabled : boolean,
+) : boolean => ((disabled == null) ? false : disabled);

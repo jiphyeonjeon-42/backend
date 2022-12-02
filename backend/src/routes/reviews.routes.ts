@@ -87,6 +87,14 @@ router
      *        in: query
      *        description: user 테이블의 id값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
      *        required: false
+     *      - name: title
+     *        in: query
+     *        description: book-info 테이블의 title값이 들어오면, 해당 title의 리뷰를 보여준다.
+     *        required: false
+     *      - name: intraId
+     *        in: query
+     *        description: user 테이블의 intraId값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
+     *        required: false
      *      - name: page
      *        in: query
      *        description: 해당하는 페이지를 보여준다.
@@ -113,6 +121,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "sechung",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 2,
@@ -122,6 +131,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 3,
@@ -131,6 +141,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 4,
@@ -140,6 +151,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 5,
@@ -149,6 +161,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 6,
@@ -158,6 +171,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 7,
@@ -167,6 +181,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 8,
@@ -176,6 +191,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 9,
@@ -185,6 +201,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      {
      *                      reviewsId : 10,
@@ -194,6 +211,7 @@ router
      *                      createdAt: "2022-11-09T06:56:15.640Z",
      *                      title: "클린코드",
      *                      nickname : "chanheki",
+     *                      intraId: "default@student.42seoul.kr",
      *                      },
      *                      ]
      *                    "meta": {
@@ -245,7 +263,7 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/', authValidate(roleSet.all), wrapAsyncController(getReviews));
+    .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
 
 router
     /**
