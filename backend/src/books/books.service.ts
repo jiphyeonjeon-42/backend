@@ -571,7 +571,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
         UPDATE likes
         SET
           isDeleted = ?
-        WHERE id = ? AND bookInfoId = ?
+        WHERE userId = ? AND bookInfoId = ?
       `, [false, userId, bookInfoId]);
     }
     conn.commit();
