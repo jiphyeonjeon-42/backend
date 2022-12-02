@@ -10,9 +10,12 @@ export const getReviewsPage = async (
   userId: number,
   page: number,
   sort: 'asc' | 'desc',
+  title: string,
+  intraId: string,
+  disabled: boolean,
 ) => {
-  const items = await reviewsRepository.getReviewsPage(bookInfoId, userId, page, sort);
-  const counts = await reviewsRepository.getReviewsCounts(bookInfoId, userId);
+  const items = await reviewsRepository.getReviewsPage(bookInfoId, userId, page, sort, title, intraId, disabled);
+  const counts = await reviewsRepository.getReviewsCounts(bookInfoId, userId, title, intraId, disabled);
   const meta = {
     totalItems: counts,
     itemsPerPage: 10,

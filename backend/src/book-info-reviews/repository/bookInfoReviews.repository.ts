@@ -20,6 +20,7 @@ export const getBookinfoReviewsPageNoOffset = async (bookInfoId: number, reviews
   JOIN user ON user.id = reviews.userId
   JOIN book_info ON reviews.bookInfoId = book_info.id  
   WHERE reviews.isDeleted = false
+  AND reviews.disabled = false
     ${bookInfoIdQuery}
     ${reviewIdQuery}
     ${sortQuery}
@@ -37,6 +38,7 @@ export const getBookInfoReviewsCounts = async (bookInfoId: number, reviewsId: nu
     COUNT(*) as counts
   FROM reviews
   WHERE reviews.isDeleted = false
+  AND reviews.disabled = false
     ${bookInfoIdQuery}
     ${reviewIdQuery}
   `);
