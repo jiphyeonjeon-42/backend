@@ -15,7 +15,7 @@ const authValidateDefaultNullUser = (roles: role[]) => async (
   next: Function,
 ) : Promise<void> => {
   if (!req.cookies.access_token) {
-    req.user = { intraProfile: req.user, id: null, role: null };
+    req.user = { intraProfile: null, id: null, role: null };
     next();
   } else {
     try {
