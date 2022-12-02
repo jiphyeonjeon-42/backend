@@ -595,9 +595,9 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
   FROM likes
-  WHERE id = ? AND bookInfoId = ?;
+  WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === true) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+  if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
   // delete
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
@@ -634,7 +634,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   `, [userId, bookInfoId]);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
-    if (like.userId === userId) { isLiked = true; }
+    if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
   });
   return ({ bookInfoId, isLiked, likeNum: LikeArray.length });
 };
