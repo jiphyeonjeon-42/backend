@@ -550,7 +550,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
   FROM likes
   WHERE userId = ? AND bookInfoId = ?;
   `, [userId, bookInfoId]);
-  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === false) { throw new Error(errorCode.ALREADY_LIKES); }
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === 0) { throw new Error(errorCode.ALREADY_LIKES); }
   // create
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
