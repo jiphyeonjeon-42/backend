@@ -630,13 +630,14 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   const LikeArray = await executeQuery(`
   SELECT userId, isDeleted
   FROM likes
-  WHERE userId = ? AND bookInfoId = ?;
-  `, [userId, bookInfoId]);
+  WHERE bookInfoId = ?;
+  `, [bookInfoId]);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
     if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
   });
-  return ({ bookInfoId, isLiked, likeNum: LikeArray.length });
+  const noDeletedLikes = LikeArray.filter((like : any) => like.isDeleted === 0);
+  return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
 export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
