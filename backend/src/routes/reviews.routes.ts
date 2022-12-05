@@ -79,30 +79,29 @@ router
      *      tags:
      *      - reviews
      *      parameters:
-     *      - name: bookInfoId
+     *      - name: titleOrNickname
      *        in: query
-     *        description: book_info 테이블의 id값이 들어오면, 해당 책에 대한 리뷰를 보여준다.
-     *        required: false
-     *      - name: userId
-     *        in: query
-     *        description: user 테이블의 id값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
-     *        required: false
-     *      - name: title
-     *        in: query
-     *        description: book-info 테이블의 title값이 들어오면, 해당 title의 리뷰를 보여준다.
-     *        required: false
-     *      - name: intraId
-     *        in: query
-     *        description: user 테이블의 intraId값이 들어오면, 해당 user가 작성한 리뷰를 보여준다.
-     *        required: false
+     *        description: 책 제목 또는 닉네임을 검색어로 받는다.
+     *        schema:
+     *          type: string
      *      - name: page
      *        in: query
      *        description: 해당하는 페이지를 보여준다.
      *        required: false
+     *        schema:
+     *          type: integer
+     *      - name: disabled
+     *        in: query
+     *        description: 0이라면 공개 리뷰를, 1이라면 비공개 리뷰를, -1이라면 모든 리뷰를 가져온다.
+     *        required: true
+     *        schema:
+     *          type: integer
      *      - name: sort
      *        in: query
-     *        description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.
+     *        description: asc, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.
      *        required: false
+     *        schema:
+     *          type: string
      *      responses:
      *        '200':
      *           content:
