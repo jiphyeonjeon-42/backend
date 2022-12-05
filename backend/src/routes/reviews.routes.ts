@@ -79,9 +79,9 @@ router
      *      tags:
      *      - reviews
      *      parameters:
-     *      - name: query
+     *      - name: titleOrNickname
      *        in: query
-     *        description: 책 제목, intra ID를 검색어로 받는다.
+     *        description: 책 제목 또는 닉네임을 검색어로 받는다.
      *        schema:
      *          type: string
      *      - name: page
@@ -90,6 +90,12 @@ router
      *        required: false
      *        schema:
      *          type: integer
+     *      - name: disabled
+     *        in: query
+     *        description: 0이라면 공개 리뷰를, 1이라면 비공개 리뷰를, -1이라면 모든 리뷰를 가져온다.
+     *        required: true
+     *        schema:
+     *          type: number
      *      - name: sort
      *        in: query
      *        description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.

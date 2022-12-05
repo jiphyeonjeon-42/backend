@@ -6,16 +6,13 @@ export const createReviews = async (userId: number, bookInfoId: number, content:
 };
 
 export const getReviewsPage = async (
-  bookInfoId: number,
-  userId: number,
+  titleOrNickname: string,
+  disabled: number,
   page: number,
   sort: 'asc' | 'desc',
-  title: string,
-  intraId: string,
-  disabled: boolean,
 ) => {
-  const items = await reviewsRepository.getReviewsPage(bookInfoId, userId, page, sort, title, intraId, disabled);
-  const counts = await reviewsRepository.getReviewsCounts(bookInfoId, userId, title, intraId, disabled);
+  const items = await reviewsRepository.getReviewsPage(titleOrNickname, disabled, page, sort);
+  const counts = await reviewsRepository.getReviewsCounts(titleOrNickname, disabled);
   const meta = {
     totalItems: counts,
     itemsPerPage: 10,
