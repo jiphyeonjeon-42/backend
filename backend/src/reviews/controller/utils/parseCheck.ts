@@ -11,14 +11,10 @@ export const pageParse = (
   page : number,
 ) : number => (Number.isNaN(page) ? 0 : page);
 
-export const titleParse = (
-  title : any,
-) : string => (title === undefined || null) ? '' : title.trim();
-
-export const intraIdParse = (
-  intraId : any,
-) : string => ((intraId === undefined || null) ? '' : intraId.trim());
+export const stringQueryParse = (
+  stringQuery : any,
+) : string => ((stringQuery === undefined || null) ? '' : stringQuery.trim());
 
 export const disabledParse = (
-  disabled : boolean,
-) : boolean => ((disabled == null) ? false : disabled);
+  disabled : number,
+) : number => (Number.isNaN(disabled) ? -1 : disabled);

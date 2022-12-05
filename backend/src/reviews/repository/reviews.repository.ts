@@ -31,20 +31,15 @@ export const createReviews = async (userId: number, bookInfoId: number, content:
 };
 
 export const getReviewsPage = async (
-  bookInfoId: number,
-  userId: number,
+  titleOrNickname :string,
+  disabled: number,
   page: number,
   sort: 'asc' | 'desc',
-  title :string,
-  intraId: string,
-  disabled: boolean,
   limit: number
 ) => {
-  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
-  const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
-  const titleQuery = title === '' ? '' : `AND book_info.title = "${title}"`;
-  const intraIdQuery = intraId === '' ? '' : `AND user.intraId = "${intraId}"`;
-  const disabledQuery = !disabled ? '' : `AND reviews.disabled = ${disabled}`;
+  const titleOrNicknameQuery = titleOrNickname === '' ? '' : `AND (book_info.title LIKE '%${titleOrNickname}%'
+                                                              OR user.nickname LIKE '%${titleOrNickname}%')`;
+  const disabledQuery = disabled === -1 ? '' : `AND reviews.disabled = ${disabled}`;
   const sortQuery = `ORDER BY reviews.id ${sort}`;
   const limitQuery = (Number.isNaN(limit)) ? 'LIMIT 10' : `LIMIT ${limit}`;
 
@@ -63,10 +58,7 @@ export const getReviewsPage = async (
   JOIN user ON user.id = reviews.userId
   JOIN book_info ON reviews.bookInfoId = book_info.id
   WHERE reviews.isDeleted = false
-    ${bookInfoIdQuery}
-    ${userIdQuery}
-    ${titleQuery}
-    ${intraIdQuery}
+    ${titleOrNicknameQuery}
     ${disabledQuery}
     ${sortQuery}
   ${limitQuery}
@@ -75,22 +67,18 @@ export const getReviewsPage = async (
   return (reviews);
 };
 
-export const getReviewsCounts = async (bookInfoId: number, userId: number, title :string, intraId: string, disabled: boolean) => {
-  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
-  const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
-  const titleQuery = title === '' ? '' : `AND book_info.title = "${title}"`;
-  const intraIdQuery = intraId === '' ? '' : `AND user.intraId = "${intraId}"`;
-  const disabledQuery = !disabled ? '' : `AND reviews.disabled = ${disabled}`;  const counts = await executeQuery(`
+export const getReviewsCounts = async (titleOrNickname :string, disabled: number) => {
+  const titleOrNicknameQuery = titleOrNickname === '' ? '' : `AND (book_info.title LIKE '%${titleOrNickname}%'
+                                                              OR user.nickname LIKE '%${titleOrNickname}%')`;
+  const disabledQuery = disabled === -1 ? '' : `AND reviews.disabled = ${disabled}`;
+  const counts = await executeQuery(`
   SELECT
     COUNT(*) as counts
   FROM reviews
   JOIN user ON user.id = reviews.userId
   JOIN book_info ON reviews.bookInfoId = book_info.id
   WHERE reviews.isDeleted = false
-    ${bookInfoIdQuery}
-    ${userIdQuery}
-    ${titleQuery}
-    ${intraIdQuery}
+    ${titleOrNicknameQuery}
     ${disabledQuery}
   `);
   return (counts[0].counts);
