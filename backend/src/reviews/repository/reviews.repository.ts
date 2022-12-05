@@ -38,6 +38,7 @@ export const getReviewsPage = async (
   title :string,
   intraId: string,
   disabled: boolean,
+  limit: number
 ) => {
   const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
   const userIdQuery = (Number.isNaN(userId)) ? '' : `AND reviews.userId = ${userId}`;
@@ -45,6 +46,7 @@ export const getReviewsPage = async (
   const intraIdQuery = intraId === '' ? '' : `AND user.intraId = "${intraId}"`;
   const disabledQuery = !disabled ? '' : `AND reviews.disabled = ${disabled}`;
   const sortQuery = `ORDER BY reviews.id ${sort}`;
+  const limitQuery = (Number.isNaN(limit)) ? 'LIMIT 10' : `LIMIT ${limit}`;
 
   const reviews = await executeQuery(`
   SELECT
@@ -59,7 +61,7 @@ export const getReviewsPage = async (
     user.intraId
   FROM reviews
   JOIN user ON user.id = reviews.userId
-  JOIN book_info ON reviews.bookInfoId = book_info.id  
+  JOIN book_info ON reviews.bookInfoId = book_info.id
   WHERE reviews.isDeleted = false
     ${bookInfoIdQuery}
     ${userIdQuery}
@@ -67,7 +69,7 @@ export const getReviewsPage = async (
     ${intraIdQuery}
     ${disabledQuery}
     ${sortQuery}
-  LIMIT 10 
+  ${limitQuery}
   OFFSET ?
   `, [page * 10]);
   return (reviews);
@@ -83,7 +85,7 @@ export const getReviewsCounts = async (bookInfoId: number, userId: number, title
     COUNT(*) as counts
   FROM reviews
   JOIN user ON user.id = reviews.userId
-  JOIN book_info ON reviews.bookInfoId = book_info.id  
+  JOIN book_info ON reviews.bookInfoId = book_info.id
   WHERE reviews.isDeleted = false
     ${bookInfoIdQuery}
     ${userIdQuery}
@@ -101,7 +103,7 @@ export const getReviewsUserId = async (
     SELECT
       userId
     FROM reviews
-    WHERE id = ? 
+    WHERE id = ?
     AND isDeleted = false
     `, [reviewsId]);
   return reviewsUserId[0].userId;
@@ -115,7 +117,7 @@ export const getReviews = async (
       userId,
       disabled
     FROM reviews
-    WHERE id = ? 
+    WHERE id = ?
     AND isDeleted = false
     `, [reviewsId]);
   return result;

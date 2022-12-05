@@ -32,6 +32,7 @@ export const getReviews = async (
   const intraId = parseCheck.intraIdParse(req?.query?.intraId);
   // disabled는 온오프로 할 것인가 아니면 true일 경우만 disabled를 반활할 것인가
   const disabled = parseCheck.disabledParse(Boolean(req?.query?.disabled));
+  const limit = parseInt(String(req?.query?.limit), 10);
   return res
     .status(status.OK)
     .json(await reviewsService.getReviewsPage(
@@ -42,6 +43,7 @@ export const getReviews = async (
       title,
       intraId,
       disabled,
+      limit
     ));
 };
 
