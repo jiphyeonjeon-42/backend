@@ -27,6 +27,7 @@ export const getReviews = async (
   const disabled = parseCheck.disabledParse(Number(req?.query?.disabled));
   const page = parseCheck.pageParse(parseInt(String(req?.query?.page), 10));
   const sort = parseCheck.sortParse(req?.query?.sort);
+  const limit = parseInt(String(req?.query?.limit), 10);
   return res
     .status(status.OK)
     .json(await reviewsService.getReviewsPage(
@@ -34,6 +35,7 @@ export const getReviews = async (
       disabled,
       page,
       sort,
+      limit
     ));
 };
 

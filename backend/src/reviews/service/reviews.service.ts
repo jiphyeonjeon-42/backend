@@ -10,15 +10,17 @@ export const getReviewsPage = async (
   disabled: number,
   page: number,
   sort: 'asc' | 'desc',
+  limit: number
 ) => {
   const items = await reviewsRepository.getReviewsPage(titleOrNickname, disabled, page, sort);
   const counts = await reviewsRepository.getReviewsCounts(titleOrNickname, disabled);
+  const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
   const meta = {
     totalItems: counts,
-    itemsPerPage: 10,
-    totalPages: parseInt(String(counts / 10 + 1), 10),
+    itemsPerPage,
+    totalPages: parseInt(String(counts / itemsPerPage + 1), 10),
     firstPage: page === 0,
-    finalPage: page === parseInt(String(counts / 10), 10),
+    finalPage: page === parseInt(String(counts / itemsPerPage), 10),
     currentPage: page,
   };
   return { items, meta };
