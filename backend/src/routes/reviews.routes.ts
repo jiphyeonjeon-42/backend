@@ -90,8 +90,6 @@ router
      *          type: number
      *        description: 해당하는 페이지를 보여준다.
      *        required: false
-     *        schema:
-     *          type: integer
      *      - name: disabled
      *        in: query
      *        description: 0이라면 공개 리뷰를, 1이라면 비공개 리뷰를, -1이라면 모든 리뷰를 가져온다.
