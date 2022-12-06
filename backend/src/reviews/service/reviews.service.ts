@@ -12,7 +12,7 @@ export const getReviewsPage = async (
   sort: 'asc' | 'desc',
   limit: number
 ) => {
-  const items = await reviewsRepository.getReviewsPage(titleOrNickname, disabled, page, sort);
+  const items = await reviewsRepository.getReviewsPage(titleOrNickname, disabled, page, sort, limit);
   const counts = await reviewsRepository.getReviewsCounts(titleOrNickname, disabled);
   const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
   const meta = {
