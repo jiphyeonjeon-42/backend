@@ -25,7 +25,7 @@ router
      *              type: object
      *              properties:
      *                bookInfoId:
-     *                  type: integer
+     *                  type: number
      *                  nullable: false
      *                  required: true
      *                  example: 42
@@ -95,7 +95,7 @@ router
      *        description: 0이라면 공개 리뷰를, 1이라면 비공개 리뷰를, -1이라면 모든 리뷰를 가져온다.
      *        required: true
      *        schema:
-     *          type: integer
+     *          type: number
      *      - name: limit
      *        in: query
      *        description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
