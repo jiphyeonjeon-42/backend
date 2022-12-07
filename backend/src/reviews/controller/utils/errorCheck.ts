@@ -5,7 +5,7 @@ export const contentParseCheck = (
   content : string,
 ) => {
   const result = content.trim();
-  if (result === '' || result.length < 10 || result.length > 100) {
+  if (result === '' || result.length < 10 || result.length > 420) {
     throw new Error(errorCode.INVALID_INPUT_REVIEWS_CONTENT);
   }
   return result;
