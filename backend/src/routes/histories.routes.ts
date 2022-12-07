@@ -60,7 +60,7 @@ router
    *                  items:
    *                    description: 검색된 대출 기록들의 목록
    *                    type: array
-   *                    example: [{"id": 135,"lendingCondition": "","login": "chanheki","returningCondition": "","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","bookInfoId":"123","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname" : null}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","bookInfoId":"123","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname": "seongyle" }]
+   *                    example: [{"id": 135,"lendingCondition": "","login": "chanheki","returningCondition": "","penaltyDays": 0,"callSign": "K23.17.v1.c1","title": "모두의 데이터 과학 with 파이썬","bookInfoId":"123","createdAt": "2022-12-07T10:24:57.708Z", "returnedAt": "2022-12-07T10:24:57.708Z","dueDate": "2022-12-21T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname" : null}, {"id": 136,"lendingCondition": "","login": "seongyle1","penaltyDays": 0,"callSign": "C5.13.v1.c1","title": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)","bookInfoId":"123","createdAt": "2022-10-28T10:24:57.708Z", "returnedAt": null, "dueDate": "2022-11-11T10:24:57.708Z","lendingLibrarianNickName": "chanheki", "returningLibrarianNickname": "seongyle",  "image": "https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg" }]
    *                    items:
    *                      type: object
    *                      properties:
@@ -116,6 +116,10 @@ router
    *                          decripttion: 반납해준 사서 이름(없으면 null)
    *                          type: string
    *                          example: seongyle
+   *                        image:
+   *                          decription: 책의 이미지 주소
+   *                          type: string
+   *                          example: https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg
    *                  meta:
    *                    description: 대출 기록 수와 관련된 정보
    *                    type: object

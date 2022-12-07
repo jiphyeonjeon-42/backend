@@ -45,6 +45,7 @@ export const histories = async (
       book.callSign,
       book_info.title,
       book_info.id AS bookInfoId,
+      book_info.image AS image,
       DATE_FORMAT(lending.createdAt, '%Y-%m-%d') AS createdAt,
       DATE_FORMAT(lending.returnedAt, '%Y-%m-%d') AS returnedAt,
       DATE_FORMAT(DATE_ADD(lending.createdAt, interval 14 day), '%Y-%m-%d') AS dueDate,
@@ -59,7 +60,7 @@ export const histories = async (
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
     ${filterQuery}
-    ORDER BY createdAt DESC
+    ORDER BY createdAt DESC, user.nickname DESC
     LIMIT ?
     OFFSET ?
   `,
