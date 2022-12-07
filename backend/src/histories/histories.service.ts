@@ -59,7 +59,7 @@ export const histories = async (
     JOIN book ON book.id = lending.bookId
     JOIN book_info ON book_info.id = book.infoID
     ${filterQuery}
-    ORDER BY createdAt DESC
+    ORDER BY createdAt DESC, user.nickname DESC
     LIMIT ?
     OFFSET ?
   `,
