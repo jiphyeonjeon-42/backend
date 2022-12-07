@@ -14,7 +14,7 @@ router
      * @openapi
      * /api/reviews:
      *    post:
-     *      description: 책 리뷰를 작성한다. content 길이는 10글자 이상 100글자 이하로 입력하여야 한다.
+     *      description: 책 리뷰를 작성한다. content 길이는 10글자 이상 420글자 이하로 입력하여야 한다.
      *      tags:
      *      - reviews
      *      requestBody:

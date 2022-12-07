@@ -166,7 +166,7 @@ CREATE TABLE `reviews` (
   `updateUserId` int NOT NULL,
   `isDeleted` boolean NOT NULL DEFAULT FALSE,
   `deleteUserId` int DEFAULT NULL,
-  `content` varchar(255) NOT NULL,
+  `content` text NOT NULL,
   `disabled` boolean NOT NULL DEFAULT FALSE,
   `disabledUserId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
