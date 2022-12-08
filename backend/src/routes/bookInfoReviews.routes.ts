@@ -19,17 +19,25 @@ router
  *      - name: bookInfoId
  *        required: true
  *        in: path
+ *        schema:
+ *          type: number
  *        description: bookInfoId에 해당 하는 리뷰 페이지를 반환한다.
  *      - name: reviewsId
  *        in: query
+ *        schema:
+ *          type: number
  *        required: false
- *        description: 해당 reviewsId를 조건으로 asd 기준 이후, desc 기준 이전의 페이지를 반환한다. 기본값은 첫 페이지를 반환한다.
+ *        description: 해당 reviewsId를 조건으로 asc 기준 이후, desc 기준 이전의 페이지를 반환한다. 기본값은 첫 페이지를 반환한다.
  *      - name: sort
  *        in: query
+ *        schema:
+ *          type: string
  *        required: false
- *        description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다. 기본값은 asd으로 한다.
+ *        description: asc, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다. 기본값은 asd으로 한다.
  *      - name: limit
  *        in: query
+ *        schema:
+ *          type: number
  *        description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
  *      responses:
  *        '200':
