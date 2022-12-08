@@ -5,11 +5,13 @@ export const getPageNoOffset = async (bookInfoId: number, reviewsId: number, sor
     .getBookinfoReviewsPageNoOffset(bookInfoId, reviewsId, sort);
   const counts = await bookInfoReviewsRepository
     .getBookInfoReviewsCounts(bookInfoId, reviewsId, sort);
+  const finalReviewsId = items[items.length - 1]?.reviewsId;
   const meta = {
     totalLeftItems: counts,
     itemsPerPage: 10,
     totalLeftPages: parseInt(String(counts / 10), 10),
     finalPage: counts <= 10,
+    finalReviewsId,
   };
   return { items, meta };
 };
