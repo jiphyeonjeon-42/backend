@@ -13,7 +13,7 @@ router
  *    get:
  *      description: 책 리뷰 10개를 반환한다. 최종 페이지의 경우 1 <= n <= 10 개의 값이 반환될 수 있다. content에는 리뷰에 대한 정보를,
  *        finalPage 에는 해당 페이지가 마지막인지에 대한 여부를 boolean 값으로 반환한다. finalReviewsId는 마지막 리뷰의 Id를 반환하며, 반환할
- *        아이디가 존재하지 않는 경우에는 -1을 반환한다.
+ *        아이디가 존재하지 않는 경우에는 해당 인자를 반환하지 않는다.
  *      tags:
  *      - bookInfo/reviews
  *      parameters:

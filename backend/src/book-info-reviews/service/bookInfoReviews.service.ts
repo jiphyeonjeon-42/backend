@@ -11,7 +11,7 @@ export const getPageNoOffset = async (bookInfoId: number, reviewsId: number, sor
     itemsPerPage: 10,
     totalLeftPages: parseInt(String(counts / 10), 10),
     finalPage: counts <= 10,
-    finalReviewsId: finalReviewsId === undefined ? -1 : finalReviewsId,
+    finalReviewsId,
   };
   return { items, meta };
 };
