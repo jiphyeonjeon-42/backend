@@ -28,6 +28,9 @@ router
  *        in: query
  *        required: false
  *        description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다. 기본값은 asd으로 한다.
+ *      - name: limit
+ *        in: query
+ *        description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
  *      responses:
  *        '200':
  *           content:
