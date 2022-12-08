@@ -1,3 +1,4 @@
+import { DOMAIN_URL } from '../../utils/env_temp';
 import * as bookInfoReviewsRepository from '../repository/bookInfoReviews.repository';
 
 export const getPageNoOffset = async (bookInfoId: number, reviewsId: number, sort: 'asc' | 'desc', limit: number) => {
@@ -8,7 +9,7 @@ export const getPageNoOffset = async (bookInfoId: number, reviewsId: number, sor
   const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
   const finalReviewsId = items[items.length - 1]?.reviewsId;
   // 추후에 DOMAIN_URL을 환경변수로 대체합니다.
-  const next = (counts <= itemsPerPage) ? undefined : `${process.env.CLIENT_URL}/api/book-info/${bookInfoId}/reviews/reviewsId=${finalReviewsId}`;
+  const next = (counts <= itemsPerPage) ? undefined : `${DOMAIN_URL}/api/book-info/${bookInfoId}/reviews/reviewsId=${finalReviewsId}`;
   const meta = {
     totalLeftItems: counts,
     itemsPerPage,
