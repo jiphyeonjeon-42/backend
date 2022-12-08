@@ -72,6 +72,3 @@ export const INVALID_INPUT_REVIEWS_CONTENT = '811';
 export const UNAUTHORIZED = '700';
 
 export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';
-
-// 추후에 환경변수로 변경예정
-export const DOMAIN_URL = 'https://42library.kr';
