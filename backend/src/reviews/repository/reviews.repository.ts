@@ -42,6 +42,7 @@ export const getReviewsPage = async (
   const disabledQuery = disabled === -1 ? '' : `AND reviews.disabled = ${disabled}`;
   const sortQuery = `ORDER BY reviews.id ${sort}`;
   const limitQuery = (Number.isNaN(limit)) ? 'LIMIT 10' : `LIMIT ${limit}`;
+  const offset = (Number.isNaN(limit)) ? page * 10 : page * limit;
 
   const reviews = await executeQuery(`
   SELECT
@@ -63,7 +64,7 @@ export const getReviewsPage = async (
     ${sortQuery}
   ${limitQuery}
   OFFSET ?
-  `, [page * 10]);
+  `, [offset]);
   return (reviews);
 };
 
