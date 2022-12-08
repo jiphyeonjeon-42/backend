@@ -14,7 +14,8 @@ export const getBookInfoReviewsPage = async (
   const bookInfoId = errorCheck.bookInfoParseCheck(req?.params?.bookInfoId);
   const reviewsId = parseCheck.reviewsIdParse(req?.query?.reviewsId);
   const sort : 'asc' | 'desc' = parseCheck.sortParse(req?.query?.sort);
+  const limit = parseInt(String(req?.query?.limit), 10);
   return res
     .status(status.OK)
-    .json(await bookInfoReviewsService.getPageNoOffset(bookInfoId, reviewsId, sort));
+    .json(await bookInfoReviewsService.getPageNoOffset(bookInfoId, reviewsId, sort, limit));
 };
