@@ -6,14 +6,29 @@ export const createReviews = async (userId: number, bookInfoId: number, content:
 };
 
 export const getReviewsPage = async (
+  reviewerId: number,
+  isMyReview: boolean,
   titleOrNickname: string,
   disabled: number,
   page: number,
   sort: 'asc' | 'desc',
-  limit: number
+  limit: number,
 ) => {
-  const items = await reviewsRepository.getReviewsPage(titleOrNickname, disabled, page, sort, limit);
-  const counts = await reviewsRepository.getReviewsCounts(titleOrNickname, disabled);
+  const items = await reviewsRepository.getReviewsPage(
+    reviewerId,
+    isMyReview,
+    titleOrNickname,
+    disabled,
+    page,
+    sort,
+    limit,
+  );
+  const counts = await reviewsRepository.getReviewsCounts(
+    reviewerId,
+    isMyReview,
+    titleOrNickname,
+    disabled,
+  );
   const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
   const meta = {
     totalItems: counts,
