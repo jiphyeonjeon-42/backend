@@ -304,6 +304,7 @@ router
      *        required: false
      *      - name: isMyReview
      *        in: query
+     *        default: false
      *        schema:
      *          type: boolean
      *        description: true 라면 마이페이지 용도의 리뷰를, false 라면 모든 리뷰를 가져온다.
