@@ -9,6 +9,20 @@ export const sortParse = (
 
 export const pageParse = (
   page : number,
-) : number => {
-  return Number.isNaN(page) ? 0 : page;
-};
+) : number => (Number.isNaN(page) ? 0 : page);
+
+export const limitParse = (
+  limit : number,
+) : number => (Number.isNaN(limit) ? 10 : limit);
+
+export const stringQueryParse = (
+  stringQuery : any,
+) : string => ((stringQuery === undefined || null) ? '' : stringQuery.trim());
+
+export const booleanQueryParse = (
+  booleanQuery : any,
+) : boolean => (booleanQuery === 'true');
+
+export const disabledParse = (
+  disabled : number,
+) : number => (Number.isNaN(disabled) ? -1 : disabled);

@@ -210,7 +210,7 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const query = String(req.query.query) === 'undefined' ? " " : String(req.query.query);
+  const query = String(req.query.query) === 'undefined' ? ' ' : String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
 
@@ -249,6 +249,7 @@ export const createLike = async (
 
   // 로직수행 및 에러처리
   try {
+    // 결과에 따라 오류status를 반환해야함
     return res.status(status.CREATED).send(await BooksService.createLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -273,12 +274,12 @@ export const deleteLike = async (
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).send(await BooksService.deleteLike(id, bookInfoId));
+    await BooksService.deleteLike(id, bookInfoId);
+    return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -302,13 +303,8 @@ export const getLikeInfo = async (
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
-  // console.log("GetLikeInfo");
-  // console.log("query: ", parameter);
-  // console.log("bookInfoId: ", bookInfoId);
-
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId))
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
 
   // 로직수행 및 에러처리
   try {
@@ -326,33 +322,30 @@ export const getLikeInfo = async (
   return 0;
 };
 
-
 export const updateBookInfo = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  let bookInfo: types.UpdateBookInfo = {
+  const bookInfo: types.UpdateBookInfo = {
     id: req.body.bookInfoId,
     title: req.body.title,
     author: req.body.author,
     publisher: req.body.publisher,
     image: req.body.image,
     publishedAt: req.body.publishedAt,
-    categoryId: req.body.categoryId
-  }
-  let book: types.UpdateBook = {
+    categoryId: req.body.categoryId,
+  };
+  const book: types.UpdateBook = {
     id: req.body.bookId,
     callSign: req.body.callSign,
     Status: req.body.status,
-  }
-  
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN)
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
-  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image || 
-          bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status))
-    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
-    
+  };
+
+  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
   if (!isNullish(bookInfo.publisher)) { bookInfo.publisher.trim(); }

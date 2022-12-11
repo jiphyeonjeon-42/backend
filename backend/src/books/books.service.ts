@@ -537,54 +537,107 @@ export const getInfo = async (id: string) => {
 };
 
 export const createLike = async (userId: number, bookInfoId: number) => {
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 생성합니다."
-  console.log(message)
-
-  // bookInfoId가 유효한지 확인한다.
-  // "SELECT  * FROM book_Info WHERE id = [bookInfoId]"
-
-  // 사용자가 해당 책에 좋아요를 이미 눌렀는지?
-  // SELECT * FROM LIKES WHERE userId = [userId]
-
-  // 좋아요 튜플 생성
-
-  return ({ code: 200, message });
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // 중복 like 검증
+  const LikeArray = await executeQuery(`
+  SELECT id, isDeleted
+  FROM likes
+  WHERE userId = ? AND bookInfoId = ?;
+  `, [userId, bookInfoId]);
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === 0) { throw new Error(errorCode.ALREADY_LIKES); }
+  // create
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
+  try {
+    if (LikeArray.length === 0) {
+      // 새로운 튜플 생성
+      await transactionExecuteQuery(`
+        INSERT INTO likes(
+          userId,
+          bookInfoId,
+          isDeleted
+        )VALUES (?, ?, ?)
+      `, [userId, bookInfoId, false]);
+    } else {
+      // 삭제된 튜플 복구
+      await transactionExecuteQuery(`
+        UPDATE likes
+        SET
+          isDeleted = ?
+        WHERE userId = ? AND bookInfoId = ?
+      `, [false, userId, bookInfoId]);
+    }
+    conn.commit();
+  } catch (error) {
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
+  return { userId, bookInfoId };
 };
 
 export const deleteLike = async (userId: number, bookInfoId: number) => {
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 삭제합니다."
-  console.log(message)
-
-  // bookInfoId가 유효한지 확인한다.
-
-  // 좋아요 튜플을 삭제할 SQL문을 실행한다.
-  /*
-    if (삭제한 튜플이 존재함)
-      정상종료
-    else
-      return ({ errorCode : 603});
-  */
-
-  return ({ code: 200, message });
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // like 존재여부 검증
+  const LikeArray = await executeQuery(`
+  SELECT id, isDeleted
+  FROM likes
+  WHERE userId = ? AND bookInfoId = ?;
+  `, [userId, bookInfoId]);
+  if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+  // delete
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
+  try {
+    // 튜플 상태값을 수정하는 soft delete
+    await transactionExecuteQuery(`
+      UPDATE likes
+      SET
+        isDeleted = ?
+      WHERE id = ?
+    `, [true, LikeArray[0].id]);
+    conn.commit();
+  } catch (error) {
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
 };
 
 export const getLikeInfo = async (userId: number, bookInfoId: number) => {
-  const message = "Like(" + userId.toString() + ", " + bookInfoId.toString() + ")를 가져옵니다."
-  console.log(message)
-
-  // bookInfoId가 유효한지 확인한다.
-
-  // "SELECT * FROM LIKES WHERE bookInfoId=[bookInfoId]"
-
-  /*
-  for(좋아요튜플배열)
-  {
-    if (i번째 좋아요 튜플의 작성자 == 로그인한 사용자)
-      isLiked = true;
-  }
-  likeNum = 좋아요튜플배열의 길이
-  */
-  return ({ "bookInfoId": 123, "isLiked" : false, "likeNum" : 15 });
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // (userId, bookInfoId)인 like 데이터 확인
+  const LikeArray = await executeQuery(`
+  SELECT userId, isDeleted
+  FROM likes
+  WHERE bookInfoId = ?;
+  `, [bookInfoId]);
+  let isLiked = false;
+  LikeArray.forEach((like: any) => {
+    if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
+  });
+  const noDeletedLikes = LikeArray.filter((like : any) => like.isDeleted === 0);
+  return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
 export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
@@ -592,30 +645,30 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
   let updateBookString = '';
   const queryBookInfoParam = [];
   const queryBookParam = [];
-  let bookInfoObject: any = {
-  } = bookInfo
-  let bookObject: any = {
-  } = book
+  const bookInfoObject: any = {
+  } = bookInfo;
+  const bookObject: any = {
+  } = book;
 
-  for (let key in bookInfoObject) {
-    let value = bookInfoObject[key];
+  for (const key in bookInfoObject) {
+    const value = bookInfoObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookInfoString += `${key} = ?,`
-      queryBookInfoParam.push(value)
-    } else if (key === null){
-      updateBookInfoString += `${key} = NULL,`
+      updateBookInfoString += `${key} = ?,`;
+      queryBookInfoParam.push(value);
+    } else if (key === null) {
+      updateBookInfoString += `${key} = NULL,`;
     }
   }
 
-  for (let key in bookObject) {
-    let value = bookObject[key];
+  for (const key in bookObject) {
+    const value = bookObject[key];
     if (key === 'id') {
     } else if (key !== '') {
-      updateBookString += `${key} = ?,`
-      queryBookParam.push(value)
-    } else if (key === null){
-      updateBookString += `${key} = NULL,`
+      updateBookString += `${key} = ?,`;
+      queryBookParam.push(value);
+    } else if (key === null) {
+      updateBookString += `${key} = NULL,`;
     }
   }
 
@@ -623,16 +676,16 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
   updateBookString = updateBookString.slice(0, -1);
 
   await executeQuery(`
-    UPDATE book_info 
-    SET 
-    ${updateBookInfoString} 
+    UPDATE book_info
+    SET
+    ${updateBookInfoString}
     WHERE id = ${bookInfoId}
     `, queryBookInfoParam);
 
   await executeQuery(`
-    UPDATE book 
-    SET 
-    ${updateBookString} 
+    UPDATE book
+    SET
+    ${updateBookString}
     WHERE id = ${bookId} ;
     `, queryBookParam);
 };
