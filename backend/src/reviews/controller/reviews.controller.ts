@@ -23,19 +23,23 @@ export const getReviews = async (
   req: Request,
   res: Response,
 ) => {
+  const { id: tokenId } = req.user as any;
+  const isMyReview = parseCheck.booleanQueryParse(req.query.isMyReview);
   const titleOrNickname = parseCheck.stringQueryParse(req?.query?.titleOrNickname);
   const disabled = parseCheck.disabledParse(Number(req?.query?.disabled));
   const page = parseCheck.pageParse(parseInt(String(req?.query?.page), 10));
   const sort = parseCheck.sortParse(req?.query?.sort);
-  const limit = parseInt(String(req?.query?.limit), 10);
+  const limit = parseCheck.limitParse(parseInt(String(req?.query?.limit), 10));
   return res
     .status(status.OK)
     .json(await reviewsService.getReviewsPage(
+      tokenId,
+      isMyReview,
       titleOrNickname,
       disabled,
       page,
       sort,
-      limit
+      limit,
     ));
 };
 

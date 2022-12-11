@@ -279,6 +279,11 @@ router
      *      tags:
      *      - reviews
      *      parameters:
+     *      - name: titleOrNickname
+     *        in: query
+     *        description: 책 제목 또는 닉네임을 검색어로 받는다.
+     *        schema:
+     *          type: string
      *      - name: limit
      *        in: query
      *        schema:
@@ -297,6 +302,12 @@ router
      *          type: string
      *        description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.
      *        required: false
+     *      - name: isMyReview
+     *        in: query
+     *        default: false
+     *        schema:
+     *          type: boolean
+     *        description: true 라면 마이페이지 용도의 리뷰를, false 라면 모든 리뷰를 가져온다.
      *      responses:
      *        '200':
      *           content:
