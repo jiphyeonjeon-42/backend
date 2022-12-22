@@ -33,7 +33,7 @@ export const getReviewsPage = async (
   const meta = {
     totalItems: counts,
     itemsPerPage,
-    totalPages: parseInt(String(counts / itemsPerPage + 1), 10),
+    totalPages: parseInt(String(counts / itemsPerPage + Number((counts % itemsPerPage != 0) || !counts)), 10),
     firstPage: page === 0,
     finalPage: page === parseInt(String(counts / itemsPerPage), 10),
     currentPage: page,

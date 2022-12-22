@@ -334,6 +334,7 @@ export const searchInfo = async (
   const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const categoryList = (await executeQuery(
     `
+    SELECT name, count FROM (
     SELECT
       IFNULL(category.name, "ALL") AS name,
       count(category.name) AS count
@@ -344,7 +345,8 @@ export const searchInfo = async (
       OR book_info.author LIKE ?
       OR book_info.isbn LIKE ?
       )
-    GROUP BY category.name WITH ROLLUP ORDER BY category.name ASC;
+    GROUP BY category.name WITH ROLLUP) as a
+    ORDER BY name ASC;
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`],
   )) as models.categoryCount[];
