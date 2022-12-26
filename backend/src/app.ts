@@ -36,6 +36,7 @@ passport.use('jwt', JwtStrategy);
 jipDataSource.initialize().then(
   () => {
     logger.info('typeORM INIT SUCCESS');
+    logger.info(process.env.MODE);
   },
 ).catch(
   (e) => {
