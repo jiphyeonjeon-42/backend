@@ -7,50 +7,52 @@ import * as models from './books.model';
 import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
+const booksRepository = require('./books.repository')
 
 export const search = async (
   query: string,
   page: number,
   limit: number,
 ) => {
-  const bookList = (await executeQuery(
-    `
-    SELECT
-      book_info.id AS bookInfoId,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
-      book_info.isbn AS isbn,
-      book.callSign AS callSign,
-      book_info.image AS image,
-      book.id AS bookId,
-      book.status AS status,
-      book_info.categoryId AS categoryId,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category,
-      (
-        IF((
-            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
-            ), TRUE, FALSE)
-      ) AS isLendable
-    FROM book_info, book
-    WHERE book_info.id = book.infoId AND
-    (book_info.title like ?
-      OR book_info.author like ?
-      OR book_info.isbn like ?)
-    LIMIT ?
-    OFFSET ?;
-  `,
-    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
-  )) as models.BookInfo[];
+  // const bookList = (await executeQuery(
+  //   `
+  //   SELECT
+  //     book_info.id AS bookInfoId,
+  //     book_info.title AS title,
+  //     book_info.author AS author,
+  //     book_info.publisher AS publisher,
+  //     DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
+  //     book_info.isbn AS isbn,
+  //     book.callSign AS callSign,
+  //     book_info.image AS image,
+  //     book.id AS bookId,
+  //     book.status AS status,
+  //     book_info.categoryId AS categoryId,
+  //     (
+  //       SELECT name
+  //       FROM category
+  //       WHERE id = book_info.categoryId
+  //     ) AS category,
+  //     (
+  //       IF((
+  //           IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
+  //           AND
+  //           IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
+  //           AND
+  //           IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
+  //           ), TRUE, FALSE)
+  //     ) AS isLendable
+  //   FROM book_info, book
+  //   WHERE book_info.id = book.infoId AND
+  //   (book_info.title like ?
+  //     OR book_info.author like ?
+  //     OR book_info.isbn like ?)
+  //   LIMIT ?
+  //   OFFSET ?;
+  // `,
+  //   [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
+  // )) as models.BookInfo[];
+  const bookList = await booksRepository.getBookList(query, limit, page);
   const totalItems = (await executeQuery(
     `
     SELECT

@@ -33,7 +33,7 @@ const jipDataSource = new DataSource({
   password,
   database,
   entities: [
-    '**/entity/*.ts',
+    '**/entity/entities/*.ts',
   ],
   logging: [
     'query',
