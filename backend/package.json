@@ -62,6 +62,8 @@
     "password-validator": "^5.3.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
+    "typeorm": "^0.3.11",
+    "typeorm-model-generator": "^0.4.6",
     "winston": "^3.6.0",
     "winston-daily-rotate-file": "^4.6.1"
   }

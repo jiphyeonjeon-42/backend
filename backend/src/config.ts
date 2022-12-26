@@ -6,7 +6,7 @@ const config = {
   nodeEnv: process.env.NODE_ENV,
   mode: process.env.MODE,
   database: {
-    host: process.env.MODE === 'local' ? 'database-1.cspdeqcahl3r.ap-northeast-2.rds.amazonaws.com' : 'database',
+    host: process.env.MODE === 'local' ? 'localhost' : 'database',
     port: 3306,
     username: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,

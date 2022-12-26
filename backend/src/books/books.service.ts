@@ -51,7 +51,6 @@ export const search = async (
   `,
     [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   )) as models.BookInfo[];
-
   const totalItems = (await executeQuery(
     `
     SELECT
