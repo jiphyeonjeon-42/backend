@@ -1,11 +1,12 @@
 import BookInfo from "./BookInfo";
 import Book from "./Book";
 import {DataSource, ViewColumn, ViewEntity} from "typeorm";
+import Category from "./Category";
 
-@ViewEntity({
+@ViewEntity("searchbook",{
     expression: (Data: DataSource) => Data
         .createQueryBuilder()
-        .select("book_info.id", "bookInfoId")
+        .select("book.infoId", "bookInfoId")
         .addSelect("book_info.title", "title")
         .addSelect("book_info.author", "author")
         .addSelect("book_info.publisher", "publisher")
@@ -16,37 +17,56 @@ import {DataSource, ViewColumn, ViewEntity} from "typeorm";
         .addSelect("book.id", "bookId")
         .addSelect("book.status", "status")
         .addSelect("book_info.categoryId", "categoryId")
-        .from(BookInfo, "book_info")
-        .addFrom(Book, "book")
+        .addSelect("category.name", "categoryName")
+        .addSelect("       IF((\n" +
+            "  IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)\n" +
+            "  AND\n" +
+            "  IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)\n" +
+            "  AND\n" +
+            "  IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)\n" +
+            "  ), TRUE, FALSE)", "isLendable")
+        .from(Book, "book")
+        .leftJoin(BookInfo, 'book_info', "book_info.id = book.infoId")
+        .leftJoin(Category, 'category', "book_info.categoryId = category.id")
 })
 export class SearchBook {
     @ViewColumn()
-    bookInfoId!: number;
+    bookId: number;
 
     @ViewColumn()
-    title!: string;
+    bookInfoId: number;
 
     @ViewColumn()
-    author!: string;
+    title: string;
 
     @ViewColumn()
-    publisher!: string;
+    author: string;
 
     @ViewColumn()
-    publishedAt!: string;
+    publisher: string;
 
     @ViewColumn()
-    isbn!: string;
+    publishedAt: string;
 
     @ViewColumn()
-    image!: string;
+    isbn: string;
 
     @ViewColumn()
-    bookId!: number;
+    image: string;
 
     @ViewColumn()
-    status!: number;
+    status: number;
 
     @ViewColumn()
-    categoryId!: string;
+    categoryId: string;
+
+    @ViewColumn()
+    callSign: string;
+
+    @ViewColumn()
+    categoryName: string;
+
+    @ViewColumn()
+    isLendable: boolean;
+
 }

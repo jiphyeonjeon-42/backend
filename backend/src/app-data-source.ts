@@ -35,10 +35,9 @@ const jipDataSource = new DataSource({
   entities: [
     '**/entity/entities/*.ts',
   ],
-  logging: [
-    'query',
-    'error',
-  ],
+  logging: true,
+  //poolSize: 500,
+  synchronize: true,
   poolSize: 200,
 });
 

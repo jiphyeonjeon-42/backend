@@ -53,21 +53,7 @@ export const search = async (
   //   [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
   // )) as models.BookInfo[];
   const bookList = await booksRepository.getBookList(query, limit, page);
-  const totalItems = (await executeQuery(
-    `
-    SELECT
-      COUNT(*) AS count
-    FROM book_info
-    INNER JOIN book ON book_info.id = book.infoId
-    WHERE (
-      book_info.title LIKE ?
-      OR book_info.author LIKE ?
-      OR book_info.isbn LIKE ?
-      )
-  `,
-    [`%${query}%`, `%${query}%`, `%${query}%`],
-  ))[0].count as number;
-
+  const totalItems = await booksRepository.getTotalItems(query);
   const meta = {
     totalItems,
     itemCount: bookList.length,
