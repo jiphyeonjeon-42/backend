@@ -2,6 +2,7 @@ import { Like, Repository } from 'typeorm';
 import jipDataSource from '../app-data-source';
 import {SearchBook} from "../entity/entities/SearchBook";
 import Book from "../entity/entities/Book";
+import * as errorCode from '../utils/error/errorCode';
 
 class BooksRepository {
     private readonly searchBook: Repository<SearchBook>;
@@ -33,6 +34,14 @@ class BooksRepository {
                 {isbn: Like(`%${condition}%`)},
             ],
         }).then(res => res.length);
+    }
+
+    async findOneById(id: string) {
+        return await this.searchBook.findOneBy({bookId: Number(id)}).then(res => {
+            if (!res)
+                throw new Error(errorCode.NO_BOOK_ID);
+            return res;
+        });
     }
 }
 
