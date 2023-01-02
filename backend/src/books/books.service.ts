@@ -246,6 +246,8 @@ export const sortInfo = async (
   `,
     [limit],
   )) as models.BookInfo[];
+  // const bookList = booksRepository.getLendingBookList(sort, limit);
+  console.log("bookList : ", bookList);
   return { items: bookList };
 };
 
