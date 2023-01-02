@@ -12,7 +12,7 @@ import User from './User';
 import Lending from './Lending';
 import Reservation from './Reservation';
 
-//@Index('FK_donator_id_from_user', ['donatorId'], {})
+@Index('FK_donator_id_from_user', ['donatorId'], {})
 @Entity('book')
 
 class Book {

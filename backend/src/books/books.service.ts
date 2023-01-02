@@ -207,20 +207,16 @@ export const sortInfo = async (
   sort: string,
 ) => {
   let ordering = '';
-  switch (sort) {
-    case 'popular':
-      ordering = 'ORDER BY lendingCnt DESC';
-      break;
-    default:
-      ordering = 'ORDER BY book_info.createdAt DESC';
-  }
   let lendingCntCondition = '';
   switch (sort) {
     case 'popular':
+      ordering = 'ORDER BY lendingCnt DESC';
       lendingCntCondition = 'and lending.createdAt >= date_sub(now(), interval 42 day)';
       break;
     default:
+      ordering = 'ORDER BY book_info.createdAt DESC';
       lendingCntCondition = '';
+      break;
   }
 
   const bookList = (await executeQuery(

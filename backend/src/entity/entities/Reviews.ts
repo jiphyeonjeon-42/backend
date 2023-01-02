@@ -9,8 +9,8 @@ import {
 import User from './User';
 import BookInfo from './BookInfo';
 
-// @Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
-// @Index('FK_bookInfo2', ['bookInfoId'], {})
+ @Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
+ @Index('FK_bookInfo2', ['bookInfoId'], {})
 @Entity('reviews')
 
 class Reviews {
