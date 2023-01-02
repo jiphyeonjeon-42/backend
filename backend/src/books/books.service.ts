@@ -14,44 +14,6 @@ export const search = async (
   page: number,
   limit: number,
 ) => {
-  // const bookList = (await executeQuery(
-  //   `
-  //   SELECT
-  //     book_info.id AS bookInfoId,
-  //     book_info.title AS title,
-  //     book_info.author AS author,
-  //     book_info.publisher AS publisher,
-  //     DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
-  //     book_info.isbn AS isbn,
-  //     book.callSign AS callSign,
-  //     book_info.image AS image,
-  //     book.id AS bookId,
-  //     book.status AS status,
-  //     book_info.categoryId AS categoryId,
-  //     (
-  //       SELECT name
-  //       FROM category
-  //       WHERE id = book_info.categoryId
-  //     ) AS category,
-  //     (
-  //       IF((
-  //           IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
-  //           AND
-  //           IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
-  //           AND
-  //           IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
-  //           ), TRUE, FALSE)
-  //     ) AS isLendable
-  //   FROM book_info, book
-  //   WHERE book_info.id = book.infoId AND
-  //   (book_info.title like ?
-  //     OR book_info.author like ?
-  //     OR book_info.isbn like ?)
-  //   LIMIT ?
-  //   OFFSET ?;
-  // `,
-  //   [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
-  // )) as models.BookInfo[];
   const bookList = await booksRepository.getBookList(query, limit, page);
   const totalItems = await booksRepository.getTotalItems(query);
   const meta = {
@@ -400,36 +362,7 @@ export const searchInfo = async (
 };
 
 export const getBookById = async (id: string) => {
-  const book = (await executeQuery(`
-    SELECT
-      book.id AS id,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      book_info.isbn AS isbn,
-      book.callSign AS callSign,
-      book_info.image as image,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category,
-      (
-        IF((
-            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
-            ), TRUE, FALSE)
-      ) AS isLendable
-    FROM book_info JOIN book
-    ON book_info.id = book.infoId
-    WHERE book.id = ?
-    LIMIT 1;
-    `, [id]))[0];
-  if (book === undefined) { throw new Error(errorCode.NO_BOOK_ID); }
-  return book;
+  return await booksRepository.findOneById(id);
 };
 
 export const getInfo = async (id: string) => {
