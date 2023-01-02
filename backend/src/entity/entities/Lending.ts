@@ -9,8 +9,8 @@ import {
 import Book from './Book';
 import User from './User';
 
-@Index('FK_f2adde8c7d298210c39c500d966', ['lendingLibrarianId'], {})
-@Index('FK_returningLibrarianId', ['returningLibrarianId'], {})
+// @Index('FK_f2adde8c7d298210c39c500d966', ['lendingLibrarianId'], {})
+// @Index('FK_returningLibrarianId', ['returningLibrarianId'], {})
 @Entity('lending', { schema: '42library' })
 
 class Lending {

@@ -12,8 +12,8 @@ import User from './User';
 import Lending from './Lending';
 import Reservation from './Reservation';
 
-@Index('FK_donator_id_from_user', ['donatorId'], {})
-@Entity('book', { schema: '42library' })
+//@Index('FK_donator_id_from_user', ['donatorId'], {})
+@Entity('book')
 
 class Book {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
@@ -33,6 +33,9 @@ class Book {
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
   createdAt: Date;
+
+  @Column()
+  infoId: number;
 
   @Column('datetime', {
     name: 'updatedAt',

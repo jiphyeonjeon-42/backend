@@ -9,8 +9,8 @@ import {
 import User from './User';
 import BookInfo from './BookInfo';
 
-@Index('FK_529dceb01ef681127fef04d755d4', ['userId'], {})
-@Index('FK_bookInfo3', ['bookInfoId'], {})
+// @Index('FK_529dceb01ef681127fef04d755d4', ['userId'], {})
+// @Index('FK_bookInfo3', ['bookInfoId'], {})
 @Entity('likes', { schema: '42library' })
 
 class Likes {

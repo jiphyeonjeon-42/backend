@@ -13,8 +13,8 @@ import Likes from './Likes';
 import Reservation from './Reservation';
 import Reviews from './Reviews';
 
-@Index('categoryId', ['categoryId'], {})
-@Entity('book_info', { schema: '42library' })
+//@Index('categoryId', ['categoryId'], {})
+@Entity('book_info')
 class BookInfo {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;

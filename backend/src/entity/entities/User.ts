@@ -14,7 +14,7 @@ import Reviews from './Reviews';
 @Index('email', ['email'], { unique: true })
 @Index('intraId', ['intraId'], { unique: true })
 @Index('slack', ['slack'], { unique: true })
-@Entity('user', { schema: '42library' })
+@Entity('user')
 class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
