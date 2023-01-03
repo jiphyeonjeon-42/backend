@@ -78,16 +78,6 @@ class BooksRepository {
         .orderBy(ordering)
         .getRawMany();
       return lendingBookList;
-
-      // return await this.bookInfo.find(
-      //     {
-      //         relations: {
-      //             Lending: true,
-      //         },
-      //         take: limit,
-      //         order : sort === "popular" ? oriding[1] : oriding[0],
-      //     },
-      // )
     }
 }
 
