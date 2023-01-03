@@ -5,6 +5,7 @@ import Book from '../entity/entities/Book';
 import * as errorCode from '../utils/error/errorCode';
 import BookInfo from '../entity/entities/BookInfo';
 import Lending from '../entity/entities/Lending';
+import Category from '../entity/entities/Category';
 
 class BooksRepository {
     private readonly searchBook: Repository<SearchBook>;
@@ -53,11 +54,11 @@ class BooksRepository {
 
     // TODO: refactact sort type
     async getLendingBookList(sort: string, limit: number) {
-      const orderingArr: {sort: string, order: 'ASC'|'DESC'}[] = [{ sort: 'createdAt', order: 'DESC' }, { sort: 'lendingCnt', order: 'DESC' }];
+      const orderingArr = [{'createdAt': 'DESC' }, {'lendingCnt': 'DESC' }];
       const ordering: any = (sort === 'popular' ? orderingArr[1] : orderingArr[0]);
-      const lendingCondition: string = sort === 'popular' ? 'lending.createdAt >= date_sub(now(), interval 42 day' : '';
+      const lendingCondition: string = sort === 'popular' ? 'and lending.createdAt >= date_sub(now(), interval 42 day)' : '';
 
-      const lendingBookList = this.bookInfo.createQueryBuilder()
+      const lendingBookList = this.bookInfo.createQueryBuilder('book_info')
         .select('book_info.id', 'id')
         .addSelect('book_info.title', 'title')
         .addSelect('book_info.author', 'author')
@@ -65,17 +66,17 @@ class BooksRepository {
         .addSelect('book_info.isbn', 'isbn')
         .addSelect('book_info.image', 'image')
         .addSelect('category.name', 'category')
+        .addSelect('book_info.publishedAt', 'publishedAt')
         .addSelect('book_info.createdAt', 'createdAt')
         .addSelect('book_info.updatedAt', 'updatedAt')
         .addSelect('COUNT(lending.id)', 'lendingCnt')
+        .leftJoin(Book, 'book', 'book.infoId = book_info.id')
+        .leftJoin(Lending, 'lending', `lending.bookId = book.id ${lendingCondition}`)
+        .leftJoin(Category, 'category', 'category.id = book_info.categoryId')
+        .limit(limit)
         .groupBy('book_info.id')
-        .from(BookInfo, 'book_info')
-        .leftJoin(Book, 'Book', 'book.infoId = bookInfo.id')
-        .leftJoin(Lending, 'lending', 'lending.bookId = book.id')
-        .skip(limit)
         .orderBy(ordering)
-        .where(lendingCondition)
-        .getMany();
+        .getRawMany();
       return lendingBookList;
 
       // return await this.bookInfo.find(
