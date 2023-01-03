@@ -54,7 +54,7 @@ class BooksRepository {
 
     // TODO: refactact sort type
     async getLendingBookList(sort: string, limit: number) {
-      const orderingArr = [{'createdAt': 'DESC' }, {'lendingCnt': 'DESC' }];
+      const orderingArr = [{'createdAt': 'DESC', 'title': 'ASC' }, {'lendingCnt': 'DESC', 'title': 'ASC'}];
       const ordering: any = (sort === 'popular' ? orderingArr[1] : orderingArr[0]);
       const lendingCondition: string = sort === 'popular' ? 'and lending.createdAt >= date_sub(now(), interval 42 day)' : '';
 
