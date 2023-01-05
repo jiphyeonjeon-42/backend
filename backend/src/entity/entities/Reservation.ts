@@ -10,7 +10,7 @@ import User from './User';
 import BookInfo from './BookInfo';
 import Book from './Book';
 
-// @Index('FK_bookInfo', ['bookInfoId'], {})
+ @Index('FK_bookInfo', ['bookInfoId'], {})
 @Entity('reservation')
 class Reservation {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
