@@ -81,32 +81,32 @@ class BooksRepository {
       return lendingBookList;
     }
 
-  async updateBookInfo(bookInfo: types.UpdateBookInfo) {
-      let updateInfoBookInfo: any = bookInfo;
-      const bookInfoId: number = bookInfo.id;
+    async updateBookInfo(bookInfo: types.UpdateBookInfo) {
+        let updateInfoBookInfo: any = bookInfo;
+        const bookInfoId: number = bookInfo.id;
 
-      delete updateInfoBookInfo.id;
+        delete updateInfoBookInfo.id;
 
-      this.bookInfo.createQueryBuilder()
+        this.bookInfo.createQueryBuilder()
+        .update()
+        .set(updateInfoBookInfo)
+        .where("id = :bookInfoId", {bookInfoId: bookInfoId})
+        .execute()
+    }
+
+    async updateBook(book: types.UpdateBook) {
+      let updateInfoBook: any = book;
+      const bookId: number = book.id;
+
+      delete updateInfoBook.id;
+
+      console.log(updateInfoBook);
+      this.books.createQueryBuilder()
       .update()
-      .set(updateInfoBookInfo)
-      .where("id = :bookInfoId", {bookInfoId: bookInfoId})
+      .set(updateInfoBook)
+      .where("id = :bookId", {bookId: bookId})
       .execute()
-  }
-
-  async updateBook(book: types.UpdateBook) {
-    let updateInfoBook: any = book;
-    const bookId: number = book.id;
-
-    delete updateInfoBook.id;
-
-    console.log(updateInfoBook);
-    this.books.createQueryBuilder()
-    .update()
-    .set(updateInfoBook)
-    .where("id = :bookId", {bookId: bookId})
-    .execute()
-  }
+    }
 
 }
 
