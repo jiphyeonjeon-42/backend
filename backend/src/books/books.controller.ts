@@ -360,7 +360,7 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
+    await BooksService.updateBookInfo(bookInfo, book);
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

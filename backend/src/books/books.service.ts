@@ -519,7 +519,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
-export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook) => {
   let updateBookInfoString = '';
   let updateBookString = '';
   const queryBookInfoParam = [];
@@ -558,13 +558,13 @@ export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types
     UPDATE book_info
     SET
     ${updateBookInfoString}
-    WHERE id = ${bookInfoId}
+    WHERE id = ${bookInfo.id}
     `, queryBookInfoParam);
 
   await executeQuery(`
     UPDATE book
     SET
     ${updateBookString}
-    WHERE id = ${bookId} ;
+    WHERE id = ${book.id} ;
     `, queryBookParam);
 };
