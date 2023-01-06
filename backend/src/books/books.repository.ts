@@ -1,8 +1,9 @@
 import { Like, Repository } from 'typeorm';
 import jipDataSource from '../app-data-source';
 import { SearchBook } from '../entity/entities/SearchBook';
-import Book from '../entity/entities/Book';
+import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
+import Book from '../entity/entities/Book';
 import BookInfo from '../entity/entities/BookInfo';
 import Lending from '../entity/entities/Lending';
 import Category from '../entity/entities/Category';
@@ -79,6 +80,34 @@ class BooksRepository {
         .getRawMany();
       return lendingBookList;
     }
+
+  async updateBookInfo(bookInfo: types.UpdateBookInfo) {
+      let updateInfoBookInfo: any = bookInfo;
+      const bookInfoId: number = bookInfo.id;
+
+      delete updateInfoBookInfo.id;
+
+      this.bookInfo.createQueryBuilder()
+      .update()
+      .set(updateInfoBookInfo)
+      .where("id = :bookInfoId", {bookInfoId: bookInfoId})
+      .execute()
+  }
+
+  async updateBook(book: types.UpdateBook) {
+    let updateInfoBook: any = book;
+    const bookId: number = book.id;
+
+    delete updateInfoBook.id;
+
+    console.log(updateInfoBook);
+    this.books.createQueryBuilder()
+    .update()
+    .set(updateInfoBook)
+    .where("id = :bookId", {bookId: bookId})
+    .execute()
+  }
+
 }
 
 module.exports = new BooksRepository();
