@@ -7,7 +7,8 @@ import * as models from './books.model';
 import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-const booksRepository = require('./books.repository')
+
+const booksRepository = require('./books.repository');
 
 export const search = async (
   query: string,
@@ -318,9 +319,7 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getBookById = async (id: string) => {
-  return await booksRepository.findOneById(id);
-};
+export const getBookById = async (id: string) => await booksRepository.findOneById(id);
 
 export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(

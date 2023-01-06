@@ -9,8 +9,8 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
-const pubdateFormatValidator = (pubdate : String | Date) => {
-  const regexConditon = (/^[0-9]{8}$/);
+const pubdateFormatValidator = (pubdate: String | Date) => {
+  const regexConditon = /^[0-9]{8}$/;
   if (regexConditon.test(String(pubdate)) === false) {
     return false;
   }
@@ -341,6 +341,7 @@ export const updateBookInfo = async (
     callSign: req.body.callSign,
     status: req.body.status,
   };
+  console.log('req.body', req.body);
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
