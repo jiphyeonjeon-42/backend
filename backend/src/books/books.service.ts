@@ -520,51 +520,6 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
 };
 
 export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook) => {
-  let updateBookInfoString = '';
-  let updateBookString = '';
-  const queryBookInfoParam = [];
-  const queryBookParam = [];
-  const bookInfoObject: any = {
-  } = bookInfo;
-  const bookObject: any = {
-  } = book;
-
-  for (const key in bookInfoObject) {
-    const value = bookInfoObject[key];
-    if (key === 'id') {
-    } else if (key !== '') {
-      updateBookInfoString += `${key} = ?,`;
-      queryBookInfoParam.push(value);
-    } else if (key === null) {
-      updateBookInfoString += `${key} = NULL,`;
-    }
-  }
-
-  for (const key in bookObject) {
-    const value = bookObject[key];
-    if (key === 'id') {
-    } else if (key !== '') {
-      updateBookString += `${key} = ?,`;
-      queryBookParam.push(value);
-    } else if (key === null) {
-      updateBookString += `${key} = NULL,`;
-    }
-  }
-
-  updateBookInfoString = updateBookInfoString.slice(0, -1);
-  updateBookString = updateBookString.slice(0, -1);
-
-  await executeQuery(`
-    UPDATE book_info
-    SET
-    ${updateBookInfoString}
-    WHERE id = ${bookInfo.id}
-    `, queryBookInfoParam);
-
-  await executeQuery(`
-    UPDATE book
-    SET
-    ${updateBookString}
-    WHERE id = ${book.id} ;
-    `, queryBookParam);
+  await booksRepository.updateBookInfo(bookInfo);
+  await booksRepository.updateBook(book);
 };
