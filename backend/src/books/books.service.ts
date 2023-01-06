@@ -8,65 +8,15 @@ import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
 
+const booksRepository = require('./books.repository');
+
 export const search = async (
   query: string,
   page: number,
   limit: number,
 ) => {
-  const bookList = (await executeQuery(
-    `
-    SELECT
-      book_info.id AS bookInfoId,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
-      book_info.isbn AS isbn,
-      book.callSign AS callSign,
-      book_info.image AS image,
-      book.id AS bookId,
-      book.status AS status,
-      book_info.categoryId AS categoryId,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category,
-      (
-        IF((
-            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
-            ), TRUE, FALSE)
-      ) AS isLendable
-    FROM book_info, book
-    WHERE book_info.id = book.infoId AND
-    (book_info.title like ?
-      OR book_info.author like ?
-      OR book_info.isbn like ?)
-    LIMIT ?
-    OFFSET ?;
-  `,
-    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
-  )) as models.BookInfo[];
-
-  const totalItems = (await executeQuery(
-    `
-    SELECT
-      COUNT(*) AS count
-    FROM book_info
-    INNER JOIN book ON book_info.id = book.infoId
-    WHERE (
-      book_info.title LIKE ?
-      OR book_info.author LIKE ?
-      OR book_info.isbn LIKE ?
-      )
-  `,
-    [`%${query}%`, `%${query}%`, `%${query}%`],
-  ))[0].count as number;
-
+  const bookList = await booksRepository.getBookList(query, limit, page);
+  const totalItems = await booksRepository.getTotalItems(query);
   const meta = {
     totalItems,
     itemCount: bookList.length,
@@ -257,50 +207,7 @@ export const sortInfo = async (
   limit: number,
   sort: string,
 ) => {
-  let ordering = '';
-  switch (sort) {
-    case 'popular':
-      ordering = 'ORDER BY lendingCnt DESC';
-      break;
-    default:
-      ordering = 'ORDER BY book_info.createdAt DESC';
-  }
-  let lendingCntCondition = '';
-  switch (sort) {
-    case 'popular':
-      lendingCntCondition = 'and lending.createdAt >= date_sub(now(), interval 42 day)';
-      break;
-    default:
-      lendingCntCondition = '';
-  }
-
-  const bookList = (await executeQuery(
-    `
-    SELECT
-      book_info.id AS id,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      book_info.isbn AS isbn,
-      book_info.image AS image,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category,
-      book_info.publishedAt as publishedAt,
-      book_info.createdAt as createdAt,
-      book_info.updatedAt as updatedAt,
-      COUNT(lending.id) as lendingCnt
-    FROM book_info LEFT JOIN lending
-    ON book_info.id = (SELECT book.infoId FROM book WHERE lending.bookId = book.id LIMIT 1)
-    ${lendingCntCondition}
-    GROUP BY book_info.id
-    ${ordering}
-    LIMIT ?;
-  `,
-    [limit],
-  )) as models.BookInfo[];
+  const bookList = await booksRepository.getLendingBookList(sort, limit);
   return { items: bookList };
 };
 
@@ -412,38 +319,7 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getBookById = async (id: string) => {
-  const book = (await executeQuery(`
-    SELECT
-      book.id AS id,
-      book_info.title AS title,
-      book_info.author AS author,
-      book_info.publisher AS publisher,
-      book_info.isbn AS isbn,
-      book.callSign AS callSign,
-      book_info.image as image,
-      (
-        SELECT name
-        FROM category
-        WHERE id = book_info.categoryId
-      ) AS category,
-      (
-        IF((
-            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
-            AND
-            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
-            ), TRUE, FALSE)
-      ) AS isLendable
-    FROM book_info JOIN book
-    ON book_info.id = book.infoId
-    WHERE book.id = ?
-    LIMIT 1;
-    `, [id]))[0];
-  if (book === undefined) { throw new Error(errorCode.NO_BOOK_ID); }
-  return book;
-};
+export const getBookById = async (id: string) => await booksRepository.findOneById(id);
 
 export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(
@@ -642,52 +518,7 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
-export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
-  let updateBookInfoString = '';
-  let updateBookString = '';
-  const queryBookInfoParam = [];
-  const queryBookParam = [];
-  const bookInfoObject: any = {
-  } = bookInfo;
-  const bookObject: any = {
-  } = book;
-
-  for (const key in bookInfoObject) {
-    const value = bookInfoObject[key];
-    if (key === 'id') {
-    } else if (key !== '') {
-      updateBookInfoString += `${key} = ?,`;
-      queryBookInfoParam.push(value);
-    } else if (key === null) {
-      updateBookInfoString += `${key} = NULL,`;
-    }
-  }
-
-  for (const key in bookObject) {
-    const value = bookObject[key];
-    if (key === 'id') {
-    } else if (key !== '') {
-      updateBookString += `${key} = ?,`;
-      queryBookParam.push(value);
-    } else if (key === null) {
-      updateBookString += `${key} = NULL,`;
-    }
-  }
-
-  updateBookInfoString = updateBookInfoString.slice(0, -1);
-  updateBookString = updateBookString.slice(0, -1);
-
-  await executeQuery(`
-    UPDATE book_info
-    SET
-    ${updateBookInfoString}
-    WHERE id = ${bookInfoId}
-    `, queryBookInfoParam);
-
-  await executeQuery(`
-    UPDATE book
-    SET
-    ${updateBookString}
-    WHERE id = ${bookId} ;
-    `, queryBookParam);
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook) => {
+  await booksRepository.updateBookInfo(bookInfo);
+  await booksRepository.updateBook(book);
 };

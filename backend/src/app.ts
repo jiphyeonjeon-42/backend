@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -7,8 +7,9 @@ import router from './routes';
 import swaggerOptions from './swagger/swagger';
 import errorHandler from './utils/error/errorHandler';
 import { FtStrategy, JwtStrategy, FtAuthentication } from './auth/auth.strategy';
-import { morganMiddleware } from './utils/logger';
+import { logger, morganMiddleware } from './utils/logger';
 import errorConverter from './utils/error/errorConverter';
+import jipDataSource from './app-data-source';
 
 const app: express.Application = express();
 const cors = require('cors');
@@ -31,6 +32,17 @@ app.use(cors({
 passport.use('42', FtStrategy);
 passport.use('42Auth', FtAuthentication);
 passport.use('jwt', JwtStrategy);
+
+jipDataSource.initialize().then(
+  () => {
+    logger.info('typeORM INIT SUCCESS');
+    logger.info(process.env.MODE);
+  },
+).catch(
+  (e) => {
+    logger.error(`typeORM INIT FAILED : ${e.message}`);
+  },
+);
 
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
