@@ -339,12 +339,12 @@ export const updateBookInfo = async (
   const book: types.UpdateBook = {
     id: req.body.bookId,
     callSign: req.body.callSign,
-    Status: req.body.status,
+    status: req.body.status,
   };
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
-          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
@@ -356,7 +356,7 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   if (isNullish(book.callSign) == false) { book.callSign.trim(); }
-  if (bookStatusFormatValidator(book.Status) == false) {
+  if (bookStatusFormatValidator(book.status) == false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {

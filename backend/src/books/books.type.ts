@@ -35,5 +35,5 @@ export interface UpdateBookInfo {
 export interface UpdateBook {
   id: number;
   callSign: string;
-  Status: number;
+  status: number;
 }
