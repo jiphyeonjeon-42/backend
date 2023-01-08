@@ -9,8 +9,8 @@ import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 
-const pubdateFormatValidator = (pubdate: String | Date) => {
-  const regexConditon = /^[0-9]{8}$/;
+const pubdateFormatValidator = (pubdate : String | Date) => {
+  const regexConditon = (/^[0-9]{8}$/);
   if (regexConditon.test(String(pubdate)) === false) {
     return false;
   }
@@ -339,13 +339,12 @@ export const updateBookInfo = async (
   const book: types.UpdateBook = {
     id: req.body.bookId,
     callSign: req.body.callSign,
-    status: req.body.status,
+    Status: req.body.status,
   };
-  console.log('req.body', req.body);
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
-          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
@@ -357,11 +356,11 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   if (isNullish(book.callSign) == false) { book.callSign.trim(); }
-  if (bookStatusFormatValidator(book.status) == false) {
+  if (bookStatusFormatValidator(book.Status) == false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await BooksService.updateBookInfo(bookInfo, book);
+    await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

@@ -11,18 +11,6 @@ export interface SortInfoType {
     limit: string;
 }
 
-export interface LendingBookList {
-    id: number;
-    title: string;
-    author: string;
-    publisher: string;
-    isbn: string;
-    image: string;
-    publishedAt: Date | string;
-    updatedAt: Date | string;
-    lendingCnt: number;
-}
-
 export interface CreateBookInfo {
   title: string;
   author: string;
@@ -47,5 +35,5 @@ export interface UpdateBookInfo {
 export interface UpdateBook {
   id: number;
   callSign: string;
-  status: number;
+  Status: number;
 }
