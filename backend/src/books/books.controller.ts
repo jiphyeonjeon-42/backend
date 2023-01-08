@@ -352,8 +352,7 @@ export const updateBookInfo = async (
   if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
   if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
-  }
-  else if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt) === false) {
+  } else if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt) === false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   if (isNullish(book.callSign) === false) { book.callSign.trim(); }
@@ -361,7 +360,8 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await BooksService.updateBookInfo(bookInfo, book);
+    if (book.id) { await BooksService.updateBook(book); }
+    if (bookInfo.id) { await BooksService.updateBookInfo(bookInfo); }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

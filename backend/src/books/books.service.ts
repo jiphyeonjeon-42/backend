@@ -518,7 +518,10 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
-export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook) => {
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo) => {
   await booksRepository.updateBookInfo(bookInfo);
+};
+
+export const updateBook = async (book: types.UpdateBook) => {
   await booksRepository.updateBook(book);
 };
