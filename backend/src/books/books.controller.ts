@@ -341,7 +341,6 @@ export const updateBookInfo = async (
     callSign: req.body.callSign,
     status: req.body.status,
   };
-  console.log('req.body', req.body);
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
