@@ -341,11 +341,10 @@ export const updateBookInfo = async (
     callSign: req.body.callSign,
     status: req.body.status,
   };
-  console.log('req.body', req.body);
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
-          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status !== undefined)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
@@ -353,15 +352,16 @@ export const updateBookInfo = async (
   if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
   if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
-  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
+  } else if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt) === false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
-  if (isNullish(book.callSign) == false) { book.callSign.trim(); }
-  if (bookStatusFormatValidator(book.status) == false) {
+  if (isNullish(book.callSign) === false) { book.callSign.trim(); }
+  if (bookStatusFormatValidator(book.status) === false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await BooksService.updateBookInfo(bookInfo, book);
+    if (book.id) { await BooksService.updateBook(book); }
+    if (bookInfo.id) { await BooksService.updateBookInfo(bookInfo); }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
