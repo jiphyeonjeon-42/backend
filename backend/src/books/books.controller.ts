@@ -356,8 +356,8 @@ export const updateBookInfo = async (
   } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
-  if (isNullish(book.callSign) == false) { book.callSign.trim(); }
-  if (bookStatusFormatValidator(book.status) == false) {
+  if (isNullish(book.callSign) === false) { book.callSign.trim(); }
+  if (bookStatusFormatValidator(book.status) === false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
