@@ -352,7 +352,7 @@ export const updateBookInfo = async (
   if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
   if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
-  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
+  } else if (pubdateFormatValidator(req.body.publishedAt) === false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   if (isNullish(book.callSign) === false) { book.callSign.trim(); }
