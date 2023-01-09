@@ -1,11 +1,5 @@
 import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
+  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
 import BookInfo from './BookInfo';
 import User from './User';
@@ -17,7 +11,7 @@ import Reservation from './Reservation';
 
 class Book {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-  id: number;
+  id?: number;
 
   @Column('varchar', { name: 'donator', nullable: true, length: 255 })
   donator: string | null;
@@ -32,7 +26,7 @@ class Book {
     name: 'createdAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column()
   infoId: number;
@@ -41,7 +35,7 @@ class Book {
     name: 'updatedAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   @Column('int', { name: 'donatorId', nullable: true })
   donatorId: number | null;
@@ -51,20 +45,20 @@ class Book {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'infoId', referencedColumnName: 'id' }])
-  info: BookInfo;
+  info?: BookInfo;
 
   @ManyToOne(() => User, (user) => user.books, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'donatorId', referencedColumnName: 'id' }])
-  donator2: User;
+  donator2?: User;
 
   @OneToMany(() => Lending, (lending) => lending.book)
-  lendings: Lending[];
+  lendings?: Lending[];
 
   @OneToMany(() => Reservation, (reservation) => reservation.book)
-  reservations: Reservation[];
+  reservations?: Reservation[];
 }
 
 export default Book;
