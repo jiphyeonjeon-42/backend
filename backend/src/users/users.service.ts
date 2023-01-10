@@ -21,7 +21,7 @@ export const getLending = async () => {
   return items;
 };
 
-export const setOverDueDay = async (items: any) => {
+export const setOverDueDay = async (items: models.User[]) => {
   const lending = (await getLending());
   if (items) {
     return items.map((item: models.User) => {
