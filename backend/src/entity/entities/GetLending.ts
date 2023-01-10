@@ -10,6 +10,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.title', 'title')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
     .addSelect('bi.image', 'image')
+    .addSelect('case when datediff(now(), duedate) > 0 then datediff(now(), duedate) else 0', 'overdueday')
     .from('lending', 'l')
     .leftJoin('book', 'b', 'l.bookId = b.id')
     .leftJoin('book_info', 'bi', 'b.infoid = bi.id')
