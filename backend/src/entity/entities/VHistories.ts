@@ -3,28 +3,27 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 @ViewEntity({
   expression: (Data: DataSource) => Data
     .createQueryBuilder()
-    .select('lending.id', 'id')
+    .select('l.id', 'id')
     .addSelect('lendingCondition')
-    .addSelect('user.nickname', 'login')
-    .addSelect('lending.returningCondition')
+    .addSelect('u.nickname', 'login')
+    .addSelect('l.returningCondition')
     .addSelect(`
-      CASE WHEN NOW() > user.penalyEndDate THEN 0
-        ELSE DATEDIFF(user.penaltyEndDate, NOW())
+      CASE WHEN NOW() > u.penaltyEndDate THEN 0
+        ELSE DATEDIFF(u.penaltyEndDate, NOW()) END
     `, 'penaltyDays')
-    .addSelect('book.callSign')
-    .addSelect('book_info.title')
-    .addSelect('book_info.id', 'bookInfoId')
-    .addSelect('book_info.image', 'image')
-    .addSelect('DATE_FORMAT(lending.createdAt, "%Y-%m-%d")', 'createdAt')
-    .addSelect('DATE_FORMAT(lending.returnedAt, "%Y-%m-%d")', 'returnedAt')
-    .addSelect('DATE_ADD(lending.createdAt, interval 14 day), \'%Y-%m-%d\')', 'dueDate')
-    .addSelect('SELECT nickname from user WHERE user.id = lendingLibrarianId', 'lendingLibrarianNickName')
-    .addSelect('SELECT nickname FROM user WHERE user.id = returningLibrarianId', 'returningLibrarianNickname')
+    .addSelect('b.callSign')
+    .addSelect('bi.title')
+    .addSelect('bi.id', 'bookInfoId')
+    .addSelect('bi.image', 'image')
+    .addSelect('DATE_FORMAT(l.createdAt, "%Y-%m-%d")', 'createdAt')
+    .addSelect('DATE_FORMAT(l.returnedAt, "%Y-%m-%d")', 'returnedAt')
+    .addSelect("DATE_FORMAT(DATE_ADD(l.createdAt, interval 14 day), '%Y-%m-%d')", 'dueDate')
+    .addSelect('(SELECT nickname FROM user WHERE user.id = lendingLibrarianId)', 'lendingLibrarianNickName')
+    .addSelect('(SELECT nickname FROM user WHERE user.id = returningLibrarianId)', 'returningLibrarianNickname')
     .from('lending', 'l')
     .innerJoin('user', 'u', 'l.userId = u.id')
     .innerJoin('book', 'b', 'l.bookId = b.id')
-    .leftJoin('book_info', 'bi', 'b.infoId = bi.id')
-    .where('l.returnedAt IS NULL'),
+    .leftJoin('book_info', 'bi', 'b.infoId = bi.id'),
 })
 export default class VHistories {
   @ViewColumn()
