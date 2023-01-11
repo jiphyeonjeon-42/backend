@@ -41,7 +41,7 @@ export const searchUserBynicknameOrEmail = async (nicknameOrEmail: string, limit
     totalPages: Math.ceil(count / limit),
     currentPage: page + 1,
   };
-  return { items, meta };
+  return { items: setItems, meta };
 };
 
 export const searchUserById = async (id: number) => {
@@ -70,7 +70,7 @@ export const searchAllUsers = async (limit: number, page: number) => {
     totalPages: Math.ceil(count / limit),
     currentPage: page + 1,
   };
-  return { setItems, meta };
+  return { items: setItems, meta };
 };
 
 export const createUser = async (email: string, password: string) => {
