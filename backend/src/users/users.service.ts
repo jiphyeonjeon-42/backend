@@ -4,37 +4,16 @@ import * as models from './users.model';
 import * as types from './users.type';
 import usersRepository from './users.repository';
 
-export const getLending = async () => {
-  const items = (await usersRepository.getLending()) as unknown as models.Lending[];
-  await Promise.all(items.map(async (item: models.Lending) => {
-    const rtnObj: models.Lending = Object.assign(item);
-    // const reservedNum = await usersRepository.countReservations(item.bookInfoId);
-    rtnObj.overDueDay = 0;
-    // rtnObj.reservedNum = reservedNum;
-    const nowDate = new Date();
-    if (rtnObj.duedate < nowDate) {
-      rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
-        - rtnObj.duedate.getTime() / (1000 * 3600 * 24));
-    }
-    return rtnObj;
-  }));
-  return items;
-};
-
 export const setOverDueDay = async (items: models.User[]) => {
-  const lending = (await getLending());
+  const lending = (await usersRepository.getLending()) as unknown as models.Lending[];
   if (items) {
     return items.map((item: models.User) => {
       const rtnObj: models.User = Object.assign(item);
       rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
       rtnObj.overDueDay = 0;
       if (rtnObj.lendings.length) {
-        const nowDate = new Date();
         rtnObj.lendings.forEach((lend: models.Lending) => {
-          if (lend.duedate < nowDate) {
-            rtnObj.overDueDay += Math.floor(nowDate.getTime() / (1000 * 3600 * 24)
-              - lend.duedate.getTime() / (1000 * 3600 * 24));
-          }
+          rtnObj.overDueDay += lend.overDueDay;
         });
       }
       return rtnObj;
