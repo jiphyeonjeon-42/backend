@@ -37,6 +37,9 @@ export class GetLending {
 
   @ViewColumn()
   image: string;
+
+  @ViewColumn()
+  overDueDay: number;
 }
 
 export default GetLending;
