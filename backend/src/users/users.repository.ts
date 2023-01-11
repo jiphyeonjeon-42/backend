@@ -44,9 +44,10 @@ class UsersRepository extends Repository<User> {
     return [customUsers, count];
   }
 
-  async getLending() {
-    const lendings = await this.getLendingRepo.find();
-    return lendings;
+
+
+  async getLending(users: { userId: number; }[] | undefined) {
+    return this.getLendingRepo.find({ where: users });
   }
 
   async countReservations(bookInfoId: number) {

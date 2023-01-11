@@ -5,7 +5,8 @@ import * as types from './users.type';
 import usersRepository from './users.repository';
 
 export const setOverDueDay = async (items: models.User[]) => {
-  const lending = (await usersRepository.getLending()) as unknown as models.Lending[];
+  const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
+  const lending = (await usersRepository.getLending(usersIdList)) as unknown as models.Lending[];
   if (items) {
     return items.map((item: models.User) => {
       const rtnObj: models.User = Object.assign(item);
