@@ -1,36 +1,49 @@
+import { Repository } from 'typeorm';
+import jipDataSource from '../../app-data-source';
+import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../../mysql';
 
-export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
-  const numberOfBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book_info
-    WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) {throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-  try {
-    await transactionExecuteQuery(`
-      INSERT INTO reviews(
-        userId,
-        bookInfoId,
-        updateUserId,
-        isDeleted,
-        content
-      )VALUES (?, ?, ?, ?, ?)
-    `, [userId, bookInfoId, userId, false, content]);
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-    throw error;
-  } finally {
-    conn.release();
+class ReviewsRepository extends Repository<Reviews> {
+  constructor() {
+    super(Reviews, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
   }
-};
 
-export const getReviewsPage = async (
+  async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
+    console.log('create reveiw called');
+  }
+
+//  createReviews = async (userId: number, bookInfoId: number, content: string) => {
+//  // TODO: bookInfo 검증은 컨트롤러로 위임
+//  const numberOfBookInfo = await executeQuery(`
+//    SELECT COUNT(*) as coun임
+//    FROM book_info
+//    WHERE id = ?;
+//  `, [bookInfoId]);
+//  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
+//  const conn = await pool.getConnection();
+//  const transactionExecuteQuery = makeExecuteQuery(conn);
+//  conn.beginTransaction();
+//  try {
+//    await transactionExecuteQuery(`
+//      INSERT INTO reviews(
+//        userId,
+//        bookInfoId,
+//        updateUserId,
+//        isDeleted,
+//        content
+//      )VALUES (?, ?, ?, ?, ?)
+//    `, [userId, bookInfoId, userId, false, content]);
+//    conn.commit();
+//  } catch (error) {
+//    conn.rollback();
+//    throw error;
+//  } finally {
+//    conn.release();
+//  }
+//};
+
+getReviewsPage = async (
   reviewerId: number,
   isMyReview: boolean,
   titleOrNickname :string,
@@ -76,7 +89,7 @@ export const getReviewsPage = async (
   return (reviews);
 };
 
-export const getReviewsCounts = async (
+getReviewsCounts = async (
   reviewerId: number,
   isMyReview: boolean,
   titleOrNickname: string,
@@ -104,7 +117,7 @@ export const getReviewsCounts = async (
   return (counts[0].counts);
 };
 
-export const getReviewsUserId = async (
+getReviewsUserId = async (
   reviewsId : number,
 ) => {
   const reviewsUserId = await executeQuery(`
@@ -117,7 +130,7 @@ export const getReviewsUserId = async (
   return reviewsUserId[0].userId;
 };
 
-export const getReviews = async (
+getReviews = async (
   reviewsId : number,
 ) => {
   const result: any = await executeQuery(`
@@ -131,7 +144,7 @@ export const getReviews = async (
   return result;
 };
 
-export const updateReviews = async (
+updateReviews = async (
   reviewsId : number,
   userId : number,
   content : string,
@@ -145,7 +158,7 @@ export const updateReviews = async (
     `, [content, userId, reviewsId]);
 };
 
-export const deleteReviews = async (reviewId: number, deleteUser: number) => {
+deleteReviews = async (reviewId: number, deleteUser: number) => {
   await executeQuery(`
       UPDATE reviews
       SET
@@ -155,7 +168,7 @@ export const deleteReviews = async (reviewId: number, deleteUser: number) => {
     `, [true, deleteUser, reviewId]);
 };
 
-export const patchReviews = async (
+patchReviews = async (
   reviewsId : number,
   userId : number,
 ) => {
@@ -167,3 +180,6 @@ export const patchReviews = async (
     WHERE id = ?
     `, [userId, reviewsId]);
 };
+}
+
+export = new ReviewsRepository();

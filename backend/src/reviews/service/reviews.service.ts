@@ -1,5 +1,6 @@
-import * as reviewsRepository from '../repository/reviews.repository';
 import * as errorCheck from './utils/errorCheck';
+
+const reviewsRepository = require('../repository/reviews.repository');
 
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
   await reviewsRepository.createReviews(userId, bookInfoId, content);
