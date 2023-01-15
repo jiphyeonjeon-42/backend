@@ -5,10 +5,10 @@ import Reservation from '../entity/entities/Reservation';
 import UserReservation from '../entity/entities/UserReservation';
 import * as models from './users.model';
 import { formatDate } from '../utils/dateFormat';
-import GetLending from '../entity/entities/GetLending';
+import VUserLending from '../entity/entities/VUserLending';
 
 class UsersRepository extends Repository<User> {
-  private readonly getLendingRepo: Repository<GetLending>;
+  private readonly getLendingRepo: Repository<VUserLending>;
 
   private readonly reservationsRepo: Repository<Reservation>;
 
@@ -16,8 +16,8 @@ class UsersRepository extends Repository<User> {
 
   constructor() {
     super(User, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
-    this.getLendingRepo = new Repository<GetLending>(
-      GetLending,
+    this.getLendingRepo = new Repository<VUserLending>(
+      VUserLending,
       jipDataSource.createEntityManager(),
       jipDataSource.createQueryRunner(),
     );

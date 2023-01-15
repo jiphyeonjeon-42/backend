@@ -16,7 +16,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .leftJoin('book_info', 'bi', 'b.infoid = bi.id')
     .where('l.returnedAt IS NULL'),
 })
-export class GetLending {
+export class VUserLending {
   @ViewColumn()
   userId: number;
 
@@ -42,4 +42,4 @@ export class GetLending {
   overDueDay: number;
 }
 
-export default GetLending;
+export default VUserLending;
