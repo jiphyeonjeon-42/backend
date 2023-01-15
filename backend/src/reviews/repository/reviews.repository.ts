@@ -10,38 +10,40 @@ class ReviewsRepository extends Repository<Reviews> {
   }
 
   async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
-    console.log('create reveiw called');
+    this.insert({
+      userId, bookInfoId, content, updateUserId: userId,
+    });
   }
 
-//  createReviews = async (userId: number, bookInfoId: number, content: string) => {
-//  // TODO: bookInfo 검증은 컨트롤러로 위임
-//  const numberOfBookInfo = await executeQuery(`
-//    SELECT COUNT(*) as coun임
-//    FROM book_info
-//    WHERE id = ?;
-//  `, [bookInfoId]);
-//  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
-//  const conn = await pool.getConnection();
-//  const transactionExecuteQuery = makeExecuteQuery(conn);
-//  conn.beginTransaction();
-//  try {
-//    await transactionExecuteQuery(`
-//      INSERT INTO reviews(
-//        userId,
-//        bookInfoId,
-//        updateUserId,
-//        isDeleted,
-//        content
-//      )VALUES (?, ?, ?, ?, ?)
-//    `, [userId, bookInfoId, userId, false, content]);
-//    conn.commit();
-//  } catch (error) {
-//    conn.rollback();
-//    throw error;
-//  } finally {
-//    conn.release();
-//  }
-//};
+  //  createReviews = async (userId: number, bookInfoId: number, content: string) => {
+  //  // TODO: bookInfo 검증은 컨트롤러로 위임
+  //  const numberOfBookInfo = await executeQuery(`
+  //    SELECT COUNT(*) as coun임
+  //    FROM book_info
+  //    WHERE id = ?;
+  //  `, [bookInfoId]);
+  //  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
+  //  const conn = await pool.getConnection();
+  //  const transactionExecuteQuery = makeExecuteQuery(conn);
+  //  conn.beginTransaction();
+  //  try {
+  //    await transactionExecuteQuery(`
+  //      INSERT INTO reviews(
+  //        userId,
+  //        bookInfoId,
+  //        updateUserId,
+  //        isDeleted,
+  //        content
+  //      )VALUES (?, ?, ?, ?, ?)
+  //    `, [userId, bookInfoId, userId, false, content]);
+  //    conn.commit();
+  //  } catch (error) {
+  //    conn.rollback();
+  //    throw error;
+  //  } finally {
+  //    conn.release();
+  //  }
+  // };
 
 getReviewsPage = async (
   reviewerId: number,
