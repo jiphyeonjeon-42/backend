@@ -22,7 +22,7 @@ class ReviewsRepository extends Repository<Reviews> {
     );
   }
 
-  async validateBookInfo(bookInfoId: number) {
+  async validateBookInfo(bookInfoId: number) : Promise<void> {
     const bookInfoCount = await this.bookInfoRepo.count({
       where: { id: bookInfoId },
     });
@@ -80,6 +80,9 @@ getReviewsPage = async (
   ${limitQuery}
   OFFSET ?
   `, [offset]);
+
+  const reviews2 = await 
+
   return (reviews);
 };
 
