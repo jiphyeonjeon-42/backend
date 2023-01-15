@@ -31,6 +31,7 @@ export const reviewsIdExistCheck = async (
   try {
     result = await reviewsService.getReviewsUserId(reviewsId);
   } catch (error : any) {
+    console.log("err", error);
     throw new Error(errorCode.NOT_FOUND_REVIEWS);
   }
   return result;

@@ -13,7 +13,7 @@ export const getReviewsPage = async (
   titleOrNickname: string,
   disabled: number,
   page: number,
-  sort: 'asc' | 'desc',
+  sort: 'ASC' | 'DESC',
   limit: number,
 ) => {
   const items = await reviewsRepository.getReviewsPage(
