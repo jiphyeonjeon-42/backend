@@ -1,11 +1,5 @@
 import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
+  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
 import Book from './Book';
 import Category from './Category';
@@ -53,7 +47,7 @@ class BookInfo {
   categoryId?: number;
 
   @OneToMany(() => Book, (book) => book.info)
-  books: Book[];
+  books?: Book[];
 
   @ManyToOne(() => Category, (category) => category.bookInfos, {
     onDelete: 'NO ACTION',
@@ -63,13 +57,13 @@ class BookInfo {
   category?: Category;
 
   @OneToMany(() => Likes, (likes) => likes.bookInfo)
-  likes: Likes[];
+  likes?: Likes[];
 
   @OneToMany(() => Reservation, (reservation) => reservation.bookInfo)
-  reservations: Reservation[];
+  reservations?: Reservation[];
 
   @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
-  reviews: Reviews[];
+  reviews?: Reviews[];
 }
 
 export default BookInfo;

@@ -24,14 +24,17 @@ export interface LendingBookList {
 }
 
 export interface CreateBookInfo {
-  title: string;
-  author: string;
-  publisher: string;
-  isbn?: string;
-  image?: string;
-  categoryId?: string;
-  pubdate?: string | Date;
-  donator: string;
+    infoId: number;
+    callSign: string;
+    title: string;
+    author: string;
+    publisher: string;
+    isbn?: string;
+    image?: string;
+    categoryId?: string;
+    pubdate?: string | null;
+    donator: string;
+    donatorId: number | null;
 }
 
 export interface UpdateBookInfo {
@@ -48,4 +51,34 @@ export interface UpdateBook {
   id: number;
   callSign: string;
   status: number;
+}
+
+export enum categoryIds{
+    'K' = 1,
+    'C',
+    'O',
+    'A',
+    'I',
+    'G',
+    'J',
+    'c',
+    'F',
+    'E',
+    'e',
+    'H',
+    'd',
+    'D',
+    'k',
+    'g',
+    'B',
+    'n',
+    'N',
+    'j',
+    'a',
+    'f',
+    'L',
+    'b',
+    'M',
+    'i',
+    'l',
 }

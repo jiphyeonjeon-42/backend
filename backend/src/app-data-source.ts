@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,7 +25,7 @@ switch (process.env.MODE) {
     hostName = 'database';
 }
 
-const jipDataSource = new DataSource({
+export const option = {
   type: 'mysql',
   host: hostName,
   port: 3306,
@@ -33,12 +33,14 @@ const jipDataSource = new DataSource({
   password,
   database,
   entities: [
-    '**/entity/entities/*.ts',
+    `${__dirname}/../**/entities/*.{js,ts}`,
   ],
   logging: true,
-  //poolSize: 500,
+  // poolSize: 500,
   synchronize: true,
   poolSize: 200,
-});
+} as DataSourceOptions;
+console.log(__dirname);
+const jipDataSource = new DataSource(option);
 
 export default jipDataSource;
