@@ -1,12 +1,34 @@
 import { Repository } from 'typeorm';
+import * as status from 'http-status';
 import jipDataSource from '../../app-data-source';
 import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../../mysql';
+import BookInfo from '../../entity/entities/BookInfo';
+import ErrorResponse from '../../utils/error/errorResponse';
 
 class ReviewsRepository extends Repository<Reviews> {
+  private readonly bookInfoRepo: Repository<BookInfo>;
+
   constructor() {
     super(Reviews, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
+    const entityManager = jipDataSource.createEntityManager();
+    const queryRunner = jipDataSource.createQueryRunner();
+
+    this.bookInfoRepo = new Repository<BookInfo>(
+      BookInfo,
+      entityManager,
+      queryRunner,
+    );
+  }
+
+  async validateBookInfo(bookInfoId: number) {
+    const bookInfoCount = await this.bookInfoRepo.count({
+      where: { id: bookInfoId },
+    });
+    if (bookInfoCount === 0) {
+      throw new Error(errorCode.INVALID_INPUT_REVIEWS);
+    }
   }
 
   async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
