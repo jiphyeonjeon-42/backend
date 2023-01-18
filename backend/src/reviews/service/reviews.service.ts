@@ -1,7 +1,9 @@
-import * as reviewsRepository from '../repository/reviews.repository';
 import * as errorCheck from './utils/errorCheck';
 
+const reviewsRepository = require('../repository/reviews.repository');
+
 export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
+  await reviewsRepository.validateBookInfo(bookInfoId);
   await reviewsRepository.createReviews(userId, bookInfoId, content);
 };
 
@@ -11,7 +13,7 @@ export const getReviewsPage = async (
   titleOrNickname: string,
   disabled: number,
   page: number,
-  sort: 'asc' | 'desc',
+  sort: 'ASC' | 'DESC',
   limit: number,
 ) => {
   const items = await reviewsRepository.getReviewsPage(
