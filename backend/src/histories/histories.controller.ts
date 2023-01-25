@@ -32,8 +32,8 @@ export const histories = async (
     return next(new ErrorResponse(errorCode.UNAUTHORIZED, status.UNAUTHORIZED));
   }
   try {
-    const result = await historiesService.histories(query, who, userId, type, page, limit);
-    return res.status(status.OK).json(result);
+    return res.status(status.OK)
+      .json(await historiesService.getHistories(query, who, userId, type, page, limit));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 700 && errorNumber < 800) {
