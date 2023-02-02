@@ -257,6 +257,11 @@ export const createLike = async (
       next(new ErrorResponse(error.message, status.BAD_REQUEST));
     } else if (error.message === 'DB error') {
       next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
+    } else if (errorNumber >= 600 && errorNumber < 700) {
+      // INVALID_INFO_ID_LIKES
+      // ALREADY_LIKES
+      // NONEXISTENT_LIKES
+      next(new ErrorResponse(error.message, status.BAD_REQUEST));
     }
     logger.error(error.message);
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
