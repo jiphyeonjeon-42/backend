@@ -218,4 +218,4 @@ class BooksRepository {
   }
 }
 
-export = new BooksRepository();
+export default new BooksRepository();

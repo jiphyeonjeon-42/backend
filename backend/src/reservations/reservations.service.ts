@@ -3,21 +3,17 @@ import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 import { publishMessage } from '../slack/slack.service';
+import ReservationsRepository from './reservations.repository';
+import BooksRepository from '../books/books.repository';
 
 export const create = async (userId: number, bookInfoId: number) => {
   // bookInfoId가 유효한지 확인
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  const numberOfBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book
-    WHERE infoId = ? AND status = 0;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) {
+  const numberOfBookInfo = await BooksRepository.isExistBook(String(bookInfoId));
+  if (numberOfBookInfo === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }
-  conn.beginTransaction();
   try {
+    await ReservationsRepository.startTransaction();
     // 연체 전적이 있는지 확인
     const userPenalty = await transactionExecuteQuery(`
       SELECT DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate
