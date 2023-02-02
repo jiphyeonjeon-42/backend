@@ -335,14 +335,18 @@ export const getInfo = async (id: string) => {
   return bookSpec;
 };
 
-export const createLike = async (userId: number, bookInfoId: number) => {
+export const validateBookInfo = async (bookInfoId: number) => {
   // bookInfo 유효검증
   const numberOfBookInfo = await executeQuery(`
   SELECT COUNT(*) as count
   FROM book_info
   WHERE id = ?;
   `, [bookInfoId]);
-  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+};
+
+export const createLike = async (userId: number, bookInfoId: number) => {
+  await validateBookInfo(bookInfoId);
   // 중복 like 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
@@ -383,13 +387,7 @@ export const createLike = async (userId: number, bookInfoId: number) => {
 };
 
 export const deleteLike = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  await validateBookInfo(bookInfoId);
   // like 존재여부 검증
   const LikeArray = await executeQuery(`
   SELECT id, isDeleted
@@ -418,13 +416,7 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
 };
 
 export const getLikeInfo = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  await validateBookInfo(bookInfoId);
   // (userId, bookInfoId)인 like 데이터 확인
   const LikeArray = await executeQuery(`
   SELECT userId, isDeleted
