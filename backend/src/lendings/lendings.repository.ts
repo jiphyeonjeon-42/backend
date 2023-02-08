@@ -105,7 +105,7 @@ class LendingRepository extends Repository<Lending> {
         returnedAt: IsNull(),
       },
     });
-    return lendings as unknown as models.Lending[];
+    return count;
   }
 
   async searchBookForLending(bookId: number) {
