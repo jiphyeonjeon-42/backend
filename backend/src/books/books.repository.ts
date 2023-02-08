@@ -26,27 +26,19 @@ class BooksRepository {
     this.transactionQueryRunner = null;
     const queryRunner = jipDataSource.createQueryRunner();
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    this.searchBook = new Repository<SearchBook>(
-      SearchBook,
-      entityManager,
-    );
-    this.books = new Repository<Book>(
-      Book,
-      entityManager,
-    );
-    this.bookInfo = new Repository<BookInfo>(
-      BookInfo,
-      entityManager,
-    );
-    this.users = new Repository<User>(
-      User,
-      entityManager,
-    );
+    this.searchBook = new Repository<SearchBook>(SearchBook, entityManager);
+    this.books = new Repository<Book>(Book, entityManager);
+    this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
+    this.users = new Repository<User>(User, entityManager);
     console.log('book repo init');
   }
 
   async isExistBook(isbn: string): Promise<number> {
     return this.bookInfo.count({ where: { isbn } });
+  }
+
+  async countBookInfos(bookInfoId: number): Promise<number> {
+    return this.bookInfo.count({ where: { id: bookInfoId } });
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -135,14 +127,25 @@ class BooksRepository {
   }
 
   async getNewCallsignPrimaryNum(categoryId: string): Promise<number> {
-    return await this.bookInfo.countBy({ categoryId: Number(categoryId) }) + 1;
+    return (
+      (await this.bookInfo.countBy({ categoryId: Number(categoryId) })) + 1
+    );
   }
 
   async getOldCallsignNums(categoryAlphabet: string) {
-    return this.books.createQueryBuilder()
-      .select('substring(SUBSTRING_INDEX(callSign, \'.\', 1),2)', 'recommendPrimaryNum')
-      .addSelect('substring(SUBSTRING_INDEX(callSign, \'.\', -1),2)', 'recommendCopyNum')
-      .where('callsign like :categoryAlphabet', { categoryAlphabet: `${categoryAlphabet}%` })
+    return this.books
+      .createQueryBuilder()
+      .select(
+        "substring(SUBSTRING_INDEX(callSign, '.', 1),2)",
+        'recommendPrimaryNum',
+      )
+      .addSelect(
+        "substring(SUBSTRING_INDEX(callSign, '.', -1),2)",
+        'recommendCopyNum',
+      )
+      .where('callsign like :categoryAlphabet', {
+        categoryAlphabet: `${categoryAlphabet}%`,
+      })
       .orderBy('recommendPrimaryNum + 0', 'DESC')
       .orderBy('recommendCopyNum', 'DESC')
       .limit(1)
@@ -203,11 +206,15 @@ class BooksRepository {
   }
 
   async commitTransaction(): Promise<void> {
-    if (this.transactionQueryRunner) { await this.transactionQueryRunner.commitTransaction(); }
+    if (this.transactionQueryRunner) {
+      await this.transactionQueryRunner.commitTransaction();
+    }
   }
 
   async rollbackTransaction(): Promise<void> {
-    if (this.transactionQueryRunner) { await this.transactionQueryRunner.rollbackTransaction(); }
+    if (this.transactionQueryRunner) {
+      await this.transactionQueryRunner.rollbackTransaction();
+    }
   }
 
   async release(): Promise<void> {
