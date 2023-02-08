@@ -57,6 +57,9 @@ class Reservation {
   })
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
   book: Book;
+
+  @Column()
+   bookId: number | null;
 }
 
 export default Reservation;
