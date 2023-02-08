@@ -5,7 +5,6 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import User from '../entity/entities/User';
 import jipDataSource from '../app-data-source';
 import Lending from '../entity/entities/Lending';
-import * as models from '../users/users.model';
 import VUserLending from '../entity/entities/VUserLending';
 import Book from '../entity/entities/Book';
 import Reservation from '../entity/entities/Reservation';
