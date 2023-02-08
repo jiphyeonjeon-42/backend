@@ -4,28 +4,14 @@ import axios from 'axios';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
-import * as types from './books.type';
+import {
+  categoryIds, CreateBookInfo, UpdateBook, UpdateBookInfo,
+} from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
 
+const likesRepository = require('./Likes.repository');
 const booksRepository = require('./books.repository');
-
-export const search = async (
-  query: string,
-  page: number,
-  limit: number,
-) => {
-  const bookList = await booksRepository.getBookList(query, limit, page);
-  const totalItems = await booksRepository.getTotalItems(query);
-  const meta = {
-    totalItems,
-    itemCount: bookList.length,
-    itemsPerPage: limit,
-    totalPages: Math.ceil(totalItems / limit),
-    currentPage: page + 1,
-  };
-  return { items: bookList, meta };
-};
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -71,128 +57,64 @@ const getAuthorInNaver = async (isbn: string) => {
   return (author);
 };
 
-const getCategoryAlpabet = (categoryId : number) => {
-  switch (categoryId) {
-    case 1:
-      return 'K';
-    case 2:
-      return 'C';
-    case 3:
-      return 'O';
-    case 4:
-      return 'A';
-    case 5:
-      return 'I';
-    case 6:
-      return 'G';
-    case 7:
-      return 'J';
-    case 8:
-      return 'c';
-    case 9:
-      return 'F';
-    case 10:
-      return 'E';
-    case 11:
-      return 'e';
-    case 12:
-      return 'H';
-    case 13:
-      return 'd';
-    case 14:
-      return 'D';
-    case 15:
-      return 'k';
-    case 16:
-      return 'g';
-    case 17:
-      return 'B';
-    case 18:
-      return 'e';
-    case 19:
-      return 'n';
-    case 20:
-      return 'N';
-    case 21:
-      return 'j';
-    case 22:
-      return 'a';
-    case 23:
-      return 'f';
-    case 24:
-      return 'L';
-    case 25:
-      return 'b';
-    case 26:
-      return 'M';
-    case 27:
-      return 'i';
-    case 28:
-      return 'l';
-    default:
-      throw new Error(errorCode.INVALID_CATEGORY_ID);
+const getCategoryAlphabet = (categoryId : number): string => {
+  try {
+    const category = Object.values(categoryIds) as string[];
+    return category[categoryId - 1];
+  } catch (e) {
+    throw new Error(errorCode.INVALID_CATEGORY_ID);
   }
 };
 
-export const createBook = async (book: types.CreateBookInfo) => {
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  try {
-    await conn.beginTransaction();
-    let recommendCopyNum;
-    let recommendPrimaryNum;
-    let categoryAlpabet;
+export const search = async (
+  query: string,
+  page: number,
+  limit: number,
+) => {
+  const bookList = await booksRepository.getBookList(query, limit, page);
+  const totalItems = await booksRepository.getTotalItems(query);
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, meta };
+};
 
-    const isbnInBookInfo = (await transactionExecuteQuery('SELECT COUNT(*) as cnt, isbn FROM book_info WHERE isbn = ?', [book.isbn])) as StringRows[];
-    const slackIdExist = (await transactionExecuteQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
-    if (slackIdExist[0].cnt > 1) {
+export const createBook = async (book: CreateBookInfo) => {
+  const isbnInBookInfo = await booksRepository.isExistBook(book.isbn);
+  const checkNickName = await booksRepository.checkNickName(book.donator);
+  const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
+  try {
+    await booksRepository.startTransaction();
+    let recommendCopyNum = 1;
+    let recommendPrimaryNum;
+
+    if (checkNickName > 1) {
       logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
     }
 
-    const category = (await transactionExecuteQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
-
-    if (isbnInBookInfo[0].cnt === 0) {
-      await transactionExecuteQuery(
-        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryId, publishedAt)
-      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?)`,
-        [
-          book.title,
-          book.author,
-          book.publisher,
-          book.isbn ? book.isbn : 'NOTEXIST',
-          book.isbn ? book.isbn : 'NOTEXIST',
-          book.image ? book.image : 'NOTEXIST',
-          book.image ? book.image : 'NOTEXIST',
-          book.categoryId,
-          book.pubdate,
-        ],
-      );
-      categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
-      recommendPrimaryNum = (await transactionExecuteQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
-      recommendCopyNum = 1;
+    if (isbnInBookInfo === 0) {
+      await booksRepository.createBookInfo(book);
+      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(book.categoryId);
     } else {
-      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].categoryAlpabet;
-      recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendPrimaryNum;
-      recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendCopyNum;
+      const nums = await booksRepository.getOldCallsignNums(categoryAlphabet);
+      recommendPrimaryNum = nums.recommendPrimaryNum;
+      recommendCopyNum = nums.recommendCopyNum * 1 + 1;
     }
-    const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
-    await transactionExecuteQuery(`INSERT INTO book (donator, donatorId, callSign, status, infoId) VALUES
-    ((SELECT IF (? != 'NOTEXIST', ?, NULL)),(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
-  `, [book.donator ? book.donator : 'NOTEXIST',
-      book.donator ? book.donator : 'NOTEXIST',
-      book.donator,
-      recommendCallSign,
-      book.isbn,
-      book.title]);
-    await conn.commit();
+    const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
+    await booksRepository.createBook({ ...book, callSign: recommendCallSign });
+    await booksRepository.commitTransaction();
     return ({ callsign: recommendCallSign });
   } catch (error) {
-    await conn.rollback();
+    await booksRepository.rollbackTransaction();
     if (error instanceof Error) {
       throw error;
     }
   } finally {
-    conn.release();
+    await booksRepository.release();
   }
   return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
 };
@@ -498,18 +420,12 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
 
 export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  const numberOfBookInfo = await booksRepository.countBookInfos(bookInfoId);
+  if (numberOfBookInfo === 0) {
+    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
+  }
   // (userId, bookInfoId)인 like 데이터 확인
-  const LikeArray = await executeQuery(`
-  SELECT userId, isDeleted
-  FROM likes
-  WHERE bookInfoId = ?;
-  `, [bookInfoId]);
+  const LikeArray = await likesRepository.getLikesByBookInfoId(bookInfoId);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
     if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
@@ -518,7 +434,10 @@ export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
-export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook) => {
+export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
   await booksRepository.updateBookInfo(bookInfo);
+};
+
+export const updateBook = async (book: UpdateBook) => {
   await booksRepository.updateBook(book);
 };

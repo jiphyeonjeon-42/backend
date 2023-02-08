@@ -10,12 +10,13 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.title', 'title')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
     .addSelect('bi.image', 'image')
+    .addSelect('CASE WHEN DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) END', 'overDueDay')
     .from('lending', 'l')
     .leftJoin('book', 'b', 'l.bookId = b.id')
     .leftJoin('book_info', 'bi', 'b.infoid = bi.id')
     .where('l.returnedAt IS NULL'),
 })
-export class GetLending {
+export class VUserLending {
   @ViewColumn()
   userId: number;
 
@@ -23,7 +24,7 @@ export class GetLending {
   lendDate: Date;
 
   @ViewColumn()
-  lendingCondition: number;
+  lendingCondition: string;
 
   @ViewColumn()
   bookInfoId: number;
@@ -36,6 +37,9 @@ export class GetLending {
 
   @ViewColumn()
   image: string;
+
+  @ViewColumn()
+  overDueDay: number;
 }
 
-export default GetLending;
+export default VUserLending;

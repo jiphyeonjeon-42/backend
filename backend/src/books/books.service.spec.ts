@@ -1,37 +1,41 @@
-import { pool } from '../mysql';
 import * as BooksService from './books.service';
-import * as models from './books.model';
+import { CreateBookInfo } from './books.type';
+import jipDataSource from '../app-data-source';
 
 describe('BooksService', () => {
+  beforeAll(async () => {
+    await jipDataSource.initialize().then(() => console.log('good!')).catch((err) => console.log(err));
+  });
   afterAll(() => {
-    pool.end();
+    jipDataSource.destroy();
   });
 
-  it('A book is added and deleted', async () => {
-    const book: models.Book = {
+  it('CreateBookInfo', async () => {
+    const book: CreateBookInfo = {
       title: 'test',
+      pubdate: '20230101',
+      callSign: '',
       author: 'testauthor',
       publisher: 'testpublisher',
       isbn: 'test0000',
-      category: '예술',
       donator: 'testdonator',
-      callSign: 'H24.23 v1.c1',
-      status: 0,
+      categoryId: '1',
+      donatorId: null,
+      infoId: 1,
     };
-    // await BooksService.createBook(book);
-    // expect(await BooksService.deleteBook(book)).toBe(true);
+    console.log(await BooksService.createBook(book));
   });
 
-  it('Search books by name, author, or isbn', async () => {
-    const query = 'C언어';
-    const sort = '';
-    const page = 0;
-    const limit = 3;
-    // expect(await BooksService.searchInfo(query, sort, page, limit, null)).toEqual(
-    //   expect.objectContaining({
-    //     categories: expect.any(Array),
-    //     items: expect.any(Array),
-    //   }),
-    // );
-  });
+  // it('Search books by name, author, or isbn', async () => {
+  //   const query = 'C언어';
+  //   const sort = '';
+  //   const page = 0;
+  //   const limit = 3;
+  //   expect(await BooksService.searchInfo(query, sort, page, limit, null)).toEqual(
+  //     expect.objectContaining({
+  //       categories: expect.any(Array),
+  //       items: expect.any(Array),
+  //     }),
+  //   );
+  // });
 });
