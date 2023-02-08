@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable consistent-return */
-import { Like } from 'typeorm';
+import { IsNull, Like } from 'typeorm';
 import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
 import { formatDate } from '../utils/dateFormat';
@@ -32,8 +32,9 @@ export const create = async (
       || overDueDay) { throw new Error(errorCode.LENDING_OVERDUE); }
 
     // book conditions
-    const lendingList = await lendingRepo.searchLendingByBookId(bookId);
-    if (lendingList.length !== 0) { throw new Error(errorCode.ON_LENDING); }
+    const countOfBookInLending = await lendingRepo.getLendingCountByBookId(bookId);
+    console.log(`countOfBookInLending: ${countOfBookInLending}`);
+    if (countOfBookInLending !== 0) { throw new Error(errorCode.ON_LENDING); }
 
     // 책이 분실, 파손이 아닌지
     const book = await lendingRepo.searchBookForLending(bookId);
@@ -103,6 +104,7 @@ export const returnBook = async (
       await lendingRepo.updateUserPenaltyEndDate(confirmedPenaltyEndDate, lendingInfo.userId);
     }
     const lendedBook = await lendingRepo.searchBookForLending(lendingInfo.bookId);
+    console.log(`lendedBook.infoId: ${lendedBook?.infoId}`);
     const reservationInfo = await lendingRepo.searchReservedBook(lendedBook!.infoId);
     if (reservationInfo) {
       const updateResult = await lendingRepo.updateReservationEndDate(
@@ -139,26 +141,26 @@ export const search = async (
   type: string,
 ) => {
   const lendingRepo = new LendingRepository(null);
-  let filterQuery: any = {};
+  const filterQuery: Array<object> = [];
   switch (type) {
     case 'user':
-      filterQuery.login = Like(`%${query}%`);
+      filterQuery.push({ returnedAt: IsNull(), login: Like(`%${query}%`) });
       break;
     case 'title':
-      filterQuery.title = Like(`%${query}%`);
+      filterQuery.push({ returnedAt: IsNull(), title: Like(`%${query}%`) });
       break;
     case 'callSign':
-      filterQuery.callSign = Like(`%${query}%`);
+      filterQuery.push({ returnedAt: IsNull(), callSign: Like(`%${query}%`) });
       break;
     case 'bookId':
-      filterQuery.bookId = Like(`%${query}%`);
+      filterQuery.push({ returnedAt: IsNull(), bookId: Like(`%${query}%`) });
       break;
     default:
-      filterQuery = [
-        { login: Like(`%${query}%`) },
-        { title: Like(`%${query}%`) },
-        { callSign: Like(`%${query}%`) },
-      ];
+      filterQuery.push([
+        { returnedAt: IsNull(), login: Like(`%${query}%`) },
+        { returnedAt: IsNull(), title: Like(`%${query}%`) },
+        { returnedAt: IsNull(), callSign: Like(`%${query}%`) },
+      ]);
   }
   const orderQuery = sort === 'new' ? { createdAt: 'DESC' } : { createdAt: 'ASC' };
   const [items, count] = await lendingRepo.searchLendingForUser(

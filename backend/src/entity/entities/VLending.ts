@@ -11,12 +11,12 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.title')
     .addSelect('bi.image', 'image')
     .addSelect('l.createdAt', 'createdAt')
+    .addSelect('l.returnedAt', 'returnedAt')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
     .from('lending', 'l')
     .innerJoin('user', 'u', 'l.userId = u.id')
     .leftJoin('book', 'b', 'l.bookId = b.id')
-    .leftJoin('book_info', 'bi', 'b.infoid = bi.id')
-    .where('l.returnedAt IS NULL'),
+    .leftJoin('book_info', 'bi', 'b.infoid = bi.id'),
 })
 export class VLending {
   @ViewColumn()
@@ -42,6 +42,9 @@ export class VLending {
 
   @ViewColumn()
   createdAt: Date;
+
+  @ViewColumn()
+  returnedAt: Date;
 
   @ViewColumn()
   duedate: Date;

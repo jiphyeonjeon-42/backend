@@ -95,13 +95,14 @@ class LendingRepository extends Repository<Lending> {
     return overDueDay;
   }
 
-  async searchLendingByBookId(bookId: number) {
-    const lendings = await this.find({
-      relations: { book: true },
+  async getLendingCountByBookId(bookId: number) {
+    const count = await this.count({
+      relations: ['book'],
       where: {
         book: {
           id: bookId,
         },
+        returnedAt: IsNull(),
       },
     });
     return lendings as unknown as models.Lending[];
@@ -118,7 +119,7 @@ class LendingRepository extends Repository<Lending> {
 
   async searchReservationByBookId(bookId: number) {
     const reservationList = await this.reserveRepo.findOne({
-      relations: ['book'],
+      relations: ['book', 'user'],
       where: {
         status: 0,
         book: {
@@ -230,6 +231,17 @@ class LendingRepository extends Repository<Lending> {
   async searchLendingForUser(conditions: {}, limit: number, page: number, order: {})
   : Promise<[VLending[], number]> {
     const [lending, count] = await this.vlendingRepo.findAndCount({
+      select: [
+        'id',
+        'lendingCondition',
+        'login',
+        'penaltyDays',
+        'callSign',
+        'title',
+        'image',
+        'createdAt',
+        'duedate',
+      ],
       where: conditions,
       take: limit,
       skip: limit * page,
@@ -241,8 +253,8 @@ class LendingRepository extends Repository<Lending> {
   async startTransaction() {
     if (!this.transactionQueryRunner) {
       this.transactionQueryRunner = jipDataSource.createQueryRunner();
-      await this.transactionQueryRunner.startTransaction();
     }
+    await this.transactionQueryRunner.startTransaction();
   }
 
   async commitTransaction() {
