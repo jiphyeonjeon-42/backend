@@ -7,7 +7,7 @@ import * as models from './users.model';
 import { formatDate } from '../utils/dateFormat';
 import VUserLending from '../entity/entities/VUserLending';
 
-class UsersRepository extends Repository<User> {
+export default class UsersRepository extends Repository<User> {
   private readonly getLendingRepo: Repository<VUserLending>;
 
   private readonly reservationsRepo: Repository<Reservation>;
@@ -86,5 +86,3 @@ class UsersRepository extends Repository<User> {
     return updatedUser;
   }
 }
-
-export default (new UsersRepository());
