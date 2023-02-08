@@ -60,15 +60,35 @@ class LendingRepository extends Repository<Lending> {
     );
   }
 
-  async searchLending(conditions: {}, limit: number, page: number)
-  : Promise<[models.Lending[], number]> {
-    const [lendings, count] = await this.userLendingRepo.findAndCount({
+  async searchLendingCount(conditions: {}, limit: number, page: number) {
+    const count = await this.userLendingRepo.count({
       where: conditions,
       take: limit,
       skip: page * limit,
     });
-    const customLendings = lendings as unknown as models.Lending[];
-    return [customLendings, count];
+    return count;
+  }
+
+  async searchLending(conditions: {}, limit: number, page: number, order: {})
+    : Promise<[VLending[], number]> {
+    const [lending, count] = await this.vlendingRepo.findAndCount({
+      select: [
+        'id',
+        'lendingCondition',
+        'login',
+        'penaltyDays',
+        'callSign',
+        'title',
+        'image',
+        'createdAt',
+        'duedate',
+      ],
+      where: conditions,
+      take: limit,
+      skip: limit * page,
+      order,
+    });
+    return [lending, count];
   }
 
   async getUsersPenalty(userId: number) {
@@ -226,28 +246,6 @@ class LendingRepository extends Repository<Lending> {
     } else {
       await this.reserveRepo.update(reservationId, { status: 1 });
     }
-  }
-
-  async searchLendingForUser(conditions: {}, limit: number, page: number, order: {})
-  : Promise<[VLending[], number]> {
-    const [lending, count] = await this.vlendingRepo.findAndCount({
-      select: [
-        'id',
-        'lendingCondition',
-        'login',
-        'penaltyDays',
-        'callSign',
-        'title',
-        'image',
-        'createdAt',
-        'duedate',
-      ],
-      where: conditions,
-      take: limit,
-      skip: limit * page,
-      order,
-    });
-    return [lending, count];
   }
 
   async startTransaction() {

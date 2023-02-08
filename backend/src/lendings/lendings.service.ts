@@ -22,9 +22,9 @@ export const create = async (
     if (!count) { throw new Error(errorCode.NO_USER_ID); }
     if (users[0].role === 0) { throw new Error(errorCode.NO_PERMISSION); }
     // user conditions
-    const numberOfLendings = (await lendingRepo.searchLending({
+    const numberOfLendings = await lendingRepo.searchLendingCount({
       userId,
-    }, 0, 0))[1];
+    }, 0, 0);
     if (numberOfLendings >= 2) { throw new Error(errorCode.LENDING_OVERLOAD); }
     const penaltyEndDate = await lendingRepo.getUsersPenalty(userId);
     const overDueDay = await lendingRepo.getUsersOverDueDay(userId);
@@ -163,7 +163,7 @@ export const search = async (
       ]);
   }
   const orderQuery = sort === 'new' ? { createdAt: 'DESC' } : { createdAt: 'ASC' };
-  const [items, count] = await lendingRepo.searchLendingForUser(
+  const [items, count] = await lendingRepo.searchLending(
     filterQuery,
     limit,
     page,
@@ -181,6 +181,6 @@ export const search = async (
 
 export const lendingId = async (id:number) => {
   const lendingRepo = new LendingRepository(null);
-  const data = (await lendingRepo.searchLendingForUser({ id }, 0, 0, {}))[0];
+  const data = (await lendingRepo.searchLending({ id }, 0, 0, {}))[0];
   return data[0];
 };
