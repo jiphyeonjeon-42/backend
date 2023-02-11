@@ -1,6 +1,4 @@
 import { Repository } from 'typeorm';
-import { EntityTarget } from 'typeorm/common/EntityTarget';
-import { EntityManager } from 'typeorm/entity-manager/EntityManager';
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 import Reservation from '../entity/entities/Reservation';
 import UserReservation from '../entity/entities/UserReservation';
@@ -8,6 +6,7 @@ import * as models from './users.model';
 import { formatDate } from '../utils/dateFormat';
 import VUserLending from '../entity/entities/VUserLending';
 import User from '../entity/entities/User';
+import jipDataSource from '../app-data-source';
 
 export default class UsersRepository extends Repository<User> {
   private readonly getLendingRepo: Repository<VUserLending>;
@@ -17,11 +16,11 @@ export default class UsersRepository extends Repository<User> {
   private readonly userReservRepo: Repository<UserReservation>;
 
   constructor(
-    target: EntityTarget<User>,
-    manager: EntityManager,
-    queryRunner: QueryRunner,
+    queryRunner?: QueryRunner,
   ) {
-    super(target, manager, queryRunner);
+    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const manager = jipDataSource.createEntityManager(qr);
+    super(User, manager);
     this.getLendingRepo = new Repository<VUserLending>(
       VUserLending,
       manager,
