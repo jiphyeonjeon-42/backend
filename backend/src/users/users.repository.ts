@@ -24,17 +24,14 @@ export default class UsersRepository extends Repository<User> {
     this.getLendingRepo = new Repository<VUserLending>(
       VUserLending,
       manager,
-      queryRunner,
     );
     this.reservationsRepo = new Repository<Reservation>(
       Reservation,
       manager,
-      queryRunner,
     );
     this.userReservRepo = new Repository<UserReservation>(
       UserReservation,
       manager,
-      queryRunner,
     );
   }
 
