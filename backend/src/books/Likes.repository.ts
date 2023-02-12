@@ -2,15 +2,11 @@ import { QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '../app-data-source';
 import Likes from '../entity/entities/Likes';
 
-class LikesRepository extends Repository<Likes> {
-  private transactionQueryRunner: QueryRunner | null;
-
-  constructor() {
-    super(
-      Likes,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
-    );
+export default class LikesRepository extends Repository<Likes> {
+  constructor(queryRunner?: QueryRunner) {
+    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const manager = jipDataSource.createEntityManager(qr);
+    super(Likes, manager);
   }
 
   async getLikesByBookInfoId(bookInfoId: number) : Promise<Likes[]> {
@@ -21,6 +17,13 @@ class LikesRepository extends Repository<Likes> {
     });
     return likes;
   }
-}
 
-export = new LikesRepository();
+  async getLikesByUserId(userId: number) : Promise<Likes[]> {
+    const likes = await this.find({
+      where: {
+        userId,
+      },
+    });
+    return likes;
+  }
+}
