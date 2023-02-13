@@ -3,94 +3,62 @@ import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { Meta } from '../users/users.type';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 import { publishMessage } from '../slack/slack.service';
-import ReservationsRepository from './reservations.repository';
 import BooksRepository from '../books/books.repository';
+import ReservationsRepository from './reservations.repository';
+import jipDataSource from '../app-data-source';
 
 export const create = async (userId: number, bookInfoId: number) => {
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  await transactionQueryRunner.connect();
+  const reservationRepo = new ReservationsRepository(transactionQueryRunner);
   // bookInfoId가 유효한지 확인
   const numberOfBookInfo = await BooksRepository.isExistBook(String(bookInfoId));
   if (numberOfBookInfo === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }
   try {
-    await ReservationsRepository.startTransaction();
-    // 연체 전적이 있는지 확인
-    const userPenalty = await transactionExecuteQuery(`
-      SELECT DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate
-      FROM user
-      WHERE id = ?;
-    `, [userId]);
-    if (userPenalty.penaltyEndDate > new Date()) {
+    await transactionQueryRunner.startTransaction();
+
+    // 유저가 대출 패널티 중인지 확인
+    if (await reservationRepo.isPenaltyUser(userId)) {
       throw new Error(errorCode.AT_PENALTY);
     }
-    // 현재 대출 중인 책이 연체 중인지 확인
-    const overdueBooks = await transactionExecuteQuery(`
-      SELECT
-        DATE_ADD(createdAt, INTERVAL 14 DAY) as duedate
-      FROM lending
-      WHERE userId = ? AND returnedAt IS NULL
-      ORDER BY createdAt ASC
-    `, [userId]);
-    if (overdueBooks?.[0]?.duedate < new Date()) {
-      throw new Error(errorCode.AT_PENALTY);
+    // 유저가 연체 중인지 확인
+    if (await reservationRepo.isOverdueUser(userId)) {
+      throw new Error(errorCode.LENDING_OVERDUE);
+    }
+    // 유저가 2권 이상 예약 중인지 확인
+    if (await reservationRepo.isAllRenderUser(userId)) {
+      throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
     }
     // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
-    const cantReservBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book
-    LEFT JOIN lending ON lending.bookId = book.id
-    LEFT JOIN reservation ON reservation.bookId = lending.bookId
-    WHERE
-      book.infoId = ? AND book.status = 0 AND
-      (lending.returnedAt IS NULL OR reservation.status = 0);
-  `, [bookInfoId]);
-    if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
+    // 대출 가능하면 예약 불가
+    const cantReservBookInfo = await reservationRepo.getlenderableBookNum(bookInfoId);
+    if (numberOfBookInfo > cantReservBookInfo) {
       throw new Error(errorCode.NOT_LENDED);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
-    const lendedBook = await transactionExecuteQuery(`
-      SELECT book.id
-      FROM lending
-      LEFT JOIN book ON book.id = lending.bookId
-      WHERE
-        lending.userId = ? AND
-        lending.returnedAt IS NULL AND
-        book.infoId = ?
-    `, [userId, bookInfoId]);
-    if (lendedBook.length) {
+    // 본인이 대출한 책에 예약 걸지 못하도록
+    const lendedBook = await reservationRepo.alreadyLendedBooks(userId, bookInfoId);
+    if (await lendedBook.getExists()) {
       throw new Error(errorCode.ALREADY_LENDED);
     }
-    // 이미 예약한 bookInfoId가 아닌지 확인
-    const reservedBook = await transactionExecuteQuery(`
-      SELECT id
-      FROM reservation
-      WHERE bookInfoId = ? AND userId = ? AND status = 0;
-    `, [bookInfoId, userId]);
-    if (reservedBook.length) {
+    // user가 이미 예약한 bookInfoId가 아닌지 확인
+    // 중첩해서 예약 거는 것을 방지하기 위해
+    const reservedBooks = await reservationRepo.getReservedBooks(userId, bookInfoId);
+    if (await reservedBooks.getExists()) {
       throw new Error(errorCode.ALREADY_RESERVED);
     }
-    // 예약한 횟수가 2회 미만인지 확인
-    const reserved = await transactionExecuteQuery(`
-      SELECT id
-      FROM reservation
-      WHERE userId = ? AND status = 0;
-    `, [userId]);
-    if (reserved.length >= 2) {
-      throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
-    }
-    await transactionExecuteQuery(`
-      INSERT INTO reservation (userId, bookInfoId)
-      VALUES (?, ?)
-    `, [userId, bookInfoId]);
+    await reservationRepo.createReservation(userId, bookInfoId);
     // eslint-disable-next-line no-use-before-define
     const reservationPriorty : any = count(bookInfoId);
-    conn.commit();
+    await transactionQueryRunner.commitTransaction();
     return reservationPriorty;
   } catch (e) {
-    conn.rollback();
+    await transactionQueryRunner.rollbackTransaction();
     throw e;
   } finally {
-    conn.release();
+    await transactionQueryRunner.release();
   }
 };
 
