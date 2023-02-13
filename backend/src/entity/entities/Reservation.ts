@@ -58,8 +58,8 @@ class Reservation {
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
   book: Book;
 
-  @Column()
+  @Column('int', { name: 'bookId', nullable: true })
    bookId: number | null;
-}
+ }
 
 export default Reservation;

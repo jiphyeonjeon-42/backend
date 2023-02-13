@@ -12,7 +12,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.title')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
     .addSelect('CASE WHEN DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) END', 'overDueDay')
-    .addSelect('COUNT(r.id) FROM reservation r WHERE r.userId = l.userId', 'reservedNum')
+    .addSelect('(SELECT COUNT(r.id) FROM reservation r WHERE r.userId = l.userId)', 'reservedNum')
     .from('lending', 'l')
     .innerJoin('user', 'u', 'l.userId = u.id')
     .leftJoin('book', 'b', 'l.bookId = b.id')
