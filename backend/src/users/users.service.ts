@@ -23,6 +23,11 @@ export const setOverDueDay = async (items: models.User[]) => {
   return items;
 };
 
+export const userLendings = async (userId: number) => {
+  const lendingList = await usersRepository.getUserLendings(userId);
+  return lendingList;
+};
+
 export const userReservations = async (userId: number) => {
   const reservationList = await usersRepository.getUserReservations(userId);
   return reservationList;
