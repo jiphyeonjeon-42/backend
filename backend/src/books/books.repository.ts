@@ -1,6 +1,6 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '../app-data-source';
-import { SearchBook } from '../entity/entities/SearchBook';
+import { VSearchBook } from '../entity/entities/VSearchBook';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
@@ -12,7 +12,7 @@ import Category from '../entity/entities/Category';
 import User from '../entity/entities/User';
 
 class BooksRepository {
-  private readonly searchBook: Repository<SearchBook>;
+  private readonly searchBook: Repository<VSearchBook>;
 
   private readonly books: Repository<Book>;
 
@@ -26,7 +26,7 @@ class BooksRepository {
     this.transactionQueryRunner = null;
     const queryRunner = jipDataSource.createQueryRunner();
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    this.searchBook = new Repository<SearchBook>(SearchBook, entityManager);
+    this.searchBook = new Repository<VSearchBook>(VSearchBook, entityManager);
     this.books = new Repository<Book>(Book, entityManager);
     this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
     this.users = new Repository<User>(User, entityManager);
@@ -50,7 +50,7 @@ class BooksRepository {
     condition: string,
     limit: number,
     page: number,
-  ): Promise<SearchBook[]> {
+  ): Promise<VSearchBook[]> {
     const searchBook = await this.searchBook.find({
       where: [
         { title: Like(`%${condition}%`) },
@@ -76,7 +76,7 @@ class BooksRepository {
   }
 
   // TODO: support variable repo.
-  async findOneById(id: string): Promise<SearchBook | void> {
+  async findOneById(id: string): Promise<VSearchBook | void> {
     await this.searchBook.findOneBy({ bookId: Number(id) }).then((res) => {
       if (!res) {
         throw new Error(errorCode.NO_BOOK_ID);

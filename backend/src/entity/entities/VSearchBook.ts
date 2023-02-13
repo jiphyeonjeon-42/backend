@@ -16,7 +16,7 @@ import Category from './Category';
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
     .addSelect('book_info.categoryId', 'categoryId')
-    .addSelect('category.name', 'categoryName')
+    .addSelect('category.name', 'category')
     .addSelect(
       '       IF((\n'
           + '  IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)\n'
@@ -31,7 +31,7 @@ import Category from './Category';
     .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
     .leftJoin(Category, 'category', 'book_info.categoryId = category.id'),
 })
-export class SearchBook {
+export class VSearchBook {
   @ViewColumn()
   bookId: number;
 
