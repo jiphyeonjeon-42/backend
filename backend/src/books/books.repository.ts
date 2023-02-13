@@ -63,8 +63,8 @@ class BooksRepository {
     return searchBook;
   }
 
-  async getTotalItems(condition: string): Promise<SearchBook[]> {
-    const searchBook = await this.searchBook.find({
+  async getTotalItems(condition: string): Promise<number> {
+    const searchBook = await this.searchBook.count({
       select: { bookId: true },
       where: [
         { title: Like(`%${condition}%`) },
