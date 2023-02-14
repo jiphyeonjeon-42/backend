@@ -1,4 +1,5 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
+import * as Status from 'http-status';
 import jipDataSource from '../app-data-source';
 import { VSearchBook } from '../entity/entities/VSearchBook';
 import {
@@ -10,6 +11,7 @@ import BookInfo from '../entity/entities/BookInfo';
 import Lending from '../entity/entities/Lending';
 import Category from '../entity/entities/Category';
 import User from '../entity/entities/User';
+import ErrorResponse from '../utils/error/errorResponse';
 
 class BooksRepository {
   private readonly searchBook: Repository<VSearchBook>;
@@ -30,7 +32,6 @@ class BooksRepository {
     this.books = new Repository<Book>(Book, entityManager);
     this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
     this.users = new Repository<User>(User, entityManager);
-    console.log('book repo init');
   }
 
   async isExistBook(isbn: string): Promise<number> {
@@ -77,12 +78,9 @@ class BooksRepository {
 
   // TODO: support variable repo.
   async findOneById(id: string): Promise<VSearchBook | void> {
-    await this.searchBook.findOneBy({ bookId: Number(id) }).then((res) => {
-      if (!res) {
-        throw new Error(errorCode.NO_BOOK_ID);
-      }
-      return res;
-    });
+    const book = await this.searchBook.findOneBy({ bookId: Number(id) });
+    if (!book) { throw new ErrorResponse(errorCode.NO_BOOK_ID, Status.BAD_REQUEST); }
+    return book;
   }
 
   // TODO: refactact sort type
