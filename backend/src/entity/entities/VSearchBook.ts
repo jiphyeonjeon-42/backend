@@ -3,7 +3,7 @@ import BookInfo from './BookInfo';
 import Book from './Book';
 import Category from './Category';
 
-@ViewEntity('searchbook', {
+@ViewEntity({
   expression: (Data: DataSource) => Data.createQueryBuilder()
     .select('book.infoId', 'bookInfoId')
     .addSelect('book_info.title', 'title')
