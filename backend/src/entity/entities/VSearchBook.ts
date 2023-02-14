@@ -66,7 +66,7 @@ export class VSearchBook {
   callSign: string;
 
   @ViewColumn()
-  categoryName: string;
+  category: string;
 
   @ViewColumn()
   isLendable: boolean;
