@@ -3,7 +3,7 @@ import BookInfo from './BookInfo';
 import Book from './Book';
 import Category from './Category';
 
-@ViewEntity({
+@ViewEntity('v_search_book', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
     .select('book.infoId', 'bookInfoId')
     .addSelect('book_info.title', 'title')
@@ -71,3 +71,5 @@ export class VSearchBook {
   @ViewColumn()
   isLendable: boolean;
 }
+
+export default VSearchBook;

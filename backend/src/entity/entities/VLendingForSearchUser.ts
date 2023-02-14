@@ -1,6 +1,6 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 
-@ViewEntity({
+@ViewEntity('v_lending_for_search_user', {
   expression: (Data: DataSource) => Data
     .createQueryBuilder()
     .addSelect('u.id', 'userId')
@@ -9,7 +9,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('l.lendingCondition', 'lendingCondition')
     .addSelect('bi.image', 'image')
     .addSelect('bi.author', 'author')
-    .addSelect('bi.title')
+    .addSelect('bi.title', 'title')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
     .addSelect('CASE WHEN DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) END', 'overDueDay')
     .addSelect('(SELECT COUNT(r.id) FROM reservation r WHERE r.userId = l.userId)', 'reservedNum')
