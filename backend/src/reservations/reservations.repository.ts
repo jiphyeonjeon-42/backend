@@ -1,10 +1,13 @@
-import { MoreThan, QueryRunner, Repository } from 'typeorm';
+import {
+  IsNull, MoreThan, QueryRunner, Repository,
+} from 'typeorm';
 import jipDataSource from '../app-data-source';
 import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
 import Lending from '../entity/entities/Lending';
 import Book from '../entity/entities/Book';
 import reservation from '../entity/entities/Reservation';
+import { Meta } from '../users/users.type';
 
 class ReservationsRepository extends Repository<reservation> {
   private readonly bookInfo: Repository<BookInfo>;
@@ -145,6 +148,48 @@ class ReservationsRepository extends Repository<reservation> {
       .into(reservation)
       .values([{ userId }, { bookInfoId }])
       .execute();
+  }
+
+  async searchReservations(query: string, filter: string, page: number, limit: number) {
+    const searchAll = await this
+      .createQueryBuilder('r', this.queryRunner)
+      .select('r.*')
+      .addSelect('u.nickname', 'login')
+      .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END', 'penaltyDays')
+      .addSelect('bi.title')
+      .addSelect('bi.image')
+      .addSelect('b.callSign')
+      .addSelect('u.id', 'userId')
+      .addSelect('(SELECT COUNT(*) FROM reservation)', 'count')
+      .leftJoin('user', 'u', 'r.userId = u.id')
+      .leftJoin('book_info', 'bi', 'r.bookInfoId = bi.id)')
+      .leftJoin('book', 'b', 'b.id = r.bookId')
+      .having(`title LIKE %${query}%`)
+      .orHaving(`login LIKE %${query}%`)
+      .orHaving(`callSign LIKE %${query}%`)
+      .limit(limit)
+      .offset(limit * page);
+    switch (filter) {
+      case 'waiting':
+        searchAll.andWhere({ status: 0, bookId: IsNull() });
+        break;
+      case 'expired':
+        searchAll.andWhere({ status: MoreThan(0) });
+        break;
+      case 'all':
+        break;
+      default:
+        searchAll.andWhere({ status: 0, bookId: IsNull() });
+    }
+    const [items, totalItems] = await searchAll.getManyAndCount();
+    const meta : Meta = {
+      totalItems,
+      itemCount: items.length,
+      itemsPerPage: limit,
+      totalPages: Math.ceil(totalItems / limit),
+      currentPage: page + 1,
+    };
+    return { items, meta };
   }
 }
 
