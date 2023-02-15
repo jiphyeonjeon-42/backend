@@ -57,7 +57,7 @@ export const create = async (userId: number, bookInfoId: number) => {
   }
 };
 
-export const search = async (query:string, page: number, limit: number, filter: string) {
+export const search = async (query:string, page: number, limit: number, filter: string) => {
   const transactionQueryRunner = jipDataSource.createQueryRunner();
   await transactionQueryRunner.connect();
   const reservationRepo = new ReservationsRepository(transactionQueryRunner);
