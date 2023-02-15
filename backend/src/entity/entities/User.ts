@@ -22,7 +22,7 @@ class User {
   @Column('varchar', { name: 'email', unique: true, length: 255 })
   email: string;
 
-  @Column('varchar', { name: 'password', length: 255 })
+  @Column('varchar', { name: 'password', length: 255, select: false })
   password: string;
 
   @Column('varchar', { name: 'nickname', nullable: true, length: 255 })

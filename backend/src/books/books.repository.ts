@@ -1,6 +1,7 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
+import * as Status from 'http-status';
 import jipDataSource from '../app-data-source';
-import { SearchBook } from '../entity/entities/SearchBook';
+import { VSearchBook } from '../entity/entities/VSearchBook';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
@@ -10,9 +11,10 @@ import BookInfo from '../entity/entities/BookInfo';
 import Lending from '../entity/entities/Lending';
 import Category from '../entity/entities/Category';
 import User from '../entity/entities/User';
+import ErrorResponse from '../utils/error/errorResponse';
 
 class BooksRepository {
-  private readonly searchBook: Repository<SearchBook>;
+  private readonly searchBook: Repository<VSearchBook>;
 
   private readonly books: Repository<Book>;
 
@@ -26,11 +28,10 @@ class BooksRepository {
     this.transactionQueryRunner = null;
     const queryRunner = jipDataSource.createQueryRunner();
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    this.searchBook = new Repository<SearchBook>(SearchBook, entityManager);
+    this.searchBook = new Repository<VSearchBook>(VSearchBook, entityManager);
     this.books = new Repository<Book>(Book, entityManager);
     this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
     this.users = new Repository<User>(User, entityManager);
-    console.log('book repo init');
   }
 
   async isExistBook(isbn: string): Promise<number> {
@@ -50,7 +51,7 @@ class BooksRepository {
     condition: string,
     limit: number,
     page: number,
-  ): Promise<SearchBook[]> {
+  ): Promise<VSearchBook[]> {
     const searchBook = await this.searchBook.find({
       where: [
         { title: Like(`%${condition}%`) },
@@ -63,8 +64,8 @@ class BooksRepository {
     return searchBook;
   }
 
-  async getTotalItems(condition: string): Promise<SearchBook[]> {
-    const searchBook = await this.searchBook.find({
+  async getTotalItems(condition: string): Promise<number> {
+    const searchBook = await this.searchBook.count({
       select: { bookId: true },
       where: [
         { title: Like(`%${condition}%`) },
@@ -76,13 +77,10 @@ class BooksRepository {
   }
 
   // TODO: support variable repo.
-  async findOneById(id: string): Promise<SearchBook | void> {
-    await this.searchBook.findOneBy({ bookId: Number(id) }).then((res) => {
-      if (!res) {
-        throw new Error(errorCode.NO_BOOK_ID);
-      }
-      return res;
-    });
+  async findOneById(id: string): Promise<VSearchBook | void> {
+    const book = await this.searchBook.findOneBy({ bookId: Number(id) });
+    if (!book) { throw new ErrorResponse(errorCode.NO_BOOK_ID, Status.BAD_REQUEST); }
+    return book;
   }
 
   // TODO: refactact sort type
@@ -225,4 +223,4 @@ class BooksRepository {
   }
 }
 
-export = new BooksRepository();
+export default new BooksRepository();

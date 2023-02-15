@@ -37,6 +37,9 @@ class Reservation {
   @Column('int', { name: 'bookInfoId' })
   bookInfoId: number;
 
+   @Column('int', { name: 'userId' })
+   userId: number;
+
   @ManyToOne(() => User, (user) => user.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
@@ -58,8 +61,9 @@ class Reservation {
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
   book: Book;
 
-  @Column()
+  @Column('int', { name: 'bookId', nullable: true })
    bookId: number | null;
-}
+
+ }
 
 export default Reservation;

@@ -240,7 +240,10 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getBookById = async (id: string) => await booksRepository.findOneById(id);
+export const getBookById = async (id: string) => {
+  const book = await booksRepository.findOneById(id);
+  return book;
+};
 
 export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(

@@ -10,7 +10,7 @@ export default class UsersService {
   constructor() {
     this.usersRepository = new UsersRepository();
   }
-
+  
   async setOverDueDay(items: models.User[]) {
     const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
     const lending = await this.usersRepository
@@ -30,6 +30,11 @@ export default class UsersService {
     }
     return items;
   }
+  
+  async userLendings(userId: number) {
+    const lendingList = await usersRepository.getUserLendings(userId);
+    return lendingList;
+  };
 
   async userReservations(userId: number) {
     const reservationList = await this.usersRepository.getUserReservations(userId);

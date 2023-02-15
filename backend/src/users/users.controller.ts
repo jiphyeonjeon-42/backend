@@ -39,6 +39,8 @@ export const search = async (
     if (items) {
       items.items = await Promise.all(items.items.map(async (data: User) => ({
         ...data,
+        lendings:
+          await userLendings(data.id),
         reservations:
           await usersService.userReservations(data.id),
       })));

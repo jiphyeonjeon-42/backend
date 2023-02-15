@@ -6,7 +6,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .select('l.id', 'id')
     .addSelect('l.lendingCondition', 'lendingCondition')
     .addSelect('u.nickname', 'login')
-    .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, now())', 'penaltyDays')
+    .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, now()) END', 'penaltyDays')
     .addSelect('b.callSign')
     .addSelect('bi.title')
     .addSelect('bi.image', 'image')
