@@ -9,8 +9,7 @@ import {
 } from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-
-const booksRepository = require('./books.repository');
+import booksRepository from './books.repository';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
