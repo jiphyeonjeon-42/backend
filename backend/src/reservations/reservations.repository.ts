@@ -63,14 +63,6 @@ class ReservationsRepository extends Repository<reservation> {
   }
 
   // 유저가 2권 이상 예약 중인지 확인
-  /**
-   * SELECT
-   * u.id,
-   * count(r.id) as reservationCnt
-   * FROM `user` u
-   * INNER JOIN reservation r ON r.userId = u.id AND r.status = 0
-   * GROUP BY u.id
-   */
   async isAllRenderUser(userId: number): Promise<boolean> {
     const allRenderUser = this.user
       .createQueryBuilder('u', this.queryRunner)
@@ -100,16 +92,6 @@ class ReservationsRepository extends Repository<reservation> {
   }
 
   // bookinfoid 가 전부 대출되어있는지 확인
-  /**
-   SELECT COUNT(*) as count
-   FROM book
-   LEFT JOIN lending ON lending.bookId = book.id
-   LEFT JOIN reservation ON reservation.bookId = lending.bookId
-   WHERE
-   book.infoId = ? AND book.status = 0 AND
-   (lending.returnedAt IS NULL OR reservation.status = 0);
-   `, [bookInfoId]);
-   */
   async getlenderableBookNum(bookInfoId: number): Promise<number> {
     const lenderableBookItemNum = this.book
       .createQueryBuilder('book', this.queryRunner)
@@ -151,7 +133,7 @@ class ReservationsRepository extends Repository<reservation> {
   }
 
   async searchReservations(query: string, filter: string, page: number, limit: number) {
-    const searchAll = await this
+    const searchAll = this
       .createQueryBuilder('r', this.queryRunner)
       .select('r.*')
       .addSelect('u.nickname', 'login')

@@ -18,16 +18,12 @@ export const create = async (userId: number, bookInfoId: number) => {
   }
   try {
     await transactionQueryRunner.startTransaction();
-
-    // 유저가 대출 패널티 중인지 확인
     if (await reservationRepo.isPenaltyUser(userId)) {
       throw new Error(errorCode.AT_PENALTY);
     }
-    // 유저가 연체 중인지 확인
     if (await reservationRepo.isOverdueUser(userId)) {
       throw new Error(errorCode.LENDING_OVERDUE);
     }
-    // 유저가 2권 이상 예약 중인지 확인
     if (await reservationRepo.isAllRenderUser(userId)) {
       throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
     }
@@ -50,10 +46,9 @@ export const create = async (userId: number, bookInfoId: number) => {
       throw new Error(errorCode.ALREADY_RESERVED);
     }
     await reservationRepo.createReservation(userId, bookInfoId);
-    // eslint-disable-next-line no-use-before-define
-    const reservationPriorty : any = count(bookInfoId);
+    const reservationPriority = await count(bookInfoId);
     await transactionQueryRunner.commitTransaction();
-    return reservationPriorty;
+    return reservationPriority;
   } catch (e) {
     await transactionQueryRunner.rollbackTransaction();
     throw e;
@@ -62,82 +57,19 @@ export const create = async (userId: number, bookInfoId: number) => {
   }
 };
 
-export const
-  search = async (query:string, page: number, limit: number, filter: string) => {
-    let filterQuery;
-    switch (filter) {
-      case 'waiting':
-        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NULL';
-        break;
-      case 'expired':
-        filterQuery = 'WHERE reservation.status > 0';
-        break;
-      case 'all':
-        filterQuery = '';
-        break;
-      default:
-        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NOT NULL';
-    }
-
-    const items = (await executeQuery(`
-      SELECT
-        reservation.id AS reservationsId,
-        user.nickname AS login,
-        CASE
-          WHEN NOW() > user.penaltyEndDate THEN 0
-          ELSE DATEDIFF(user.penaltyEndDate, now())
-        END AS penaltyDays,
-        book_info.title,
-        book_info.image,
-        (
-          SELECT callSign
-          FROM book
-          WHERE id = bookId
-        ) AS callSign,
-        reservation.createdAt AS createdAt,
-        reservation.endAt AS endAt,
-        reservation.status,
-        user.id AS userId,
-        reservation.bookId AS bookId
-      FROM reservation
-      LEFT JOIN user ON reservation.userId = user.id
-      LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
-      ${filterQuery}
-      HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
-      LIMIT ?
-      OFFSET ?
-  `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
-    const totalItems = (await executeQuery(`
-      SELECT
-        reservation.id AS reservationsId,
-        user.nickName AS login,
-        book.title,
-        (
-          SELECT callSign
-          FROM book
-          WHERE book.id = reservation.bookId
-        ) AS callSign
-      FROM reservation
-      LEFT JOIN user AS user ON reservation.userId = user.id
-      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
-      ${filterQuery}
-      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
-    `, [`%${query}%`, `%${query}%`, `%${query}%`]));
-    const meta : Meta = {
-      totalItems: totalItems.length,
-      itemCount: items.length,
-      itemsPerPage: limit,
-      totalPages: Math.ceil(totalItems.length / limit),
-      currentPage: page + 1,
-    };
-    return { items, meta };
-  };
+export const search = async (query:string, page: number, limit: number, filter: string) {
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  await transactionQueryRunner.connect();
+  const reservationRepo = new ReservationsRepository(transactionQueryRunner);
+  return await reservationRepo.searchReservations(query, filter, page, limit);
+}
 
 export const cancel = async (reservationId: number): Promise<void> => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
   try {
+    //  올바른 예약인지 확인.
     const reservations: {
       status: number,
       bookId: string,
@@ -158,12 +90,15 @@ export const cancel = async (reservationId: number): Promise<void> => {
     if (reservations[0].status !== 0) {
       throw new Error(errorCode.NOT_RESERVED);
     }
+    //  예약 취소 ( 2번 ) 으로 status 변경
     await transactionExecuteQuery(`
       UPDATE reservation
       SET status = 2
       WHERE id = ?;
     `, [reservationId]);
+    //  bookId 가 있는 사람이 취소했으면 ( 0순위 예약자 )
     if (reservations[0].bookId) {
+      //  예약자 (취소된 bookInfoId 로 예약한 사람) 중에 가장 빨리 예약한 사람 찾아서 반환
       const candidates: {id: number, slack: string}[] = await transactionExecuteQuery(`
         SELECT
           reservation.id AS id,
@@ -180,6 +115,7 @@ export const cancel = async (reservationId: number): Promise<void> => {
           reservation.status = 0
         ORDER BY reservation.createdAt ASC;
       `, [reservations[0].bookId]);
+      //  그 사람이 존재한다면 예약 update 하고 예약 알림 보내기
       if (candidates.length) {
         await transactionExecuteQuery(`
           UPDATE reservation
