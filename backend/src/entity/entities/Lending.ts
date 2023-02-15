@@ -55,12 +55,18 @@ class Lending {
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
   book: Book;
 
+  @Column({ name: 'bookId', type: 'int' })
+  bookId: number;
+
   @ManyToOne(() => User, (user) => user.lendings, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
+
+  @Column({ name: 'userId', type: 'int' })
+  userId: number;
 
   @ManyToOne(() => User, (user) => user.lendings2, {
     onDelete: 'NO ACTION',
@@ -75,6 +81,6 @@ class Lending {
   })
   @JoinColumn([{ name: 'returningLibrarianId', referencedColumnName: 'id' }])
   returningLibrarian: User;
-}
+ }
 
 export default Lending;

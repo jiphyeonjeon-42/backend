@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import User from '../entity/entities/User';
 import jipDataSource from '../app-data-source';
 import Reservation from '../entity/entities/Reservation';
@@ -6,9 +6,12 @@ import UserReservation from '../entity/entities/UserReservation';
 import * as models from './users.model';
 import { formatDate } from '../utils/dateFormat';
 import VUserLending from '../entity/entities/VUserLending';
+import VLendingForSearchUser from '../entity/entities/VLendingForSearchUser';
 
 class UsersRepository extends Repository<User> {
-  private readonly getLendingRepo: Repository<VUserLending>;
+  private readonly userLendingRepo: Repository<VUserLending>;
+
+  private readonly lendingForSearchUserRepo: Repository<VLendingForSearchUser>;
 
   private readonly reservationsRepo: Repository<Reservation>;
 
@@ -16,8 +19,13 @@ class UsersRepository extends Repository<User> {
 
   constructor() {
     super(User, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
-    this.getLendingRepo = new Repository<VUserLending>(
+    this.userLendingRepo = new Repository<VUserLending>(
       VUserLending,
+      jipDataSource.createEntityManager(),
+      jipDataSource.createQueryRunner(),
+    );
+    this.lendingForSearchUserRepo = new Repository<VLendingForSearchUser>(
+      VLendingForSearchUser,
       jipDataSource.createEntityManager(),
       jipDataSource.createQueryRunner(),
     );
@@ -36,6 +44,15 @@ class UsersRepository extends Repository<User> {
   async searchUserBy(conditions: {}, limit: number, page: number)
   : Promise<[models.User[], number]> {
     const [users, count] = await this.findAndCount({
+      select: [
+        'id',
+        'email',
+        'nickname',
+        'intraId',
+        'slack',
+        'penaltyEndDate',
+        'role',
+      ],
       where: conditions,
       take: limit,
       skip: page * limit,
@@ -45,8 +62,8 @@ class UsersRepository extends Repository<User> {
   }
 
   async getLending(users: { userId: number; }[]) {
-    if (users.length !== 0) return this.getLendingRepo.find({ where: users });
-    return this.getLendingRepo.find();
+    if (users.length !== 0) return this.userLendingRepo.find({ where: users });
+    return this.userLendingRepo.find();
   }
 
   async countReservations(bookInfoId: number) {
@@ -56,6 +73,16 @@ class UsersRepository extends Repository<User> {
       },
     });
     return count;
+  }
+
+  async getUserLendings(userId: number) {
+    const userLendingList = await this.lendingForSearchUserRepo.find({
+      where: {
+        userId,
+        lendDate: IsNull(),
+      },
+    }) as unknown as models.Lending[];
+    return userLendingList;
   }
 
   async getUserReservations(userId: number) {

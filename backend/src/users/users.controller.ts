@@ -7,7 +7,7 @@ import { User } from './users.model';
 import {
   createUser,
   searchAllUsers, searchUserById, searchUserBynicknameOrEmail, updateUserAuth,
-  updateUserEmail, updateUserPassword, userReservations,
+  updateUserEmail, updateUserPassword, userLendings, userReservations,
 } from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
@@ -41,6 +41,8 @@ export const search = async (
     if (items) {
       items.items = await Promise.all(items.items.map(async (data: User) => ({
         ...data,
+        lendings:
+          await userLendings(data.id),
         reservations:
           await userReservations(data.id),
       })));

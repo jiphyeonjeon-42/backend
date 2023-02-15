@@ -10,6 +10,7 @@ import {
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
 
+const likesRepository = require('./Likes.repository');
 const booksRepository = require('./books.repository');
 
 const getInfoInNationalLibrary = async (isbn: string) => {
@@ -419,18 +420,12 @@ export const deleteLike = async (userId: number, bookInfoId: number) => {
 
 export const getLikeInfo = async (userId: number, bookInfoId: number) => {
   // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  const numberOfBookInfo = await booksRepository.countBookInfos(bookInfoId);
+  if (numberOfBookInfo === 0) {
+    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
+  }
   // (userId, bookInfoId)인 like 데이터 확인
-  const LikeArray = await executeQuery(`
-  SELECT userId, isDeleted
-  FROM likes
-  WHERE bookInfoId = ?;
-  `, [bookInfoId]);
+  const LikeArray = await likesRepository.getLikesByBookInfoId(bookInfoId);
   let isLiked = false;
   LikeArray.forEach((like: any) => {
     if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
