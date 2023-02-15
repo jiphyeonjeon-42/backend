@@ -1,22 +1,20 @@
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '../../app-data-source';
 import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
 import BookInfo from '../../entity/entities/BookInfo';
 import User from '../../entity/entities/User';
 
-class ReviewsRepository extends Repository<Reviews> {
+export default class ReviewsRepository extends Repository<Reviews> {
   private readonly bookInfoRepo: Repository<BookInfo>;
 
-  constructor() {
-    super(Reviews, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
-    const entityManager = jipDataSource.createEntityManager();
-    const queryRunner = jipDataSource.createQueryRunner();
-
+  constructor(queryRunner?: QueryRunner) {
+    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const manager = jipDataSource.createEntityManager(qr);
+    super(Reviews, manager);
     this.bookInfoRepo = new Repository<BookInfo>(
       BookInfo,
-      entityManager,
-      queryRunner,
+      manager,
     );
   }
 
@@ -30,7 +28,7 @@ class ReviewsRepository extends Repository<Reviews> {
   }
 
   async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
-    this.insert({
+    await this.insert({
       userId, bookInfoId, content, updateUserId: userId,
     });
   }
@@ -149,5 +147,3 @@ class ReviewsRepository extends Repository<Reviews> {
     );
   }
 }
-
-export = new ReviewsRepository();
