@@ -32,7 +32,7 @@ export default class UsersService {
   }
   
   async userLendings(userId: number) {
-    const lendingList = await usersRepository.getUserLendings(userId);
+    const lendingList = await this.usersRepository.getUserLendings(userId);
     return lendingList;
   };
 
