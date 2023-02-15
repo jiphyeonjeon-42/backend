@@ -1,6 +1,5 @@
 import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import { Meta } from '../users/users.type';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 import { publishMessage } from '../slack/slack.service';
 import BooksRepository from '../books/books.repository';
@@ -61,8 +60,8 @@ export const search = async (query:string, page: number, limit: number, filter: 
   const transactionQueryRunner = jipDataSource.createQueryRunner();
   await transactionQueryRunner.connect();
   const reservationRepo = new ReservationsRepository(transactionQueryRunner);
-  return await reservationRepo.searchReservations(query, filter, page, limit);
-}
+  return reservationRepo.searchReservations(query, filter, page, limit);
+};
 
 export const cancel = async (reservationId: number): Promise<void> => {
   const conn = await pool.getConnection();
