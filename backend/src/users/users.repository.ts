@@ -1,14 +1,15 @@
+import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 import { IsNull, Repository } from 'typeorm';
-import User from '../entity/entities/User';
-import jipDataSource from '../app-data-source';
 import Reservation from '../entity/entities/Reservation';
 import UserReservation from '../entity/entities/UserReservation';
 import * as models from './users.model';
 import { formatDate } from '../utils/dateFormat';
 import VUserLending from '../entity/entities/VUserLending';
 import VLendingForSearchUser from '../entity/entities/VLendingForSearchUser';
+import User from '../entity/entities/User';
+import jipDataSource from '../app-data-source';
 
-class UsersRepository extends Repository<User> {
+export default class UsersRepository extends Repository<User> {
   private readonly userLendingRepo: Repository<VUserLending>;
 
   private readonly lendingForSearchUserRepo: Repository<VLendingForSearchUser>;
@@ -17,12 +18,15 @@ class UsersRepository extends Repository<User> {
 
   private readonly userReservRepo: Repository<UserReservation>;
 
-  constructor() {
-    super(User, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
+  constructor(
+    queryRunner?: QueryRunner,
+  ) {
+    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const manager = jipDataSource.createEntityManager(qr);
+    super(User, manager);
     this.userLendingRepo = new Repository<VUserLending>(
       VUserLending,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
+      manager,
     );
     this.lendingForSearchUserRepo = new Repository<VLendingForSearchUser>(
       VLendingForSearchUser,
@@ -31,13 +35,11 @@ class UsersRepository extends Repository<User> {
     );
     this.reservationsRepo = new Repository<Reservation>(
       Reservation,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
+      manager,
     );
     this.userReservRepo = new Repository<UserReservation>(
       UserReservation,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
+      manager,
     );
   }
 
@@ -113,5 +115,3 @@ class UsersRepository extends Repository<User> {
     return updatedUser;
   }
 }
-
-export default (new UsersRepository());

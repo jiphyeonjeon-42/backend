@@ -10,7 +10,6 @@ import {
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
 
-const likesRepository = require('./Likes.repository');
 const booksRepository = require('./books.repository');
 
 const getInfoInNationalLibrary = async (isbn: string) => {
@@ -337,104 +336,6 @@ export const getInfo = async (id: string) => {
   );
   bookSpec.books = books;
   return bookSpec;
-};
-
-export const createLike = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
-  // 중복 like 검증
-  const LikeArray = await executeQuery(`
-  SELECT id, isDeleted
-  FROM likes
-  WHERE userId = ? AND bookInfoId = ?;
-  `, [userId, bookInfoId]);
-  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === 0) { throw new Error(errorCode.ALREADY_LIKES); }
-  // create
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-  try {
-    if (LikeArray.length === 0) {
-      // 새로운 튜플 생성
-      await transactionExecuteQuery(`
-        INSERT INTO likes(
-          userId,
-          bookInfoId,
-          isDeleted
-        )VALUES (?, ?, ?)
-      `, [userId, bookInfoId, false]);
-    } else {
-      // 삭제된 튜플 복구
-      await transactionExecuteQuery(`
-        UPDATE likes
-        SET
-          isDeleted = ?
-        WHERE userId = ? AND bookInfoId = ?
-      `, [false, userId, bookInfoId]);
-    }
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-  } finally {
-    conn.release();
-  }
-  return { userId, bookInfoId };
-};
-
-export const deleteLike = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
-  // like 존재여부 검증
-  const LikeArray = await executeQuery(`
-  SELECT id, isDeleted
-  FROM likes
-  WHERE userId = ? AND bookInfoId = ?;
-  `, [userId, bookInfoId]);
-  if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
-  // delete
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-  try {
-    // 튜플 상태값을 수정하는 soft delete
-    await transactionExecuteQuery(`
-      UPDATE likes
-      SET
-        isDeleted = ?
-      WHERE id = ?
-    `, [true, LikeArray[0].id]);
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-  } finally {
-    conn.release();
-  }
-};
-
-export const getLikeInfo = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await booksRepository.countBookInfos(bookInfoId);
-  if (numberOfBookInfo === 0) {
-    throw new Error(errorCode.INVALID_INFO_ID_LIKES);
-  }
-  // (userId, bookInfoId)인 like 데이터 확인
-  const LikeArray = await likesRepository.getLikesByBookInfoId(bookInfoId);
-  let isLiked = false;
-  LikeArray.forEach((like: any) => {
-    if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
-  });
-  const noDeletedLikes = LikeArray.filter((like : any) => like.isDeleted === 0);
-  return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
 };
 
 export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
