@@ -1,7 +1,7 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
-import { executeQuery, makeExecuteQuery, pool } from '../mysql';
+import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import {
