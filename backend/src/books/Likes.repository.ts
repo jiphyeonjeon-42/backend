@@ -3,18 +3,13 @@ import jipDataSource from '../app-data-source';
 import Likes from '../entity/entities/Likes';
 
 class LikesRepository extends Repository<Likes> {
-  private transactionQueryRunner: QueryRunner | null;
-
-  constructor() {
-    super(
-      Likes,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
-    );
+  constructor(transactionQueryRunner?: QueryRunner) {
+    const entityManager = jipDataSource.createEntityManager(transactionQueryRunner);
+    super(Likes, entityManager);
   }
 
   async getLikesByBookInfoId(bookInfoId: number) : Promise<Likes[]> {
-    const likes = await this.find({
+    const likes = this.find({
       where: {
         bookInfoId,
       },
@@ -23,4 +18,4 @@ class LikesRepository extends Repository<Likes> {
   }
 }
 
-export = new LikesRepository();
+export default LikesRepository;
