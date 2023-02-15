@@ -82,7 +82,8 @@ export const search = async (
 };
 
 export const createBook = async (book: CreateBookInfo) => {
-  const isbnInBookInfo = await booksRepository.isExistBook(book.isbn);
+  const isbn = book.isbn === undefined ? '' : book.isbn;
+  const isbnInBookInfo = await booksRepository.isExistBook(isbn);
   const checkNickName = await booksRepository.checkNickName(book.donator);
   const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
   try {
@@ -96,7 +97,8 @@ export const createBook = async (book: CreateBookInfo) => {
 
     if (isbnInBookInfo === 0) {
       await booksRepository.createBookInfo(book);
-      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(book.categoryId);
+      const categoryId = book.categoryId === undefined ? '' : book.categoryId;
+      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(categoryId);
     } else {
       const nums = await booksRepository.getOldCallsignNums(categoryAlphabet);
       recommendPrimaryNum = nums.recommendPrimaryNum;
