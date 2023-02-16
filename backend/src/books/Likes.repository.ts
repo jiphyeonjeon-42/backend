@@ -16,6 +16,15 @@ class LikesRepository extends Repository<Likes> {
     });
     return likes;
   }
+
+  async getLikesByUserId(userId: number) : Promise<Likes[]> {
+    const likes = await this.find({
+      where: {
+        userId,
+      },
+    });
+    return likes;
+  }
 }
 
 export default LikesRepository;

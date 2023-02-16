@@ -1,15 +1,42 @@
 /* eslint no-console: "off" */
-import { pool } from '../mysql';
-import * as UsersService from './users.service';
+import { QueryRunner } from 'typeorm';
+import jipDataSource from '../app-data-source';
+import UsersService from './users.service';
+import { logger } from '../utils/logger';
+
+const usersService = new UsersService();
 
 describe('UsersService', () => {
-  afterAll(() => {
-    pool.end();
+  // typeORM init을 위해 제한시간을 넉넉히 잡는다.
+  jest.setTimeout(10 * 1000);
+  let queryRunner: QueryRunner;
+  beforeAll(async () => {
+    await jipDataSource.initialize().then(
+      () => {
+        logger.info('typeORM INIT SUCCESS');
+        logger.info(process.env.MODE);
+      },
+    ).catch(
+      (e) => {
+        logger.error(`typeORM INIT FAILED : ${e.message}`);
+      },
+    );
+    // 트랜잭션 사전작업
+    queryRunner = jipDataSource.createQueryRunner();
+    await queryRunner.connect();
   });
-
+  beforeEach(async () => {
+    await queryRunner.startTransaction();
+  });
+  afterEach(async () => {
+    await queryRunner.rollbackTransaction();
+  });
+  afterAll(async () => {
+    await queryRunner.release();
+  });
   // searchUserByNickName
-  it('[searchUserByNickName] User hihi is', async () => {
-    expect(await UsersService.searchUserByNickName('seongyle3', 5, 0)).toStrictEqual({
+  it('searchUserBynicknameOrEmail()', async () => {
+    expect(await usersService.searchUserBynicknameOrEmail('seongyle3', 5, 0)).toStrictEqual({
       items: [
         {
           id: 1410,
@@ -35,8 +62,8 @@ describe('UsersService', () => {
   });
 
   // searchUserById
-  it('[searchUserById] User id 1414 (hihi) is', async () => {
-    expect(await UsersService.searchUserById(1414)).toStrictEqual(
+  it('searchUserById()', async () => {
+    expect(await usersService.searchUserById(1414)).toStrictEqual(
       {
         items: [
           {
@@ -57,8 +84,8 @@ describe('UsersService', () => {
   });
 
   // searchUserByIntraId
-  it('[searchUserByIntraId] User intraId 44 (hihi) is', async () => {
-    expect(await UsersService.searchUserByIntraId(44)).toStrictEqual(
+  it('searchUserByIntraId()', async () => {
+    expect(await usersService.searchUserByIntraId(44)).toStrictEqual(
       [
         {
           id: 1414,
@@ -77,8 +104,8 @@ describe('UsersService', () => {
   });
 
   // searchAllUsers
-  it('[searchAllUsers] 3 Users in page 6 are', async () => {
-    expect(await UsersService.searchAllUsers(3, 6)).toStrictEqual({
+  it('searchAllUsers()', async () => {
+    expect(await usersService.searchAllUsers(3, 6)).toStrictEqual({
       items: [
         {
           id: 1410,

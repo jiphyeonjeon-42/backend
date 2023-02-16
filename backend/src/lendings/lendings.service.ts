@@ -5,8 +5,10 @@ import { publishMessage } from '../slack/slack.service';
 import { Meta } from '../users/users.type';
 import { formatDate } from '../utils/dateFormat';
 import * as errorCode from '../utils/error/errorCode';
-import usersRepository from '../users/users.repository';
+import UsersRepository from '../users/users.repository';
 import LendingRepository from './lendings.repository';
+
+const usersRepository = new UsersRepository();
 
 export const create = async (
   userId: number,
