@@ -9,7 +9,6 @@ import {
 } from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-import LikesRepository from './Likes.repository';
 import BooksRepository from './books.repository';
 import jipDataSource from '../app-data-source';
 
@@ -92,7 +91,7 @@ export const createBook = async (book: CreateBookInfo) => {
   const checkNickName = await booksRepository.checkNickName(book.donator);
   const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
   try {
-    transactionQueryRunner.startTransaction();
+    await transactionQueryRunner.startTransaction();
     let recommendCopyNum = 1;
     let recommendPrimaryNum;
 
