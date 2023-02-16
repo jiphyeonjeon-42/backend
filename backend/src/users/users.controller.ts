@@ -40,7 +40,7 @@ export const search = async (
       items.items = await Promise.all(items.items.map(async (data: User) => ({
         ...data,
         lendings:
-          await userLendings(data.id),
+          await usersService.userLendings(data.id),
         reservations:
           await usersService.userReservations(data.id),
       })));
