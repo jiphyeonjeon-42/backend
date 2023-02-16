@@ -5,11 +5,13 @@ import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import {
-  categoryIds, CreateBookInfo, UpdateBook, UpdateBookInfo,
+  categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-import booksRepository from './books.repository';
+import LikesRepository from './Likes.repository';
+import BooksRepository from './books.repository';
+import jipDataSource from '../app-data-source';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -69,6 +71,7 @@ export const search = async (
   page: number,
   limit: number,
 ) => {
+  const booksRepository = new BooksRepository();
   const bookList = await booksRepository.getBookList(query, limit, page);
   const totalItems = await booksRepository.getTotalItems(query);
   const meta = {
@@ -82,12 +85,14 @@ export const search = async (
 };
 
 export const createBook = async (book: CreateBookInfo) => {
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  const booksRepository = new BooksRepository(transactionQueryRunner);
   const isbn = book.isbn === undefined ? '' : book.isbn;
   const isbnInBookInfo = await booksRepository.isExistBook(isbn);
   const checkNickName = await booksRepository.checkNickName(book.donator);
   const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
   try {
-    await booksRepository.startTransaction();
+    transactionQueryRunner.startTransaction();
     let recommendCopyNum = 1;
     let recommendPrimaryNum;
 
@@ -106,15 +111,15 @@ export const createBook = async (book: CreateBookInfo) => {
     }
     const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await booksRepository.createBook({ ...book, callSign: recommendCallSign });
-    await booksRepository.commitTransaction();
+    await transactionQueryRunner.commitTransaction();
     return ({ callsign: recommendCallSign });
   } catch (error) {
-    await booksRepository.rollbackTransaction();
+    await transactionQueryRunner.rollbackTransaction();
     if (error instanceof Error) {
       throw error;
     }
   } finally {
-    await booksRepository.release();
+    await transactionQueryRunner.release();
   }
   return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
 };
@@ -129,7 +134,8 @@ export const sortInfo = async (
   limit: number,
   sort: string,
 ) => {
-  const bookList = await booksRepository.getLendingBookList(sort, limit);
+  const booksRepository = new BooksRepository();
+  const bookList: LendingBookList[] = await booksRepository.getLendingBookList(sort, limit);
   return { items: bookList };
 };
 
@@ -242,7 +248,8 @@ export const searchInfo = async (
 };
 
 export const getBookById = async (id: string) => {
-  const book = await booksRepository.findOneById(id);
+  const booksRepository = new BooksRepository();
+  const book = await booksRepository.findOneBookById(id);
   return book;
 };
 
@@ -340,9 +347,11 @@ export const getInfo = async (id: string) => {
 };
 
 export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
+  const booksRepository = new BooksRepository();
   await booksRepository.updateBookInfo(bookInfo);
 };
 
 export const updateBook = async (book: UpdateBook) => {
+  const booksRepository = new BooksRepository();
   await booksRepository.updateBook(book);
 };
