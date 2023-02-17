@@ -1,16 +1,16 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
-import { executeQuery, makeExecuteQuery, pool } from '../mysql';
+import { executeQuery } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import {
-  categoryIds, CreateBookInfo, UpdateBook, UpdateBookInfo,
+  categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-
-const booksRepository = require('./books.repository');
+import BooksRepository from './books.repository';
+import jipDataSource from '../app-data-source';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -70,6 +70,7 @@ export const search = async (
   page: number,
   limit: number,
 ) => {
+  const booksRepository = new BooksRepository();
   const bookList = await booksRepository.getBookList(query, limit, page);
   const totalItems = await booksRepository.getTotalItems(query);
   const meta = {
@@ -83,11 +84,14 @@ export const search = async (
 };
 
 export const createBook = async (book: CreateBookInfo) => {
-  const isbnInBookInfo = await booksRepository.isExistBook(book.isbn);
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  const booksRepository = new BooksRepository(transactionQueryRunner);
+  const isbn = book.isbn === undefined ? '' : book.isbn;
+  const isbnInBookInfo = await booksRepository.isExistBook(isbn);
   const checkNickName = await booksRepository.checkNickName(book.donator);
   const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
   try {
-    await booksRepository.startTransaction();
+    await transactionQueryRunner.startTransaction();
     let recommendCopyNum = 1;
     let recommendPrimaryNum;
 
@@ -97,7 +101,8 @@ export const createBook = async (book: CreateBookInfo) => {
 
     if (isbnInBookInfo === 0) {
       await booksRepository.createBookInfo(book);
-      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(book.categoryId);
+      const categoryId = book.categoryId === undefined ? '' : book.categoryId;
+      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(categoryId);
     } else {
       const nums = await booksRepository.getOldCallsignNums(categoryAlphabet);
       recommendPrimaryNum = nums.recommendPrimaryNum;
@@ -105,15 +110,15 @@ export const createBook = async (book: CreateBookInfo) => {
     }
     const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await booksRepository.createBook({ ...book, callSign: recommendCallSign });
-    await booksRepository.commitTransaction();
+    await transactionQueryRunner.commitTransaction();
     return ({ callsign: recommendCallSign });
   } catch (error) {
-    await booksRepository.rollbackTransaction();
+    await transactionQueryRunner.rollbackTransaction();
     if (error instanceof Error) {
       throw error;
     }
   } finally {
-    await booksRepository.release();
+    await transactionQueryRunner.release();
   }
   return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
 };
@@ -128,7 +133,8 @@ export const sortInfo = async (
   limit: number,
   sort: string,
 ) => {
-  const bookList = await booksRepository.getLendingBookList(sort, limit);
+  const booksRepository = new BooksRepository();
+  const bookList: LendingBookList[] = await booksRepository.getLendingBookList(sort, limit);
   return { items: bookList };
 };
 
@@ -240,7 +246,11 @@ export const searchInfo = async (
   return { items: bookList, categories: categoryList, meta };
 };
 
-export const getBookById = async (id: string) => await booksRepository.findOneById(id);
+export const getBookById = async (id: string) => {
+  const booksRepository = new BooksRepository();
+  const book = await booksRepository.findOneBookById(id);
+  return book;
+};
 
 export const getInfo = async (id: string) => {
   const [bookSpec] = (await executeQuery(
@@ -335,114 +345,12 @@ export const getInfo = async (id: string) => {
   return bookSpec;
 };
 
-export const createLike = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
-  // 중복 like 검증
-  const LikeArray = await executeQuery(`
-  SELECT id, isDeleted
-  FROM likes
-  WHERE userId = ? AND bookInfoId = ?;
-  `, [userId, bookInfoId]);
-  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === 0) { throw new Error(errorCode.ALREADY_LIKES); }
-  // create
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-  try {
-    if (LikeArray.length === 0) {
-      // 새로운 튜플 생성
-      await transactionExecuteQuery(`
-        INSERT INTO likes(
-          userId,
-          bookInfoId,
-          isDeleted
-        )VALUES (?, ?, ?)
-      `, [userId, bookInfoId, false]);
-    } else {
-      // 삭제된 튜플 복구
-      await transactionExecuteQuery(`
-        UPDATE likes
-        SET
-          isDeleted = ?
-        WHERE userId = ? AND bookInfoId = ?
-      `, [false, userId, bookInfoId]);
-    }
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-  } finally {
-    conn.release();
-  }
-  return { userId, bookInfoId };
-};
-
-export const deleteLike = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
-  // like 존재여부 검증
-  const LikeArray = await executeQuery(`
-  SELECT id, isDeleted
-  FROM likes
-  WHERE userId = ? AND bookInfoId = ?;
-  `, [userId, bookInfoId]);
-  if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
-  // delete
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
-  conn.beginTransaction();
-  try {
-    // 튜플 상태값을 수정하는 soft delete
-    await transactionExecuteQuery(`
-      UPDATE likes
-      SET
-        isDeleted = ?
-      WHERE id = ?
-    `, [true, LikeArray[0].id]);
-    conn.commit();
-  } catch (error) {
-    conn.rollback();
-  } finally {
-    conn.release();
-  }
-};
-
-export const getLikeInfo = async (userId: number, bookInfoId: number) => {
-  // bookInfo 유효검증
-  const numberOfBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book_info
-  WHERE id = ?;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
-  // (userId, bookInfoId)인 like 데이터 확인
-  const LikeArray = await executeQuery(`
-  SELECT userId, isDeleted
-  FROM likes
-  WHERE bookInfoId = ?;
-  `, [bookInfoId]);
-  let isLiked = false;
-  LikeArray.forEach((like: any) => {
-    if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
-  });
-  const noDeletedLikes = LikeArray.filter((like : any) => like.isDeleted === 0);
-  return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
-};
-
 export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
+  const booksRepository = new BooksRepository();
   await booksRepository.updateBookInfo(bookInfo);
 };
 
 export const updateBook = async (book: UpdateBook) => {
+  const booksRepository = new BooksRepository();
   await booksRepository.updateBook(book);
 };

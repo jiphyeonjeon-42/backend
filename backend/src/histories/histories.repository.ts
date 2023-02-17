@@ -4,7 +4,8 @@ import jipDataSource from '../app-data-source';
 
 class HistoriesRepository extends Repository<VHistories> {
   constructor() {
-    super(VHistories, jipDataSource.createEntityManager(), jipDataSource.createQueryRunner());
+    const entityManager = jipDataSource.createEntityManager();
+    super(VHistories, entityManager);
   }
 
   async getHistoriesItems(conditions: {}, limit: number, page: number)

@@ -10,7 +10,7 @@ let database;
 
 switch (process.env.MODE) {
   case 'local':
-    hostName = 'local';
+    hostName = 'localhost';
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
     database = process.env.MYSQL_DATABASE;
@@ -37,7 +37,7 @@ export const option = {
   ],
   logging: true,
   // poolSize: 500,
-  synchronize: true,
+//  synchronize: true,
   poolSize: 200,
 } as DataSourceOptions;
 console.log(__dirname);

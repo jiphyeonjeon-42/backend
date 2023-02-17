@@ -1,6 +1,7 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
+import * as Status from 'http-status';
 import jipDataSource from '../app-data-source';
-import { SearchBook } from '../entity/entities/SearchBook';
+import { VSearchBook } from '../entity/entities/VSearchBook';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
@@ -10,9 +11,10 @@ import BookInfo from '../entity/entities/BookInfo';
 import Lending from '../entity/entities/Lending';
 import Category from '../entity/entities/Category';
 import User from '../entity/entities/User';
+import ErrorResponse from '../utils/error/errorResponse';
 
-class BooksRepository {
-  private readonly searchBook: Repository<SearchBook>;
+class BooksRepository extends Repository<Book> {
+  private readonly searchBook: Repository<VSearchBook>;
 
   private readonly books: Repository<Book>;
 
@@ -20,33 +22,22 @@ class BooksRepository {
 
   private readonly users: Repository<User>;
 
-  private transactionQueryRunner: QueryRunner | null;
-
-  constructor() {
-    this.transactionQueryRunner = null;
-    const queryRunner = jipDataSource.createQueryRunner();
+  constructor(transactionQueryRunner?: QueryRunner) {
+    const queryRunner = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    this.searchBook = new Repository<SearchBook>(
-      SearchBook,
-      entityManager,
-    );
-    this.books = new Repository<Book>(
-      Book,
-      entityManager,
-    );
-    this.bookInfo = new Repository<BookInfo>(
-      BookInfo,
-      entityManager,
-    );
-    this.users = new Repository<User>(
-      User,
-      entityManager,
-    );
-    console.log('book repo init');
+    super(Book, entityManager);
+    this.searchBook = new Repository<VSearchBook>(VSearchBook, entityManager);
+    this.books = new Repository<Book>(Book, entityManager);
+    this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
+    this.users = new Repository<User>(User, entityManager);
   }
 
-  async isExistBook(isbn: string): Promise<number> {
+  async isExistBook(isbn: string | undefined): Promise<number> {
     return this.bookInfo.count({ where: { isbn } });
+  }
+
+  async countBookInfos(bookInfoId: number): Promise<number> {
+    return this.bookInfo.count({ where: { id: bookInfoId } });
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -58,7 +49,7 @@ class BooksRepository {
     condition: string,
     limit: number,
     page: number,
-  ): Promise<SearchBook[]> {
+  ): Promise<VSearchBook[]> {
     const searchBook = await this.searchBook.find({
       where: [
         { title: Like(`%${condition}%`) },
@@ -71,8 +62,8 @@ class BooksRepository {
     return searchBook;
   }
 
-  async getTotalItems(condition: string): Promise<SearchBook[]> {
-    const searchBook = await this.searchBook.find({
+  async getTotalItems(condition: string): Promise<number> {
+    const searchBook = await this.searchBook.count({
       select: { bookId: true },
       where: [
         { title: Like(`%${condition}%`) },
@@ -84,13 +75,12 @@ class BooksRepository {
   }
 
   // TODO: support variable repo.
-  async findOneById(id: string): Promise<SearchBook | void> {
-    await this.searchBook.findOneBy({ bookId: Number(id) }).then((res) => {
-      if (!res) {
-        throw new Error(errorCode.NO_BOOK_ID);
-      }
-      return res;
-    });
+  async findOneBookById(id: string): Promise<VSearchBook | void> {
+    const book = await this.searchBook.findOneBy({ bookId: Number(id) });
+    if (!book) {
+      throw new ErrorResponse(errorCode.NO_BOOK_ID, Status.BAD_REQUEST);
+    }
+    return book;
   }
 
   // TODO: refactact sort type
@@ -134,15 +124,26 @@ class BooksRepository {
     return lendingBookList;
   }
 
-  async getNewCallsignPrimaryNum(categoryId: string): Promise<number> {
-    return await this.bookInfo.countBy({ categoryId: Number(categoryId) }) + 1;
+  async getNewCallsignPrimaryNum(categoryId: string | undefined): Promise<number> {
+    return (
+      (await this.bookInfo.countBy({ categoryId: Number(categoryId) })) + 1
+    );
   }
 
   async getOldCallsignNums(categoryAlphabet: string) {
-    return this.books.createQueryBuilder()
-      .select('substring(SUBSTRING_INDEX(callSign, \'.\', 1),2)', 'recommendPrimaryNum')
-      .addSelect('substring(SUBSTRING_INDEX(callSign, \'.\', -1),2)', 'recommendCopyNum')
-      .where('callsign like :categoryAlphabet', { categoryAlphabet: `${categoryAlphabet}%` })
+    return this.books
+      .createQueryBuilder()
+      .select(
+        "substring(SUBSTRING_INDEX(callSign, '.', 1),2)",
+        'recommendPrimaryNum',
+      )
+      .addSelect(
+        "substring(SUBSTRING_INDEX(callSign, '.', -1),2)",
+        'recommendCopyNum',
+      )
+      .where('callsign like :categoryAlphabet', {
+        categoryAlphabet: `${categoryAlphabet}%`,
+      })
       .orderBy('recommendPrimaryNum + 0', 'DESC')
       .orderBy('recommendCopyNum', 'DESC')
       .limit(1)
@@ -159,7 +160,6 @@ class BooksRepository {
 
   async createBookInfo(
     target: CreateBookInfo,
-    transaction: QueryRunner | null = this.transactionQueryRunner,
   ): Promise<void> {
     const bookInfo: BookInfo = {
       title: target.title,
@@ -170,16 +170,11 @@ class BooksRepository {
       isbn: target.isbn,
       image: target.image,
     };
-    if (!transaction) {
-      await this.bookInfo.save(bookInfo);
-    } else {
-      await transaction.manager.save(BookInfo, bookInfo);
-    }
+    await this.bookInfo.save(bookInfo);
   }
 
   async createBook(
     target: CreateBookInfo,
-    transaction: QueryRunner | null = this.transactionQueryRunner,
   ): Promise<void> {
     const book: Book = {
       donator: target.donator,
@@ -188,34 +183,8 @@ class BooksRepository {
       status: 0,
       infoId: target.infoId,
     };
-    if (!transaction) {
-      await this.books.save(book);
-    } else {
-      await transaction.manager.save(Book, book);
-    }
-  }
-
-  async startTransaction(): Promise<void> {
-    if (!this.transactionQueryRunner) {
-      this.transactionQueryRunner = jipDataSource.createQueryRunner();
-      await this.transactionQueryRunner.startTransaction();
-    }
-  }
-
-  async commitTransaction(): Promise<void> {
-    if (this.transactionQueryRunner) { await this.transactionQueryRunner.commitTransaction(); }
-  }
-
-  async rollbackTransaction(): Promise<void> {
-    if (this.transactionQueryRunner) { await this.transactionQueryRunner.rollbackTransaction(); }
-  }
-
-  async release(): Promise<void> {
-    if (this.transactionQueryRunner) {
-      await this.transactionQueryRunner.release();
-      this.transactionQueryRunner = null;
-    }
+    await this.books.save(book);
   }
 }
 
-export = new BooksRepository();
+export default BooksRepository;

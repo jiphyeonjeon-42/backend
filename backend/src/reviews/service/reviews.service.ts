@@ -1,72 +1,79 @@
 import * as errorCheck from './utils/errorCheck';
+import ReviewsRepository from '../repository/reviews.repository';
 
-const reviewsRepository = require('../repository/reviews.repository');
+export default class ReviewsService {
+  private readonly reviewsRepository : ReviewsRepository;
 
-export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
-  await reviewsRepository.validateBookInfo(bookInfoId);
-  await reviewsRepository.createReviews(userId, bookInfoId, content);
-};
+  constructor() {
+    this.reviewsRepository = new ReviewsRepository();
+  }
 
-export const getReviewsPage = async (
-  reviewerId: number,
-  isMyReview: boolean,
-  titleOrNickname: string,
-  disabled: number,
-  page: number,
-  sort: 'ASC' | 'DESC',
-  limit: number,
-) => {
-  const items = await reviewsRepository.getReviewsPage(
-    reviewerId,
-    isMyReview,
-    titleOrNickname,
-    disabled,
-    page,
-    sort,
-    limit,
-  );
-  const counts = await reviewsRepository.getReviewsCounts(
-    reviewerId,
-    isMyReview,
-    titleOrNickname,
-    disabled,
-  );
-  const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
-  const meta = {
-    totalItems: counts,
-    itemsPerPage,
-    totalPages: parseInt(String(counts / itemsPerPage + Number((counts % itemsPerPage != 0) || !counts)), 10),
-    firstPage: page === 0,
-    finalPage: page === parseInt(String(counts / itemsPerPage), 10),
-    currentPage: page,
-  };
-  return { items, meta };
-};
+  async createReviews(userId: number, bookInfoId: number, content: string) {
+    await this.reviewsRepository.validateBookInfo(bookInfoId);
+    await this.reviewsRepository.createReviews(userId, bookInfoId, content);
+  }
 
-export const getReviewsUserId = async (
-  reviewsId : number,
-) => {
-  const reviewsUserId = await reviewsRepository.getReviewsUserId(reviewsId);
-  return reviewsUserId;
-};
+  async getReviewsPage(
+    reviewerId: number,
+    isMyReview: boolean,
+    titleOrNickname: string,
+    disabled: number,
+    page: number,
+    sort: 'ASC' | 'DESC',
+    limit: number,
+  ) {
+    const items = await this.reviewsRepository.getReviewsPage(
+      reviewerId,
+      isMyReview,
+      titleOrNickname,
+      disabled,
+      page,
+      sort,
+      limit,
+    );
+    const counts = await this.reviewsRepository.getReviewsCounts(
+      reviewerId,
+      isMyReview,
+      titleOrNickname,
+      disabled,
+    );
+    const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
+    const meta = {
+      totalItems: counts,
+      itemsPerPage,
+      totalPages: parseInt(String(counts / itemsPerPage + Number((counts % itemsPerPage != 0) || !counts)), 10),
+      firstPage: page === 0,
+      finalPage: page === parseInt(String(counts / itemsPerPage), 10),
+      currentPage: page,
+    };
+    return { items, meta };
+  }
 
-export const updateReviews = async (
-  reviewsId : number,
-  userId : number,
-  content : string,
-) => {
-  const reviewsUserId = await errorCheck.updatePossibleCheck(reviewsId);
-  errorCheck.idAndTokenIdSameCheck(reviewsUserId, userId);
-  await reviewsRepository.updateReviews(reviewsId, userId, content);
-};
+  async getReviewsUserId(
+    reviewsId: number,
+  ) {
+    const reviewsUserId = await this.reviewsRepository.getReviewsUserId(reviewsId);
+    return reviewsUserId;
+  }
 
-export const deleteReviews = async (reviewId: number, deleteUser: number) => {
-  await reviewsRepository.deleteReviews(reviewId, deleteUser);
-};
+  async updateReviews(
+    reviewsId: number,
+    userId: number,
+    content: string,
+  ) {
+    const reviewsUserId = await errorCheck.updatePossibleCheck(reviewsId);
+    errorCheck.idAndTokenIdSameCheck(reviewsUserId, userId);
+    await this.reviewsRepository.updateReviews(reviewsId, userId, content);
+  }
 
-export const patchReviews = async (
-  reviewsId : number,
-  userId : number,
-) => {
-  await reviewsRepository.patchReviews(reviewsId, userId);
-};
+  async deleteReviews(reviewId: number, deleteUser: number) {
+    await this.reviewsRepository.deleteReviews(reviewId, deleteUser);
+  }
+
+  async patchReviews(
+    reviewsId: number,
+    userId: number,
+  ) {
+    await this.reviewsRepository.patchReviews(reviewsId, userId);
+  }
+}

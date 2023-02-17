@@ -8,6 +8,9 @@ import { isNullish } from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
+import LikesService from './likes.service';
+
+const likesService = new LikesService();
 
 const pubdateFormatValidator = (pubdate: String | Date) => {
   const regexConditon = /^[0-9]{8}$/;
@@ -250,7 +253,7 @@ export const createLike = async (
   // 로직수행 및 에러처리
   try {
     // 결과에 따라 오류status를 반환해야함
-    return res.status(status.CREATED).send(await BooksService.createLike(id, bookInfoId));
+    return res.status(status.CREATED).send(await likesService.createLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -278,7 +281,7 @@ export const deleteLike = async (
 
   // 로직수행 및 에러처리
   try {
-    await BooksService.deleteLike(id, bookInfoId);
+    await likesService.deleteLike(id, bookInfoId);
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -308,7 +311,7 @@ export const getLikeInfo = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).json(await BooksService.getLikeInfo(id, bookInfoId));
+    return res.status(status.OK).json(await likesService.getLikeInfo(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {

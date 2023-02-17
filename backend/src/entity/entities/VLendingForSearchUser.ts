@@ -1,24 +1,29 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 
-@ViewEntity({
+@ViewEntity('v_lending_for_search_user', {
   expression: (Data: DataSource) => Data
     .createQueryBuilder()
-    .select('l.userId', 'userId')
+    .addSelect('u.id', 'userId')
+    .addSelect('bi.id', 'bookInfoId')
     .addSelect('l.createdAt', 'lendDate')
     .addSelect('l.lendingCondition', 'lendingCondition')
-    .addSelect('bi.id', 'bookInfoId')
+    .addSelect('bi.image', 'image')
+    .addSelect('bi.author', 'author')
     .addSelect('bi.title', 'title')
     .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
-    .addSelect('bi.image', 'image')
     .addSelect('CASE WHEN DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) END', 'overDueDay')
+    .addSelect('(SELECT COUNT(r.id) FROM reservation r WHERE r.userId = l.userId)', 'reservedNum')
     .from('lending', 'l')
+    .innerJoin('user', 'u', 'l.userId = u.id')
     .leftJoin('book', 'b', 'l.bookId = b.id')
-    .leftJoin('book_info', 'bi', 'b.infoid = bi.id')
-    .where('l.returnedAt IS NULL'),
+    .leftJoin('book_info', 'bi', 'b.infoid = bi.id'),
 })
-export class VUserLending {
+export class VLendingForSearchUser {
   @ViewColumn()
   userId: number;
+
+  @ViewColumn()
+  bookInfoId: number;
 
   @ViewColumn()
   lendDate: Date;
@@ -27,7 +32,10 @@ export class VUserLending {
   lendingCondition: string;
 
   @ViewColumn()
-  bookInfoId: number;
+  image: string;
+
+  @ViewColumn()
+  author: string;
 
   @ViewColumn()
   title: string;
@@ -36,10 +44,10 @@ export class VUserLending {
   duedate: Date;
 
   @ViewColumn()
-  image: string;
+  overDueDay: Date;
 
   @ViewColumn()
-  overDueDay: number;
+  reservedNum: number;
 }
 
-export default VUserLending;
+export default VLendingForSearchUser;
