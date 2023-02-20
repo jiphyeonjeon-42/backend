@@ -30,8 +30,8 @@ export const stockUpdate: RequestHandler = async (
   const { id } = req.body;
   const bookId = parseInt(id as string, 10) ? parseInt(id as string, 10) : 0;
   try {
-    await stocksService.updateBook(bookId);
-    res.sendStatus(200);
+    const stock = await stocksService.updateBook(bookId);
+    res.status(200).send(stock);
   } catch (error: any) {
     next(new ErrorResponse(errorCode.NO_BOOK_ID, status.BAD_REQUEST));
   }

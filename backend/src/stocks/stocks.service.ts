@@ -25,9 +25,10 @@ export const updateBook = async (
   const stocksRepo = new StocksRepository(transaction);
   try {
     await transaction.startTransaction();
-    await stocksRepo.getStockById(bookId);
+    const stock = await stocksRepo.getStockById(bookId);
     await stocksRepo.updateBook(bookId);
     await transaction.commitTransaction();
+    return stock;
   } catch (error: any) {
     await transaction.rollbackTransaction();
     throw new Error('update Error');
