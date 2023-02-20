@@ -15,6 +15,7 @@ import Category from './Category';
     .addSelect('book.callSign', 'callSign')
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
+    .addSelect('book.updatedAt', 'updatedAt')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
     .addSelect(
@@ -70,6 +71,9 @@ export class VSearchBook {
 
   @ViewColumn()
   isLendable: boolean;
+
+  @ViewColumn()
+  updatedAt: Date;
 }
 
 export default VSearchBook;
