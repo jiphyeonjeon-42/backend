@@ -33,6 +33,6 @@ export const stockUpdate: RequestHandler = async (
     await stocksService.updateBook(bookId);
     res.sendStatus(200);
   } catch (error: any) {
-    next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+    next(new ErrorResponse(errorCode.NO_BOOK_ID, status.BAD_REQUEST));
   }
 };
