@@ -1,6 +1,8 @@
 import {
+  LessThan,
   QueryRunner, Repository,
 } from 'typeorm';
+import { startOfDay } from 'date-fns';
 import jipDataSource from '../app-data-source';
 import book from '../entity/entities/Book';
 import VSearchBook from '../entity/entities/VSearchBook';
@@ -21,9 +23,13 @@ class StocksRepository extends Repository<book> {
 
   async getAllStocksAndCount(limit:number, page:number)
   : Promise<[VSearchBook[], number]> {
+    const today = startOfDay(new Date());
     const [items, totalItems] = await this.vSearchBook
       .findAndCount({
-        where: { isLendable: true },
+        where: {
+          isLendable: true,
+          updatedAt: LessThan(today),
+        },
         take: limit,
         skip: limit * page,
       });
