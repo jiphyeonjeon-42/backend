@@ -30,5 +30,7 @@ export const updateBook = async (
     await transaction.commitTransaction();
   } catch (error: any) {
     await transaction.rollbackTransaction();
+  } finally {
+    await transaction.release();
   }
 };
