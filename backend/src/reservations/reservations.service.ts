@@ -42,7 +42,7 @@ export const create = async (userId: number, bookInfoId: number) => {
   const reservationRepo = new ReservationsRepository(transactionQueryRunner);
   const booksRepository = new BooksRepository();
   // bookInfoId가 유효한지 확인
-  const numberOfBookInfo = await booksRepository.isExistBook(String(bookInfoId));
+  const numberOfBookInfo = await booksRepository.countBookInfos(bookInfoId);
   if (numberOfBookInfo === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }

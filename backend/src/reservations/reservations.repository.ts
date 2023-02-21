@@ -39,49 +39,46 @@ class ReservationsRepository extends Repository<reservation> {
 
   // 유저가 대출 패널티 중인지 확인
   async isPenaltyUser(userId: number): Promise<boolean> {
-    const userItem = this.user.find({
+    const userItem = await this.user.find({
       where: {
         id: userId,
         penaltyEndDate: MoreThan(new Date()),
       },
     });
-    if (userItem === undefined) return false;
+    if (userItem.length === 0) return false;
     return true;
   }
 
   // 유저가 연체 중인지 확인
   async isOverdueUser(userId: number) {
-    const overdueUser = this.user
-      .createQueryBuilder('u', this.queryRunner)
+    return this.user
+      .createQueryBuilder('u')
       .select('u.id')
       .addSelect('count(u.id)', 'overdueLendingCnt')
-      .leftJoin('lending', 'l', 'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) > 0')
-      .where(`id = ${userId}`)
-      .groupBy('u.id');
-    if (overdueUser === null) return false;
-    return true;
+      .innerJoin('lending', 'l', 'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) > 0')
+      .where('u.id = :userId', { userId })
+      .groupBy('u.id')
+      .getExists();
   }
 
   // 유저가 2권 이상 예약 중인지 확인
   async isAllRenderUser(userId: number): Promise<boolean> {
-    const allRenderUser = this.user
+    return this.user
       .createQueryBuilder('u', this.queryRunner)
       .select('u.id')
       .addSelect('count(r.id)')
-      .innerJoin('resetvation', 'r', 'r.userId = u.id AND r.status = 0')
+      .innerJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
       .where(`u.id = ${userId}`)
-      .groupBy('u.id');
-    if (allRenderUser === null) return false;
-    return true;
+      .groupBy('u.id')
+      .getExists();
   }
 
   // 유저가 예약 가능한지 확인
   async isRenderableUser(userId: number): Promise<boolean> {
     const renderableUser = this.user
-      .createQueryBuilder('u', this.queryRunner)
+      .createQueryBuilder('u')
       .select('u.id')
       .addSelect('u.nickname')
-      .from('user', 'u')
       .leftJoin('lending', 'l', 'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY) > 0')
       .leftJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
       .groupBy('u.id')
@@ -93,30 +90,33 @@ class ReservationsRepository extends Repository<reservation> {
 
   // bookinfoid 가 전부 대출되어있는지 확인
   async getlenderableBookNum(bookInfoId: number): Promise<number> {
-    const lenderableBookItemNum = this.book
-      .createQueryBuilder('book', this.queryRunner)
-      .select('count(*)', 'count')
-      .leftJoin('leading', 'l', 'leading.bookId = book.id and lending.returnedAt IS NULL')
-      .leftJoin('reservation', 'r', 'reservation.bookId = lending.bookId AND reservation.status = 0')
-      .where(`book.infoID = ${bookInfoId} AND book.status = 0`)
+    const lenderableBookItemNum = this.bookInfo
+      .createQueryBuilder('bi')
+      .select('bi.id')
+      .addSelect('count(b.id)', 'count')
+      .leftJoin('book', 'b', 'b.infoId = bi.id')
+      .leftJoin('lending', 'l', 'l.bookId = b.id and l.returnedAt IS NULL')
+      .leftJoin('reservation', 'r', 'r.bookId = l.bookId AND r.status = 0')
+      .where(`bi.id = ${bookInfoId}`)
+      .andWhere('b.status = 0')
       .getCount();
     return lenderableBookItemNum;
   }
 
   async alreadyLendedBooks(userId: number, bookInfoId: number) {
     const lendedBooks = this.lending
-      .createQueryBuilder('l', this.queryRunner)
-      .select('book.id')
-      .leftJoin('book', 'b', 'book.id = l.bookId')
+      .createQueryBuilder('l')
+      .select('b.id')
+      .leftJoin('book', 'b', 'b.id = l.bookId')
       .where('l.returnedAt IS NULL')
-      .andWhere('l.userId = :usdrId', { userId })
-      .andWhere('book.infoId = :bookInfoId', { bookInfoId });
+      .andWhere('l.userId = :userId', { userId })
+      .andWhere('b.infoId = :bookInfoId', { bookInfoId });
     return lendedBooks;
   }
 
   async getReservedBooks(userId: number, bookInfoId: number) {
     const reservedBooks = this
-      .createQueryBuilder('r', this.queryRunner)
+      .createQueryBuilder('r')
       .select('r.id', 'id')
       .where('r.bookInfoId = :bookInfoId', { bookInfoId })
       .andWhere('r.userId = :userId', { userId })
@@ -128,7 +128,7 @@ class ReservationsRepository extends Repository<reservation> {
     await this.createQueryBuilder()
       .insert()
       .into(reservation)
-      .values([{ userId }, { bookInfoId }])
+      .values([{ userId, bookInfoId }])
       .execute();
   }
 
@@ -138,19 +138,18 @@ class ReservationsRepository extends Repository<reservation> {
       .select('r.*')
       .addSelect('u.nickname', 'login')
       .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END', 'penaltyDays')
-      .addSelect('bi.title')
-      .addSelect('bi.image')
-      .addSelect('b.callSign')
+      .addSelect('bi.title', 'title')
+      .addSelect('bi.image', 'image')
+      .addSelect('b.callSign', 'callSign')
+      .addSelect('b.status', 'status')
       .addSelect('u.id', 'userId')
       .addSelect('(SELECT COUNT(*) FROM reservation)', 'count')
       .leftJoin('user', 'u', 'r.userId = u.id')
-      .leftJoin('book_info', 'bi', 'r.bookInfoId = bi.id)')
-      .leftJoin('book', 'b', 'b.id = r.bookId')
-      .having(`title LIKE %${query}%`)
-      .orHaving(`login LIKE %${query}%`)
-      .orHaving(`callSign LIKE %${query}%`)
-      .limit(limit)
-      .offset(limit * page);
+      .leftJoin('book_info', 'bi', 'r.bookInfoId = bi.id')
+      .leftJoin('book', 'b', 'r.bookId = b.id')
+      .having('bi.title like :query', { query: `%${query}%` })
+      .orHaving('u.nickname like :query', { query: `%${query}%` })
+      .orHaving('b.callSign like :query', { query: `%${query}%` });
     switch (filter) {
       case 'waiting':
         searchAll.andWhere({ status: 0, bookId: IsNull() });
@@ -163,6 +162,7 @@ class ReservationsRepository extends Repository<reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
+    searchAll.limit(limit).offset(limit * page);
     const [items, totalItems] = await searchAll.getManyAndCount();
     const meta : Meta = {
       totalItems,
