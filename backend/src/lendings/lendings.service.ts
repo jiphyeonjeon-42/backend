@@ -7,8 +7,7 @@ import { formatDate } from '../utils/dateFormat';
 import * as errorCode from '../utils/error/errorCode';
 import UsersRepository from '../users/users.repository';
 import LendingRepository from './lendings.repository';
-
-const usersRepository = new UsersRepository();
+import jipDataSource from '../app-data-source';
 
 export const create = async (
   userId: number,
@@ -17,9 +16,11 @@ export const create = async (
   condition: string,
 ) => {
   const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-  const lendingRepo = new LendingRepository(null);
+  const transaction = jipDataSource.createQueryRunner();
+  const lendingRepo = new LendingRepository(transaction);
+  const usersRepository = new UsersRepository(transaction);
   try {
-    await lendingRepo.startTransaction();
+    await transaction.startTransaction();
     const [users, count] = await usersRepository.searchUserBy({ id: userId }, 0, 0);
     if (!count) { throw new Error(errorCode.NO_USER_ID); }
     if (users[0].role === 0) { throw new Error(errorCode.NO_PERMISSION); }
@@ -35,7 +36,6 @@ export const create = async (
 
     // book conditions
     const countOfBookInLending = await lendingRepo.getLendingCountByBookId(bookId);
-    console.log(`countOfBookInLending: ${countOfBookInLending}`);
     if (countOfBookInLending !== 0) { throw new Error(errorCode.ON_LENDING); }
 
     // 책이 분실, 파손이 아닌지
@@ -55,17 +55,17 @@ export const create = async (
     await lendingRepo.createLending(userId, bookId, librarianId, condition);
     // 예약 대출 시 상태값 reservation status 0 -> 1 변경
     if (reservationOfBook) { await lendingRepo.updateReservationToLended(reservationOfBook.id); }
-    await lendingRepo.commitTransaction();
+    await transaction.commitTransaction();
     if (users[0].slack) {
       await publishMessage(users[0].slack, `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${book?.info?.title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
     }
   } catch (e) {
-    await lendingRepo.rollbackTransaction();
+    await transaction.rollbackTransaction();
     if (e instanceof Error) {
       throw e;
     }
   } finally {
-    await lendingRepo.release();
+    await transaction.release();
   }
   return ({ dueDate: formatDate(dueDate) });
 };
@@ -75,9 +75,10 @@ export const returnBook = async (
   lendingId: number,
   condition: string,
 ) => {
-  const lendingRepo = new LendingRepository(null);
+  const transaction = jipDataSource.createQueryRunner();
+  const lendingRepo = new LendingRepository(transaction);
   try {
-    await lendingRepo.startTransaction();
+    await transaction.startTransaction();
     const lendingInfo = await lendingRepo.findOneBy({ id: lendingId });
     if (!lendingInfo) {
       throw new Error(errorCode.NONEXISTENT_LENDING);
@@ -106,7 +107,6 @@ export const returnBook = async (
       await lendingRepo.updateUserPenaltyEndDate(confirmedPenaltyEndDate, lendingInfo.userId);
     }
     const lendedBook = await lendingRepo.searchBookForLending(lendingInfo.bookId);
-    console.log(`lendedBook.infoId: ${lendedBook?.infoId}`);
     const reservationInfo = await lendingRepo.searchReservedBook(lendedBook!.infoId);
     if (reservationInfo) {
       const updateResult = await lendingRepo.updateReservationEndDate(
@@ -120,18 +120,18 @@ export const returnBook = async (
         if (slackIdReservedUser) { await publishMessage(slackIdReservedUser, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`); }
       }
     }
-    await lendingRepo.commitTransaction();
+    await transaction.commitTransaction();
     if (reservationInfo) {
       return ({ reservedBook: true });
     }
     return ({ reservedBook: false });
   } catch (error) {
-    await lendingRepo.rollbackTransaction();
+    await transaction.rollbackTransaction();
     if (error instanceof Error) {
       throw error;
     }
   } finally {
-    await lendingRepo.release();
+    await transaction.release();
   }
 };
 
@@ -142,7 +142,7 @@ export const search = async (
   sort:string,
   type: string,
 ) => {
-  const lendingRepo = new LendingRepository(null);
+  const lendingRepo = new LendingRepository();
   const filterQuery: Array<object> = [];
   switch (type) {
     case 'user':
@@ -182,7 +182,7 @@ export const search = async (
 };
 
 export const lendingId = async (id:number) => {
-  const lendingRepo = new LendingRepository(null);
+  const lendingRepo = new LendingRepository();
   const data = (await lendingRepo.searchLending({ id }, 0, 0, {}))[0];
   return data[0];
 };
