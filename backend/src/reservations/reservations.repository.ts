@@ -136,12 +136,16 @@ class ReservationsRepository extends Repository<reservation> {
   async searchReservations(query: string, filter: string, page: number, limit: number) {
     const searchAll = this
       .createQueryBuilder('r')
-      .select('r.id', 'reservationId')
+      .select('r.id', 'reservationsId')
+      .addSelect('r.endAt', 'endAt')
+      .addSelect('r.createdAt', 'createdAt')
+      .addSelect('r.status', 'status')
+      .addSelect('r.userId', 'userId')
+      .addSelect('r.bookId', 'bookId')
       .addSelect('u.nickname', 'login')
       .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END', 'penaltyDays')
       .addSelect('bi.title', 'title')
       .addSelect('bi.image', 'image')
-      .addSelect('b.status', 'status')
       .addSelect('(SELECT COUNT(*) FROM reservation)', 'count')
       .addSelect('b.callSign', 'callSign')
       .leftJoin('user', 'u', 'r.userId = u.id')
@@ -173,6 +177,7 @@ class ReservationsRepository extends Repository<reservation> {
       totalPages: Math.ceil(totalItems / limit),
       currentPage: page + 1,
     };
+    console.log(items);
     return { items, meta };
   }
 }
