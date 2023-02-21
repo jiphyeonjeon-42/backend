@@ -105,7 +105,7 @@ class LendingRepository extends Repository<Lending> {
         userId,
       },
     });
-    return overDueDay;
+    return overDueDay?.overDueDay;
   }
 
   async getLendingCountByBookId(bookId: number) {
