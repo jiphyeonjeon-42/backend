@@ -7,12 +7,12 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('l.lendingCondition', 'lendingCondition')
     .addSelect('u.nickname', 'login')
     .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, now()) END', 'penaltyDays')
-    .addSelect('b.callSign')
-    .addSelect('bi.title')
+    .addSelect('b.callSign', 'callSign')
+    .addSelect('bi.title', 'title')
     .addSelect('bi.image', 'image')
     .addSelect('l.createdAt', 'createdAt')
     .addSelect('l.returnedAt', 'returnedAt')
-    .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'duedate')
+    .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'dueDate')
     .from('lending', 'l')
     .innerJoin('user', 'u', 'l.userId = u.id')
     .leftJoin('book', 'b', 'l.bookId = b.id')
@@ -47,7 +47,7 @@ export class VLending {
   returnedAt: Date;
 
   @ViewColumn()
-  duedate: Date;
+  dueDate: Date;
 }
 
 export default VLending;
