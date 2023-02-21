@@ -32,7 +32,7 @@ export const create = async (
     const penaltyEndDate = await lendingRepo.getUsersPenalty(userId);
     const overDueDay = await lendingRepo.getUsersOverDueDay(userId);
     if (penaltyEndDate >= new Date()
-      || overDueDay) { throw new Error(errorCode.LENDING_OVERDUE); }
+      || overDueDay === undefined) { throw new Error(errorCode.LENDING_OVERDUE); }
 
     // book conditions
     const countOfBookInLending = await lendingRepo.getLendingCountByBookId(bookId);
