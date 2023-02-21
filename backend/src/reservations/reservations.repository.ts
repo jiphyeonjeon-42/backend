@@ -1,4 +1,5 @@
 import {
+  Brackets,
   IsNull, MoreThan, QueryRunner, Repository,
 } from 'typeorm';
 import jipDataSource from '../app-data-source';
@@ -134,22 +135,23 @@ class ReservationsRepository extends Repository<reservation> {
 
   async searchReservations(query: string, filter: string, page: number, limit: number) {
     const searchAll = this
-      .createQueryBuilder('r', this.queryRunner)
-      .select('r.*')
+      .createQueryBuilder('r')
+      .select('r.id', 'reservationId')
       .addSelect('u.nickname', 'login')
       .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END', 'penaltyDays')
       .addSelect('bi.title', 'title')
       .addSelect('bi.image', 'image')
-      .addSelect('b.callSign', 'callSign')
       .addSelect('b.status', 'status')
-      .addSelect('u.id', 'userId')
       .addSelect('(SELECT COUNT(*) FROM reservation)', 'count')
+      .addSelect('b.callSign', 'callSign')
       .leftJoin('user', 'u', 'r.userId = u.id')
       .leftJoin('book_info', 'bi', 'r.bookInfoId = bi.id')
       .leftJoin('book', 'b', 'r.bookId = b.id')
-      .having('bi.title like :query', { query: `%${query}%` })
-      .orHaving('u.nickname like :query', { query: `%${query}%` })
-      .orHaving('b.callSign like :query', { query: `%${query}%` });
+      .where(new Brackets((qb) => {
+        qb.where('bi.title like :query', { query: `%${query}%` })
+          .orWhere('u.nickname like :query', { query: `%${query}%` })
+          .orWhere('b.callSign like :query', { query: `%${query}%` });
+      }));
     switch (filter) {
       case 'waiting':
         searchAll.andWhere({ status: 0, bookId: IsNull() });
@@ -162,8 +164,8 @@ class ReservationsRepository extends Repository<reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
-    searchAll.limit(limit).offset(limit * page);
-    const [items, totalItems] = await searchAll.getManyAndCount();
+    const items = await searchAll.offset(limit * page).limit(limit).getRawMany();
+    const totalItems = await searchAll.getCount();
     const meta : Meta = {
       totalItems,
       itemCount: items.length,
