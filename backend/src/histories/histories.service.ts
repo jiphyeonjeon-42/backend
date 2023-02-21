@@ -1,6 +1,6 @@
 import { Like } from 'typeorm';
 import { Meta } from '../users/users.type';
-import historiesRepo from './histories.repository';
+import HistoriesRepository from './histories.repository';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getHistories = async (
@@ -23,9 +23,8 @@ export const getHistories = async (
     filterQuery.login = Like(`%${query}%`);
     filterQuery.title = Like(`%${query}%`);
   }
-
+  const historiesRepo = new HistoriesRepository();
   const [items, count] = await historiesRepo.getHistoriesItems(filterQuery, limit, page);
-
   const meta: Meta = {
     totalItems: count,
     itemCount: items.length,

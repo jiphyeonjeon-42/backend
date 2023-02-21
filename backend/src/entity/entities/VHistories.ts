@@ -4,15 +4,15 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
   expression: (Data: DataSource) => Data
     .createQueryBuilder()
     .select('l.id', 'id')
-    .addSelect('lendingCondition')
+    .addSelect('lendingCondition', 'lendingCondition')
     .addSelect('u.nickname', 'login')
-    .addSelect('l.returningCondition')
+    .addSelect('l.returningCondition', 'returningCondition')
     .addSelect(`
       CASE WHEN NOW() > u.penaltyEndDate THEN 0
         ELSE DATEDIFF(u.penaltyEndDate, NOW()) END
     `, 'penaltyDays')
-    .addSelect('b.callSign')
-    .addSelect('bi.title')
+    .addSelect('b.callSign', 'callSign')
+    .addSelect('bi.title', 'title')
     .addSelect('bi.id', 'bookInfoId')
     .addSelect('bi.image', 'image')
     .addSelect('DATE_FORMAT(l.createdAt, "%Y-%m-%d")', 'createdAt')
