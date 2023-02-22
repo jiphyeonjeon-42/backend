@@ -1,5 +1,5 @@
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
-import { IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import Reservation from '../entity/entities/Reservation';
 import UserReservation from '../entity/entities/UserReservation';
 import * as models from './users.model';
@@ -81,7 +81,6 @@ export default class UsersRepository extends Repository<User> {
     const userLendingList = await this.lendingForSearchUserRepo.find({
       where: {
         userId,
-        lendDate: IsNull(),
       },
     }) as unknown as models.Lending[];
     return userLendingList;
