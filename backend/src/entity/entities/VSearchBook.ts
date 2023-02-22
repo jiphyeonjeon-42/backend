@@ -2,6 +2,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 import BookInfo from './BookInfo';
 import Book from './Book';
 import Category from './Category';
+import Lending from './Lending';
 
 @ViewEntity('v_search_book', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -15,7 +16,7 @@ import Category from './Category';
     .addSelect('book.callSign', 'callSign')
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
-    .addSelect('book.updatedAt', 'updatedAt')
+    .addSelect('book.donator', 'donator')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
     .addSelect(
@@ -28,9 +29,11 @@ import Category from './Category';
           + '  ), TRUE, FALSE)',
       'isLendable',
     )
+    .addSelect('lending.returnedAt', 'dueDate')
     .from(Book, 'book')
     .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
-    .leftJoin(Category, 'category', 'book_info.categoryId = category.id'),
+    .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
+    .leftJoin(Lending, 'lending', 'lending.bookId = book.id'),
 })
 export class VSearchBook {
   @ViewColumn()
@@ -44,6 +47,12 @@ export class VSearchBook {
 
   @ViewColumn()
   author: string;
+
+  @ViewColumn()
+  donator: string;
+
+  @ViewColumn()
+  dueDate: Date;
 
   @ViewColumn()
   publisher: string;
@@ -72,8 +81,6 @@ export class VSearchBook {
   @ViewColumn()
   isLendable: boolean;
 
-  @ViewColumn()
-  updatedAt: Date;
 }
 
 export default VSearchBook;

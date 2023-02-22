@@ -23,4 +23,4 @@ class HistoriesRepository extends Repository<VHistories> {
   }
 }
 
-export default (new HistoriesRepository());
+export default HistoriesRepository;
