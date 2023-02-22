@@ -1,5 +1,5 @@
 import {
-  IsNull, QueryRunner, Repository, UpdateResult,
+  IsNull, MoreThan, QueryRunner, Repository, UpdateResult,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import User from '../entity/entities/User';
@@ -103,6 +103,7 @@ class LendingRepository extends Repository<Lending> {
       },
       where: {
         userId,
+        overDueDay: MoreThan(0),
       },
     });
     return overDueDay?.overDueDay;
