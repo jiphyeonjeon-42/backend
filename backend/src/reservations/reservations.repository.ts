@@ -1,6 +1,6 @@
 import {
   Brackets,
-  IsNull, MoreThan, QueryRunner, Repository,
+  IsNull, MoreThan, Not, QueryRunner, Repository,
 } from 'typeorm';
 import jipDataSource from '../app-data-source';
 import BookInfo from '../entity/entities/BookInfo';
@@ -167,6 +167,9 @@ class ReservationsRepository extends Repository<reservation> {
         break;
       case 'all':
         break;
+      case 'pending':
+        searchAll.andWhere({ status: 0, bookId: Not(IsNull()) });
+        break;
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
@@ -179,7 +182,6 @@ class ReservationsRepository extends Repository<reservation> {
       totalPages: Math.ceil(totalItems / limit),
       currentPage: page + 1,
     };
-    console.log(items);
     return { items, meta };
   }
 }
