@@ -249,7 +249,12 @@ export const searchInfo = async (
 export const getBookById = async (id: string) => {
   const booksRepository = new BooksRepository();
   const book = await booksRepository.findOneBookById(id);
-  return book;
+  const ret = {
+    id: book?.bookId,
+    ...book,
+  };
+
+  return ret;
 };
 
 export const getInfo = async (id: string) => {
