@@ -84,22 +84,22 @@ export default class ReviewsRepository extends Repository<Reviews> {
   ) : Promise<number> {
     let reviewFilter = '';
     if (isMyReview) {
-      reviewFilter = titleOrNickname === '' ? '' : `book_info.title LIKE '%${titleOrNickname}%' `;
+      reviewFilter = titleOrNickname === '' ? 'TRUE' : `book_info.title LIKE '%${titleOrNickname}%' `;
       reviewFilter = reviewFilter.concat(`reviews.userId = ${reviewerId}`);
     } else {
-      reviewFilter = titleOrNickname === '' ? '' : `(book_info.title LIKE '%${titleOrNickname}%'
+      reviewFilter = titleOrNickname === '' ? 'TRUE' : `(book_info.title LIKE '%${titleOrNickname}%'
                                                         OR user.nickname LIKE '%${titleOrNickname}%')`;
     }
     const disabledQuery = disabled === -1 ? '' : `reviews.disabled = ${disabled}`;
-    const ret = await this.createQueryBuilder('reviews')
+    const queryBuilder = this.createQueryBuilder('reviews')
       .select('COUNT(*)', 'counts')
       .leftJoin(User, 'user', 'user.id = reviews.userId')
       .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
       .where('reviews.isDeleted = false')
-      .andWhere(reviewFilter)
-      .andWhere(disabledQuery)
-      .getRawOne();
-    return (ret[0].counts);
+      .andWhere(reviewFilter);
+    if (disabledQuery !== '') queryBuilder.andWhere(disabledQuery);
+    const ret = queryBuilder.getRawOne();
+    return ret;
   }
 
   async getReviewsUserId(reviewsId : number): Promise<number> {
