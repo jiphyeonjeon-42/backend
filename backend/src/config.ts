@@ -20,6 +20,12 @@ switch (process.env.MODE) {
     password = process.env.RDS_PASSWORD;
     database = process.env.RDS_DB_NAME;
     break;
+  case 'prod':
+    hostName = 'database';
+    username = process.env.MYSQL_USER;
+    password = process.env.MYSQL_PASSWORD;
+    database = process.env.MYSQL_DATABASE; 
+    break;
   default:
     hostName = 'database';
 }
