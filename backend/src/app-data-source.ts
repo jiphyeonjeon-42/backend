@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import dotenv from 'dotenv';
+import { logger } from './utils/logger';
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ switch (process.env.MODE) {
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
     database = process.env.MYSQL_DATABASE;
+    break;
+  default:
+    logger.error("no valid env mode");
 }
 
 export const option = {
