@@ -11,8 +11,8 @@ export default function errorConverter(
   // eslint-disable-next-line no-unused-vars
   next: NextFunction,
 ) {
-  if (err.message == errorCode.CLIENT_AUTH_FAILED_ERROR_MESSAGE) { 
+  if (err.message === errorCode.CLIENT_AUTH_FAILED_ERROR_MESSAGE) {
     return next(new ErrorResponse('42', 500, '42KeyError'));
   }
   next(err);
-};
+}

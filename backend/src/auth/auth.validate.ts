@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import * as status from 'http-status';
-import * as usersService from '../users/users.service';
+import UsersService from '../users/users.service';
 import { role } from './auth.type';
 import { User } from '../users/users.model';
 import config from '../config';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
+
+const usersService = new UsersService();
 
 const authValidate = (roles: role[]) => async (
   req: Request,

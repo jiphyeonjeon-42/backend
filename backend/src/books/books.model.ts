@@ -1,16 +1,16 @@
 import { RowDataPacket } from 'mysql2';
 
 export interface BookInfo extends RowDataPacket {
-    id?: number;
-    title: string;
-    author: string;
-    publisher: string;
-    isbn?: string;
-    image: string;
-    category: string;
-    publishedAt?: string | Date;
-    createdAt: Date;
-    updatedAt: Date;
+  id?: number;
+  title: string;
+  author: string;
+  publisher: string;
+  isbn?: string;
+  image: string;
+  category: string;
+  publishedAt?: string | Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface BookEach extends RowDataPacket {

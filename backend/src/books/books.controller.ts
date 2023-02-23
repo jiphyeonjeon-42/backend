@@ -8,9 +8,12 @@ import { isNullish } from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
+import LikesService from './likes.service';
 
-const pubdateFormatValidator = (pubdate : String | Date) => {
-  const regexConditon = (/^[0-9]{8}$/);
+const likesService = new LikesService();
+
+const pubdateFormatValidator = (pubdate: String | Date) => {
+  const regexConditon = /^[0-9]{8}$/;
   if (regexConditon.test(String(pubdate)) === false) {
     return false;
   }
@@ -250,7 +253,7 @@ export const createLike = async (
   // 로직수행 및 에러처리
   try {
     // 결과에 따라 오류status를 반환해야함
-    return res.status(status.CREATED).send(await BooksService.createLike(id, bookInfoId));
+    return res.status(status.CREATED).send(await likesService.createLike(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -278,7 +281,7 @@ export const deleteLike = async (
 
   // 로직수행 및 에러처리
   try {
-    await BooksService.deleteLike(id, bookInfoId);
+    await likesService.deleteLike(id, bookInfoId);
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -308,7 +311,7 @@ export const getLikeInfo = async (
 
   // 로직수행 및 에러처리
   try {
-    return res.status(status.OK).json(await BooksService.getLikeInfo(id, bookInfoId));
+    return res.status(status.OK).json(await likesService.getLikeInfo(id, bookInfoId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -339,12 +342,12 @@ export const updateBookInfo = async (
   const book: types.UpdateBook = {
     id: req.body.bookId,
     callSign: req.body.callSign,
-    Status: req.body.status,
+    status: req.body.status,
   };
 
   if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
-          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.Status)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status !== undefined)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
   if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
   if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
@@ -352,15 +355,16 @@ export const updateBookInfo = async (
   if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
   if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
-  } else if (pubdateFormatValidator(req.body.publishedAt) == false) {
+  } else if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt) === false) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
-  if (isNullish(book.callSign) == false) { book.callSign.trim(); }
-  if (bookStatusFormatValidator(book.Status) == false) {
+  if (isNullish(book.callSign) === false) { book.callSign.trim(); }
+  if (bookStatusFormatValidator(book.status) === false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    await BooksService.updateBookInfo(bookInfo, book, bookInfo.id, book.id);
+    if (book.id) { await BooksService.updateBook(book); }
+    if (bookInfo.id) { await BooksService.updateBookInfo(bookInfo); }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
