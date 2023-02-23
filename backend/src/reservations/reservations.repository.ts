@@ -64,15 +64,15 @@ class ReservationsRepository extends Repository<reservation> {
 
   // 유저가 2권 이상 예약 중인지 확인
   async isAllRenderUser(userId: number): Promise<boolean> {
-    const rendUser = await this.user
-      .createQueryBuilder('u', this.queryRunner)
-      .select('u.id')
-      .addSelect('count(r.id)', 'count')
+    const [rendUser] = await Promise.all([this.user
+      .createQueryBuilder('u')
+      .select('u.id', 'id')
+      .addSelect('COUNT(r.id)', 'count')
       .innerJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
       .where(`u.id = ${userId}`)
       .groupBy('u.id')
-      .getRawOne();
-    if (rendUser.count >= 2) { return true; }
+      .getRawOne()]);
+    if (rendUser?.count >= 2) { return true; }
     return false;
   }
 
