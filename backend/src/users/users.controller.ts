@@ -4,11 +4,13 @@ import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
 import ErrorResponse from '../utils/error/errorResponse';
 import { User } from './users.model';
-import UsersService from './users.service';
+import {
+  createUser,
+  searchAllUsers, searchUserById, searchUserBynicknameOrEmail, updateUserAuth,
+  updateUserEmail, updateUserPassword, userReservations,
+} from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
-
-const usersService = new UsersService();
 
 export const search = async (
   req: Request,
@@ -26,23 +28,21 @@ export const search = async (
   }
   try {
     if (nicknameOrEmail === '' && id === 0) {
-      items = await usersService.searchAllUsers(limit, page);
+      items = await searchAllUsers(limit, page);
     } else if (nicknameOrEmail !== '' && id === 0) {
       items = JSON.parse(JSON.stringify(
-        await usersService.searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
+        await searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
       ));
     } else if (nicknameOrEmail === '' && id !== 0) {
       items = JSON.parse(JSON.stringify(
-        await usersService.searchUserById(id),
+        await searchUserById(id),
       ));
     }
     if (items) {
       items.items = await Promise.all(items.items.map(async (data: User) => ({
         ...data,
-        lendings:
-          await usersService.userLendings(data.id),
         reservations:
-          await usersService.userReservations(data.id),
+          await userReservations(data.id),
       })));
     }
     return res.json(items);
@@ -75,7 +75,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     if (!pwSchema.validate(String(password))) {
       return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
     }
-    await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
+    await createUser(String(email), await bcrypt.hash(String(password), 10));
     return res.status(status.OK).send(`${email} created!`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -106,7 +106,7 @@ export const update = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    const updatedUser = await usersService.updateUserAuth(
+    const updatedUser = await updateUserAuth(
       parseInt(id, 10),
       nickname,
       intraId,
@@ -146,7 +146,7 @@ export const myupdate = async (
   }
   try {
     if (email !== '' && password === '0') {
-      await usersService.updateUserEmail(parseInt(tokenId, 10), email);
+      await updateUserEmail(parseInt(tokenId, 10), email);
     } else if (email === '' && password !== '0') {
       const pwSchema = new PasswordValidator();
       pwSchema
@@ -158,7 +158,7 @@ export const myupdate = async (
       if (!pwSchema.validate(password)) {
         return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
       }
-      await usersService.updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
+      await updateUserPassword(parseInt(tokenId, 10), bcrypt.hashSync(password, 10));
     } res.status(200).send('success');
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

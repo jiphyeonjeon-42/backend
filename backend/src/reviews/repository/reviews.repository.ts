@@ -1,149 +1,169 @@
-import { QueryRunner, Repository } from 'typeorm';
-import jipDataSource from '../../app-data-source';
-import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
-import BookInfo from '../../entity/entities/BookInfo';
-import User from '../../entity/entities/User';
+import { executeQuery, makeExecuteQuery, pool } from '../../mysql';
 
-export default class ReviewsRepository extends Repository<Reviews> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
-
-  constructor(queryRunner?: QueryRunner) {
-    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
-    const manager = jipDataSource.createEntityManager(qr);
-    super(Reviews, manager);
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
-      manager,
-    );
+export const createReviews = async (userId: number, bookInfoId: number, content: string) => {
+  const numberOfBookInfo = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM book_info
+    WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) {throw new Error(errorCode.INVALID_INPUT_REVIEWS); }
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
+  try {
+    await transactionExecuteQuery(`
+      INSERT INTO reviews(
+        userId,
+        bookInfoId,
+        updateUserId,
+        isDeleted,
+        content
+      )VALUES (?, ?, ?, ?, ?)
+    `, [userId, bookInfoId, userId, false, content]);
+    conn.commit();
+  } catch (error) {
+    conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
   }
+};
 
-  async validateBookInfo(bookInfoId: number) : Promise<void> {
-    const bookInfoCount = await this.bookInfoRepo.count({
-      where: { id: bookInfoId },
-    });
-    if (bookInfoCount === 0) {
-      throw new Error(errorCode.INVALID_INPUT_REVIEWS);
-    }
-  }
-
-  async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
-    await this.insert({
-      userId, bookInfoId, content, updateUserId: userId,
-    });
-  }
-
-  async getReviewsPage(
-    reviewerId: number,
-    isMyReview: boolean,
-    titleOrNickname :string,
-    disabled: number,
-    page: number,
-    sort: 'ASC' | 'DESC' | undefined,
-    limit: number,
-  ) {
-    let reviewFilter = '';
-    if (isMyReview) {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `book_info.title LIKE '%${titleOrNickname}%' `;
-      reviewFilter = reviewFilter.concat(`reviews.userId = ${reviewerId}`);
-    } else {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `(book_info.title LIKE '%${titleOrNickname}%'
+export const getReviewsPage = async (
+  reviewerId: number,
+  isMyReview: boolean,
+  titleOrNickname :string,
+  disabled: number,
+  page: number,
+  sort: 'asc' | 'desc',
+  limit: number,
+) => {
+  let reviewFilter = '';
+  if (isMyReview) {
+    reviewFilter = titleOrNickname === '' ? '' : `AND book_info.title LIKE '%${titleOrNickname}%' `;
+    reviewFilter = reviewFilter.concat(`AND reviews.userId = ${reviewerId}`);
+  } else {
+    reviewFilter = titleOrNickname === '' ? '' : `AND (book_info.title LIKE '%${titleOrNickname}%'
                                                       OR user.nickname LIKE '%${titleOrNickname}%')`;
-    }
-    const disabledQuery = disabled === -1 ? 'TRUE' : `reviews.disabled = ${disabled}`;
-    const limitQuery = (Number.isNaN(limit)) ? 10 : limit;
-    const offset = (Number.isNaN(limit)) ? page * 10 : page * limit;
-
-    const reviews = await this.createQueryBuilder('reviews')
-      .select('reviews.id', 'reviewsId')
-      .addSelect('reviews.userId', 'reviewerId')
-      .addSelect('reviews.bookInfoId', 'bookInfoId')
-      .addSelect('reviews.content', 'content')
-      .addSelect('reviews.createdAt', 'createdAt')
-      .addSelect('reviews.disabled', 'disabled')
-      .addSelect('book_info.title', 'title')
-      .addSelect('user.nickname', 'nickname')
-      .addSelect('user.intraId', 'intraId')
-      .leftJoin(User, 'user', 'user.id = reviews.userId')
-      .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
-      .where('reviews.isDeleted = false')
-      .andWhere(reviewFilter)
-      .andWhere(disabledQuery)
-      .orderBy('reviews.id', sort)
-      .offset(offset)
-      .limit(limitQuery)
-      .getRawMany();
-    return (reviews);
   }
+  const disabledQuery = disabled === -1 ? '' : `AND reviews.disabled = ${disabled}`;
+  const sortQuery = `ORDER BY reviews.id ${sort}`;
+  const limitQuery = (Number.isNaN(limit)) ? 'LIMIT 10' : `LIMIT ${limit}`;
+  const offset = (Number.isNaN(limit)) ? page * 10 : page * limit;
 
-  async getReviewsCounts(
-    reviewerId: number,
-    isMyReview: boolean,
-    titleOrNickname: string,
-    disabled: number,
-  ) : Promise<number> {
-    let reviewFilter = '';
-    if (isMyReview) {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `book_info.title LIKE '%${titleOrNickname}%' `;
-      reviewFilter = reviewFilter.concat(`reviews.userId = ${reviewerId}`);
-    } else {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `(book_info.title LIKE '%${titleOrNickname}%'
-                                                        OR user.nickname LIKE '%${titleOrNickname}%')`;
-    }
-    const disabledQuery = disabled === -1 ? '' : `reviews.disabled = ${disabled}`;
-    const queryBuilder = this.createQueryBuilder('reviews')
-      .select('COUNT(*)', 'counts')
-      .leftJoin(User, 'user', 'user.id = reviews.userId')
-      .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
-      .where('reviews.isDeleted = false')
-      .andWhere(reviewFilter);
-    if (disabledQuery !== '') queryBuilder.andWhere(disabledQuery);
-    const ret = queryBuilder.getRawOne();
-    return ret;
-  }
+  const reviews = await executeQuery(`
+  SELECT
+    reviews.id as reviewsId,
+    reviews.userId as reviewerId,
+    reviews.bookInfoId,
+    reviews.content,
+    reviews.createdAt,
+    reviews.disabled,
+    book_info.title,
+    user.nickname,
+    user.intraId
+  FROM reviews
+  JOIN user ON user.id = reviews.userId
+  JOIN book_info ON reviews.bookInfoId = book_info.id
+  WHERE reviews.isDeleted = false
+    ${reviewFilter}
+    ${disabledQuery}
+    ${sortQuery}
+  ${limitQuery}
+  OFFSET ?
+  `, [offset]);
+  return (reviews);
+};
 
-  async getReviewsUserId(reviewsId : number): Promise<number> {
-    const ret = await this.findOneOrFail({
-      select: {
-        userId: true,
-      },
-      where: {
-        id: reviewsId,
-        isDeleted: false,
-      },
-    });
-    return ret.userId;
+export const getReviewsCounts = async (
+  reviewerId: number,
+  isMyReview: boolean,
+  titleOrNickname: string,
+  disabled: number,
+) => {
+  let reviewFilter = '';
+  if (isMyReview) {
+    reviewFilter = titleOrNickname === '' ? '' : `AND book_info.title LIKE '%${titleOrNickname}%' `;
+    reviewFilter = reviewFilter.concat(`AND reviews.userId = ${reviewerId}`);
+  } else {
+    reviewFilter = titleOrNickname === '' ? '' : `AND (book_info.title LIKE '%${titleOrNickname}%'
+                                                      OR user.nickname LIKE '%${titleOrNickname}%')`;
   }
+  const disabledQuery = disabled === -1 ? '' : `AND reviews.disabled = ${disabled}`;
+  const counts = await executeQuery(`
+  SELECT
+    COUNT(*) as counts
+  FROM reviews
+  JOIN user ON user.id = reviews.userId
+  JOIN book_info ON reviews.bookInfoId = book_info.id
+  WHERE reviews.isDeleted = false
+    ${reviewFilter}
+    ${disabledQuery}
+  `);
+  return (counts[0].counts);
+};
 
-  async getReviews(reviewsId : number): Promise<Reviews[]> {
-    const ret = await this.find({
-      select: {
-        userId: true,
-        disabled: true,
-      },
-      where: {
-        id: reviewsId,
-        isDeleted: false,
-      },
-    });
-    return ret;
-  }
+export const getReviewsUserId = async (
+  reviewsId : number,
+) => {
+  const reviewsUserId = await executeQuery(`
+    SELECT
+      userId
+    FROM reviews
+    WHERE id = ?
+    AND isDeleted = false
+    `, [reviewsId]);
+  return reviewsUserId[0].userId;
+};
 
-  async updateReviews(reviewsId : number, userId : number, content : string): Promise<void> {
-    await this.update(reviewsId, { content, updateUserId: userId });
-  }
+export const getReviews = async (
+  reviewsId : number,
+) => {
+  const result: any = await executeQuery(`
+    SELECT
+      userId,
+      disabled
+    FROM reviews
+    WHERE id = ?
+    AND isDeleted = false
+    `, [reviewsId]);
+  return result;
+};
 
-  async deleteReviews(reviewId: number, deleteUser: number): Promise<void> {
-    await this.update(reviewId, { isDeleted: true, deleteUserId: deleteUser });
-  }
+export const updateReviews = async (
+  reviewsId : number,
+  userId : number,
+  content : string,
+) => {
+  await executeQuery(`
+    UPDATE reviews
+    SET
+      content = ?,
+      updateUserId = ?
+    WHERE id = ?
+    `, [content, userId, reviewsId]);
+};
 
-  async patchReviews(reviewsId : number, userId : number): Promise<void> {
-    await this.update(
-      reviewsId,
-      {
-        disabled: () => 'IF(disabled=TRUE, FALSE, TRUE)',
-        disabledUserId: () => `IF(disabled=FALSE, NULL, ${userId})`,
-      },
-    );
-  }
-}
+export const deleteReviews = async (reviewId: number, deleteUser: number) => {
+  await executeQuery(`
+      UPDATE reviews
+      SET
+        isDeleted = ?,
+        deleteUserId = ?
+      WHERE id = ?
+    `, [true, deleteUser, reviewId]);
+};
+
+export const patchReviews = async (
+  reviewsId : number,
+  userId : number,
+) => {
+  await executeQuery(`
+    UPDATE reviews
+    SET
+      disabled = IF(disabled=TRUE, FALSE, TRUE),
+      disabledUserId = IF(disabled=FALSE, NULL, ?)
+    WHERE id = ?
+    `, [userId, reviewsId]);
+};

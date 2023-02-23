@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as status from 'http-status';
 import config from '../config';
-import UsersService from '../users/users.service';
+import * as usersService from '../users/users.service';
 import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
 import * as models from '../users/users.model';
@@ -11,8 +11,6 @@ import { updateSlackIdByUserId } from '../slack/slack.service';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
-
-const usersService = new UsersService();
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;

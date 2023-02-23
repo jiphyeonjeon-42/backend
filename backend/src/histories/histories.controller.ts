@@ -32,7 +32,7 @@ export const histories = async (
     return next(new ErrorResponse(errorCode.UNAUTHORIZED, status.UNAUTHORIZED));
   }
   try {
-    const result = await historiesService.getHistories(query, who, userId, type, page, limit);
+    const result = await historiesService.histories(query, who, userId, type, page, limit);
     return res.status(status.OK).json(result);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

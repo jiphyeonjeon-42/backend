@@ -1,7 +1,5 @@
 import * as errorCode from '../../../utils/error/errorCode';
-import ReviewsService from '../../service/reviews.service';
-
-const reviewsService = new ReviewsService();
+import * as reviewsService from '../../service/reviews.service';
 
 export const contentParseCheck = (
   content : string,

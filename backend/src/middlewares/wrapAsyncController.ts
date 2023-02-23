@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-import * as status from 'http-status';
 import ErrorResponse from '../utils/error/errorResponse';
 import * as errorCode from '../utils/error/errorCode';
 
@@ -17,8 +15,6 @@ export const wrapAsyncController = (fn : any) => (req: any, res: any, next: any)
       next(new ErrorResponse(errorCode.UNAUTHORIZED_REVIEWS, 401, next));
     } else if (error.message === errorCode.NOT_FOUND_REVIEWS) {
       next(new ErrorResponse(errorCode.NOT_FOUND_REVIEWS, 404, next));
-    } else if (error.message === errorCode.INVALID_INPUT_REVIEWS) {
-      next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS, status.BAD_REQUEST));
     } else {
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, 500));
     }

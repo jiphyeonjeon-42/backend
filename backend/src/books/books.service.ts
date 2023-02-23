@@ -1,16 +1,81 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
-import { executeQuery } from '../mysql';
+import { executeQuery, makeExecuteQuery, pool } from '../mysql';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
-import {
-  categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
-} from './books.type';
+import * as types from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
-import BooksRepository from './books.repository';
-import jipDataSource from '../app-data-source';
+
+export const search = async (
+  query: string,
+  page: number,
+  limit: number,
+) => {
+  const bookList = (await executeQuery(
+    `
+    SELECT
+      book_info.id AS bookInfoId,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      DATE_FORMAT(book_info.publishedAt, '%Y%m%d') AS publishedAt,
+      book_info.isbn AS isbn,
+      book.callSign AS callSign,
+      book_info.image AS image,
+      book.id AS bookId,
+      book.status AS status,
+      book_info.categoryId AS categoryId,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      (
+        IF((
+            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
+            ), TRUE, FALSE)
+      ) AS isLendable
+    FROM book_info, book
+    WHERE book_info.id = book.infoId AND
+    (book_info.title like ?
+      OR book_info.author like ?
+      OR book_info.isbn like ?)
+    LIMIT ?
+    OFFSET ?;
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
+  )) as models.BookInfo[];
+
+  const totalItems = (await executeQuery(
+    `
+    SELECT
+      COUNT(*) AS count
+    FROM book_info
+    INNER JOIN book ON book_info.id = book.infoId
+    WHERE (
+      book_info.title LIKE ?
+      OR book_info.author LIKE ?
+      OR book_info.isbn LIKE ?
+      )
+  `,
+    [`%${query}%`, `%${query}%`, `%${query}%`],
+  ))[0].count as number;
+
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, meta };
+};
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -56,69 +121,128 @@ const getAuthorInNaver = async (isbn: string) => {
   return (author);
 };
 
-const getCategoryAlphabet = (categoryId : number): string => {
-  try {
-    const category = Object.values(categoryIds) as string[];
-    return category[categoryId - 1];
-  } catch (e) {
-    throw new Error(errorCode.INVALID_CATEGORY_ID);
+const getCategoryAlpabet = (categoryId : number) => {
+  switch (categoryId) {
+    case 1:
+      return 'K';
+    case 2:
+      return 'C';
+    case 3:
+      return 'O';
+    case 4:
+      return 'A';
+    case 5:
+      return 'I';
+    case 6:
+      return 'G';
+    case 7:
+      return 'J';
+    case 8:
+      return 'c';
+    case 9:
+      return 'F';
+    case 10:
+      return 'E';
+    case 11:
+      return 'e';
+    case 12:
+      return 'H';
+    case 13:
+      return 'd';
+    case 14:
+      return 'D';
+    case 15:
+      return 'k';
+    case 16:
+      return 'g';
+    case 17:
+      return 'B';
+    case 18:
+      return 'e';
+    case 19:
+      return 'n';
+    case 20:
+      return 'N';
+    case 21:
+      return 'j';
+    case 22:
+      return 'a';
+    case 23:
+      return 'f';
+    case 24:
+      return 'L';
+    case 25:
+      return 'b';
+    case 26:
+      return 'M';
+    case 27:
+      return 'i';
+    case 28:
+      return 'l';
+    default:
+      throw new Error(errorCode.INVALID_CATEGORY_ID);
   }
 };
 
-export const search = async (
-  query: string,
-  page: number,
-  limit: number,
-) => {
-  const booksRepository = new BooksRepository();
-  const bookList = await booksRepository.getBookList(query, limit, page);
-  const totalItems = await booksRepository.getTotalItems(query);
-  const meta = {
-    totalItems,
-    itemCount: bookList.length,
-    itemsPerPage: limit,
-    totalPages: Math.ceil(totalItems / limit),
-    currentPage: page + 1,
-  };
-  return { items: bookList, meta };
-};
-
-export const createBook = async (book: CreateBookInfo) => {
-  const transactionQueryRunner = jipDataSource.createQueryRunner();
-  const booksRepository = new BooksRepository(transactionQueryRunner);
-  const isbn = book.isbn === undefined ? '' : book.isbn;
-  const isbnInBookInfo = await booksRepository.isExistBook(isbn);
-  const checkNickName = await booksRepository.checkNickName(book.donator);
-  const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
+export const createBook = async (book: types.CreateBookInfo) => {
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
   try {
-    await transactionQueryRunner.startTransaction();
-    let recommendCopyNum = 1;
+    await conn.beginTransaction();
+    let recommendCopyNum;
     let recommendPrimaryNum;
+    let categoryAlpabet;
 
-    if (checkNickName > 1) {
+    const isbnInBookInfo = (await transactionExecuteQuery('SELECT COUNT(*) as cnt, isbn FROM book_info WHERE isbn = ?', [book.isbn])) as StringRows[];
+    const slackIdExist = (await transactionExecuteQuery('SELECT COUNT(*) as cnt FROM user WHERE nickname = ?', [book.donator])) as StringRows[];
+    if (slackIdExist[0].cnt > 1) {
       logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
     }
 
-    if (isbnInBookInfo === 0) {
-      await booksRepository.createBookInfo(book);
-      const categoryId = book.categoryId === undefined ? '' : book.categoryId;
-      recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(categoryId);
+    const category = (await transactionExecuteQuery(`SELECT name FROM category WHERE id = ${book.categoryId}`))[0].name;
+
+    if (isbnInBookInfo[0].cnt === 0) {
+      await transactionExecuteQuery(
+        `INSERT INTO book_info (title, author, publisher, isbn, image, categoryId, publishedAt)
+      VALUES (?, ?, ?, (SELECT IF (? != 'NOTEXIST', ?, NULL)), (SELECT IF (? != 'NOTEXIST', ?, NULL)), ?, ?)`,
+        [
+          book.title,
+          book.author,
+          book.publisher,
+          book.isbn ? book.isbn : 'NOTEXIST',
+          book.isbn ? book.isbn : 'NOTEXIST',
+          book.image ? book.image : 'NOTEXIST',
+          book.image ? book.image : 'NOTEXIST',
+          book.categoryId,
+          book.pubdate,
+        ],
+      );
+      categoryAlpabet = getCategoryAlpabet(Number(book.categoryId));
+      recommendPrimaryNum = (await transactionExecuteQuery('SELECT COUNT(*) + 1 as recommendPrimaryNum FROM book_info where categoryId = ?', [book.categoryId]))[0].recommendPrimaryNum;
+      recommendCopyNum = 1;
     } else {
-      const nums = await booksRepository.getOldCallsignNums(categoryAlphabet);
-      recommendPrimaryNum = nums.recommendPrimaryNum;
-      recommendCopyNum = nums.recommendCopyNum * 1 + 1;
+      categoryAlpabet = (await transactionExecuteQuery('SELECT substring(callsign,1,1) as categoryAlpabet FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].categoryAlpabet;
+      recommendPrimaryNum = (await transactionExecuteQuery('SELECT substring(substring_index(callsign, ".", 1),2) as recommendPrimaryNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendPrimaryNum;
+      recommendCopyNum = (await transactionExecuteQuery('SELECT MAX(convert(substring(substring_index(callsign, ".", -1),2), unsigned)) + 1 as recommendCopyNum FROM book WHERE infoId = (select id from book_info where isbn = ? limit 1)', [book.isbn]))[0].recommendCopyNum;
     }
-    const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
-    await booksRepository.createBook({ ...book, callSign: recommendCallSign });
-    await transactionQueryRunner.commitTransaction();
+    const recommendCallSign = `${categoryAlpabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
+    await transactionExecuteQuery(`INSERT INTO book (donator, donatorId, callSign, status, infoId) VALUES
+    ((SELECT IF (? != 'NOTEXIST', ?, NULL)),(SELECT id FROM user WHERE nickname = ? ORDER BY createdAt DESC LIMIT 1),?,0,(SELECT id FROM book_info WHERE (isbn = ? or title = ?) ORDER BY createdAt DESC LIMIT 1))
+  `, [book.donator ? book.donator : 'NOTEXIST',
+      book.donator ? book.donator : 'NOTEXIST',
+      book.donator,
+      recommendCallSign,
+      book.isbn,
+      book.title]);
+    await conn.commit();
     return ({ callsign: recommendCallSign });
   } catch (error) {
-    await transactionQueryRunner.rollbackTransaction();
+    await conn.rollback();
     if (error instanceof Error) {
       throw error;
     }
   } finally {
-    await transactionQueryRunner.release();
+    conn.release();
   }
   return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
 };
@@ -133,8 +257,50 @@ export const sortInfo = async (
   limit: number,
   sort: string,
 ) => {
-  const booksRepository = new BooksRepository();
-  const bookList: LendingBookList[] = await booksRepository.getLendingBookList(sort, limit);
+  let ordering = '';
+  switch (sort) {
+    case 'popular':
+      ordering = 'ORDER BY lendingCnt DESC';
+      break;
+    default:
+      ordering = 'ORDER BY book_info.createdAt DESC';
+  }
+  let lendingCntCondition = '';
+  switch (sort) {
+    case 'popular':
+      lendingCntCondition = 'and lending.createdAt >= date_sub(now(), interval 42 day)';
+      break;
+    default:
+      lendingCntCondition = '';
+  }
+
+  const bookList = (await executeQuery(
+    `
+    SELECT
+      book_info.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      book_info.image AS image,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      book_info.publishedAt as publishedAt,
+      book_info.createdAt as createdAt,
+      book_info.updatedAt as updatedAt,
+      COUNT(lending.id) as lendingCnt
+    FROM book_info LEFT JOIN lending
+    ON book_info.id = (SELECT book.infoId FROM book WHERE lending.bookId = book.id LIMIT 1)
+    ${lendingCntCondition}
+    GROUP BY book_info.id
+    ${ordering}
+    LIMIT ?;
+  `,
+    [limit],
+  )) as models.BookInfo[];
   return { items: bookList };
 };
 
@@ -247,14 +413,36 @@ export const searchInfo = async (
 };
 
 export const getBookById = async (id: string) => {
-  const booksRepository = new BooksRepository();
-  const book = await booksRepository.findOneBookById(id);
-  const ret = {
-    id: book?.bookId,
-    ...book,
-  };
-
-  return ret;
+  const book = (await executeQuery(`
+    SELECT
+      book.id AS id,
+      book_info.title AS title,
+      book_info.author AS author,
+      book_info.publisher AS publisher,
+      book_info.isbn AS isbn,
+      book.callSign AS callSign,
+      book_info.image as image,
+      (
+        SELECT name
+        FROM category
+        WHERE id = book_info.categoryId
+      ) AS category,
+      (
+        IF((
+            IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)
+            AND
+            IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)
+            ), TRUE, FALSE)
+      ) AS isLendable
+    FROM book_info JOIN book
+    ON book_info.id = book.infoId
+    WHERE book.id = ?
+    LIMIT 1;
+    `, [id]))[0];
+  if (book === undefined) { throw new Error(errorCode.NO_BOOK_ID); }
+  return book;
 };
 
 export const getInfo = async (id: string) => {
@@ -350,12 +538,156 @@ export const getInfo = async (id: string) => {
   return bookSpec;
 };
 
-export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
-  const booksRepository = new BooksRepository();
-  await booksRepository.updateBookInfo(bookInfo);
+export const createLike = async (userId: number, bookInfoId: number) => {
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo.count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // 중복 like 검증
+  const LikeArray = await executeQuery(`
+  SELECT id, isDeleted
+  FROM likes
+  WHERE userId = ? AND bookInfoId = ?;
+  `, [userId, bookInfoId]);
+  if (LikeArray.length !== 0 && LikeArray[0].isDeleted === 0) { throw new Error(errorCode.ALREADY_LIKES); }
+  // create
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
+  try {
+    if (LikeArray.length === 0) {
+      // 새로운 튜플 생성
+      await transactionExecuteQuery(`
+        INSERT INTO likes(
+          userId,
+          bookInfoId,
+          isDeleted
+        )VALUES (?, ?, ?)
+      `, [userId, bookInfoId, false]);
+    } else {
+      // 삭제된 튜플 복구
+      await transactionExecuteQuery(`
+        UPDATE likes
+        SET
+          isDeleted = ?
+        WHERE userId = ? AND bookInfoId = ?
+      `, [false, userId, bookInfoId]);
+    }
+    conn.commit();
+  } catch (error) {
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
+  return { userId, bookInfoId };
 };
 
-export const updateBook = async (book: UpdateBook) => {
-  const booksRepository = new BooksRepository();
-  await booksRepository.updateBook(book);
+export const deleteLike = async (userId: number, bookInfoId: number) => {
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // like 존재여부 검증
+  const LikeArray = await executeQuery(`
+  SELECT id, isDeleted
+  FROM likes
+  WHERE userId = ? AND bookInfoId = ?;
+  `, [userId, bookInfoId]);
+  if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+  // delete
+  const conn = await pool.getConnection();
+  const transactionExecuteQuery = makeExecuteQuery(conn);
+  conn.beginTransaction();
+  try {
+    // 튜플 상태값을 수정하는 soft delete
+    await transactionExecuteQuery(`
+      UPDATE likes
+      SET
+        isDeleted = ?
+      WHERE id = ?
+    `, [true, LikeArray[0].id]);
+    conn.commit();
+  } catch (error) {
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
+};
+
+export const getLikeInfo = async (userId: number, bookInfoId: number) => {
+  // bookInfo 유효검증
+  const numberOfBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book_info
+  WHERE id = ?;
+  `, [bookInfoId]);
+  if (numberOfBookInfo[0].count === 0) { throw new Error(errorCode.INVALID_INFO_ID_LIKES); }
+  // (userId, bookInfoId)인 like 데이터 확인
+  const LikeArray = await executeQuery(`
+  SELECT userId, isDeleted
+  FROM likes
+  WHERE bookInfoId = ?;
+  `, [bookInfoId]);
+  let isLiked = false;
+  LikeArray.forEach((like: any) => {
+    if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
+  });
+  const noDeletedLikes = LikeArray.filter((like : any) => like.isDeleted === 0);
+  return ({ bookInfoId, isLiked, likeNum: noDeletedLikes.length });
+};
+
+export const updateBookInfo = async (bookInfo: types.UpdateBookInfo, book: types.UpdateBook, bookInfoId: number, bookId: number) => {
+  let updateBookInfoString = '';
+  let updateBookString = '';
+  const queryBookInfoParam = [];
+  const queryBookParam = [];
+  const bookInfoObject: any = {
+  } = bookInfo;
+  const bookObject: any = {
+  } = book;
+
+  for (const key in bookInfoObject) {
+    const value = bookInfoObject[key];
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookInfoString += `${key} = ?,`;
+      queryBookInfoParam.push(value);
+    } else if (key === null) {
+      updateBookInfoString += `${key} = NULL,`;
+    }
+  }
+
+  for (const key in bookObject) {
+    const value = bookObject[key];
+    if (key === 'id') {
+    } else if (key !== '') {
+      updateBookString += `${key} = ?,`;
+      queryBookParam.push(value);
+    } else if (key === null) {
+      updateBookString += `${key} = NULL,`;
+    }
+  }
+
+  updateBookInfoString = updateBookInfoString.slice(0, -1);
+  updateBookString = updateBookString.slice(0, -1);
+
+  await executeQuery(`
+    UPDATE book_info
+    SET
+    ${updateBookInfoString}
+    WHERE id = ${bookInfoId}
+    `, queryBookInfoParam);
+
+  await executeQuery(`
+    UPDATE book
+    SET
+    ${updateBookString}
+    WHERE id = ${bookId} ;
+    `, queryBookParam);
 };

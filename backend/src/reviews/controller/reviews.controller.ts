@@ -1,13 +1,11 @@
 import {
-  Request, Response,
+  NextFunction, Request, Response,
 } from 'express';
 import * as status from 'http-status';
+import * as reviewsService from '../service/reviews.service';
 import * as errorCheck from './utils/errorCheck';
 import * as parseCheck from './utils/parseCheck';
 import { contentParseCheck } from './utils/errorCheck';
-import ReviewsService from '../service/reviews.service';
-
-const reviewsService = new ReviewsService();
 
 export const createReviews = async (
   req: Request,

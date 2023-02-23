@@ -60,10 +60,9 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    const searchResult = await reservationsService.search(query, page, limit, filter);
     return res
       .status(status.OK)
-      .json(searchResult);
+      .json(await reservationsService.search(query, page, limit, filter));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {

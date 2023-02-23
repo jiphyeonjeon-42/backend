@@ -1,7 +1,5 @@
 import * as errorCode from '../../../utils/error/errorCode';
-import ReviewsRepository from '../../repository/reviews.repository';
-
-const reviewsRepository = new ReviewsRepository();
+import * as reviewsRepository from '../../repository/reviews.repository';
 
 export const updatePossibleCheck = async (
   reviewsId : number,
