@@ -2,7 +2,6 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 import BookInfo from './BookInfo';
 import Book from './Book';
 import Category from './Category';
-import Lending from './Lending';
 
 @ViewEntity('v_search_book', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -29,11 +28,9 @@ import Lending from './Lending';
           + '  ), TRUE, FALSE)',
       'isLendable',
     )
-    .addSelect('lending.returnedAt', 'dueDate')
     .from(Book, 'book')
     .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
-    .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
-    .leftJoin(Lending, 'lending', 'lending.bookId = book.id'),
+    .leftJoin(Category, 'category', 'book_info.categoryId = category.id'),
 })
 export class VSearchBook {
   @ViewColumn()
@@ -50,9 +47,6 @@ export class VSearchBook {
 
   @ViewColumn()
   donator: string;
-
-  @ViewColumn()
-  dueDate: Date;
 
   @ViewColumn()
   publisher: string;
