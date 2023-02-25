@@ -40,7 +40,7 @@ export const option = {
   password,
   database,
   entities: [
-    `${__dirname}/../**/entities/*.{js,ts}`,
+    `${__dirname}/**/entities/*.{js,ts}`,
   ],
   logging: true,
   // poolSize: 500,
