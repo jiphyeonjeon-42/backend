@@ -2,8 +2,10 @@ import { WebClient } from '@slack/web-api';
 import { ResultSetHeader } from 'mysql2';
 import { executeQuery } from '../mysql';
 import * as models from '../users/users.model';
-import { searchUserById } from '../users/users.service';
+import UsersService from '../users/users.service';
 import { logger } from '../utils/logger';
+
+const usersService = new UsersService();
 
 export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
   const result : ResultSetHeader = await executeQuery(`
@@ -53,7 +55,7 @@ export const updateSlackId = async (): Promise<void> => {
 };
 
 export const updateSlackIdByUserId = async (userId: number): Promise<void> => {
-  const { items: userInfo } = await searchUserById(userId);
+  const { items: userInfo } = await usersService.searchUserById(userId);
   if (userInfo[0] && userMap.has(userInfo[0].nickname)) {
     updateSlackIdUser(userInfo[0].id, userMap.get(userInfo[0].nickname));
   }

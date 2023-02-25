@@ -1,13 +1,12 @@
 import * as errorCode from '../utils/error/errorCode';
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import { Meta } from '../users/users.type';
 import { queriedReservationInfo, reservationInfo } from './reservations.type';
 import { publishMessage } from '../slack/slack.service';
+import ReservationsRepository from './reservations.repository';
+import jipDataSource from '../app-data-source';
+import BooksRepository from '../books/books.repository';
 
-export const create = async (userId: number, bookInfoId: number) => {
-  // bookInfoId가 유효한지 확인
-  const conn = await pool.getConnection();
-  const transactionExecuteQuery = makeExecuteQuery(conn);
+export const count = async (bookInfoId: number) => {
   const numberOfBookInfo = await executeQuery(`
     SELECT COUNT(*) as count
     FROM book
@@ -16,164 +15,90 @@ export const create = async (userId: number, bookInfoId: number) => {
   if (numberOfBookInfo[0].count === 0) {
     throw new Error(errorCode.INVALID_INFO_ID);
   }
-  conn.beginTransaction();
+  // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
+  const cantReservBookInfo = await executeQuery(`
+  SELECT COUNT(*) as count
+  FROM book
+  LEFT JOIN lending ON lending.bookId = book.id
+  LEFT JOIN reservation ON reservation.bookId = lending.bookId
+  WHERE
+    book.infoId = ? AND book.status = 0 AND
+    (lending.returnedAt IS NULL OR reservation.status = 0);
+`, [bookInfoId]);
+  if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
+    throw new Error(errorCode.NOT_LENDED);
+  }
+  const numberOfReservations = await executeQuery(`
+    SELECT COUNT(*) as count
+    FROM reservation
+    WHERE bookInfoId = ? AND status = 0;
+  `, [bookInfoId]);
+  return numberOfReservations[0];
+};
+
+export const create = async (userId: number, bookInfoId: number) => {
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  await transactionQueryRunner.connect();
+  const reservationRepo = new ReservationsRepository(transactionQueryRunner);
+  const booksRepository = new BooksRepository();
+  // bookInfoId가 유효한지 확인
+  const numberOfBookInfo = await booksRepository.countBookInfos(bookInfoId);
+  if (numberOfBookInfo === 0) {
+    throw new Error(errorCode.INVALID_INFO_ID);
+  }
   try {
-    // 연체 전적이 있는지 확인
-    const userPenalty = await transactionExecuteQuery(`
-      SELECT DATE_FORMAT(penaltyEndDate, "%Y-%m-%d") as penaltyEndDate
-      FROM user
-      WHERE id = ?;
-    `, [userId]);
-    if (userPenalty.penaltyEndDate > new Date()) {
+    await transactionQueryRunner.startTransaction();
+    if (await reservationRepo.isPenaltyUser(userId)) {
       throw new Error(errorCode.AT_PENALTY);
     }
-    // 현재 대출 중인 책이 연체 중인지 확인
-    const overdueBooks = await transactionExecuteQuery(`
-      SELECT
-        DATE_ADD(createdAt, INTERVAL 14 DAY) as duedate
-      FROM lending
-      WHERE userId = ? AND returnedAt IS NULL
-      ORDER BY createdAt ASC
-    `, [userId]);
-    if (overdueBooks?.[0]?.duedate < new Date()) {
-      throw new Error(errorCode.AT_PENALTY);
+    if (await reservationRepo.isOverdueUser(userId)) {
+      throw new Error(errorCode.LENDING_OVERDUE);
+    }
+    if (await reservationRepo.isAllRenderUser(userId)) {
+      throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
     }
     // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
-    const cantReservBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book
-    LEFT JOIN lending ON lending.bookId = book.id
-    LEFT JOIN reservation ON reservation.bookId = lending.bookId
-    WHERE
-      book.infoId = ? AND book.status = 0 AND
-      (lending.returnedAt IS NULL OR reservation.status = 0);
-  `, [bookInfoId]);
-    if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
+    // 대출 가능하면 예약 불가
+    const cantReservBookInfo = await reservationRepo.getlenderableBookNum(bookInfoId);
+    if (numberOfBookInfo > cantReservBookInfo) {
       throw new Error(errorCode.NOT_LENDED);
     }
     // 이미 대출한 bookInfoId가 아닌지 확인
-    const lendedBook = await transactionExecuteQuery(`
-      SELECT book.id
-      FROM lending
-      LEFT JOIN book ON book.id = lending.bookId
-      WHERE
-        lending.userId = ? AND
-        lending.returnedAt IS NULL AND
-        book.infoId = ?
-    `, [userId, bookInfoId]);
-    if (lendedBook.length) {
+    // 본인이 대출한 책에 예약 걸지 못하도록
+    const lendedBook = await reservationRepo.alreadyLendedBooks(userId, bookInfoId);
+    if (await lendedBook.getExists()) {
       throw new Error(errorCode.ALREADY_LENDED);
     }
-    // 이미 예약한 bookInfoId가 아닌지 확인
-    const reservedBook = await transactionExecuteQuery(`
-      SELECT id
-      FROM reservation
-      WHERE bookInfoId = ? AND userId = ? AND status = 0;
-    `, [bookInfoId, userId]);
-    if (reservedBook.length) {
+    // user가 이미 예약한 bookInfoId가 아닌지 확인
+    // 중첩해서 예약 거는 것을 방지하기 위해
+    const reservedBooks = await reservationRepo.getReservedBooks(userId, bookInfoId);
+    if (await reservedBooks.getExists()) {
       throw new Error(errorCode.ALREADY_RESERVED);
     }
-    // 예약한 횟수가 2회 미만인지 확인
-    const reserved = await transactionExecuteQuery(`
-      SELECT id
-      FROM reservation
-      WHERE userId = ? AND status = 0;
-    `, [userId]);
-    if (reserved.length >= 2) {
-      throw new Error(errorCode.MORE_THAN_TWO_RESERVATIONS);
-    }
-    await transactionExecuteQuery(`
-      INSERT INTO reservation (userId, bookInfoId)
-      VALUES (?, ?)
-    `, [userId, bookInfoId]);
-    // eslint-disable-next-line no-use-before-define
-    const reservationPriorty : any = count(bookInfoId);
-    conn.commit();
-    return reservationPriorty;
+    await reservationRepo.createReservation(userId, bookInfoId);
+    const reservationPriority = await count(bookInfoId);
+    await transactionQueryRunner.commitTransaction();
+    return reservationPriority;
   } catch (e) {
-    conn.rollback();
+    await transactionQueryRunner.rollbackTransaction();
     throw e;
   } finally {
-    conn.release();
+    await transactionQueryRunner.release();
   }
 };
 
-export const
-  search = async (query:string, page: number, limit: number, filter: string) => {
-    let filterQuery;
-    switch (filter) {
-      case 'waiting':
-        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NULL';
-        break;
-      case 'expired':
-        filterQuery = 'WHERE reservation.status > 0';
-        break;
-      case 'all':
-        filterQuery = '';
-        break;
-      default:
-        filterQuery = 'WHERE reservation.status = 0 AND reservation.bookId IS NOT NULL';
-    }
-
-    const items = (await executeQuery(`
-      SELECT
-        reservation.id AS reservationsId,
-        user.nickname AS login,
-        CASE
-          WHEN NOW() > user.penaltyEndDate THEN 0
-          ELSE DATEDIFF(user.penaltyEndDate, now())
-        END AS penaltyDays,
-        book_info.title,
-        book_info.image,
-        (
-          SELECT callSign
-          FROM book
-          WHERE id = bookId
-        ) AS callSign,
-        reservation.createdAt AS createdAt,
-        reservation.endAt AS endAt,
-        reservation.status,
-        user.id AS userId,
-        reservation.bookId AS bookId
-      FROM reservation
-      LEFT JOIN user ON reservation.userId = user.id
-      LEFT JOIN book_info ON reservation.bookInfoId = book_info.id
-      ${filterQuery}
-      HAVING book_info.title LIKE ? OR login LIKE ? OR callSign LIKE ?
-      LIMIT ?
-      OFFSET ?
-  `, [`%${query}%`, `%${query}%`, `%${query}%`, limit, limit * page]));
-    const totalItems = (await executeQuery(`
-      SELECT
-        reservation.id AS reservationsId,
-        user.nickName AS login,
-        book.title,
-        (
-          SELECT callSign
-          FROM book
-          WHERE book.id = reservation.bookId
-        ) AS callSign
-      FROM reservation
-      LEFT JOIN user AS user ON reservation.userId = user.id
-      LEFT JOIN book_info AS book ON reservation.bookInfoId = book.id
-      ${filterQuery}
-      HAVING book.title LIKE ? OR login LIKE ? OR callSign LIKE ?
-    `, [`%${query}%`, `%${query}%`, `%${query}%`]));
-    const meta : Meta = {
-      totalItems: totalItems.length,
-      itemCount: items.length,
-      itemsPerPage: limit,
-      totalPages: Math.ceil(totalItems.length / limit),
-      currentPage: page + 1,
-    };
-    return { items, meta };
-  };
+export const search = async (query:string, page: number, limit: number, filter: string) => {
+  const reservationRepo = new ReservationsRepository();
+  const reservationList = await reservationRepo.searchReservations(query, filter, page, limit);
+  return reservationList;
+};
 
 export const cancel = async (reservationId: number): Promise<void> => {
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   conn.beginTransaction();
   try {
+    //  올바른 예약인지 확인.
     const reservations: {
       status: number,
       bookId: string,
@@ -194,12 +119,15 @@ export const cancel = async (reservationId: number): Promise<void> => {
     if (reservations[0].status !== 0) {
       throw new Error(errorCode.NOT_RESERVED);
     }
+    //  예약 취소 ( 2번 ) 으로 status 변경
     await transactionExecuteQuery(`
       UPDATE reservation
       SET status = 2
       WHERE id = ?;
     `, [reservationId]);
+    //  bookId 가 있는 사람이 취소했으면 ( 0순위 예약자 )
     if (reservations[0].bookId) {
+      //  예약자 (취소된 bookInfoId 로 예약한 사람) 중에 가장 빨리 예약한 사람 찾아서 반환
       const candidates: {id: number, slack: string}[] = await transactionExecuteQuery(`
         SELECT
           reservation.id AS id,
@@ -216,6 +144,7 @@ export const cancel = async (reservationId: number): Promise<void> => {
           reservation.status = 0
         ORDER BY reservation.createdAt ASC;
       `, [reservations[0].bookId]);
+      //  그 사람이 존재한다면 예약 update 하고 예약 알림 보내기
       if (candidates.length) {
         await transactionExecuteQuery(`
           UPDATE reservation
@@ -247,36 +176,6 @@ export const userCancel = async (userId: number, reservationId: number): Promise
     throw new Error(errorCode.NO_MATCHING_USER);
   }
   cancel(reservationId);
-};
-
-export const count = async (bookInfoId: number) => {
-  const numberOfBookInfo = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM book
-    WHERE infoId = ? AND status = 0;
-  `, [bookInfoId]);
-  if (numberOfBookInfo[0].count === 0) {
-    throw new Error(errorCode.INVALID_INFO_ID);
-  }
-  // bookInfoId가 모두 대출 중이거나 예약 중인지 확인
-  const cantReservBookInfo = await executeQuery(`
-  SELECT COUNT(*) as count
-  FROM book
-  LEFT JOIN lending ON lending.bookId = book.id
-  LEFT JOIN reservation ON reservation.bookId = lending.bookId
-  WHERE
-    book.infoId = ? AND book.status = 0 AND
-    (lending.returnedAt IS NULL OR reservation.status = 0);
-`, [bookInfoId]);
-  if (numberOfBookInfo[0].count > cantReservBookInfo[0].count) {
-    throw new Error(errorCode.NOT_LENDED);
-  }
-  const numberOfReservations = await executeQuery(`
-    SELECT COUNT(*) as count
-    FROM reservation
-    WHERE bookInfoId = ? AND status = 0;
-  `, [bookInfoId]);
-  return numberOfReservations[0];
 };
 
 export const reservationKeySubstitution = (obj: queriedReservationInfo): reservationInfo => {

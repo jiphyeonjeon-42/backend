@@ -1,4 +1,6 @@
+import { DataSource, DataSourceOptions } from 'typeorm';
 import dotenv from 'dotenv';
+import { logger } from './utils/logger';
 
 dotenv.config();
 
@@ -9,7 +11,7 @@ let database;
 
 switch (process.env.MODE) {
   case 'local':
-    hostName = 'local';
+    hostName = 'localhost';
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
     database = process.env.MYSQL_DATABASE;
@@ -24,31 +26,28 @@ switch (process.env.MODE) {
     hostName = 'database';
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
-    database = process.env.MYSQL_DATABASE; 
+    database = process.env.MYSQL_DATABASE;
     break;
   default:
-    hostName = 'database';
+    logger.error("no valid env mode");
 }
 
-const config = {
-  nodeEnv: process.env.NODE_ENV,
-  mode: process.env.MODE,
-  database: {
-    host: hostName,
-    port: 3306,
-    username,
-    password,
-    dbName: database,
-  },
-  client: {
-    id: process.env.CLIENT_ID,
-    secret: process.env.CLIENT_SECRET,
-    redirectURL: process.env.REDIRECT_URL ?? 'https://server.42library.kr',
-    clientURL: process.env.CLIENT_URL ?? 'https://42library.kr',
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET ?? 'secret',
-  },
-};
+export const option = {
+  type: 'mysql',
+  host: hostName,
+  port: 3306,
+  username,
+  password,
+  database,
+  entities: [
+    `${__dirname}/**/entities/*.{js,ts}`,
+  ],
+  logging: true,
+  // poolSize: 500,
+//  synchronize: true,
+  poolSize: 200,
+} as DataSourceOptions;
+console.log(__dirname);
+const jipDataSource = new DataSource(option);
 
-export default config;
+export default jipDataSource;
