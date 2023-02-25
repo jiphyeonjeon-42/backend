@@ -124,6 +124,7 @@ class LendingRepository extends Repository<Lending> {
 
   async searchBookForLending(bookId: number) {
     const book = await this.bookRepo.findOne({
+      relations: ['info'],
       where: {
         id: bookId,
       },

@@ -7,12 +7,13 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('l.lendingCondition', 'lendingCondition')
     .addSelect('u.nickname', 'login')
     .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, now()) END', 'penaltyDays')
+    .addSelect('b.id', 'bookId')
     .addSelect('b.callSign', 'callSign')
     .addSelect('bi.title', 'title')
     .addSelect('bi.image', 'image')
-    .addSelect('l.createdAt', 'createdAt')
-    .addSelect('l.returnedAt', 'returnedAt')
-    .addSelect('DATE_ADD(l.createdAt, INTERVAL 14 DAY)', 'dueDate')
+    .addSelect('date_format(l.createdAt, \'%Y-%m-%d\')', 'createdAt')
+    .addSelect('date_format(l.returnedAt, \'%Y-%m-%d\')', 'returnedAt')
+    .addSelect('date_format(DATE_ADD(l.createdAt, INTERVAL 14 DAY), \'%Y-%m-%d\')', 'dueDate')
     .from('lending', 'l')
     .innerJoin('user', 'u', 'l.userId = u.id')
     .leftJoin('book', 'b', 'l.bookId = b.id')
@@ -30,6 +31,9 @@ export class VLending {
 
   @ViewColumn()
   penaltyDays: number;
+
+  @ViewColumn()
+  bookId: number
 
   @ViewColumn()
   callSign: string;
