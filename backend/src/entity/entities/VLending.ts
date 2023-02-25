@@ -7,6 +7,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('l.lendingCondition', 'lendingCondition')
     .addSelect('u.nickname', 'login')
     .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, now()) END', 'penaltyDays')
+    .addSelect('b.id', 'bookId')
     .addSelect('b.callSign', 'callSign')
     .addSelect('bi.title', 'title')
     .addSelect('bi.image', 'image')
@@ -30,6 +31,9 @@ export class VLending {
 
   @ViewColumn()
   penaltyDays: number;
+
+  @ViewColumn()
+  bookId: number
 
   @ViewColumn()
   callSign: string;
