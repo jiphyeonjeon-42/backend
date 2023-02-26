@@ -43,7 +43,6 @@ export const option = {
     `${__dirname}/**/entities/*.{js,ts}`,
   ],
   logging: true,
-  autoRelease: true,
 //  synchronize: true,
   poolSize: 200,
 } as DataSourceOptions;
