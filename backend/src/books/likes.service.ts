@@ -43,8 +43,9 @@ export default class LikesService {
       await likesRepo.manager.queryRunner?.commitTransaction();
     } catch (e) {
       await likesRepo.manager.queryRunner?.rollbackTransaction();
-      await likesRepo.manager.queryRunner?.release();
       throw new Error(errorCode.CREATE_FAIL_LIKES);
+    } finally {
+      await likesRepo.manager.queryRunner?.release();
     }
 
     return { userId, bookInfoId };
