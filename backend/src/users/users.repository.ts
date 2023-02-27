@@ -60,6 +60,11 @@ export default class UsersRepository extends Repository<User> {
       skip: page * limit,
     });
     const customUsers = users as unknown as models.User[];
+    customUsers.forEach(user => {
+      const penaltyEndDate: Date = user.penaltyEndDate as Date;
+      const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);
+      user.penaltyEndDate = formattedPenaltyEndDate as unknown as Date;
+     })
     return [customUsers, count];
   }
 
