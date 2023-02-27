@@ -11,7 +11,7 @@ export default class UsersService {
     this.usersRepository = new UsersRepository();
   }
 
-  async setOverDueDay(items: models.User[]) {
+  async setOverDueDay(items: models.User[]): Promise<models.User[]> {
     const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
     const lending = await this.usersRepository
       .getLending(usersIdList) as unknown as models.Lending[];
@@ -22,7 +22,7 @@ export default class UsersService {
         rtnObj.overDueDay = 0;
         if (rtnObj.lendings.length) {
           rtnObj.lendings.forEach((lend: models.Lending) => {
-            rtnObj.overDueDay += lend.overDueDay;
+            rtnObj.overDueDay += (+lend.overDueDay);
           });
         }
         return rtnObj;
