@@ -12,7 +12,7 @@ export const getHistories = async (
   page: number,
   limit: number,
 ) => {
-  const filterQuery: any = {};
+  let filterQuery: any = {};
   if (who === 'my') {
     const usersRepo = new UsersRepository();
     const user = (await usersRepo.searchUserBy({ id: userId }, 0, 0))[0];
@@ -23,8 +23,10 @@ export const getHistories = async (
   } else if (type === 'title') {
     filterQuery.title = Like(`%${query}%`);
   } else {
-    filterQuery.login = Like(`%${query}%`);
-    filterQuery.title = Like(`%${query}%`);
+    filterQuery = [
+      { login: Like(`%${query}%`) },
+      { title: Like(`%${query}%`) },
+    ];
   }
   const historiesRepo = new HistoriesRepository();
   const [items, count] = await historiesRepo.getHistoriesItems(filterQuery, limit, page);
