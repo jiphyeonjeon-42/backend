@@ -21,7 +21,7 @@ export default class UsersRepository extends Repository<User> {
   constructor(
     queryRunner?: QueryRunner,
   ) {
-    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const qr = queryRunner;
     const manager = jipDataSource.createEntityManager(qr);
     super(User, manager);
     this.userLendingRepo = new Repository<VUserLending>(
