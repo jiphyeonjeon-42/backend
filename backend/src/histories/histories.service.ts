@@ -1,6 +1,7 @@
 import { Like } from 'typeorm';
 import { Meta } from '../users/users.type';
 import HistoriesRepository from './histories.repository';
+import UsersRepository from '../users/users.repository';
 
 // eslint-disable-next-line import/prefer-default-export
 export const getHistories = async (
@@ -11,17 +12,21 @@ export const getHistories = async (
   page: number,
   limit: number,
 ) => {
-  const filterQuery: any = {};
+  let filterQuery: any = {};
   if (who === 'my') {
-    filterQuery.id = userId;
+    const usersRepo = new UsersRepository();
+    const user = (await usersRepo.searchUserBy({ id: userId }, 0, 0))[0];
+    filterQuery.login = user[0].nickname;
   }
   if (type === 'user') {
     filterQuery.login = Like(`%${query}%`);
   } else if (type === 'title') {
     filterQuery.title = Like(`%${query}%`);
   } else {
-    filterQuery.login = Like(`%${query}%`);
-    filterQuery.title = Like(`%${query}%`);
+    filterQuery = [
+      { login: Like(`%${query}%`) },
+      { title: Like(`%${query}%`) },
+    ];
   }
   const historiesRepo = new HistoriesRepository();
   const [items, count] = await historiesRepo.getHistoriesItems(filterQuery, limit, page);
