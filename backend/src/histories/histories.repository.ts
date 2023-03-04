@@ -1,10 +1,11 @@
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import VHistories from '../entity/entities/VHistories';
 import jipDataSource from '../app-data-source';
 
 class HistoriesRepository extends Repository<VHistories> {
-  constructor() {
-    const entityManager = jipDataSource.createEntityManager();
+  constructor(transactionQueryRunner?: QueryRunner) {
+    const queryRunner: QueryRunner | undefined = transactionQueryRunner;
+    const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(VHistories, entityManager);
   }
 
