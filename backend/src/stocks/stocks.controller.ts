@@ -33,6 +33,8 @@ export const stockUpdate: RequestHandler = async (
     const stock = await stocksService.updateBook(bookId);
     res.status(200).send(stock);
   } catch (error: any) {
-    next(new ErrorResponse(errorCode.NO_BOOK_ID, status.BAD_REQUEST));
+    if (error.message === '701') {
+      next(new ErrorResponse(errorCode.NO_BOOK_ID, status.BAD_REQUEST));
+    }
   }
 };
