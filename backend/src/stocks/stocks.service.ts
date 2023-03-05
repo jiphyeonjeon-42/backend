@@ -31,6 +31,7 @@ export const updateBook = async (
     return stock;
   } catch (error: any) {
     await transaction.rollbackTransaction();
+    throw (error);
   } finally {
     await transaction.release();
   }

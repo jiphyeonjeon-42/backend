@@ -35,6 +35,8 @@ export const stockUpdate: RequestHandler = async (
   } catch (error: any) {
     if (error.message === '701') {
       next(new ErrorResponse(errorCode.NO_BOOK_ID, status.BAD_REQUEST));
+    } else {
+      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
   }
 };
