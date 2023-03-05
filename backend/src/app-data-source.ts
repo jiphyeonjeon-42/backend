@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import dotenv from 'dotenv';
+import { logger } from './utils/logger';
 
 dotenv.config();
 
@@ -21,8 +22,14 @@ switch (process.env.MODE) {
     password = process.env.RDS_PASSWORD;
     database = process.env.RDS_DB_NAME;
     break;
-  default:
+  case 'prod':
     hostName = 'database';
+    username = process.env.MYSQL_USER;
+    password = process.env.MYSQL_PASSWORD;
+    database = process.env.MYSQL_DATABASE;
+    break;
+  default:
+    logger.error("no valid env mode");
 }
 
 export const option = {
@@ -33,10 +40,9 @@ export const option = {
   password,
   database,
   entities: [
-    `${__dirname}/../**/entities/*.{js,ts}`,
+    `${__dirname}/**/entities/*.{js,ts}`,
   ],
   logging: true,
-  // poolSize: 500,
 //  synchronize: true,
   poolSize: 200,
 } as DataSourceOptions;

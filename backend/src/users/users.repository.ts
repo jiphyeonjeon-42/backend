@@ -21,7 +21,7 @@ export default class UsersRepository extends Repository<User> {
   constructor(
     queryRunner?: QueryRunner,
   ) {
-    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
+    const qr = queryRunner;
     const manager = jipDataSource.createEntityManager(qr);
     super(User, manager);
     this.userLendingRepo = new Repository<VUserLending>(
@@ -60,6 +60,11 @@ export default class UsersRepository extends Repository<User> {
       skip: page * limit,
     });
     const customUsers = users as unknown as models.User[];
+    customUsers.forEach((user) => {
+      const penaltyEndDate: Date = user.penaltyEndDate as Date;
+      const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);
+      user.penaltyEndDate = formattedPenaltyEndDate as unknown as Date;
+    });
     return [customUsers, count];
   }
 

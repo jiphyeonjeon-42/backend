@@ -12,8 +12,6 @@ import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
 
-const usersService = new UsersService();
-
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = config.client.id;
   const redirectURL = `${config.client.redirectURL}/api/auth/token`;
@@ -25,6 +23,7 @@ export const getOAuth = (req: Request, res: Response) => {
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const usersService = new UsersService();
     const { id, nickName } = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
     if (user.length === 0) {
@@ -65,6 +64,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
 
 export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const usersService = new UsersService();
     const { id } = req.user as any;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
@@ -93,6 +93,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
 // eslint-disable-next-line consistent-return
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const usersService = new UsersService();
     const { id, password } = req.body;
     if (!id || !password) {
       throw new ErrorResponse(errorCode.NO_INPUT, 400);
@@ -141,6 +142,7 @@ export const intraAuthentication = async (
   next: NextFunction,
 ) : Promise<void> => {
   try {
+    const usersService = new UsersService();
     const { intraProfile, id } = req.user as any;
     const { intraId, nickName } = intraProfile;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
