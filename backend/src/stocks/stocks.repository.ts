@@ -5,29 +5,28 @@ import {
 import { startOfDay } from 'date-fns';
 import jipDataSource from '../app-data-source';
 import book from '../entity/entities/Book';
-import VSearchBook from '../entity/entities/VSearchBook';
+import VStock from '../entity/entities/VStock';
 
 class StocksRepository extends Repository<book> {
-  private readonly vSearchBook: Repository<VSearchBook>;
+  private readonly vStock: Repository<VStock>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(book, entityManager);
 
-    this.vSearchBook = new Repository<VSearchBook>(
-      VSearchBook,
+    this.vStock = new Repository<VStock>(
+      VStock,
       entityManager,
     );
   }
 
   async getAllStocksAndCount(limit:number, page:number)
-  : Promise<[VSearchBook[], number]> {
+  : Promise<[VStock[], number]> {
     const today = startOfDay(new Date());
-    const [items, totalItems] = await this.vSearchBook
+    const [items, totalItems] = await this.vStock
       .findAndCount({
         where: {
-          isLendable: true,
           updatedAt: LessThan(today),
         },
         take: limit,
@@ -37,7 +36,7 @@ class StocksRepository extends Repository<book> {
   }
 
   async getStockById(bookId: number) {
-    const stock = await this.vSearchBook
+    const stock = await this.vStock
       .findOneBy({ bookId });
     if (stock === null) { throw new Error('701'); }
     return stock;
