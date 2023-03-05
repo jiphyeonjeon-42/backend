@@ -21,8 +21,6 @@ import Reservation from './Reservation';
     .addSelect("date_format(book.updatedAt, '%Y-%m-%d-%T')", 'updatedAt')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
-    .addSelect('l.id', 'lendId')
-    .addSelect('l.returnedAt', 'returndAt')
     .from(Book, 'book')
     .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
     .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
@@ -38,12 +36,6 @@ export class VStock {
 
   @ViewColumn()
   bookInfoId: number;
-
-  @ViewColumn()
-  lendId: number;
-
-  @ViewColumn()
-  returnedAt: Date;
 
   @ViewColumn()
   title: string;
