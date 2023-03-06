@@ -98,8 +98,8 @@ export default class ReviewsRepository extends Repository<Reviews> {
       .where('reviews.isDeleted = false')
       .andWhere(reviewFilter);
     if (disabledQuery !== '') queryBuilder.andWhere(disabledQuery);
-    const ret = queryBuilder.getRawOne();
-    return ret;
+    const ret = await queryBuilder.getRawOne();
+    return ret.counts;
   }
 
   async getReviewsUserId(reviewsId : number): Promise<number> {
