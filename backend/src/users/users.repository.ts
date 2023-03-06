@@ -68,6 +68,9 @@ export default class UsersRepository extends Repository<User> {
     return [customUsers, count];
   }
 
+  /**
+   * @warning : use only password needed
+   */
   async searchUserWithPasswordBy(conditions: {}, limit: number, page: number)
   : Promise<[models.User[], number]> {
     const [users, count] = await this.findAndCount({
