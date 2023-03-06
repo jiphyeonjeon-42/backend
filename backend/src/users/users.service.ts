@@ -68,6 +68,11 @@ export default class UsersService {
     return { items };
   }
 
+  async searchUserWithPasswordByEmail(email: string) {
+    const items = (await this.usersRepository.searchUserWithPasswordBy({ email: Like(`%${email}%`) }, 0, 0))[0];
+    return { items };
+  }
+
   async searchUserByIntraId(intraId: number) {
     const items = (await this.usersRepository.searchUserBy({ intraId }, 0, 0))[0];
     return items;

@@ -99,7 +99,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       throw new ErrorResponse(errorCode.NO_INPUT, 400);
     }
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
-    const user: { items: models.User[] } = await usersService.searchUserByEmail(id);
+    const user: { items: models.User[] } = await usersService.searchUserWithPasswordByEmail(id);
     if (user.items.length === 0) {
       return next(new ErrorResponse(errorCode.NO_ID, 401));
     }
