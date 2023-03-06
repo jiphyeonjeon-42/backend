@@ -128,13 +128,15 @@ export default class UsersService {
     if (slackCount > 0) {
       throw new Error(errorCode.SLACK_OVERLAP);
     }
-    const updateParam = {
+    const updateParam: any = {
       nickname,
       intraId,
       slack,
       role,
-      penaltyEndDate,
     };
+    if (penaltyEndDate) {
+      updateParam.penaltyEndDate = penaltyEndDate;
+    }
     const updatedUser = this.usersRepository.updateUser(id, updateParam);
     return (updatedUser);
   }
