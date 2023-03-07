@@ -345,7 +345,9 @@ export const updateBookInfo = async (
     status: req.body.status,
   };
 
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (book.id <= 0 || Number.isNaN(book.id) || bookInfo.id <= 0 || Number.isNaN(bookInfo.id)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
           || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status !== undefined)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
