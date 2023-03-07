@@ -31,6 +31,11 @@ export const router = Router();
  *          description: 한 페이지에 들어올 검색결과 수
  *          schema:
  *            type: integer
+  *        - in: query
+ *          name: id
+ *          description: 검색할 유저의 id
+ *          schema:
+ *            type: integer
  *      responses:
  *        '200':
  *          description: 검색 결과를 반환한다.
