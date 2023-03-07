@@ -1,5 +1,3 @@
-export const isNullish = (value: any) => {
-    if (value === null || value === undefined)
-        return (true);
-    return (false);
-  }
+export default function isNullish(value: unknown) {
+  return (value === null || value === undefined);
+}

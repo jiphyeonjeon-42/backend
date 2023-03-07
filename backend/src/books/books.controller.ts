@@ -4,7 +4,7 @@ import {
 import * as status from 'http-status';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
-import { isNullish } from '../utils/isNullish';
+import isNullish from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
