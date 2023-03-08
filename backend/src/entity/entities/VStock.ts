@@ -2,8 +2,10 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 import BookInfo from './BookInfo';
 import Book from './Book';
 import Category from './Category';
+import Lending from './Lending';
+import Reservation from './Reservation';
 
-@ViewEntity('v_search_book', {
+@ViewEntity('v_stock', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
     .select('book.infoId', 'bookInfoId')
     .addSelect('book_info.title', 'title')
@@ -16,23 +18,19 @@ import Category from './Category';
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
     .addSelect('book.donator', 'donator')
+    .addSelect("date_format(book.updatedAt, '%Y-%m-%d-%T')", 'updatedAt')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
-    .addSelect(
-      '       IF((\n'
-          + '  IF((select COUNT(*) from lending as l where l.bookId = book.id and l.returnedAt is NULL) = 0, TRUE, FALSE)\n'
-          + '  AND\n'
-          + '  IF((select COUNT(*) from book as b where (b.id = book.id and b.status = 0)) = 1, TRUE, FALSE)\n'
-          + '  AND\n'
-          + '  IF((select COUNT(*) from reservation as r where (r.bookId = book.id and status = 0)) = 0, TRUE, FALSE)\n'
-          + '  ), TRUE, FALSE)',
-      'isLendable',
-    )
     .from(Book, 'book')
     .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
-    .leftJoin(Category, 'category', 'book_info.categoryId = category.id'),
+    .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
+    .leftJoin(Lending, 'l', 'book.id = l.bookId')
+    .leftJoin(Reservation, 'r', 'r.bookId = book.id AND r.status = 0')
+    .groupBy('book.id')
+    .having('COUNT(l.id) = COUNT(l.returnedAt) AND COUNT(r.id) = 0')
+    .where('book.status = 0'),
 })
-export class VSearchBook {
+export class VStock {
   @ViewColumn()
   bookId: number;
 
@@ -73,8 +71,7 @@ export class VSearchBook {
   category: string;
 
   @ViewColumn()
-  isLendable: boolean;
-
+  updatedAt: Date;
 }
 
-export default VSearchBook;
+export default VStock;

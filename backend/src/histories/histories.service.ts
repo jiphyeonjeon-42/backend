@@ -17,8 +17,7 @@ export const getHistories = async (
     const usersRepo = new UsersRepository();
     const user = (await usersRepo.searchUserBy({ id: userId }, 0, 0))[0];
     filterQuery.login = user[0].nickname;
-  }
-  if (type === 'user') {
+  } else if (type === 'user') {
     filterQuery.login = Like(`%${query}%`);
   } else if (type === 'title') {
     filterQuery.title = Like(`%${query}%`);

@@ -8,13 +8,13 @@ import User from '../../entity/entities/User';
 export default class ReviewsRepository extends Repository<Reviews> {
   private readonly bookInfoRepo: Repository<BookInfo>;
 
-  constructor(queryRunner?: QueryRunner) {
-    const qr = queryRunner === undefined ? jipDataSource.createQueryRunner() : queryRunner;
-    const manager = jipDataSource.createEntityManager(qr);
-    super(Reviews, manager);
+  constructor(transactionQueryRunner?: QueryRunner) {
+    const queryRunner: QueryRunner | undefined = transactionQueryRunner;
+    const entityManager = jipDataSource.createEntityManager(queryRunner);
+    super(Reviews, entityManager);
     this.bookInfoRepo = new Repository<BookInfo>(
       BookInfo,
-      manager,
+      entityManager,
     );
   }
 
@@ -98,8 +98,8 @@ export default class ReviewsRepository extends Repository<Reviews> {
       .where('reviews.isDeleted = false')
       .andWhere(reviewFilter);
     if (disabledQuery !== '') queryBuilder.andWhere(disabledQuery);
-    const ret = queryBuilder.getRawOne();
-    return ret;
+    const ret = await queryBuilder.getRawOne();
+    return ret.counts;
   }
 
   async getReviewsUserId(reviewsId : number): Promise<number> {

@@ -68,6 +68,11 @@ export default class UsersService {
     return { items };
   }
 
+  async searchUserWithPasswordByEmail(email: string) {
+    const items = (await this.usersRepository.searchUserWithPasswordBy({ email: Like(`%${email}%`) }, 0, 0))[0];
+    return { items };
+  }
+
   async searchUserByIntraId(intraId: number) {
     const items = (await this.usersRepository.searchUserBy({ intraId }, 0, 0))[0];
     return items;
@@ -128,13 +133,15 @@ export default class UsersService {
     if (slackCount > 0) {
       throw new Error(errorCode.SLACK_OVERLAP);
     }
-    const updateParam = {
+    const updateParam: any = {
       nickname,
       intraId,
       slack,
       role,
-      penaltyEndDate,
     };
+    if (penaltyEndDate) {
+      updateParam.penaltyEndDate = penaltyEndDate;
+    }
     const updatedUser = this.usersRepository.updateUser(id, updateParam);
     return (updatedUser);
   }
