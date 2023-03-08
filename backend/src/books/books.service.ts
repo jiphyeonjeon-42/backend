@@ -100,7 +100,10 @@ export const createBook = async (book: CreateBookInfo) => {
     }
 
     if (isbnInBookInfo === 0) {
-      await booksRepository.createBookInfo(book);
+      const BookInfo = await booksRepository.createBookInfo(book);
+      if (typeof BookInfo.id === 'number') {
+        book.infoId = BookInfo.id;
+      }
       const categoryId = book.categoryId === undefined ? '' : book.categoryId;
       recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(categoryId);
     } else {
