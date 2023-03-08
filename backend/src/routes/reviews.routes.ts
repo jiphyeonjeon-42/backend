@@ -97,7 +97,8 @@ router
      *                    value :
      *                      errorCode: 109
      */
-    .post('/', authValidate(roleSet.all), wrapAsyncController(createReviews));
+  .get('/latestFive', takeFiveReviews);
+  // GET POST DELTE
 
 router
     /**
