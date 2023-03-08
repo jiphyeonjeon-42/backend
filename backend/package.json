@@ -14,13 +14,17 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/http-errors": "^1.8.2",
     "@types/jest": "^27.4.1",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.15",
+    "@types/node-schedule": "^2.1.0",
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
     "@types/swagger-jsdoc": "^6.0.1",
@@ -40,9 +44,6 @@
   },
   "dependencies": {
     "@slack/web-api": "^6.7.1",
-    "@types/bcrypt": "^5.0.0",
-    "@types/cors": "^2.8.12",
-    "@types/node-schedule": "^2.1.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.6",
