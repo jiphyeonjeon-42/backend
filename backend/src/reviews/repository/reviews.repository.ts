@@ -18,6 +18,24 @@ export default class ReviewsRepository extends Repository<Reviews> {
     );
   }
 
+  async getFiveReviews() {
+    return this.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 5,
+    });
+  };
+
+  async takeFiveReview(x : number) {
+    return this.find({
+      order: {
+        createdAt: 'ASC',
+      },
+      take: x,
+    });
+  };
+
   async validateBookInfo(bookInfoId: number) : Promise<void> {
     const bookInfoCount = await this.bookInfoRepo.count({
       where: { id: bookInfoId },

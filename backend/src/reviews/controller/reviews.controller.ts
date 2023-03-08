@@ -9,6 +9,23 @@ import ReviewsService from '../service/reviews.service';
 
 const reviewsService = new ReviewsService();
 
+export const getFiveReviews = async (
+  req: Request,
+  res: Response,
+) => {
+  return res
+    .status(status.OK)
+    .json(await reviewsService.getFiveReviews());
+};
+// /api/reviews/latestFive?number=5
+export const takeFiveReviews = async (
+  req: Request,
+  res: Response,
+) => {
+  const n = parseInt(String(req?.query?.number), 10);
+  return res.status(status.OK).json(await reviewsService.takeFiveReviews(n));
+}
+
 export const createReviews = async (
   req: Request,
   res: Response,

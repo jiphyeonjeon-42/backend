@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  createReviews, updateReviews, getReviews, deleteReviews, patchReviews,
+  createReviews, updateReviews, getReviews, deleteReviews, patchReviews, getFiveReviews, takeFiveReviews
 } from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -12,28 +12,58 @@ export const router = Router();
 router
   /**
      * @openapi
-     * /api/reviews:
-     *    post:
-     *      description: 책 리뷰를 작성한다. content 길이는 10글자 이상 420글자 이하로 입력하여야 한다.
+     * /api/reviews/gshimAPI:
+     *    get:
+     *      description: 최신리뷰 5개를 반환한다.
      *      tags:
      *      - reviews
      *      requestBody:
-     *        required: true
-     *        content:
-     *          application/json:
-     *            schema:
-     *              type: object
-     *              properties:
-     *                bookInfoId:
-     *                  type: number
-     *                  nullable: false
-     *                  required: true
-     *                  example: 42
-     *                content:
-     *                  type: string
-     *                  nullable: false
-     *                  required: true
-     *                  example: "책이 좋네요 열글자."
+     *        required: false
+     *      responses:
+     *         '201':
+     *            description: 리뷰가 DB에 정상적으로 insert됨.
+     *         '400':
+     *            description: 잘못된 요청.
+     *            content:
+     *              application/json:
+     *                schema:
+     *                  type: object
+     *                examples:
+     *                  유효하지 않은 content 길이 :
+     *                    value:
+     *                      errorCode: 801
+     *         '401':
+     *            description: 권한 없음.
+     *            content:
+     *              application/json:
+     *                schema:
+     *                  type: object
+     *                examples:
+     *                  토큰 누락 :
+     *                    value:
+     *                      errorCode: 100
+     *                  토큰 유저 존재하지 않음 :
+     *                    value :
+     *                      errorCode: 101
+     *                  토큰 만료 :
+     *                    value :
+     *                      errorCode: 108
+     *                  토큰 유효하지 않음 :
+     *                    value :
+     *                      errorCode: 109
+     */
+  .get('/gshimAPI', getFiveReviews);
+
+  router
+  /**
+     * @openapi
+     * /api/reviews/latestFive:
+     *    get:
+     *      description: 최신리뷰 5개를 반환한다.
+     *      tags:
+     *      - reviews
+     *      requestBody:
+     *        required: false
      *      responses:
      *         '201':
      *            description: 리뷰가 DB에 정상적으로 insert됨.

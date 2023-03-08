@@ -8,6 +8,18 @@ export default class ReviewsService {
     this.reviewsRepository = new ReviewsRepository();
   }
 
+  async getFiveReviews() {
+    const ret = await this.reviewsRepository.getFiveReviews();
+    console.log(ret);
+    return ret;
+  }
+
+  async takeFiveReviews(n : number) {
+    const ret = await this.reviewsRepository.takeFiveReview(n);
+    console.log(ret);
+    return ret;
+  }
+
   async createReviews(userId: number, bookInfoId: number, content: string) {
     await this.reviewsRepository.validateBookInfo(bookInfoId);
     await this.reviewsRepository.createReviews(userId, bookInfoId, content);
