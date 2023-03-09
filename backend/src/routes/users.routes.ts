@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { roleSet } from '../auth/auth.type';
 import authValidate from '../auth/auth.validate';
 import {
-  create, myupdate, search, update,
+  create, getVersion, myupdate, search, update,
 } from '../users/users.controller';
 
 export const path = '/users';
@@ -338,8 +338,28 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 1
  */
-
+/**
+ * @openapi
+ * /api/users/EasterEgg:
+ *    get:
+ *      description: 집현전 개발 버전을 확인합니다.
+ *      tags:
+ *        - users
+ *      responses:
+ *        '200':
+ *          description: 수정된 유저 정보를 반환합니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  version:
+ *                    description: 에러코드
+ *                    type: string
+ *                    example: gshim.v1
+ */
 router.get('/search', search)
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
-  .patch('/myupdate', authValidate(roleSet.all), myupdate);
+  .patch('/myupdate', authValidate(roleSet.all), myupdate)
+  .get('/EasterEgg', getVersion);
