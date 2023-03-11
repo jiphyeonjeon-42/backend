@@ -134,7 +134,7 @@ export default class UsersRepository extends Repository<User> {
   async insertUser(email: string, password: string) {
     const penaltyEndDate = new Date(0);
     penaltyEndDate.setDate(penaltyEndDate.getDate() - 1);
-    this.insert({
+    await this.insert({
       email,
       password,
       penaltyEndDate: formatDate(penaltyEndDate),
