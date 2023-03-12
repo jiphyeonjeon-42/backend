@@ -1,4 +1,4 @@
-import { QueryRunner, Repository } from 'typeorm';
+import { Like, QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '../../app-data-source';
 import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
@@ -42,19 +42,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     sort: 'ASC' | 'DESC' | undefined,
     limit: number,
   ) {
-    let reviewFilter = '';
-    if (isMyReview) {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `book_info.title LIKE '%${titleOrNickname}%' `;
-      reviewFilter = reviewFilter.concat(`reviews.userId = ${reviewerId}`);
-    } else {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `(book_info.title LIKE '%${titleOrNickname}%'
-                                                      OR user.nickname LIKE '%${titleOrNickname}%')`;
-    }
-    const disabledQuery = disabled === -1 ? 'TRUE' : `reviews.disabled = ${disabled}`;
-    const limitQuery = (Number.isNaN(limit)) ? 10 : limit;
-    const offset = (Number.isNaN(limit)) ? page * 10 : page * limit;
-
-    const reviews = await this.createQueryBuilder('reviews')
+    const reviews = this.createQueryBuilder('reviews')
       .select('reviews.id', 'reviewsId')
       .addSelect('reviews.userId', 'reviewerId')
       .addSelect('reviews.bookInfoId', 'bookInfoId')
@@ -67,13 +55,24 @@ export default class ReviewsRepository extends Repository<Reviews> {
       .leftJoin(User, 'user', 'user.id = reviews.userId')
       .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
       .where('reviews.isDeleted = false')
-      .andWhere(reviewFilter)
-      .andWhere(disabledQuery)
-      .orderBy('reviews.id', sort)
-      .offset(offset)
-      .limit(limitQuery)
+      .orderBy('reviews.id', sort);
+    if (isMyReview && titleOrNickname !== '') {
+      reviews.andWhere({ userId: reviewerId })
+        .andWhere({ title: Like(`%${titleOrNickname}%`) });
+    } else if (!isMyReview && titleOrNickname !== '') {
+      reviews.andWhere({ title: Like(`%${titleOrNickname}%`) })
+        .andWhere((qb) => {
+          qb.where({ title: Like(`%${titleOrNickname}%`) });
+          qb.orWhere({ nickname: `%${titleOrNickname}%` });
+        });
+    }
+    if (disabled !== -1) {
+      reviews.andWhere({ disabled });
+    }
+    const ret = await reviews.offset(page * limit)
+      .limit(limit)
       .getRawMany();
-    return (reviews);
+    return ret;
   }
 
   async getReviewsCounts(
@@ -82,23 +81,25 @@ export default class ReviewsRepository extends Repository<Reviews> {
     titleOrNickname: string,
     disabled: number,
   ) : Promise<number> {
-    let reviewFilter = '';
-    if (isMyReview) {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `book_info.title LIKE '%${titleOrNickname}%' `;
-      reviewFilter = reviewFilter.concat(`reviews.userId = ${reviewerId}`);
-    } else {
-      reviewFilter = titleOrNickname === '' ? 'TRUE' : `(book_info.title LIKE '%${titleOrNickname}%'
-                                                        OR user.nickname LIKE '%${titleOrNickname}%')`;
-    }
-    const disabledQuery = disabled === -1 ? '' : `reviews.disabled = ${disabled}`;
-    const queryBuilder = this.createQueryBuilder('reviews')
+    const reviews = this.createQueryBuilder('reviews')
       .select('COUNT(*)', 'counts')
       .leftJoin(User, 'user', 'user.id = reviews.userId')
       .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
-      .where('reviews.isDeleted = false')
-      .andWhere(reviewFilter);
-    if (disabledQuery !== '') queryBuilder.andWhere(disabledQuery);
-    const ret = await queryBuilder.getRawOne();
+      .where('reviews.isDeleted = false');
+    if (isMyReview && titleOrNickname !== '') {
+      reviews.andWhere({ userId: reviewerId })
+        .andWhere({ title: Like(`%${titleOrNickname}%`) });
+    } else if (!isMyReview && titleOrNickname !== '') {
+      reviews.andWhere({ title: Like(`%${titleOrNickname}%`) })
+        .andWhere((qb) => {
+          qb.where({ title: Like(`%${titleOrNickname}%`) });
+          qb.orWhere({ nickname: `%${titleOrNickname}%` });
+        });
+    }
+    if (disabled !== -1) {
+      reviews.andWhere({ disabled });
+    }
+    const ret = await reviews.getRawOne();
     return ret.counts;
   }
 
