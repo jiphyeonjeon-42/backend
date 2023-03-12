@@ -30,8 +30,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
       // 회원가입
       try {
         const email = `${nickName}@student.42seoul.kr`;
-        const password = Math.random().toString(36).slice(2); // 랜덤 비밀번호 설정
-        await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
+        await usersService.createUser(String(email), await bcrypt.hash(String(email), 10));
         const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
         await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
         await updateSlackIdByUserId(newUser.items[0].id);
