@@ -160,7 +160,7 @@ class BooksRepository extends Repository<Book> {
 
   async createBookInfo(
     target: CreateBookInfo,
-  ): Promise<void> {
+  ): Promise<BookInfo> {
     const bookInfo: BookInfo = {
       title: target.title,
       author: target.author,
@@ -170,7 +170,7 @@ class BooksRepository extends Repository<Book> {
       isbn: target.isbn,
       image: target.image,
     };
-    await this.bookInfo.save(bookInfo);
+    return this.bookInfo.save(bookInfo);
   }
 
   async createBook(

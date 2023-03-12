@@ -100,7 +100,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
       reviews.andWhere({ disabled });
     }
     const ret = await reviews.getRawOne();
-    return ret;
+    return ret.counts;
   }
 
   async getReviewsUserId(reviewsId : number): Promise<number> {

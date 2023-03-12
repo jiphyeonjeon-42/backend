@@ -68,6 +68,37 @@ export default class UsersRepository extends Repository<User> {
     return [customUsers, count];
   }
 
+  /**
+   * @warning : use only password needed
+   */
+  async searchUserWithPasswordBy(conditions: {}, limit: number, page: number)
+  : Promise<[models.User[], number]> {
+    const [users, count] = await this.findAndCount({
+      select: [
+        'id',
+        'email',
+        'nickname',
+        'intraId',
+        'slack',
+        'penaltyEndDate',
+        'role',
+        'password'
+      ],
+      where: conditions,
+      take: limit,
+      skip: page * limit,
+    });
+    const customUsers = users as unknown as models.User[];
+    customUsers.forEach((user) => {
+      const penaltyEndDate: Date = user.penaltyEndDate as Date;
+      const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);
+      user.penaltyEndDate = formattedPenaltyEndDate as unknown as Date;
+    });
+    return [customUsers, count];
+  }
+
+  
+
   async getLending(users: { userId: number; }[]) {
     if (users.length !== 0) return this.userLendingRepo.find({ where: users });
     return this.userLendingRepo.find();
@@ -103,7 +134,7 @@ export default class UsersRepository extends Repository<User> {
   async insertUser(email: string, password: string) {
     const penaltyEndDate = new Date(0);
     penaltyEndDate.setDate(penaltyEndDate.getDate() - 1);
-    this.insert({
+    await this.insert({
       email,
       password,
       penaltyEndDate: formatDate(penaltyEndDate),

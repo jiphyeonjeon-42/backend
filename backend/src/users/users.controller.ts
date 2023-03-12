@@ -179,3 +179,11 @@ export const myupdate = async (
   }
   return 0;
 };
+
+export const getVersion = async (
+  req: Request,
+  res: Response,
+) => {
+  res.status(200).send({ version: 'gshim.v1' });
+  return 0;
+};

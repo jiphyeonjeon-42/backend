@@ -4,7 +4,7 @@ import {
 import * as status from 'http-status';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
-import { isNullish } from '../utils/isNullish';
+import isNullish from '../utils/isNullish';
 import { logger } from '../utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
@@ -345,7 +345,9 @@ export const updateBookInfo = async (
     status: req.body.status,
   };
 
-  if (book.id <= 0 || book.id === NaN || bookInfo.id <= 0 || bookInfo.id === NaN) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (book.id <= 0 || Number.isNaN(book.id) || bookInfo.id <= 0 || Number.isNaN(bookInfo.id)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
   if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
           || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status !== undefined)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
 
