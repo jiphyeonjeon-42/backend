@@ -2,7 +2,7 @@ import {
   LessThan,
   QueryRunner, Repository,
 } from 'typeorm';
-import { startOfDay } from 'date-fns';
+import { startOfDay, addDays } from 'date-fns';
 import jipDataSource from '../app-data-source';
 import book from '../entity/entities/Book';
 import VStock from '../entity/entities/VStock';
@@ -27,7 +27,7 @@ class StocksRepository extends Repository<book> {
     const [items, totalItems] = await this.vStock
       .findAndCount({
         where: {
-          updatedAt: LessThan(today),
+          updatedAt: LessThan(addDays(today, -15)),
         },
         take: limit,
         skip: limit * page,
