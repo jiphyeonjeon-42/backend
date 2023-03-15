@@ -82,9 +82,8 @@ export default class ReviewsRepository extends Repository<Reviews> {
       .leftJoin(BookInfo, 'book_info', 'reviews.bookInfoId = book_info.id')
       .where('reviews.isDeleted = false');
     if (isMyReview === true) {
-      reviews.andWhere({ userId: reviewerId })
-        .andWhere({ title: Like(`%${titleOrNickname}%`) });
-    } else if (isMyReview === false && titleOrNickname !== '') {
+      reviews.andWhere({ userId: reviewerId });
+    } else if (!isMyReview && titleOrNickname !== '') {
       reviews.andWhere(`(title LIKE '%${titleOrNickname}%' OR nickname LIKE '%${titleOrNickname}%')`);
     }
     if (disabled !== -1) {
