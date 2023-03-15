@@ -1,4 +1,4 @@
-import { Like, QueryRunner, Repository, SelectQueryBuilder } from 'typeorm';
+import { Like, QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '../../app-data-source';
 import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
