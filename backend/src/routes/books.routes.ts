@@ -945,8 +945,6 @@ router
  *                        example: 3
  *        '400':
  *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
- *        '401':
- *          description: 대출을 조회할 권한이 없는 사용자
  *        '500':
  *          description: db 에러
  */
