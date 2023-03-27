@@ -17,8 +17,8 @@
 
 # 🗒 개발 문서
 
-[이슈 관리](docs/깃허브 이슈 전략.md)
-[프로젝트 관리](docs/commit 규칙 & 코딩 컨벤션.md)
+[이슈 관리](docs/issue_strategy.md)
+[프로젝트 관리](docs/convention.md)
 
 # 🗄️ERD (Updated at 2022.10.26)
 ![erd_backend](https://user-images.githubusercontent.com/50291995/198007446-0259fd24-1b8a-4d40-a2b8-cb8cce2bddc2.png)
