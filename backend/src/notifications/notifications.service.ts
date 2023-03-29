@@ -172,7 +172,9 @@ export const notifyUsers = async (userList : Lender[], notifyFn: (_: Lender) => 
   await Promise.all(userList.map(notifyFn));
 };
 
+// 반납기한 3일전, 1일전, 당일날 알림을 발송합니다.
 export const notifyOverdueManager = async () => {
+  await notifyUsers(await GetUserFromNDaysLeft(0), notifyUser);
   await notifyUsers(await GetUserFromNDaysLeft(1), notifyUser);
   await notifyUsers(await GetUserFromNDaysLeft(3), notifyUser);
 };
