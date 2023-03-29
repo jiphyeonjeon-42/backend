@@ -15,11 +15,6 @@
 # 💻 기술 스택
 ![typescript](https://img.shields.io/badge/TypeScript-^4.5.5-3178C6?logo=TypeScript) ![Express](https://img.shields.io/badge/Express-^4.17.2-000000?logo=Express) ![jest](https://img.shields.io/badge/Jest-^27.5.1-C21325?logo=Jest) ![.ENV](https://img.shields.io/badge/.ENV-^2.3.3-ECD53F?logo=.ENV) ![MySQL2](https://img.shields.io/badge/MySQL2-^2.3.3-4479A1?logo=MySQL) ![docker-compose](https://img.shields.io/badge/docker--compose-v2-2496ED?logo=Docker) ![swagger](https://img.shields.io/badge/swagger-3.x-85EA2D?logo=swagger)
 
-# 🗒 개발 문서
-
-- [이슈 관리](docs/issue_strategy.md)
-- [프로젝트 관리](docs/convention.md)
-
 # 🗄️ERD (Updated at 2022.10.26)
 ![erd_backend](https://user-images.githubusercontent.com/50291995/198007446-0259fd24-1b8a-4d40-a2b8-cb8cce2bddc2.png)
 
