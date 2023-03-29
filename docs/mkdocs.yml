@@ -2,7 +2,7 @@ site_name: jiphyeonjeon develop documentation
 theme: readthedocs
 extra:
   static_dirs:
-    - doc/image
+    - docs/image
 nav:
   - 홈: index.md
   - 컨벤션: convention.md
