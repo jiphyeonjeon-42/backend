@@ -27,9 +27,21 @@ const morningScheduler = () => {
   });
 };
 
+const gshimTempScheduler = () => {
+  const rule = new schedule.RecurrenceRule();
+  rule.dayOfWeek = [0, new schedule.Range(0, 6)];
+  rule.hour = 9;
+  rule.minute = 42;
+  rule.tz = 'Asia/Seoul';
+  schedule.scheduleJob(rule, async () => {
+    await notifications.notifyOverdueManager();
+  });
+};
+
 export const scheduler = () => {
   midnightScheduler();
   morningScheduler();
+  gshimTempScheduler();
 };
 
 export default scheduler;

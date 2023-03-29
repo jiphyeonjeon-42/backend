@@ -140,6 +140,43 @@ export const notifyReturningReminder = async () => {
   });
 };
 
+type Lender = {title: string, slack: string, daysLeft: number};
+
+// day : 반납까지 남은 기한.
+// 반납기한이 N일 남은 유저의 목록을 가져옵니다.
+export const GetUserFromNDaysLeft = async (day : number) : Promise<Lender[]> => {
+  const LOAN_PERIOD = 14;
+  const daysLeft = LOAN_PERIOD - day;
+  const lendings: Lender[] = await executeQuery(`
+    SELECT
+      book_info.title,
+      user.slack
+    FROM
+      lending
+    LEFT JOIN book ON
+      lending.bookId = book.id
+    LEFT JOIN book_info ON
+      book.infoId = book_info.id
+    LEFT JOIN user ON
+      lending.userId = user.id
+    WHERE
+      DATEDIFF(CURDATE(), lending.createdAt) = ${daysLeft} AND
+      lending.returnedAt IS NULL
+  `);
+  return lendings.map(({ ...args }) => ({ ...args, daysLeft: day }));
+};
+
+const notifyUser = ({ slack, title, daysLeft }: Lender) => publishMessage(slack, `:jiphyeonjeon: 반납 알림 :jiphyeonjeon:\n 대출하신 도서 \`${title}\`의 반납 기한이 다가왔습니다. ${daysLeft}일 내로 반납해주시기 바랍니다.`);
+
+export const notifyUsers = async (userList : Lender[], notifyFn: (_: Lender) => Promise<void>) => {
+  await Promise.all(userList.map(notifyFn));
+};
+
+export const notifyOverdueManager = async () => {
+  await notifyUsers(await GetUserFromNDaysLeft(1), notifyUser);
+  await notifyUsers(await GetUserFromNDaysLeft(3), notifyUser);
+};
+
 export const notifyOverdue = async () => {
   const lendings: [{title: string, slack: string}] = await executeQuery(`
     SELECT
