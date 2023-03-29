@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>깃 플로우 전략 - jiphyeonjeon develop documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\uae43 \ud50c\ub85c\uc6b0 \uc804\ub7b5";
+        var mkdocs_page_input_path = "gitflow.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> jiphyeonjeon develop documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">홈</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../convention/">컨벤션</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../issue_strategy/">이슈 전략</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">깃 플로우 전략</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#main">main 브랜치</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#develop">develop 브랜치</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#issue-eg-42-issue-">issue 브랜치 (eg. 42-issue-추가)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_1">개인 브랜치</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../error/">에러 코드</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">jiphyeonjeon develop documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>깃 플로우 전략</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="git-flow-strategy">Git Flow Strategy</h1>
+<h3 id="main"><code>main</code> 브랜치</h3>
+<ul>
+<li>완성된 기능들이 들어있는 가장 최신의 브랜치입니다. develop 브랜치에서만 푸시를 받습니다.</li>
+</ul>
+<h3 id="develop"><code>develop</code> 브랜치</h3>
+<ul>
+<li>개발중인 기능들이 이슈 단위로 완료되어 들어오는 브랜치입니다. issue 브랜치에서 푸시를 받습니다.</li>
+</ul>
+<h3 id="issue-eg-42-issue-">issue 브랜치 (eg. <code>42-issue-추가</code>)</h3>
+<ul>
+<li>개별 이슈에 대한 개발이 진행되는 브랜치입니다.</li>
+<li>이슈에서 create_branch 기능을 이용하여 자동으로 생성합시다.</li>
+<li>여러 이슈로 이루어진 이슈는 여러 이슈를 가진 이슈로 묶어 Umbrella issue 로 관리합니다. [이슈 전략 페이지로 링크]</li>
+<li>이슈를 해결한 후 pull request 를 생성합니다.</li>
+<li>리뷰를 받은 후 <strong><em>squash merge</em></strong> 로 develop 브랜치에 merge 합니다.</li>
+</ul>
+<h3 id="_1">개인 브랜치</h3>
+<p>둘 이상의 인원이 하나의 issue 브랜치에서 작업할 경우에 <code>issue/23_jolim</code>같은 방식으로 이름지어서 푸시합니다.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../issue_strategy/" class="btn btn-neutral float-left" title="이슈 전략"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../error/" class="btn btn-neutral float-right" title="에러 코드">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../issue_strategy/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../error/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

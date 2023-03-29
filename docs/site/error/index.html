@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>에러 코드 - jiphyeonjeon develop documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\uc5d0\ub7ec \ucf54\ub4dc";
+        var mkdocs_page_input_path = "error.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> jiphyeonjeon develop documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">홈</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../convention/">컨벤션</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../issue_strategy/">이슈 전략</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../gitflow/">깃 플로우 전략</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">에러 코드</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#common-error-code-0">Common Error Code (0번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#auth-error-code-100">Auth Error Code (100번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#user-error-code-200">User Error Code (200번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#books-error-code-300">Books Error Code (300번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lendings-error-code-400">Lendings Error Code (400번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reservation-error-code-500">Reservation Error Code (500번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#likes-600">Likes (600번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#history-700">history (700번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reviews-800">reviews (800번대)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tags-900">tags (900번대)</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">jiphyeonjeon develop documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>에러 코드</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="error-code">에러 코드 (Error code)</h1>
+<h3 id="common-error-code-0">Common Error Code (0번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">0</td>
+<td align="left">UNKNOWN_ERROR</td>
+<td align="left">unknown error</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="left">QUERY_EXECUTION_FAILED</td>
+<td align="left">executeQuery SQL 에러</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="left">INVALID_INPUT</td>
+<td align="left">유효하지 않은 인자 (req , param, body에 잘못된 인자가 들어왔을 때)</td>
+</tr>
+<tr>
+<td align="center">42</td>
+<td align="left">CLIENT_AUTH_FAILED</td>
+<td align="left">Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auth-error-code-100">Auth Error Code (100번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">100</td>
+<td align="left">NO_AUTHORIZATION</td>
+<td align="left">권한이 없을때</td>
+</tr>
+<tr>
+<td align="center">101</td>
+<td align="left">NO_USER</td>
+<td align="left">해당 토큰의 유저가 DB에 없을때</td>
+</tr>
+<tr>
+<td align="center">102</td>
+<td align="left">NO_TOKEN</td>
+<td align="left">토큰이 발급되지 않았을때</td>
+</tr>
+<tr>
+<td align="center">103</td>
+<td align="left">NO_INPUT</td>
+<td align="left">로그인시 ID, PW 파라미터가 없을때</td>
+</tr>
+<tr>
+<td align="center">104</td>
+<td align="left">WRONG_PASSWORD</td>
+<td align="left">비밀번호가 일치하지 않을때(로그인 실패)</td>
+</tr>
+<tr>
+<td align="center">105</td>
+<td align="left">ALREADY_AUTHENTICATED</td>
+<td align="left">이미 인증된 회원의 경우(또 인증할 경우)</td>
+</tr>
+<tr>
+<td align="center">107</td>
+<td align="left">NO_ID</td>
+<td align="left">해당 ID가 존재하지 않을때(로그인 실패)</td>
+</tr>
+<tr>
+<td align="center">108</td>
+<td align="left">EXPIRATION_TOKEN</td>
+<td align="left">토큰이 만료되었을 경우</td>
+</tr>
+<tr>
+<td align="center">109</td>
+<td align="left">TOKEN_NOT_VALID</td>
+<td align="left">토큰이 유효하지 않을때</td>
+</tr>
+<tr>
+<td align="center">110</td>
+<td align="left">NON_AFFECTED</td>
+<td align="left">UPDATE 실패</td>
+</tr>
+<tr>
+<td align="center">111</td>
+<td align="left">ANOTHER_ACCOUNT_AUTHENTICATED</td>
+<td align="left">다른 계정에 이미 42 intra가 연동되어 있는 경우 <br/> (105번은 이미 인증된 회원인 경우이고 111번은 42 계정을 다른 계정에 또 연결하는 경우)</td>
+</tr>
+<tr>
+<td align="center">112</td>
+<td align="left">ACCESS_DENIED</td>
+<td align="left">42 API 사용에 대해 동의를 하지 않았을 경우</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="user-error-code-200">User Error Code (200번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">203</td>
+<td align="left">EMAIL_OVERLAP</td>
+<td align="left">email 중복. (이미 있는 email 로 가입)</td>
+</tr>
+<tr>
+<td align="center">204</td>
+<td align="left">NICKNAME_OVERLAP</td>
+<td align="left">nickname 중복. (이미 있는 nickname 입력)</td>
+</tr>
+<tr>
+<td align="center">205</td>
+<td align="left">INVALIDATE_PASSWORD</td>
+<td align="left">잘못된 password 형식</td>
+</tr>
+<tr>
+<td align="center">206</td>
+<td align="left">INVALID_ROLE</td>
+<td align="left">유효하지 않은 role 값입니다.</td>
+</tr>
+<tr>
+<td align="center">207</td>
+<td align="left">SLACK_OVERLAP</td>
+<td align="left">슬랙 ID가 중복</td>
+</tr>
+<tr>
+<td align="center">208</td>
+<td align="left">INTRA_AUTHENTICATE_SUCCESS</td>
+<td align="left">42 인증 완료 ( 에러 메세지는 아닌데, 인증 완료시 Front한테 상태값을 전달해서 메세지를 띄우기 위한 코드 입니다 )</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="books-error-code-300">Books Error Code (300번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">301</td>
+<td align="left">SLACKID_OVERLAP</td>
+<td align="left">슬랙 ID가 중복됨</td>
+</tr>
+<tr>
+<td align="center">302</td>
+<td align="left">NO_ISBN</td>
+<td align="left">네이버 Open API에서 ISBN검색 결과가 없음</td>
+</tr>
+<tr>
+<td align="center">303</td>
+<td align="left">ISBN_SEARCH_FAILED</td>
+<td align="left">국립중앙 도서관 API에서 ISBN 검색이 실패</td>
+</tr>
+<tr>
+<td align="center">304</td>
+<td align="left">NO_BOOK_INFO_ID</td>
+<td align="left">book_info table에 존재하지 않는 ID를 조회하려고 함</td>
+</tr>
+<tr>
+<td align="center">305</td>
+<td align="left">CALL_SIGN_OVERLAP</td>
+<td align="left">등록하려는 callSign는 이미 있는 callSign임</td>
+</tr>
+<tr>
+<td align="center">306</td>
+<td align="left">INVALID_CALL_SIGN</td>
+<td align="left">유효하지 않는 callsign</td>
+</tr>
+<tr>
+<td align="center">307</td>
+<td align="left">NO_BOOK_ID</td>
+<td align="left">없는 BOOK_ID를 조회하려고 함</td>
+</tr>
+<tr>
+<td align="center">308</td>
+<td align="left">FAIL_CREATE_BOOK_BY_UNEXPECTED</td>
+<td align="left">예상치 못한 에러로 책 정보 insert에 실패함</td>
+</tr>
+<tr>
+<td align="center">309</td>
+<td align="left">INVALID_CATEGORY_ID</td>
+<td align="left">보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음</td>
+</tr>
+<tr>
+<td align="center">310</td>
+<td align="left">ISBN_SEARCH_FAILED_IN_NAVER</td>
+<td align="left">네이버 Open API에서 ISBN검색 자체가 실패함</td>
+</tr>
+<tr>
+<td align="center">311</td>
+<td align="left">INVALID_PUBDATE_FORNAT</td>
+<td align="left">입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"</td>
+</tr>
+<tr>
+<td align="center">312</td>
+<td align="left">FAIL_PATCH_BOOK_BY_UNEXPECTED</td>
+<td align="left">예상치 못한 에러로 bookInfo patch 가 실패함</td>
+</tr>
+<tr>
+<td align="center">313</td>
+<td align="left">NO_BOOK_INFO_DATA</td>
+<td align="left">입력한 data가 없음(적어도 하나의 데이터는 필수)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="lendings-error-code-400">Lendings Error Code (400번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">401</td>
+<td align="left">NO_USER_ID</td>
+<td align="left"> 유저 없음</td>
+</tr>
+<tr>
+<td align="center">402</td>
+<td align="left">NO_PERMISSION</td>
+<td align="left">권환 없음</td>
+</tr>
+<tr>
+<td align="center">403</td>
+<td align="left">LENDING_OVERLOAD</td>
+<td align="left">2권 이상 대출</td>
+</tr>
+<tr>
+<td align="center">404</td>
+<td align="left">LENDING_OVERDUE</td>
+<td align="left">연체 중</td>
+</tr>
+<tr>
+<td align="center">405</td>
+<td align="left">ON_LENDING</td>
+<td align="left">대출 중</td>
+</tr>
+<tr>
+<td align="center">406</td>
+<td align="left">ON_RESERVATION</td>
+<td align="left">예약된 책</td>
+</tr>
+<tr>
+<td align="center">407</td>
+<td align="left">LOST_BOOK</td>
+<td align="left">분실된 책</td>
+</tr>
+<tr>
+<td align="center">408</td>
+<td align="left">DAMAGED_BOOK</td>
+<td align="left">파손된 책</td>
+</tr>
+<tr>
+<td align="center">410</td>
+<td align="left">NONEXISTENT_LENDING</td>
+<td align="left">존재하지 않는 대출</td>
+</tr>
+<tr>
+<td align="center">411</td>
+<td align="left">ALREADY_RETURNED</td>
+<td align="left">이미 반납 처리된 대출</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="reservation-error-code-500">Reservation Error Code (500번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">501</td>
+<td align="left">INVALID_INFO_ID</td>
+<td align="left">book_info_id가 유효하지 않음</td>
+</tr>
+<tr>
+<td align="center">502</td>
+<td align="left">AT_PENALTY</td>
+<td align="left">대출 제한 중</td>
+</tr>
+<tr>
+<td align="center">503</td>
+<td align="left">NOT_LENDED</td>
+<td align="left">대출 가능</td>
+</tr>
+<tr>
+<td align="center">504</td>
+<td align="left">ALREADY_RESERVED</td>
+<td align="left">이미 예약 중</td>
+</tr>
+<tr>
+<td align="center">505</td>
+<td align="left">ALREADY_LENDED</td>
+<td align="left">이미 대출 중</td>
+</tr>
+<tr>
+<td align="center">506</td>
+<td align="left">MORE_THAN_TWO_RESERVATIONS</td>
+<td align="left">두 개 이상 예약 중</td>
+</tr>
+<tr>
+<td align="center">507</td>
+<td align="left">NO_MATCHING_USER</td>
+<td align="left">해당 유저 아님</td>
+</tr>
+<tr>
+<td align="center">508</td>
+<td align="left">RESERVATION_NOT_EXIST</td>
+<td align="left">예약 ID 존재하지 않음</td>
+</tr>
+<tr>
+<td align="center">509</td>
+<td align="left">NOT_RESERVED</td>
+<td align="left">예약 상태가 아님</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="likes-600">Likes (600번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">601</td>
+<td align="left">INVALID_INFO_ID_LIKES</td>
+<td align="left">bookInfoId가 유효하지 않음</td>
+</tr>
+<tr>
+<td align="center">602</td>
+<td align="left">ALREADY_LIKES</td>
+<td align="left">좋아요 데이터가 이미 존재함</td>
+</tr>
+<tr>
+<td align="center">603</td>
+<td align="left">NONEXISTENT_LIKES</td>
+<td align="left">bookInfoId가 유효하지 않음</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="history-700">history (700번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">700</td>
+<td align="left">UNAUTHORIZED</td>
+<td align="left">사서권한이 없는 사람이 모든 대출/반납 기록을 조회하려고함</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="reviews-800">reviews (800번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">800</td>
+<td align="left">INVALID_INPUT_REVIEWS</td>
+<td align="left">유효하지 않은 양식의 reviews</td>
+</tr>
+<tr>
+<td align="center">801</td>
+<td align="left">UNAUTHORIZED_REVIEWS</td>
+<td align="left">reviews를 수정/삭제할 권한이 없음</td>
+</tr>
+<tr>
+<td align="center">804</td>
+<td align="left">NOT_FOUND_REVIEWS</td>
+<td align="left">존재하지 않는 reviewsId</td>
+</tr>
+<tr>
+<td align="center">805</td>
+<td align="left">DISABLED_REVIEWS</td>
+<td align="left">Disabled 된 review</td>
+</tr>
+<tr>
+<td align="center">810</td>
+<td align="left">INVALID_INPUT_REVIEWS_ID</td>
+<td align="left">유효하지 않은 양식의 reviewsId</td>
+</tr>
+<tr>
+<td align="center">811</td>
+<td align="left">INVALID_INPUT_REVIEWS_CONTENT</td>
+<td align="left">유효하지 않은 양식의 reviews content</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tags-900">tags (900번대)</h3>
+<table>
+<thead>
+<tr>
+<th align="center">Error Code</th>
+<th align="left">Constant Name</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">900</td>
+<td align="left">INVALID_INPUT_TAGS</td>
+<td align="left">유효하지 않은 양식의 tags</td>
+</tr>
+<tr>
+<td align="center">901</td>
+<td align="left">UNAUTHORIZED_TAGS</td>
+<td align="left">tags를 수정/삭제할 권한이 없음</td>
+</tr>
+<tr>
+<td align="center">902</td>
+<td align="left">ALREADY_EXISTING_TAGS</td>
+<td align="left">이미 존재하는 내용의 태그</td>
+</tr>
+<tr>
+<td align="center">904</td>
+<td align="left">NOT_FOUND_TAGS</td>
+<td align="left">존재하지 않는 tagId</td>
+</tr>
+<tr>
+<td align="center">910</td>
+<td align="left">INVALID_INPUT_TAG_ID</td>
+<td align="left">유효하지 않은 양식의 tagId</td>
+</tr>
+</tbody>
+</table>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../gitflow/" class="btn btn-neutral float-left" title="깃 플로우 전략"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../gitflow/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
