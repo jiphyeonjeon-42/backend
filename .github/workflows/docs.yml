@@ -1,0 +1,22 @@
+name: 공식 문서 배포
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+
+defaults:
+  run:
+    working-directory: docs
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pip
+
+      - run: pip install mkdocs
+      - run: mkdocs gh-deploy --force
