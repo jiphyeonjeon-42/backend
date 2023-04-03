@@ -1,5 +1,6 @@
 import * as errorCode from '../../../utils/error/errorCode';
 import ReviewsService from '../../service/reviews.service';
+import ErrorResponse from "../../../utils/error/errorResponse";
 
 const reviewsService = new ReviewsService();
 
@@ -8,7 +9,7 @@ export const contentParseCheck = (
 ) => {
   const result = content.trim();
   if (result === '' || result.length < 10 || result.length > 420) {
-    throw new Error(errorCode.INVALID_INPUT_REVIEWS_CONTENT);
+    throw new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_CONTENT, 400);
   }
   return result;
 };
@@ -17,12 +18,12 @@ export const reviewsIdParseCheck = (
   reviewsId : string,
 ) => {
   if (reviewsId.trim() === '') {
-    throw new Error(errorCode.INVALID_INPUT_REVIEWS_ID);
+    throw new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_ID, 400);
   }
   try {
     return parseInt(reviewsId, 10);
   } catch (error : any) {
-    throw new Error(errorCode.INVALID_INPUT_REVIEWS);
+    throw new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS, 400);
   }
 };
 
@@ -33,7 +34,7 @@ export const reviewsIdExistCheck = async (
   try {
     result = await reviewsService.getReviewsUserId(reviewsId);
   } catch (error : any) {
-    throw new Error(errorCode.NOT_FOUND_REVIEWS);
+    throw new ErrorResponse(errorCode.NOT_FOUND_REVIEWS, 404);
   }
   return result;
 };
@@ -43,6 +44,6 @@ export const idAndTokenIdSameCheck = (
   tokenId : number,
 ) => {
   if (id !== tokenId) {
-    throw new Error(errorCode.UNAUTHORIZED_REVIEWS);
+    throw new ErrorResponse(errorCode.UNAUTHORIZED_REVIEWS, 401);
   }
 };

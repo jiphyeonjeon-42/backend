@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getBookInfoReviewsPage,
 } from '../book-info-reviews/controller/bookInfoReviews.controller';
-import { wrapAsyncController } from '../middlewares/wrapAsyncController';
+import wrapAsyncController from '../middlewares/wrapAsyncController';
 
 export const path = '/book-info';
 export const router = Router();

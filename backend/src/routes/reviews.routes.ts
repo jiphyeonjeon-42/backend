@@ -4,7 +4,7 @@ import {
 } from '../reviews/controller/reviews.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import { wrapAsyncController } from '../middlewares/wrapAsyncController';
+import wrapAsyncController from '../middlewares/wrapAsyncController';
 
 export const path = '/reviews';
 export const router = Router();
