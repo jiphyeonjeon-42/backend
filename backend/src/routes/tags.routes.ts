@@ -128,40 +128,44 @@ router
    *              schema:
    *                type: object
    *                properties:
-   *                  superTags:
-   *                    description: 슈퍼 태그 목록
-   *                    type: list
-   *                    items:
-   *                      type: object
-   *                      properties:
-   *                        id:
-   *                          description: 슈퍼 태그 고유 id
-   *                          type: integer
-   *                        content:
-   *                          description: 슈퍼 태그의 내용
-   *                          type: string
-   *                    example:
-   *                      - id: 0
-   *                        content: 파이썬
-   *                      - id: 42
-   *                        content: Python
-   *                  defaultTags:
-   *                    description: 디폴트 태그 목록
-   *                    type: list
-   *                    items:
-   *                      type: object
-   *                      properties:
-   *                        id:
-   *                          description: 디폴트 태그 고유 id
-   *                          type: integer
-   *                        content:
-   *                          description: 디폴트 태그의 내용
-   *                          type: string
-   *                    example:
-   *                      - id: 0
-   *                        content: yena가_추천하는
-   *                      - id: 42
-   *                        content: 멋지다_집현전
+   *                  items:
+   *                    description: 슈퍼 태그, 디폴트 태그 목록
+   *                    type: object
+   *                    properties:
+   *                      superTags:
+   *                        description: 슈퍼 태그 목록
+   *                        type: array
+   *                        items:
+   *                          type: object
+   *                          properties:
+   *                            id:
+   *                              description: 슈퍼 태그 고유 id
+   *                              type: integer
+   *                            content:
+   *                              description: 슈퍼 태그 내용
+   *                              type: string
+   *                        example:
+   *                          - id: 0
+   *                            content: 1서클_추천_책
+   *                          - id: 42
+   *                            content: 커리어
+   *                      defaultTags:
+   *                        description: 디폴트 태그 목록
+   *                        type: array
+   *                        items:
+   *                          type: object
+   *                          properties:
+   *                            id:
+   *                              description: 디폴트 태그 고유 id
+   *                              type: integer
+   *                            content:
+   *                              description: 디폴트 태그 내용
+   *                              type: string
+   *                        example:
+   *                          - id: 0
+   *                            content: yena가_추천하는
+   *                          - id: 42
+   *                            content: 마법같은_파이썬
    *        '400':
    *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
    *        '401':
