@@ -67,19 +67,15 @@ router
    *                          format: date
    *                    example:
    *                      - id: 0
+   *                        title: 깐깐하게 배우는 C
    *                        content: 1서클_추천_책
    *                        login: yena
-   *                        bookInfoId: 1
-   *                        count: 1
    *                        createdAt: 2023.03.27
-   *                        updatedAt: 2023.03.27
    *                      - id: 42
-   *                        content: minirt
-   *                        login: yena, jang-cho
-   *                        bookInfoId: 42
-   *                        count: 2
+   *                        title: 나는 LINE 개발자입니다
+   *                        content: 커리어
+   *                        login: yena
    *                        createdAt: 2023.03.27
-   *                        updatedAt: 2023.03.27
    *                  meta:
    *                    description: 태그 조회 결과에 대한 요약 정보
    *                    type: object
@@ -111,7 +107,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
 
 router
   /**
