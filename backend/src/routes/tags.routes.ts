@@ -173,4 +173,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTag */);
