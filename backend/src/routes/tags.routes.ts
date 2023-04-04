@@ -107,7 +107,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
+  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
 
 router
   /**
