@@ -112,3 +112,65 @@ router
    *          description: db 에러
    */
   .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
+
+router
+  /**
+   * @openapi
+   * /api/tags/merge:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 슈퍼 태그, 디폴트 태그 목록을 가져온다.
+   *      description: 태그를 병합하기 위한 슈퍼 태그(노출되는 태그),
+   *                   디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다.
+   *      parameters:
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그, 디폴트 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  superTags:
+   *                    description: 슈퍼 태그 목록
+   *                    type: list
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id:
+   *                          description: 슈퍼 태그 고유 id
+   *                          type: integer
+   *                        content:
+   *                          description: 슈퍼 태그의 내용
+   *                          type: string
+   *                    example:
+   *                      - id: 0
+   *                        content: 파이썬
+   *                      - id: 42
+   *                        content: Python
+   *                  defaultTags:
+   *                    description: 디폴트 태그 목록
+   *                    type: list
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id:
+   *                          description: 디폴트 태그 고유 id
+   *                          type: integer
+   *                        content:
+   *                          description: 디폴트 태그의 내용
+   *                          type: string
+   *                    example:
+   *                      - id: 0
+   *                        content: yena가_추천하는
+   *                      - id: 42
+   *                        content: 멋지다_집현전
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
