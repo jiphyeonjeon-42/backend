@@ -112,6 +112,50 @@ router
 router
   /**
    * @openapi
+   * /api/tags/super:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 슈퍼 태그 목록을 가져온다.
+   *      description: 메인 페이지에서 보여줄 슈퍼 태그 정보를 검색하여 보여준다.
+   *      parameters:
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 슈퍼 태그 목록
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        title:
+   *                          description: 슈퍼 태그가 등록된 도서의 제목
+   *                          type: string
+   *                        content:
+   *                          description: 슈퍼 태그의 내용
+   *                          type: string
+   *                    example:
+   *                      - title: 깐깐하게 배우는 C
+   *                        content: 1서클_추천_책
+   *                      - title: 나는 LINE 개발자입니다
+   *                        content: 커리어
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/tags/super', authValidate(roleSet.all) /* , searchSubTag */);
+
+router
+  /**
+   * @openapi
    * /api/tags/merge:
    *    get:
    *      tags:
