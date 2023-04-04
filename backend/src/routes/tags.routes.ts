@@ -8,6 +8,50 @@ export const router = Router();
 router
   /**
    * @openapi
+   * /api/tags:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 메인 페이지의 슈퍼 태그 목록을 가져온다.
+   *      description: 메인 페이지에서 보여줄 슈퍼 태그 정보를 검색하여 보여준다.
+   *      parameters:
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 슈퍼 태그 목록
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        title:
+   *                          description: 슈퍼 태그가 등록된 도서의 제목
+   *                          type: string
+   *                        content:
+   *                          description: 슈퍼 태그의 내용
+   *                          type: string
+   *                    example:
+   *                      - title: 깐깐하게 배우는 C
+   *                        content: 1서클_추천_책
+   *                      - title: 나는 LINE 개발자입니다
+   *                        content: 커리어
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
+
+router
+  /**
+   * @openapi
    * /api/tags/sub:
    *    get:
    *      tags:
@@ -112,50 +156,6 @@ router
 router
   /**
    * @openapi
-   * /api/tags:
-   *    get:
-   *      tags:
-   *      - tags
-   *      summary: 메인 페이지의 슈퍼 태그 목록을 가져온다.
-   *      description: 메인 페이지에서 보여줄 슈퍼 태그 정보를 검색하여 보여준다.
-   *      parameters:
-   *      responses:
-   *        '200':
-   *          description: 슈퍼 태그들을 반환한다.
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: object
-   *                properties:
-   *                  items:
-   *                    description: 슈퍼 태그 목록
-   *                    type: array
-   *                    items:
-   *                      type: object
-   *                      properties:
-   *                        title:
-   *                          description: 슈퍼 태그가 등록된 도서의 제목
-   *                          type: string
-   *                        content:
-   *                          description: 슈퍼 태그의 내용
-   *                          type: string
-   *                    example:
-   *                      - title: 깐깐하게 배우는 C
-   *                        content: 1서클_추천_책
-   *                      - title: 나는 LINE 개발자입니다
-   *                        content: 커리어
-   *        '400':
-   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
-   *        '401':
-   *          description: 태그 기록을 조회할 권한이 없는 사용자
-   *        '500':
-   *          description: db 에러
-   */
-  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
-
-router
-  /**
-   * @openapi
    * /api/tags/merge:
    *    get:
    *      tags:
@@ -218,3 +218,60 @@ router
    *          description: db 에러
    */
   .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTag */);
+
+router
+  /**
+   * @openapi
+   * /api/tags/{superTagId}/sub:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다.
+   *      description: 태그를 병합하기 위한 슈퍼 태그(노출되는 태그),
+   *                   서브 태그(노출되지 않는 태그)를 가져온다.
+   *      parameters:
+   *        - in: path
+   *          name: superTagId
+   *          description: 서브 태그를 조회할 슈퍼 태그의 id
+   *          required: true
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그에 속한 서브 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 슈퍼 태그에 속한 서브 태그 목록
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id:
+   *                          description: 서브 태그 고유 id
+   *                          type: integer
+   *                        content:
+   *                          description: 서브 태그의 내용
+   *                          type: string
+   *                        login:
+   *                          description: 서브 태그를 작성한 카뎃의 인트라 id
+   *                          type: string
+   *                    example:
+   *                    - id: 0
+   *                      content: 도커_쿠버네티스
+   *                      login: yena
+   *                    - id: 42
+   *                      content: 도커
+   *                      login: yena
+   *                    - id: 50
+   *                      content: 도커
+   *                      login: jang-cho
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/api/tags/{superTagId}/sub', authValidate(roleSet.librarian) /* , searchSubTag */);
