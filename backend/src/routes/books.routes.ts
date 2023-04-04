@@ -868,81 +868,47 @@ router
  *      tags:
  *      - tags
  *      summary: 도서 별 태그 조회
- *      description: 도서 별 태그 정보를 검색하여 보여준다.
+ *      description: 도서 별 슈퍼 태그 정보를 검색하여 보여준다.
  *      parameters:
  *      - name: bookInfoId
  *        in: query
- *        description: 태그를 조회할 도서의 bookInfoId
+ *        description: 슈퍼 태그를 조회할 도서의 bookInfoId
  *        schema:
  *          type: integer
  *          example: 42
  *      responses:
  *        '200':
- *          description: 대출 기록을 반환한다.
+ *          description: 슈퍼 태그 목록을 반환한다.
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
  *                  items:
- *                    description: 검색된 태그들의 목록
+ *                    description: 검색된 슈퍼 태그들의 목록
  *                    type: array
  *                    items:
  *                      type: object
  *                      properties:
  *                        id:
- *                          description: 태그 고유 id
+ *                          description: 슈퍼 태그 고유 id
  *                          type: integer
  *                        content:
- *                          description: 태그의 내용
+ *                          description: 슈퍼 태그의 내용
  *                          type: string
  *                        login:
- *                          description: 태그를 작성한 카뎃의 인트라 id
- *                          type: string
- *                        bookInfoId:
- *                          description: 태그가 작성된 책의 bookInfoId
- *                          type: integer
- *                        count:
- *                          description: 태그의 개수
- *                          type: integer
- *                        createdAt:
- *                          description: 태그가 작성된 날짜
- *                          type: string
- *                          format: date
- *                        updatedAt:
- *                          description: 태그가 수정된 날짜
- *                          type: string
- *                          format: date
+ *                          description: 슈퍼 태그에 병합된 서브 태그를 작성한 카뎃의 인트라 id
+ *                          type: list
  *                    example:
  *                      - id: 0
  *                        content: 1서클_추천_책
  *                        login: yena, jang-cho, chanheki
- *                        bookInfoId: 42
- *                        count: 3
- *                        createdAt: 2023.03.26
- *                        updatedAt: 2023.03.27
  *                      - id: 1
  *                        content: libft
  *                        login: yena, jang-cho
- *                        bookInfoId: 42
- *                        count: 2
- *                        createdAt: 2023.03.26
- *                        updatedAt: 2023.03.27
  *                      - id: 42
- *                        content: C_기본
+ *                        content: C
  *                        login: yena
- *                        bookInfoId: 42
- *                        count: 1
- *                        createdAt: 2023.03.27
- *                        updatedAt: 2023.03.27
- *                  meta:
- *                    description: 태그 조회 결과에 대한 요약 정보
- *                    type: object
- *                    properties:
- *                      totalItems:
- *                        description: 전체 태그 검색 결과 건수
- *                        type: integer
- *                        example: 3
  *        '400':
  *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
  *        '500':
