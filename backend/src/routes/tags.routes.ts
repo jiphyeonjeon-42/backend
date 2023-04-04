@@ -7,15 +7,15 @@ export const router = Router();
 
 /**
  * @openapi
- * /api/tags/{id}:
+ * /api/tags/{superTagId}:
  *    patch:
- *      description: 태그를 수정한다.
+ *      description: 슈퍼 태그를 수정한다.
  *      tags:
  *        - tags
  *      parameters:
  *        - in: path
- *          name: id
- *          description: 변경할 태그의 id 값
+ *          name: superTagId
+ *          description: 변경할 슈퍼 태그의 id 값
  *          required: true
  *          schema:
  *            type: integer
@@ -25,38 +25,26 @@ export const router = Router();
  *            schema:
  *              type: object
  *              properties:
- *                login:
- *                  description: 인트라 아이디
- *                  type: string
- *                  example: yena
  *                content:
- *                  description: 태그 내용
+ *                  description: 슈퍼 태그 내용
  *                  type: string
  *                  example: "수정할_내용_적기"
  *      responses:
  *        '200':
- *          description: 수정된 태그를 반환합니다.
+ *          description: 수정된 슈퍼 태그를 반환합니다.
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
  *                  id:
- *                    description: 수정된 태그의 id
+ *                    description: 수정된 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
- *                  login:
- *                    description: 인트라 아이디
- *                    type: string
- *                    example: yena
  *                  content:
- *                    description: 태그 내용
+ *                    description: 수정된 슈퍼 태그 내용
  *                    type: string
  *                    example: "수정된_태그"
- *                  count:
- *                    description: 태그 개수
- *                    type: integer
- *                    example: 1
  *        '900':
  *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
@@ -100,7 +88,7 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/update/:id', authValidate(roleSet.all) /* ,update */);
+router.patch('/tags/{superTagId}', authValidate(roleSet.librarian) /* ,update */);
 
 /**
  * @openapi
@@ -116,38 +104,34 @@ router.patch('/update/:id', authValidate(roleSet.all) /* ,update */);
  *            schema:
  *              type: object
  *              properties:
- *                sourceId:
- *                  description: 병합될 태그의 id 값
- *                  type: integer
+ *                subTagIds:
+ *                  description: 병합될 서브 태그의 id 리스트
+ *                  type: list
  *                  required: true
- *                  example: 1
- *                targetId:
- *                  description: 병합할 태그의 id 값
+ *                  example: [1, 2, 3, 5, 10]
+ *                superTagId:
+ *                  description: 슈퍼 태그의 id
  *                  type: integer
  *                  required: true
  *                  example: 2
  *      responses:
  *        '200':
- *          description: 병합 후의 태그를 반환합니다.
+ *          description: 병합 후의 슈퍼 태그를 반환합니다.
  *          content:
  *            application/json:
  *              schema:
  *                type: object
  *                properties:
  *                  id:
- *                    description: 병합된 태그의 id
+ *                    description: 슈퍼 태그의 id
  *                    type: integer
  *                    example: 3
- *                  login:
- *                    description: 인트라 아이디 리스트
- *                    type: list
- *                    example: ['yena', 'chanheki', 'jang-cho']
  *                  content:
  *                    description: 태그 내용
  *                    type: string
  *                    example: "병합된_태그"
  *                  count:
- *                    description: 태그 개수
+ *                    description: 해당 슈퍼 태그에 속한 서브 태그의 개수
  *                    type: integer
  *                    example: 3
  *        '901':
