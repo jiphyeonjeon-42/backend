@@ -105,21 +105,15 @@ router
    *                        login:
    *                          description: 서브 태그를 작성한 카뎃의 인트라 id
    *                          type: string
-   *                        createdAt:
-   *                          description: 태그가 작성된 날짜
-   *                          type: string
-   *                          format: date
    *                    example:
    *                      - id: 0
    *                        title: 깐깐하게 배우는 C
    *                        content: 1서클_추천_책
    *                        login: yena
-   *                        createdAt: 2023.03.27
    *                      - id: 42
    *                        title: 나는 LINE 개발자입니다
    *                        content: 커리어
    *                        login: yena
-   *                        createdAt: 2023.03.27
    *                  meta:
    *                    description: 태그 조회 결과에 대한 요약 정보
    *                    type: object
