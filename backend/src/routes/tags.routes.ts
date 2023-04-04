@@ -8,7 +8,7 @@ export const router = Router();
 router
   /**
    * @openapi
-   * /api/tags:
+   * /api/tags/sub:
    *    get:
    *      tags:
    *      - tags
@@ -107,16 +107,16 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/tags/sub', authValidate(roleSet.librarian) /* , searchSubTag */);
 
 router
   /**
    * @openapi
-   * /api/tags/super:
+   * /api/tags:
    *    get:
    *      tags:
    *      - tags
-   *      summary: 슈퍼 태그 목록을 가져온다.
+   *      summary: 메인 페이지의 슈퍼 태그 목록을 가져온다.
    *      description: 메인 페이지에서 보여줄 슈퍼 태그 정보를 검색하여 보여준다.
    *      parameters:
    *      responses:
@@ -151,7 +151,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/super', authValidate(roleSet.all) /* , searchSubTag */);
+  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
 
 router
   /**
