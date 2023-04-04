@@ -73,12 +73,13 @@ router
    *          type: integer
    *          default: 10
    *          example: 10
-   *      - name: private
+   *      - name: visibility
    *        in: query
-   *        description: 공개 및 비공개 여부로, 1이면 공개, 0이면 비공개 서브 태그만 가져온다.
+   *        description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개 서브 태그만 가져온다.
    *        schema:
-   *          type: integer
-   *          example: 1
+   *          type: string
+   *          default: public
+   *          example: private
    *      responses:
    *        '200':
    *          description: 서브 태그들을 반환한다.
