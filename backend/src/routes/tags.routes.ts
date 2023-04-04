@@ -8,12 +8,12 @@ export const router = Router();
 router
   /**
    * @openapi
-   * /api/tags/search:
+   * /api/tags:
    *    get:
    *      tags:
    *      - tags
-   *      summary: 전체 태그 조회
-   *      description: 태그 정보를 검색하여 보여준다.
+   *      summary: 서브 태그 목록을 가져온다.
+   *      description: 태그 관리 페이지에서 보여줄 서브 태그 정보를 검색하여 보여준다.
    *      parameters:
    *      - name: page
    *        in: query
@@ -27,62 +27,42 @@ router
    *        description: 검색 결과 한 페이지당 보여줄 결과물의 개수
    *        schema:
    *          type: integer
-   *          default: 5
-   *          example: 3
-   *      - name: sort
+   *          default: 10
+   *          example: 10
+   *      - name: private
    *        in: query
-   *        description: 검색 결과를 정렬할 기준
+   *        description: 공개 및 비공개 여부로, 1이면 공개, 0이면 비공개 서브 태그만 가져온다.
    *        schema:
-   *          type: string
-   *          enum: [new, old]
-   *          default: new
-   *      - name: query
-   *        in: query
-   *        description: 태그 목록에서 검색할 단어, 검색 가능한 필드 [user, title, bookInfoId]
-   *        schema:
-   *          type: string
-   *          example: yena
-   *      - name: type
-   *        in: query
-   *        description: query를 조회할 항목
-   *        schema:
-   *          type: string
-   *          enum: [user, title, bookInfoId]
+   *          type: integer
+   *          example: 1
    *      responses:
    *        '200':
-   *          description: 태그 기록을 반환한다.
+   *          description: 서브 태그들을 반환한다.
    *          content:
    *            application/json:
    *              schema:
    *                type: object
    *                properties:
    *                  items:
-   *                    description: 검색된 태그들의 목록
+   *                    description: 서브 태그 목록
    *                    type: array
    *                    items:
    *                      type: object
    *                      properties:
    *                        id:
-   *                          description: 태그 고유 id
+   *                          description: 서브 태그 고유 id
    *                          type: integer
+   *                        title:
+   *                          description: 서브 태그가 등록된 도서의 제목
+   *                          type: string
    *                        content:
-   *                          description: 태그의 내용
+   *                          description: 서브 태그의 내용
    *                          type: string
    *                        login:
-   *                          description: 태그를 작성한 카뎃의 인트라 id
+   *                          description: 서브 태그를 작성한 카뎃의 인트라 id
    *                          type: string
-   *                        bookInfoId:
-   *                          description: 태그가 작성된 책의 bookInfoId
-   *                          type: integer
-   *                        count:
-   *                          description: 태그의 개수
-   *                          type: integer
    *                        createdAt:
    *                          description: 태그가 작성된 날짜
-   *                          type: string
-   *                          format: date
-   *                        updatedAt:
-   *                          description: 태그가 수정된 날짜
    *                          type: string
    *                          format: date
    *                    example:
@@ -131,4 +111,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/search', authValidate(roleSet.librarian) /* , search */);
+  .get('/tags', authValidate(roleSet.librarian) /* , searchSubTag */);
