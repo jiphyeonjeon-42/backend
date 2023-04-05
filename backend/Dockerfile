@@ -1,6 +1,6 @@
-FROM node:16
+FROM node:19
 
-COPY . .
-RUN yarn
+WORKDIR /app
 
-ENTRYPOINT [ "sh", "start.sh"]
+COPY . /app
+ENTRYPOINT [ "yarn", "run", "container" ]

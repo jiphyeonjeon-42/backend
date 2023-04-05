@@ -1,0 +1,31 @@
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    volumes: [./nginx/conf.d:/etc/nginx/conf.d]
+    ports: [80:80]
+    restart: always
+
+  database:
+    platform: linux/x86_64
+    container_name: database
+    image: mysql:8.0
+    environment: [TZ=Asia/Seoul]
+    env_file: .env
+    ports: [3306:3306]
+    volumes: [./mock:/docker-entrypoint-initdb.d:ro]
+    restart: always
+
+  backend:
+    container_name: backend
+    depends_on: [database]
+    build:
+      context: ./backend
+    restart: always
+    volumes:
+      - ./backend/:/app 
+    ports: [3000:3000]
+    env_file: .env
+
+volumes:
+  db_data:

@@ -38,10 +38,6 @@ jipDataSource.initialize().then(
     logger.info('typeORM INIT SUCCESS');
     logger.info(process.env.MODE);
   },
-).catch(
-  (e) => {
-    logger.error(`typeORM INIT FAILED : ${e.message}`);
-  },
 );
 
 // Swagger 연결

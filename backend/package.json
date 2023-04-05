@@ -11,6 +11,7 @@
     "build": "npx tsc -p .",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
     "prod": "npx tsc -p . && yarn start",
+    "container": "tsx src/server.ts",
     "test": "jest"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
+    "tsx": "^3.12.6",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
