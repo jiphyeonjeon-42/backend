@@ -28,7 +28,7 @@ class Book {
   })
   createdAt?: Date;
 
-  @Column()
+  @Column('int')
   infoId: number;
 
   @Column('datetime', {
