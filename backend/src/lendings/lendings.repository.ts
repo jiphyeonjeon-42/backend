@@ -169,6 +169,7 @@ class LendingRepository extends Repository<Lending> {
       returningLibrarianId,
       returningCondition,
       returnedAt: (new Date()),
+      updatedAt: (new Date()),
     };
     await this.update(lendingId, updateObject);
   }
