@@ -3,21 +3,6 @@ description: 버그 리포트를 작성합니다.
 
 labels: [bug]
 body:
-  - type: input
-    id: when
-    attributes:
-      label: 발견 일시
-      description: 언제 버그를 발견했는지 알려주세요.
-      placeholder: "2023-03-12"
-    validations:
-      required: false
-  - type: input
-    id: commit
-    attributes:
-      label: 발생 커밋
-      description: 어떤 커밋에서 버그가 발생했는지 알려주세요.
-    validations:
-      required: false
   - type: textarea
     id: reproduce
     attributes:
