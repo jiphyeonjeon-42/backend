@@ -9,7 +9,7 @@ let database;
 
 switch (process.env.MODE) {
   case 'local':
-    hostName = 'local';
+    hostName = process.env.MYSQL_HOSTNAME ?? 'local';
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
     database = process.env.MYSQL_DATABASE;
@@ -24,7 +24,7 @@ switch (process.env.MODE) {
     hostName = 'database';
     username = process.env.MYSQL_USER;
     password = process.env.MYSQL_PASSWORD;
-    database = process.env.MYSQL_DATABASE; 
+    database = process.env.MYSQL_DATABASE;
     break;
   default:
     hostName = 'database';
