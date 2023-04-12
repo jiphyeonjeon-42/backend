@@ -861,62 +861,6 @@ router
   .get('/info/:bookInfoId/like', authValidateDefaultNullUser(roleSet.all), getLikeInfo);
 
 router
-  /**
- * @openapi
- * /api/books/info/{bookInfoId}/tags:
- *    get:
- *      tags:
- *      - tags
- *      summary: 도서 별 태그 조회
- *      description: 도서 별 슈퍼 태그 정보를 검색하여 보여준다.
- *      parameters:
- *      - name: bookInfoId
- *        in: query
- *        description: 슈퍼 태그를 조회할 도서의 bookInfoId
- *        schema:
- *          type: integer
- *          example: 42
- *      responses:
- *        '200':
- *          description: 슈퍼 태그 목록을 반환한다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  items:
- *                    description: 검색된 슈퍼 태그들의 목록
- *                    type: array
- *                    items:
- *                      type: object
- *                      properties:
- *                        id:
- *                          description: 슈퍼 태그 고유 id
- *                          type: integer
- *                        content:
- *                          description: 슈퍼 태그의 내용
- *                          type: string
- *                        login:
- *                          description: 슈퍼 태그에 병합된 서브 태그를 작성한 카뎃의 인트라 id
- *                          type: list
- *                    example:
- *                      - id: 0
- *                        content: 1서클_추천_책
- *                        login: yena, jang-cho, chanheki
- *                      - id: 1
- *                        content: libft
- *                        login: yena, jang-cho
- *                      - id: 42
- *                        content: C
- *                        login: yena
- *        '400':
- *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
- *        '500':
- *          description: db 에러
- */
-  .get('/info/{bookInfoId}/tags', authValidate(roleSet.all) /* , getTagInfo */);
-
-router
 /**
  * @openapi
  * /api/books/update:
