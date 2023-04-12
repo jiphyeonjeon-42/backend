@@ -16,8 +16,7 @@ class HistoriesRepository extends Repository<VHistories> {
       take: limit,
       skip: page * limit,
       order: {
-        createdAt: 'DESC',
-        login: 'DESC',
+        updatedAt: 'DESC',
       },
     });
     return [histories, count];

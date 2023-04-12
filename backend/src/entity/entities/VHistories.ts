@@ -17,6 +17,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.image', 'image')
     .addSelect('DATE_FORMAT(l.createdAt, "%Y-%m-%d")', 'createdAt')
     .addSelect('DATE_FORMAT(l.returnedAt, "%Y-%m-%d")', 'returnedAt')
+    .addSelect('DATE_FORMAT(l.updatedAt, "%Y-%m-%d")', 'updatedAt')
     .addSelect("DATE_FORMAT(DATE_ADD(l.createdAt, interval 14 day), '%Y-%m-%d')", 'dueDate')
     .addSelect('(SELECT nickname FROM user WHERE user.id = lendingLibrarianId)', 'lendingLibrarianNickName')
     .addSelect('(SELECT nickname FROM user WHERE user.id = returningLibrarianId)', 'returningLibrarianNickname')
@@ -58,6 +59,9 @@ export default class VHistories {
 
   @ViewColumn()
   returnedAt: Date;
+
+  @ViewColumn()
+  updatedAt: Date;
 
   @ViewColumn()
   dueDate: Date;
