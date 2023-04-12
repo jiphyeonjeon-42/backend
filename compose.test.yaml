@@ -23,9 +23,11 @@ services:
       context: ./backend
     restart: always
     volumes:
-      - ./backend/:/app 
+      - ./backend/:/app
     ports: [3000:3000]
-    env_file: .env
+    env_file: 
+      - .env
+      - .env.test
 
 volumes:
   db_data:
