@@ -197,4 +197,4 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/update/:id', authValidate(roleSet.librarian) /* ,merge */);
+router.patch('/tags/merge', authValidate(roleSet.librarian) /* ,merge */);
