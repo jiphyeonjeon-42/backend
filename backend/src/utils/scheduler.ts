@@ -23,7 +23,7 @@ const morningScheduler = () => {
   schedule.scheduleJob(rule, async () => {
     await notifications.notifyReservation();
     await notifications.notifyReturningReminder();
-    await notifications.notifyOverdue();
+    await notifications.notifyOverdueManager();
   });
 };
 
