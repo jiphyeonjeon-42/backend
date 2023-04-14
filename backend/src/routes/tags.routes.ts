@@ -12,19 +12,19 @@ router
    *    get:
    *      tags:
    *      - tags
-   *      summary: 태그 목록을 가져온다.
-   *      description: 슈퍼/서브/디폴트 태그 정보를 검색하여 보여준다.
+   *      summary: 서브/디폴트 태그 정보를 검색한다.
+   *      description: 서브/디폴트 태그 정보를 검색한다. 이는 태그 관리 페이지에서 사용한다.
    *      parameters:
    *        - name: page
    *          in: query
-   *          description: 검색 결과의 페이지
+   *          description: 검색 결과의 페이지.
    *          schema:
    *            type: integer
    *            default: 1
-   *            example: 3
+   *            example: 1
    *        - name: limit
    *          in: query
-   *          description: 검색 결과 한 페이지당 보여줄 결과물의 개수
+   *          description: 검색 결과 한 페이지당 보여줄 결과물의 개수.
    *          schema:
    *            type: integer
    *            default: 10
@@ -32,24 +32,19 @@ router
    *        - name: visibility
    *          in: query
    *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개 서브 태그만 가져온다.
+   *          required: true
    *          schema:
    *            type: string
    *            default: public
-   *            example: private
-   *        - name: type
+   *            example: public
+   *            enum: [public, private]
+   *        - name: title
    *          in: query
-   *          description: 태그의 타입으로, super, sub, default 중 하나를 입력한다.
+   *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
    *          schema:
    *            type: string
-   *            default: super
-   *            example: super
-   *            enum: [super, sub, default]
-   *        - name: bookInfoId
-   *          in: query
-   *          description: 태그가 등록된 도서의 infoId
-   *          schema:
-   *            type: integer
-   *            example: 1
+   *            example: 깐깐하게 배우는 C
+   *            nullable: true
    *      responses:
    *        '200':
    *          description: 슈퍼/서브/디폴트 태그들을 반환한다.
@@ -88,6 +83,30 @@ router
    *                          description: 슈퍼 태그의 내용
    *                          type: string
    *                          example: 1서클_추천_책
+   *                  meta:
+   *                    description: 모든 태그 수와 관련된 정보
+   *                    type: object
+   *                    properties:
+   *                      totalItems:
+   *                        description: 전체 검색 결과 수
+   *                        type: integer
+   *                        example: 1
+   *                      itemCount:
+   *                        description: 현재 페이지 검색 결과 수
+   *                        type: integer
+   *                        example: 1
+   *                      itemsPerPage:
+   *                        description: 페이지 당 검색 결과 수
+   *                        type: integer
+   *                        example: 10
+   *                      totalPages:
+   *                        description: 전체 결과 페이지 수
+   *                        type: integer
+   *                        example: 1
+   *                      currentPage:
+   *                        description: 현재 페이지
+   *                        type: integer
+   *                        example: 1
    *          '400':
    *            description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
    *          '401':
@@ -105,8 +124,8 @@ router
    *      tags:
    *      - tags
    *      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다.
-   *      description: 태그를 병합하기 위한 슈퍼 태그(노출되는 태그),
-   *                   서브 태그(노출되지 않는 태그)를 가져온다.
+   *      description: superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의
+   *                   서브 태그를 가져올 때 사용한다.
    *      parameters:
    *        - in: path
    *          name: superTagId
@@ -157,13 +176,13 @@ router
 router
   /**
    * @openapi
-   * /api/{bookInfoId}/tags:
+   * /api/tags/{bookInfoId}:
    *    get:
    *      tags:
    *      - tags
    *      summary: 도서에 등록된 슈퍼 태그, 디폴트 태그 목록을 가져온다.
-   *      description: 태그를 병합하기 위한 슈퍼 태그(노출되는 태그),
-   *                   디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다.
+   *      description: 슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다.
+   *                   이는 도서 상세 페이지 및 태그 병합 페이지에서 사용된다.
    *      parameters:
    *        - in: path
    *          name: bookInfoId
