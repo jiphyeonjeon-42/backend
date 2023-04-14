@@ -320,6 +320,7 @@ router
      */
     .delete('/:reviewsId', authValidate(roleSet.all), /*wrapAsyncController(deleteReviews)*/);
 
+ /**
    * @openapi
    * /api/tags:
    *    get:
