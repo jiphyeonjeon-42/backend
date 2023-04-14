@@ -1,5 +1,6 @@
 import * as errorCode from '../../../utils/error/errorCode';
 import ReviewsRepository from '../../repository/reviews.repository';
+import ErrorResponse from "../../../utils/error/errorResponse";
 
 const reviewsRepository = new ReviewsRepository();
 
@@ -12,10 +13,10 @@ export const updatePossibleCheck = async (
     result = await reviewsRepository.getReviews(reviewsId);
     resultId = result[0].userId;
   } catch (error : any) {
-    throw new Error(errorCode.NOT_FOUND_REVIEWS);
+    throw new ErrorResponse(errorCode.NOT_FOUND_REVIEWS, 404);
   }
   if (result[0].disabled === 1) {
-    throw new Error(errorCode.DISABLED_REVIEWS);
+    throw new ErrorResponse(errorCode.DISABLED_REVIEWS, 401);
   }
   return resultId;
 };
@@ -25,6 +26,6 @@ export const idAndTokenIdSameCheck = (
   tokenId : number,
 ) => {
   if (id !== tokenId) {
-    throw new Error(errorCode.UNAUTHORIZED_REVIEWS);
+    throw new ErrorResponse(errorCode.UNAUTHORIZED_REVIEWS, 401);
   }
 };
