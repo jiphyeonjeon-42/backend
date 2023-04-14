@@ -7,31 +7,41 @@ export const router = Router();
 
 /**
  * @openapi
- * /api/tags/{superTagId}:
+ * /api/tags/:
  *    patch:
- *      description: 슈퍼 태그를 수정한다.
+ *      description: 태그를 수정한다.
  *      tags:
  *        - tags
  *      parameters:
- *        - in: path
- *          name: superTagId
- *          description: 변경할 슈퍼 태그의 id 값
- *          required: true
- *          schema:
- *            type: integer
  *      requestBody:
  *        content:
  *          application/json:
  *            schema:
  *              type: object
  *              properties:
+ *                id:
+ *                  description: 수정할 태그의 id
+ *                  type: integer
+ *                  example: 1
+ *                  required: true
+ *                type:
+ *                  description: 수정할 태그의 타입
+ *                  type: string
+ *                  enum: [super, sub, default]
+ *                  example: super
+ *                  required: true
  *                content:
  *                  description: 슈퍼 태그 내용
  *                  type: string
  *                  example: "수정할_내용_적기"
+ *                visible:
+ *                  description: 태그의 공개 여부
+ *                  type: string
+ *                  example: public
+ *                  enum: [public, private]
  *      responses:
  *        '200':
- *          description: 수정된 슈퍼 태그를 반환합니다.
+ *          description: 수정된 슈퍼 태그를 반환한다.
  *          content:
  *            application/json:
  *              schema:
@@ -41,10 +51,20 @@ export const router = Router();
  *                    description: 수정된 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
+ *                  type:
+ *                    description: 수정된 슈퍼 태그의 타입
+ *                    type: string
+ *                    example: "super"
+ *                    enum: [super, sub, default]
  *                  content:
  *                    description: 수정된 슈퍼 태그 내용
  *                    type: string
  *                    example: "수정된_태그"
+ *                  visible:
+ *                    description: 수정된 슈퍼 태그의 공개 여부
+ *                    type: string
+ *                    example: "public"
+ *                    enum: [public, private]
  *        '900':
  *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
@@ -88,7 +108,7 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/tags/{superTagId}', authValidate(roleSet.librarian) /* ,update */);
+router.patch('/tags', authValidate(roleSet.all) /* ,update */);
 
 /**
  * @openapi
