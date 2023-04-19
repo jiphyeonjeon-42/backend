@@ -320,113 +320,118 @@ router
      */
     .delete('/:reviewsId', authValidate(roleSet.all), /*wrapAsyncController(deleteReviews)*/);
 
- /**
-   * @openapi
-   * /api/tags:
-   *    get:
-   *      tags:
-   *      - tags
-   *      summary: 서브/디폴트 태그 정보를 검색한다.
-   *      description: 서브/디폴트 태그 정보를 검색한다. 이는 태그 관리 페이지에서 사용한다.
-   *      parameters:
-   *        - name: page
-   *          in: query
-   *          description: 검색 결과의 페이지.
-   *          schema:
-   *            type: integer
-   *            default: 0
-   *            example: 0
-   *        - name: limit
-   *          in: query
-   *          description: 검색 결과 한 페이지당 보여줄 결과물의 개수.
-   *          schema:
-   *            type: integer
-   *            default: 10
-   *            example: 10
-   *        - name: visibility
-   *          in: query
-   *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 태그만 가져온다.
-   *          schema:
-   *            type: string
-   *            default:
-   *            example: null
-   *            enum: [null, public, private]
-   *        - name: title
-   *          in: query
-   *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
-   *          schema:
-   *            type: string
-   *            example: 깐깐하게 배우는 C
-   *            nullable: true
-   *      responses:
-   *        '200':
-   *          description: 슈퍼/서브/디폴트 태그들을 반환한다.
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: object
-   *                properties:
-   *                  items:
-   *                    description: 태그 목록
-   *                    type: array
-   *                    items:
-   *                      type: object
-   *                      properties:
-   *                        bookInfoId:
-   *                          description: 태그가 등록된 도서의 infoId
-   *                          type: integer
-   *                          example: 1
-   *                        title:
-   *                          description: 태그가 등록된 도서의 제목
-   *                          type: string
-   *                          example: 깐깐하게 배우는 C
-   *                        id:
-   *                          description: 태그 고유 id
-   *                          type: integer
-   *                          example: 1
-   *                        createdAt:
-   *                          description: 태그가 등록된 시간
-   *                          type: string
-   *                          example: 2023-04-12
-   *                        login:
-   *                          description: 태그를 작성한 카뎃의 닉네임
-   *                          type: string
-   *                          example: yena
-   *                        content:
-   *                          description: 슈퍼 태그의 내용
-   *                          type: string
-   *                          example: 1서클_추천_책
-   *                  meta:
-   *                    description: 모든 태그 수와 관련된 정보
-   *                    type: object
-   *                    properties:
-   *                      totalItems:
-   *                        description: 전체 검색 결과 수
-   *                        type: integer
-   *                        example: 1
-   *                      itemCount:
-   *                        description: 현재 페이지 검색 결과 수
-   *                        type: integer
-   *                        example: 1
-   *                      itemsPerPage:
-   *                        description: 페이지 당 검색 결과 수
-   *                        type: integer
-   *                        example: 10
-   *                      totalPages:
-   *                        description: 전체 결과 페이지 수
-   *                        type: integer
-   *                        example: 1
-   *                      currentPage:
-   *                        description: 현재 페이지
-   *                        type: integer
-   *                        example: 1
-   *          '400':
-   *            description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
-   *          '401':
-   *            description: 태그 기록을 조회할 권한이 없는 사용자
-   *          '500':
-   *            description: db 에러
-   */
+router
+/**
+  * @openapi
+  * /api/tags:
+  *    get:
+  *      tags:
+  *      - tags
+  *      summary: 서브/디폴트 태그 정보를 검색한다.
+  *      description: 서브/디폴트 태그 정보를 검색한다. 이는 태그 관리 페이지에서 사용한다.
+  *      parameters:
+  *        - name: page
+  *          in: query
+  *          description: 검색 결과의 페이지.
+  *          schema:
+  *            type: integer
+  *            default: 0
+  *            example: 0
+  *        - name: limit
+  *          in: query
+  *          description: 검색 결과 한 페이지당 보여줄 결과물의 개수.
+  *          schema:
+  *            type: integer
+  *            default: 10
+  *            example: 10
+  *        - name: visibility
+  *          in: query
+  *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 태그만 가져온다.
+  *          schema:
+  *            type: string
+  *            default:
+  *            example: null
+  *            enum: [null, public, private]
+  *        - name: title
+  *          in: query
+  *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
+  *          schema:
+  *            type: string
+  *            example: 깐깐하게 배우는 C
+  *            nullable: true
+  *      responses:
+  *        '200':
+  *          description: 슈퍼/서브/디폴트 태그들을 반환한다.
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                properties:
+  *                  items:
+  *                    description: 태그 목록
+  *                    type: array
+  *                    items:
+  *                      type: object
+  *                      properties:
+  *                        bookInfoId:
+  *                          description: 태그가 등록된 도서의 infoId
+  *                          type: integer
+  *                          example: 1
+  *                        title:
+  *                          description: 태그가 등록된 도서의 제목
+  *                          type: string
+  *                          example: 깐깐하게 배우는 C
+  *                        id:
+  *                          description: 태그 고유 id
+  *                          type: integer
+  *                          example: 1
+  *                        createdAt:
+  *                          description: 태그가 등록된 시간
+  *                          type: string
+  *                          example: 2023-04-12
+  *                        login:
+  *                          description: 태그를 작성한 카뎃의 닉네임
+  *                          type: string
+  *                          example: yena
+  *                        content:
+  *                          description: 서브/디폴트 태그의 내용
+  *                          type: string
+  *                          example: yena가_추천하는
+  *                        superContent:
+  *                          description: 슈퍼 태그의 내용
+  *                          type: string
+  *                          example: 1서클_추천_책
+  *                  meta:
+  *                    description: 모든 태그 수와 관련된 정보
+  *                    type: object
+  *                    properties:
+  *                      totalItems:
+  *                        description: 전체 검색 결과 수
+  *                        type: integer
+  *                        example: 1
+  *                      itemCount:
+  *                        description: 현재 페이지 검색 결과 수
+  *                        type: integer
+  *                        example: 1
+  *                      itemsPerPage:
+  *                        description: 페이지 당 검색 결과 수
+  *                        type: integer
+  *                        example: 10
+  *                      totalPages:
+  *                        description: 전체 결과 페이지 수
+  *                        type: integer
+  *                        example: 1
+  *                      currentPage:
+  *                        description: 현재 페이지
+  *                        type: integer
+  *                        example: 1
+  *          '400':
+  *            description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+  *          '401':
+  *            description: 태그 기록을 조회할 권한이 없는 사용자
+  *          '500':
+  *            description: db 에러
+  */
   .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
 
 router
