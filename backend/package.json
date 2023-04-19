@@ -33,7 +33,6 @@
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
-    "tsx": "^3.12.6",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
@@ -42,6 +41,7 @@
     "prettier": "^2.5.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.4.0",
+    "tsx": "^3.12.6",
     "typescript": "^4.5.5"
   },
   "dependencies": {
@@ -70,6 +70,7 @@
     "typeorm": "^0.3.11",
     "typeorm-model-generator": "^0.4.6",
     "winston": "^3.6.0",
-    "winston-daily-rotate-file": "^4.6.1"
+    "winston-daily-rotate-file": "^4.6.1",
+    "zod": "^3.21.4"
   }
 }
