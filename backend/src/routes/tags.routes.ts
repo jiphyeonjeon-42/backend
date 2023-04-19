@@ -334,8 +334,8 @@ router
    *          description: 검색 결과의 페이지.
    *          schema:
    *            type: integer
-   *            default: 1
-   *            example: 1
+   *            default: 0
+   *            example: 0
    *        - name: limit
    *          in: query
    *          description: 검색 결과 한 페이지당 보여줄 결과물의 개수.
