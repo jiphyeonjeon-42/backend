@@ -388,7 +388,7 @@ router
    *                          description: 태그가 등록된 시간
    *                          type: string
    *                          example: 2023-04-12
-   *                        nickname:
+   *                        login:
    *                          description: 태그를 작성한 카뎃의 닉네임
    *                          type: string
    *                          example: yena
