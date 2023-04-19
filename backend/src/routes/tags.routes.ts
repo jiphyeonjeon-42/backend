@@ -345,13 +345,12 @@ router
    *            example: 10
    *        - name: visibility
    *          in: query
-   *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개 서브 태그만 가져온다.
-   *          required: true
+   *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 태그만 가져온다.
    *          schema:
    *            type: string
-   *            default: public
-   *            example: public
-   *            enum: [public, private]
+   *            default:
+   *            example: null
+   *            enum: [null, public, private]
    *        - name: title
    *          in: query
    *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
