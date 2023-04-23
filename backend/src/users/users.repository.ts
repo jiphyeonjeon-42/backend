@@ -2,7 +2,7 @@ import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 import { Repository } from 'typeorm';
 import Reservation from '../entity/entities/Reservation';
 import UserReservation from '../entity/entities/UserReservation';
-import * as models from './users.model';
+import * as models from '../DTO/users.model';
 import { formatDate } from '../utils/dateFormat';
 import VUserLending from '../entity/entities/VUserLending';
 import VLendingForSearchUser from '../entity/entities/VLendingForSearchUser';
@@ -72,7 +72,7 @@ export default class UsersRepository extends Repository<User> {
    * @warning : use only password needed
    */
   async searchUserWithPasswordBy(conditions: {}, limit: number, page: number)
-  : Promise<[models.User[], number]> {
+  : Promise<[models.PrivateUser[], number]> {
     const [users, count] = await this.findAndCount({
       select: [
         'id',
@@ -88,7 +88,7 @@ export default class UsersRepository extends Repository<User> {
       take: limit,
       skip: page * limit,
     });
-    const customUsers = users as unknown as models.User[];
+    const customUsers = users as unknown as models.PrivateUser[];
     customUsers.forEach((user) => {
       const penaltyEndDate: Date = user.penaltyEndDate as Date;
       const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);

@@ -3,7 +3,7 @@ import { verify } from 'jsonwebtoken';
 import * as status from 'http-status';
 import UsersService from '../users/users.service';
 import { role } from './auth.type';
-import { User } from '../users/users.model';
+import { User } from '../DTO/users.model';
 import config from '../config';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';

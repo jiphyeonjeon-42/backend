@@ -14,6 +14,18 @@ export interface Lending {
 export interface User {
   id: number,
   email: string,
+  nickname: string,
+  intraId: number,
+  slack?: string,
+  penaltyEndDate?: Date,
+  overDueDay: number,
+  role: number,
+  reservations?: [],
+  lendings?: Lending[],
+}
+export interface PrivateUser {
+  id: number,
+  email: string,
   password: string,
   nickname: string,
   intraId: number,
