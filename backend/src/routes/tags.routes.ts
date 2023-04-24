@@ -466,7 +466,7 @@ router
   *            example: 10
   *        - name: visibility
   *          in: query
-  *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 태그만 가져온다.
+  *          description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 및 디폴트 태그만 가져온다.
   *          schema:
   *            type: string
   *            default:
@@ -481,7 +481,7 @@ router
   *            nullable: true
   *      responses:
   *        '200':
-  *          description: 슈퍼/서브/디폴트 태그들을 반환한다.
+  *          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면 superContent에 superContent가 들어간다.
   *          content:
   *            application/json:
   *              schema:
