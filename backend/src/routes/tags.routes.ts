@@ -126,6 +126,8 @@ router
      */
     .delete('/:reviewsId', authValidate(roleSet.all), /*wrapAsyncController(deleteReviews)*/);
 
+router
+  /**
    * @openapi
    * /api/tags:
    *    get:
