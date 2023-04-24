@@ -8,7 +8,7 @@ export const router = Router();
 
 /**
  * @openapi
- * /api/tags/:
+ * /api/tags:
  *    patch:
  *      description: 태그를 수정한다.
  *      tags:
