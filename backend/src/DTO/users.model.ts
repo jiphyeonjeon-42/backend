@@ -23,16 +23,6 @@ export interface User {
   reservations?: [],
   lendings?: Lending[],
 }
-export interface PrivateUser {
-  id: number,
-  email: string,
+export interface PrivateUser extends User {
   password: string,
-  nickname: string,
-  intraId: number,
-  slack?: string,
-  penaltyEndDate?: Date,
-  overDueDay: number,
-  role: number,
-  reservations?: [],
-  lendings?: Lending[],
 }
