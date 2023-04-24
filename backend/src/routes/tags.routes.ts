@@ -481,7 +481,7 @@ router
   *            nullable: true
   *      responses:
   *        '200':
-  *          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면 superContent에 superContent가 들어간다.
+  *          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면 superContent에 super 태그의 내용이 들어간다.
   *          content:
   *            application/json:
   *              schema:
