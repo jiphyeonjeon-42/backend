@@ -6,7 +6,7 @@ import Category from './Category';
 import Likes from './Likes';
 import Reservation from './Reservation';
 import Reviews from './Reviews';
-import { SuperTag } from './SuperTag';
+import SuperTag from './SuperTag';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')

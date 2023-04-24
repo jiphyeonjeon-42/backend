@@ -1,13 +1,13 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import jipDataSource from '../app-data-source';
-import { SubTag } from '../entity/entities/SubTag';
+import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
 import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
 import ErrorResponse from "../utils/error/errorResponse";
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-export class SubTagRepository extends Repository<SubTag> {
+export default class SubTagRepository extends Repository<SubTag> {
   private readonly bookInfoRepo: Repository<BookInfo>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -31,4 +31,3 @@ export class SubTagRepository extends Repository<SubTag> {
     await this.insert(insertObject);
   }
 }
- 

@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import User from './User';
-import { SuperTag } from './SuperTag';
+import SuperTag from './SuperTag';
 
 @Index('userid', ['userid'], {})
 @Index('superTagId', ['superTagId'], {})
