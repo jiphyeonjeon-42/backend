@@ -6,6 +6,7 @@ import Category from './Category';
 import Likes from './Likes';
 import Reservation from './Reservation';
 import Reviews from './Reviews';
+import { SuperTag } from './SuperTag';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')
@@ -64,6 +65,9 @@ class BookInfo {
 
   @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
   reviews?: Reviews[];
+
+  @OneToMany(() => SuperTag, (superTags) => superTags.userid)
+  superTags?: SuperTag[];
 }
 
 export default BookInfo;

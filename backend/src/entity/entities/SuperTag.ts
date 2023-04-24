@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { SubTag } from "./SubTag";
-import { User } from "./User";
-import { BookInfo } from "./BookInfo";
+import  User  from "./User";
+import  BookInfo  from "./BookInfo";
 
 @Index("userid", ["userid"], {})
 @Index("bookInfoId", ["bookInfoId"], {})

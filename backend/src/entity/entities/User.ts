@@ -10,6 +10,8 @@ import Lending from './Lending';
 import Likes from './Likes';
 import Reservation from './Reservation';
 import Reviews from './Reviews';
+import { SubTag } from './SubTag';
+import { SuperTag } from './SuperTag';
 
 @Index('email', ['email'], { unique: true })
 @Index('intraId', ['intraId'], { unique: true })
@@ -80,6 +82,12 @@ class User {
 
   @OneToMany(() => Reviews, (reviews) => reviews.user)
   reviews: Reviews[];
+
+  @OneToMany(() => SubTag, (subtag) => subtag.userid)
+  subTag: SubTag[];
+
+  @OneToMany(() => SuperTag, (superTags) => superTags.userid)
+  superTags: SuperTag[];
 }
 
 export default User;

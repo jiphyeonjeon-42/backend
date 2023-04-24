@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./User";
+import  User  from "./User";
 import { SuperTag } from "./SuperTag";
 
 @Index("userid", ["userid"], {})
@@ -46,7 +46,7 @@ export class SubTag {
   @Column("tinyint", { name: "isPublic" })
   isPublic: number;
 
-  @ManyToOne(() => User, (user) => user.subTags, {
+  @ManyToOne(() => User, (user) => user.subTag, {
     onDelete: "NO ACTION",
     onUpdate: "NO ACTION",
   })
