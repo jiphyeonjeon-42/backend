@@ -6,6 +6,7 @@ import { wrapAsyncController } from '../middlewares/wrapAsyncController';
 export const path = '/tags';
 export const router = Router();
 
+router
 /**
  * @openapi
  * /api/tags/:
@@ -111,6 +112,7 @@ export const router = Router();
  */
 router.patch('/tags', authValidate(roleSet.all) /* ,update */);
 
+router
 /**
  * @openapi
  * /api/tags/merge:
@@ -320,6 +322,8 @@ router
      */
     .delete('/:reviewsId', authValidate(roleSet.all), /*wrapAsyncController(deleteReviews)*/);
 
+router
+  /**
    * @openapi
    * /api/tags:
    *    get:
