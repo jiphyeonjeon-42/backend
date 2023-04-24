@@ -1,7 +1,9 @@
 import { Router } from 'express';
+import { createDefaultTags } from '../tags/tags.controller.ts';
+
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import { wrapAsyncController } from '../middlewares/wrapAsyncController';
+import { wrapAsyncController } from '../router/wrapAsyncController';
 
 export const path = '/tags';
 export const router = Router();
@@ -258,7 +260,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.all) /* wrapAsyncController(createtags) */);
+  .post('/', authValidate(roleSet.all), wrapAsyncController(createDefaultTags));
 
 router
   /**
