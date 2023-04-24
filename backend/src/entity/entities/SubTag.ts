@@ -59,4 +59,8 @@ export class SubTag {
   })
   @JoinColumn([{ name: "superTagId", referencedColumnName: "id" }])
   superTag: SuperTag;
+
+  @JoinColumn([{ name: "bookInfoId", referencedColumnName: "id" }])
+  bookInfoId: number;
+
 }
