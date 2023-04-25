@@ -44,4 +44,4 @@ export class TagsService {
   }
 }
 
-export default new TagsService();
+export default TagsService;
