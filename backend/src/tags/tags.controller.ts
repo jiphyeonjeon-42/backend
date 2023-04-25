@@ -17,5 +17,5 @@ export const createDefaultTags = async (
   const tagsService = new TagsService();
   // contentParseCheck(content);
   await tagsService.createDefaultTags(tokenId, bookInfoId, content);
-  return res.status(status.OK).send();
+  return res.status(status.CREATED).send();
 };
