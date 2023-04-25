@@ -83,10 +83,10 @@ class User {
   @OneToMany(() => Reviews, (reviews) => reviews.user)
   reviews: Reviews[];
 
-  @OneToMany(() => SubTag, (subtag) => subtag.userid)
+  @OneToMany(() => SubTag, (subtag) => subtag.userId)
   subTag: SubTag[];
 
-  @OneToMany(() => SuperTag, (superTags) => superTags.userid)
+  @OneToMany(() => SuperTag, (superTags) => superTags.userId)
   superTags: SuperTag[];
 }
 
