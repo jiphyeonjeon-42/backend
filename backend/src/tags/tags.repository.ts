@@ -1,4 +1,6 @@
-import { InsertResult, Like, QueryRunner, Repository } from 'typeorm';
+import {
+  InsertResult, Like, QueryRunner, Repository,
+} from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
@@ -37,6 +39,7 @@ export default class SubTagRepository extends Repository<SubTag> {
 
 export class SuperTagRepository extends Repository<SuperTag> {
   private readonly bookInfoRepo: Repository<BookInfo>;
+
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -45,10 +48,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     super(SuperTag, entityManager);
     this.entityManager = entityManager;
     this.bookInfoRepo = new Repository<BookInfo>(
-        BookInfo,
-        this.entityManager,
-      );
-    }
+      BookInfo,
+      this.entityManager,
+    );
+  }
 
   async getDefaultTagId(bookInfoId: number)
   : Promise<SuperTag | null> {
@@ -63,7 +66,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     });
     return defaultTag;
   }
-  
+
   async createSuperTag(content: string, bookInfoId: number, userId: number)
   : Promise<number> {
     const insertObject: QueryDeepPartialEntity<SuperTag> = {
