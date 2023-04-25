@@ -1,4 +1,4 @@
-import { Like, QueryRunner, Repository } from 'typeorm';
+import { InsertResult, Like, QueryRunner, Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
@@ -21,10 +21,11 @@ export default class SubTagRepository extends Repository<SubTag> {
     );
   }
 
-  async createDefaultTags(userId: number, bookInfoId: number, content: string): Promise<void> {
+  async createDefaultTags(userId: number, bookInfoId: number, content: string, superTagId: number)
+  : Promise<void> {
     const insertObject: QueryDeepPartialEntity<SubTag> = {
-      superTagId: 0,
-      userid: userId,
+      superTagId,
+      userId,
       bookInfoId,
       content,
       updateUserId: userId,
@@ -58,5 +59,17 @@ export class SuperTagRepository extends Repository<SuperTag> {
       },
     });
     return defaultTag;
+  }
+  
+  async createSuperTag(content: string, bookInfoId: number, userId: number)
+  : Promise<number> {
+    const insertObject: QueryDeepPartialEntity<SuperTag> = {
+      userId,
+      bookInfoId,
+      content,
+      updateUserId: userId,
+    };
+    const insertResult = await this.insert(insertObject);
+    return insertResult.identifiers[0].id;
   }
 }
