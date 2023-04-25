@@ -26,11 +26,6 @@ export class TagsService {
   // [] TODO => createDefaultTags에 superTagId 같이 전달
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
-		const regexContent = new RegExp(`/([A-Za-z가-힣0-9_])/g`);
-		if (content === '' || content.length > 42 || regexContent.test(content) === false) {
-			await this.queryRunner.release();
-			throw new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400);
-		}
 		try {
       await this.queryRunner.startTransaction();
       const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
