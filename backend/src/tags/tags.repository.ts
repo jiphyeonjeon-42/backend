@@ -30,20 +30,23 @@ export default class SubTagRepository extends Repository<SubTag> {
       content,
       updateUserId: userId,
     };
+
     await this.insert(insertObject);
   }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
-    private readonly bookInfoRepo: Repository<BookInfo>;
-  
-    constructor(transactionQueryRunner?: QueryRunner) {
-      const queryRunner: QueryRunner | undefined = transactionQueryRunner;
-      const entityManager = jipDataSource.createEntityManager(queryRunner);
-      super(SuperTag, entityManager);
-      this.bookInfoRepo = new Repository<BookInfo>(
+  private readonly bookInfoRepo: Repository<BookInfo>;
+  private readonly entityManager;
+
+  constructor(transactionQueryRunner?: QueryRunner) {
+    const queryRunner: QueryRunner | undefined = transactionQueryRunner;
+    const entityManager = jipDataSource.createEntityManager(queryRunner);
+    super(SuperTag, entityManager);
+    this.entityManager = entityManager;
+    this.bookInfoRepo = new Repository<BookInfo>(
         BookInfo,
-        entityManager,
+        this.entityManager,
       );
     }
 
@@ -69,7 +72,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
       content,
       updateUserId: userId,
     };
-    const insertResult = await this.insert(insertObject);
+    const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
 }
