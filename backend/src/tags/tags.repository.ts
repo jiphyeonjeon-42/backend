@@ -10,7 +10,7 @@ import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
 import SuperTag from '../entity/entities/SuperTag';
 
-export default class SubTagRepository extends Repository<SubTag> {
+export class SubTagRepository extends Repository<SubTag> {
   private readonly bookInfoRepo: Repository<BookInfo>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
