@@ -552,7 +552,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/tags', authValidate(roleSet.librarian), searchSubDefaultTags);
+  .get('/', authValidate(roleSet.librarian), searchSubDefaultTags);
 
 router
   /**
