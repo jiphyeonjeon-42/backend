@@ -5,23 +5,18 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
-import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
 import { subDefaultTag } from './DTO.temp';
 import SuperTag from '../entity/entities/SuperTag';
+import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class SubTagRepository extends Repository<SubTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
-      entityManager,
-    );
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string, superTagId: number)
@@ -38,7 +33,7 @@ export class SubTagRepository extends Repository<SubTag> {
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
   private readonly entityManager;
 
@@ -47,8 +42,8 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SuperTag, entityManager);
     this.entityManager = entityManager;
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
       this.entityManager,
     );
   }
@@ -81,7 +76,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
 
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
-    const [items, count] = await this.findAndCount({
+    const [items, count] = await this.vSubDefaultRepo.findAndCount({
       where: conditions,
       order: { id: 'DESC' },
     });
