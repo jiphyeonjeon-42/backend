@@ -13,12 +13,13 @@ import User from './User';
     .addSelect('u.nickname', 'login')
     .addSelect('sb.content', 'content')
     .addSelect('sp.content', 'superContent')
+    .addSelect('sb.isPublic', 'isPublic')
     .from(SuperTag, 'sp')
     .innerJoin(SubTag, 'sb', 'sb.superTagId = sp.id')
     .innerJoin(BookInfo, 'bi', 'bi.id = sp.bookInfoId')
     .innerJoin(User, 'u', 'u.id = sb.userId'),
 })
-export class VSearchBook {
+export class VTagsSubDefault {
   @ViewColumn()
   bookInfoId: number;
 
@@ -32,13 +33,16 @@ export class VSearchBook {
   createdAt: string;
 
   @ViewColumn()
-  loginId: string;
+  login: string;
 
   @ViewColumn()
   content: string;
 
   @ViewColumn()
   superContent: string;
+
+  @ViewColumn()
+  isPublic: boolean;
 }
 
-export default VSearchBook;
+export default VTagsSubDefault;
