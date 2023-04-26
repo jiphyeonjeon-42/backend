@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { createDefaultTags } from '../tags/tags.controller';
-
+import { createDefaultTags, searchSubDefaultTags } from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 import wrapAsyncController from '../middlewares/wrapAsyncController';
@@ -554,7 +553,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
+  .get('/tags', authValidate(roleSet.librarian), searchSubDefaultTags);
 
 router
   /**
