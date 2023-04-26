@@ -33,18 +33,7 @@ export class SubTagRepository extends Repository<SubTag> {
       content,
       updateUserId: userId,
     };
-
     await this.insert(insertObject);
-  }
-
-  async searchSubDefaultTags(page: number, limit: number, conditions: Object)
-  : Promise<[subDefaultTag[], number]> {
-    const [items, count] = await this.findAndCount({
-      where: conditions,
-      order: { id: 'DESC' },
-    });
-    const convertedItems = items as unknown as subDefaultTag[];
-    return [convertedItems, count];
   }
 }
 
@@ -88,5 +77,15 @@ export class SuperTagRepository extends Repository<SuperTag> {
     };
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
+  }
+
+  async getSubAndSuperTags(page: number, limit: number, conditions: Object)
+    : Promise<[subDefaultTag[], number]> {
+    const [items, count] = await this.findAndCount({
+      where: conditions,
+      order: { id: 'DESC' },
+    });
+    const convertedItems = items as unknown as subDefaultTag[];
+    return [convertedItems, count];
   }
 }
