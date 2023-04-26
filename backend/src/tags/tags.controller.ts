@@ -32,6 +32,7 @@ export const searchSubDefaultTags = async (
   const limit: number = parseCheck.limitParse(parseInt(String(req?.query?.limit), 10));
   const visibility: string = parseCheck.stringQueryParse(req?.query?.visibility);
   const title: string = parseCheck.stringQueryParse(req?.query?.title);
+  const tagsService = new TagsService();
   return res.status(status.OK)
     .json(await tagsService.searchSubDefaultTags(page, limit, visibility, title));
 };
