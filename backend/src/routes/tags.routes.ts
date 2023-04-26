@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import { createDefaultTags, createSuperTags } from '../tags/tags.controller';
+
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
-import { wrapAsyncController } from '../middlewares/wrapAsyncController';
 
 export const path = '/tags';
 export const router = Router();
@@ -258,7 +259,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.all) /* wrapAsyncController(createtags) */);
+  .post('/default', authValidate(roleSet.all), createDefaultTags);
 
 router
   /**
@@ -318,7 +319,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.librarian) /* wrapAsyncController(createtags) */);
+  .post('/super', authValidate(roleSet.librarian), createSuperTags);
 
 router
   /**
@@ -378,7 +379,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.all) /* wrapAsyncController(deleteReviews) */);
+  .delete('/:reviewsId', authValidate(roleSet.all) /* (deleteReviews) */);
 
 router
   /**
@@ -438,7 +439,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.librarian) /* wrapAsyncController(deleteReviews) */);
+  .delete('/:reviewsId', authValidate(roleSet.librarian) /* (deleteReviews) */);
 
 router
   /**

@@ -8,6 +8,7 @@ import * as histories from './histories.routes';
 import * as reviews from './reviews.routes';
 import * as bookInfoReviews from './bookInfoReviews.routes';
 import * as stock from './stock.routes';
+import * as tags from './tags.routes'
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.use(reviews.path, reviews.router);
 router.use(histories.path, histories.router);
 router.use(bookInfoReviews.path, bookInfoReviews.router);
 router.use(stock.path, stock.router);
+router.use(tags.path, tags.router);
 
 export default router;

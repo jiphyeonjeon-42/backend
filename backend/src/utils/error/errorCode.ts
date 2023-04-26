@@ -73,4 +73,11 @@ export const INVALID_INPUT_REVIEWS_CONTENT = '811';
 
 export const UNAUTHORIZED = '700';
 
+export const INVALID_INPUT_TAGS = '900';
+export const UNAUTHORIZED_TAGS = '901';
+export const ALREADY_EXISTING_TAGS = '902';
+export const NOT_FOUND_TAGS = '903';
+export const CREATE_FAIL_TAGS = '904';
+export const INVALID_INPUT_TAG_ID = '910';
+
 export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';
