@@ -66,7 +66,7 @@ class BookInfo {
   @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
   reviews?: Reviews[];
 
-  @OneToMany(() => SuperTag, (superTags) => superTags.userid)
+  @OneToMany(() => SuperTag, (superTags) => superTags.userId)
   superTags?: SuperTag[];
 }
 
