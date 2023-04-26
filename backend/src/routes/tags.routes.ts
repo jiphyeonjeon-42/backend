@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createDefaultTags } from '../tags/tags.controller';
+import { createDefaultTags, createSuperTags } from '../tags/tags.controller';
 
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -319,7 +319,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.librarian) /* (createtags) */);
+  .post('/super', authValidate(roleSet.librarian), createSuperTags);
 
 router
   /**
