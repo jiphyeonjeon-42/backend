@@ -11,15 +11,15 @@ import SubTag from './SubTag';
 import User from './User';
 import BookInfo from './BookInfo';
 
-@Index('userid', ['userid'], {})
+@Index('userId', ['userId'], {})
 @Index('bookInfoId', ['bookInfoId'], {})
 @Entity('super_tag', { schema: 'jip_dev' })
 export default class SuperTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('int', { name: 'userid' })
-  userid: number;
+  @Column('int', { name: 'userId' })
+  userId: number;
 
   @Column('int', { name: 'bookInfoId' })
   bookInfoId: number;
@@ -52,7 +52,7 @@ export default class SuperTag {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  @JoinColumn([{ name: 'userid', referencedColumnName: 'id' }])
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.superTags, {

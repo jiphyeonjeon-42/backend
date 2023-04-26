@@ -9,15 +9,15 @@ import {
 import User from './User';
 import SuperTag from './SuperTag';
 
-@Index('userid', ['userid'], {})
+@Index('userId', ['userId'], {})
 @Index('superTagId', ['superTagId'], {})
 @Entity('sub_tag', { schema: 'jip_dev' })
 export default class SubTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('int', { name: 'userid' })
-  userid: number;
+  @Column('int', { name: 'userId' })
+  userId: number;
 
   @Column('int', { name: 'superTagId' })
   superTagId: number;
@@ -50,7 +50,7 @@ export default class SubTag {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  @JoinColumn([{ name: 'userid', referencedColumnName: 'id' }])
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
   @ManyToOne(() => SuperTag, (superTag) => superTag.subTags, {
