@@ -77,10 +77,21 @@ export class SuperTagRepository extends Repository<SuperTag> {
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({
+      select: [
+        'bookInfoId',
+        'title',
+        'id',
+        'createdAt',
+        'login',
+        'content',
+        'superContent',
+      ],
       where: conditions,
       order: { id: 'DESC' },
+      skip: page * limit,
+      take: limit,
     });
-    const convertedItems = items as unknown as subDefaultTag[];
+    const convertedItems = items as subDefaultTag[];
     return [convertedItems, count];
   }
 }
