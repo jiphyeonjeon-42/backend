@@ -6,6 +6,7 @@ import * as errorCode from '../utils/error/errorCode';
 import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
+import { subDefaultTag } from './DTO.temp';
 
 export default class SubTagRepository extends Repository<SubTag> {
   private readonly bookInfoRepo: Repository<BookInfo>;
@@ -29,5 +30,15 @@ export default class SubTagRepository extends Repository<SubTag> {
       updateUserId: userId,
     };
     await this.insert(insertObject);
+  }
+
+  async searchSubDefaultTags(page: number, limit: number, conditions: Object)
+  : Promise<[subDefaultTag[], number]> {
+    const [items, count] = await this.findAndCount({
+      where: conditions,
+      order: { id: 'DESC' },
+    });
+    const convertedItems = items as unknown as subDefaultTag[];
+    return [convertedItems, count];
   }
 }
