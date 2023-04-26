@@ -60,7 +60,7 @@ export class TagsService {
         break;
     }
     if (title) { conditions.title = Like(`%${title}%`); }
-    const [items, count] = await this.subTagRepository.searchSubDefaultTags(
+    const [items, count] = await this.superTagRepository.getSubAndSuperTags(
       page,
       limit,
       conditions,
