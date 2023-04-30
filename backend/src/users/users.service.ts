@@ -1,7 +1,7 @@
 import { Like, Not } from 'typeorm';
 import * as errorCode from '../utils/error/errorCode';
-import * as models from './users.model';
-import * as types from './users.type';
+import * as models from '../DTO/users.model';
+import * as types from '../DTO/common.interface';
 import UsersRepository from './users.repository';
 
 export default class UsersService {

@@ -1,0 +1,16 @@
+name: 기능 추가
+description: 새로 구현할 기능을 작성합니다.
+
+labels: [enhancement]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 기능 설명
+      description: 어떤 기능을 구현할지 설명해주세요.
+      placeholder: |
+        예시:
+        - [ ] '...' 기능을 구현합니다.
+        - [ ] '...' 기능을 구현합니다.
+    validations:
+      required: true

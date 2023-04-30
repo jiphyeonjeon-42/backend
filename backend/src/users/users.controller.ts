@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
 import ErrorResponse from '../utils/error/errorResponse';
-import { User } from './users.model';
+import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';

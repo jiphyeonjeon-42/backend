@@ -107,6 +107,8 @@ export const createBook = async (book: CreateBookInfo) => {
       const categoryId = book.categoryId === undefined ? '' : book.categoryId;
       recommendPrimaryNum = await booksRepository.getNewCallsignPrimaryNum(categoryId);
     } else {
+      const bookInfoId = await booksRepository.getBookList(isbn, 1, 0);
+      book.infoId = bookInfoId[0].bookInfoId;
       const nums = await booksRepository.getOldCallsignNums(categoryAlphabet);
       recommendPrimaryNum = nums.recommendPrimaryNum;
       recommendCopyNum = nums.recommendCopyNum * 1 + 1;

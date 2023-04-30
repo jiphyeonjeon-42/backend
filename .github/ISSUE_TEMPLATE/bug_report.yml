@@ -1,0 +1,30 @@
+name: 버그 리포트
+description: 버그 리포트를 작성합니다.
+
+labels: [bug]
+body:
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현 방법
+      description: 어떻게 버그가 발생했는지 설명해주세요.
+      placeholder: |
+        예시:
+        1. '...' 요청을 보냅니다.
+        2. '....' 응답을 받습니다.
+        3. '....' 에러가 발생합니다.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: 발생 위치
+      description: 어디에서 버그가 발생했는지 알려주세요.
+      placeholder: "'...' 컨트롤러에서 '...' 함수"
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 추가 정보
+      description: 추가적인 정보나 스크린샷이 있다면 알려주세요.

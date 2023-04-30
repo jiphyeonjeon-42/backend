@@ -5,7 +5,7 @@ import config from '../config';
 import UsersService from '../users/users.service';
 import * as authService from './auth.service';
 import * as authJwt from './auth.jwt';
-import * as models from '../users/users.model';
+import * as models from '../DTO/users.model';
 import { role } from './auth.type';
 import { updateSlackIdByUserId } from '../slack/slack.service';
 import ErrorResponse from '../utils/error/errorResponse';
@@ -98,7 +98,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       throw new ErrorResponse(errorCode.NO_INPUT, 400);
     }
     /* 여기에 id, password의 유효성 검증 한번 더 할 수도 있음 */
-    const user: { items: models.User[] } = await usersService.searchUserWithPasswordByEmail(id);
+    const user: { items: models.PrivateUser[] } = await usersService.searchUserWithPasswordByEmail(id);
     if (user.items.length === 0) {
       return next(new ErrorResponse(errorCode.NO_ID, 401));
     }
