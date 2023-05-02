@@ -7,12 +7,11 @@ import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
-import { subDefaultTag } from './DTO.temp';
+import { subDefaultTag, superDefaultTag } from './DTO.temp';
 import SuperTag from '../entity/entities/SuperTag';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class SubTagRepository extends Repository<SubTag> {
-
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -111,5 +110,24 @@ export class SuperTagRepository extends Repository<SuperTag> {
     });
     const convertedItems = items as subDefaultTag[];
     return [convertedItems, count];
+  }
+
+  async getSuperTagsWithSubCount(bookInfoId: number)
+    : Promise<superDefaultTag[]> {
+    const superTags = await this.createQueryBuilder('sp')
+      .select('id', 'id')
+      .addSelect('content', 'content')
+      .loadRelationCountAndMap(
+        'sp.subTagCount',
+        'sp.subTags',
+        'count',
+        (qb) => qb.where(
+          'sp.bookInfoId = :bookInfoId',
+          { bookInfoId },
+        ),
+      )
+      .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
+      .getRawMany();
+    return superTags as superDefaultTag[];
   }
 }
