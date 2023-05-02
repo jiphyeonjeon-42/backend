@@ -7,3 +7,9 @@ export interface subDefaultTag {
   content: string;
   superContent: string;
 }
+
+export interface superDefaultTag {
+  id: number;
+  content: string;
+  count: number;
+}
