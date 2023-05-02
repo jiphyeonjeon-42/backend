@@ -7,6 +7,7 @@ import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from "../utils/error/errorResponse";
 import { DBError } from '../mysql';
 import { ErrorCode } from '@slack/web-api';
+import { superDefaultTag } from './DTO.temp';
 
 export class TagsService {
   private readonly subTagRepository : SubTagRepository;
@@ -81,6 +82,22 @@ export class TagsService {
   async searchSubTags(superTagId: number): Promise<Object> {
     const subTags = await this.subTagRepository.getSubTags({ superTagId });
     return subTags;
+  }
+
+  async searchSuperDefaultTags(bookInfoId: number): Promise<Object> {
+    let superDefaultTags: Array<superDefaultTag> = [];
+
+    superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
+    const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
+    const defaultTags = await this.subTagRepository.getSubTags({ superTagId: defaultTagId });
+    defaultTags.forEach((defaultTag) => {
+      superDefaultTags.push({
+        id: defaultTag.id,
+        content: defaultTag.content,
+        count: 0,
+      });
+    });
+    return superDefaultTags;
   }
 }
 
