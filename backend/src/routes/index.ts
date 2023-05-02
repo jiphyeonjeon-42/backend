@@ -12,6 +12,7 @@ import * as tags from './tags.routes';
 
 const router = Router();
 
+//  ELB healthcheck 를 위한 /api/health endpoint
 router.use('/health', (req, res) => {
   res.status(200).send();
 });
