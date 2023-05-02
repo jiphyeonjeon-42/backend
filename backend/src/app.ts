@@ -52,11 +52,6 @@ app.use(
   swaggerUi.setup(specs, { explorer: true }),
 );
 
-//  elb healthcheck endpoint
-app.get('/health', (req, res) => {
-  res.status(200).send();
-});
-
 // dev route
 app.use('/api', router);
 

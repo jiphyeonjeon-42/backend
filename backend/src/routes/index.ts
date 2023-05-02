@@ -8,10 +8,13 @@ import * as histories from './histories.routes';
 import * as reviews from './reviews.routes';
 import * as bookInfoReviews from './bookInfoReviews.routes';
 import * as stock from './stock.routes';
-import * as tags from './tags.routes'
+import * as tags from './tags.routes';
 
 const router = Router();
 
+router.use('/health', (req, res) => {
+  res.status(200).send();
+});
 router.use(auth.path, auth.router);
 router.use(books.path, books.router);
 router.use(lendings.path, lendings.router);
