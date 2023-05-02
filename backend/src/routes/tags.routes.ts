@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createDefaultTags, searchSubDefaultTags } from '../tags/tags.controller';
+import { createDefaultTags, searchSubDefaultTags, searchSubTags } from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
@@ -609,7 +609,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/{superTagId}/sub', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**
@@ -670,4 +670,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTags */);

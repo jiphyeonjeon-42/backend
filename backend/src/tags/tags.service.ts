@@ -77,6 +77,11 @@ export class TagsService {
     };
     return { items, meta };
   }
+
+  async searchSubTags(superTagId: number): Promise<Object> {
+    const subTags = await this.subTagRepository.getSubTags({ superTagId });
+    return subTags;
+  }
 }
 
 export default TagsService;

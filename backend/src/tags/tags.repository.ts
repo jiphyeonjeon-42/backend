@@ -13,10 +13,16 @@ import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class SubTagRepository extends Repository<SubTag> {
 
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
+
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
+      entityManager,
+    );
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string, superTagId: number)
@@ -29,6 +35,18 @@ export class SubTagRepository extends Repository<SubTag> {
       updateUserId: userId,
     };
     await this.insert(insertObject);
+  }
+
+  async getSubTags(conditions: object) {
+    const subTags = await this.vSubDefaultRepo.find({
+      select: [
+        'id',
+        'content',
+        'login',
+      ],
+      where: conditions,
+    });
+    return subTags;
   }
 }
 

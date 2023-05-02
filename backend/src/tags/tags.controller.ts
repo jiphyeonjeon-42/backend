@@ -36,3 +36,11 @@ export const searchSubDefaultTags = async (
   return res.status(status.OK)
     .json(await tagsService.searchSubDefaultTags(page, limit, visibility, title));
 };
+
+export const searchSubTags = async (
+  req: Request,
+  res: Response,
+) => {
+  const superTagId: number = parseInt(req.params.superTagId, 10);
+  return res.status(status.OK).json(await new TagsService().searchSubTags(superTagId));
+};
