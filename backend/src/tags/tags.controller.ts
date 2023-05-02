@@ -44,3 +44,11 @@ export const searchSubTags = async (
   const superTagId: number = parseInt(req.params.superTagId, 10);
   return res.status(status.OK).json(await new TagsService().searchSubTags(superTagId));
 };
+
+export const searchSuperDefaultTags = async (
+  req: Request,
+  res: Response,
+) => {
+  const bookInfoId: number = parseInt(req.params.bookInfoId, 10);
+  return res.status(status.OK).json(await new TagsService().searchSuperDefaultTags(bookInfoId));
+};
