@@ -502,7 +502,7 @@ router
    *                        title:
    *                          description: 태그가 등록된 도서의 제목
    *                          type: string
-   *                          example: 깐깐하게 배우는 C
+   *                          example: 개발자의 코드
    *                        id:
    *                          description: 태그 고유 id
    *                          type: integer
