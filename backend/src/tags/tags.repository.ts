@@ -5,20 +5,21 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
-import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
+import { subDefaultTag, superDefaultTag } from './DTO.temp';
 import SuperTag from '../entity/entities/SuperTag';
+import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class SubTagRepository extends Repository<SubTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
       entityManager,
     );
   }
@@ -32,13 +33,24 @@ export class SubTagRepository extends Repository<SubTag> {
       content,
       updateUserId: userId,
     };
-
     await this.insert(insertObject);
+  }
+
+  async getSubTags(conditions: object) {
+    const subTags = await this.vSubDefaultRepo.find({
+      select: [
+        'id',
+        'content',
+        'login',
+      ],
+      where: conditions,
+    });
+    return subTags;
   }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
   private readonly entityManager;
 
@@ -47,8 +59,8 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SuperTag, entityManager);
     this.entityManager = entityManager;
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
       this.entityManager,
     );
   }
@@ -77,5 +89,45 @@ export class SuperTagRepository extends Repository<SuperTag> {
     };
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
+  }
+  
+  async getSubAndSuperTags(page: number, limit: number, conditions: Object)
+    : Promise<[subDefaultTag[], number]> {
+    const [items, count] = await this.vSubDefaultRepo.findAndCount({
+      select: [
+        'bookInfoId',
+        'title',
+        'id',
+        'createdAt',
+        'login',
+        'content',
+        'superContent',
+      ],
+      where: conditions,
+      order: { id: 'DESC' },
+      skip: page * limit,
+      take: limit,
+    });
+    const convertedItems = items as subDefaultTag[];
+    return [convertedItems, count];
+  }
+
+  async getSuperTagsWithSubCount(bookInfoId: number)
+    : Promise<superDefaultTag[]> {
+    const superTags = await this.createQueryBuilder('sp')
+      .select('id', 'id')
+      .addSelect('content', 'content')
+      .loadRelationCountAndMap(
+        'sp.subTagCount',
+        'sp.subTags',
+        'count',
+        (qb) => qb.where(
+          'sp.bookInfoId = :bookInfoId',
+          { bookInfoId },
+        ),
+      )
+      .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
+      .getRawMany();
+    return superTags as superDefaultTag[];
   }
 }

@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { createDefaultTags, createSuperTags } from '../tags/tags.controller';
-
+import { createDefaultTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags } from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
@@ -553,7 +552,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
+  .get('/' /* , authValidate(roleSet.librarian) */, searchSubDefaultTags);
 
 router
   /**
@@ -610,7 +609,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/{superTagId}/sub', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/:superTagId/sub' /* , authValidate(roleSet.librarian) */, searchSubTags);
 
 router
   /**
@@ -671,4 +670,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/:bookInfoId' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
