@@ -552,7 +552,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/', authValidate(roleSet.librarian), searchSubDefaultTags);
+  .get('/' /* , authValidate(roleSet.librarian) */, searchSubDefaultTags);
 
 router
   /**
@@ -609,7 +609,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
+  .get('/:superTagId/sub' /* , authValidate(roleSet.librarian) */, searchSubTags);
 
 router
   /**
@@ -670,4 +670,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/merge', authValidate(roleSet.librarian), searchSuperDefaultTags);
+  .get('/tags/merge' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
