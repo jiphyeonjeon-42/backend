@@ -8,7 +8,7 @@ import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
-import { subDefaultTag, superDefaultTag } from './DTO.temp';
+import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 import SuperTag from '../entity/entities/SuperTag';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 

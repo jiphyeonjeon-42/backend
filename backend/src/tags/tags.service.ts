@@ -3,7 +3,7 @@ import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
-import { superDefaultTag } from './DTO.temp';
+import { superDefaultTag } from '../DTO/tags.model';
 
 export class TagsService {
   private readonly subTagRepository : SubTagRepository;
