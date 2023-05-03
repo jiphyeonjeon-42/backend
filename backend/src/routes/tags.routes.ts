@@ -318,7 +318,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.librarian) /* (createtags) */);
+  .post('/super', authValidate(roleSet.librarian), createSuperTags);
 
 router
   /**

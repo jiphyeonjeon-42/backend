@@ -90,7 +90,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-
+  
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({

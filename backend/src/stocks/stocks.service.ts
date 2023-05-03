@@ -1,4 +1,4 @@
-import { Meta } from '../users/users.type';
+import { Meta } from '../DTO/common.interface';
 import StocksRepository from './stocks.repository';
 import jipDataSource from '../app-data-source';
 
