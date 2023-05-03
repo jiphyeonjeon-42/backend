@@ -1,5 +1,12 @@
 import { Router } from 'express';
-import { createDefaultTags, createSuperTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags } from '../tags/tags.controller';
+import {
+  createDefaultTags,
+  createSuperTags,
+  mergeTags,
+  searchSubDefaultTags,
+  searchSubTags,
+  searchSuperDefaultTags
+} from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
@@ -198,7 +205,7 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/tags/merge', authValidate(roleSet.librarian) /* ,merge */);
+router.patch('/tags/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
