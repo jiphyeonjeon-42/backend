@@ -56,7 +56,7 @@ export class SubTagRepository extends Repository<SubTag> {
     );
   }
 
-  async counSubTag(subTagId: number)
+  async countSubTag(subTagId: number)
   : Promise<number> {
     const count = await this.count({
       where: { id: subTagId },
