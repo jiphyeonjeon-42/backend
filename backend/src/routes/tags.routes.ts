@@ -670,4 +670,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/merge' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
+  .get('/:bookInfoId' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
