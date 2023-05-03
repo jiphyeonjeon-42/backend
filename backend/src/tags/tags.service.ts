@@ -81,7 +81,9 @@ export class TagsService {
 
     superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
     const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
-    const defaultTags = await this.subTagRepository.getSubTags({ superTagId: defaultTagId });
+    const defaultTags = await this.subTagRepository.getSubTags(
+      { superTagId: defaultTagId, isPublic: 1 },
+    );
     defaultTags.forEach((defaultTag) => {
       superDefaultTags.push({
         id: defaultTag.id,
