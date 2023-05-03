@@ -56,10 +56,10 @@ export class SubTagRepository extends Repository<SubTag> {
     );
   }
 
-  async countSubTag(subTagId: number)
+  async countSubTag(conditions: object)
   : Promise<number> {
     const count = await this.count({
-      where: { id: subTagId },
+      where: conditions,
     });
     return count;
   }
@@ -147,12 +147,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     return superTags as superDefaultTag[];
   }
 
-  async countSuperTag(superTagId: number)
+  async countSuperTag(conditions: object)
   : Promise<number> {
     const count = await this.count({
-      where: {
-        id: superTagId,
-      },
+      where: conditions,
     });
     return count;
   }
