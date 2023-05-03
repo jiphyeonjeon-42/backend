@@ -1,13 +1,8 @@
-import { Like } from 'typeorm';
-// import * as errorCheck from './utils/errorCheck';
-import { QueryRunner } from 'typeorm';
+import { Like, QueryRunner } from 'typeorm';
 import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
-import ErrorResponse from "../utils/error/errorResponse";
-import { DBError } from '../mysql';
-import { ErrorCode } from '@slack/web-api';
 import { superDefaultTag } from './DTO.temp';
 
 export class TagsService {
@@ -24,7 +19,7 @@ export class TagsService {
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
-		try {
+    try {
       await this.queryRunner.startTransaction();
       const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
       let defaultTagId;
@@ -95,10 +90,12 @@ export class TagsService {
       });
     });
     return superDefaultTags;
-	async createSuperTags(userId: number, bookInfoId: number, content: string) {
-		try {
+  }
+
+  async createSuperTags(userId: number, bookInfoId: number, content: string) {
+    try {
       await this.queryRunner.startTransaction();
-			await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
+      await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {
       await this.queryRunner.rollbackTransaction();
