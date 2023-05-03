@@ -12,6 +12,7 @@ import User from './User';
     .addSelect('DATE_FORMAT(sb.createdAt, "%Y-%m-%d")', 'createdAt')
     .addSelect('u.nickname', 'login')
     .addSelect('sb.content', 'content')
+    .addSelect('sp.id', 'superTagId')
     .addSelect('sp.content', 'superContent')
     .addSelect('sb.isPublic', 'isPublic')
     .from(SuperTag, 'sp')
@@ -37,6 +38,9 @@ export class VTagsSubDefault {
 
   @ViewColumn()
   content: string;
+
+  @ViewColumn()
+  superTagId: number;
 
   @ViewColumn()
   superContent: string;
