@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import { createDefaultTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags } from '../tags/tags.controller';
+import {
+  createDefaultTags, createSuperTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags,
+} from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 

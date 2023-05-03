@@ -5,7 +5,6 @@ import * as status from 'http-status';
 import * as parseCheck from '../utils/parseCheck';
 import TagsService from './tags.service';
 import ErrorResponse from '../utils/error/errorResponse';
-import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
 
 export const createDefaultTags = async (
