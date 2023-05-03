@@ -14,7 +14,7 @@ export const createDefaultTags = async (
 ) => {
   const { id: tokenId } = req.user as any;
   const bookInfoId = req?.body?.bookInfoId;
-  const content = req?.body?.content;
+  const content = req?.body?.content.trim();
   const tagsService = new TagsService();
   const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
   if (content === '' || content.length > 42 || regex.test(content) === false) next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
@@ -29,7 +29,7 @@ export const createSuperTags = async (
   ) => {
     const { id: tokenId } = req.user as any;
     const bookInfoId = req?.body?.bookInfoId;
-    const content = req?.body?.content;
+    const content = req?.body?.content.trim();
     const tagsService = new TagsService();
     const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
     if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === false) next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
