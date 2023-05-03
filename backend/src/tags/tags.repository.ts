@@ -1,4 +1,5 @@
 import {
+  In,
   InsertResult, Like, QueryRunner, Repository,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -47,6 +48,21 @@ export class SubTagRepository extends Repository<SubTag> {
     });
     return subTags;
   }
+
+  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+    await this.update(
+      { id: In(subTagIds) },
+      { superTagId, updateUserId: userId, updatedAt: new Date() },
+    );
+  }
+
+  async counSubTag(subTagId: number)
+  : Promise<number> {
+    const count = await this.count({
+      where: { id: subTagId },
+    });
+    return count;
+  }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
@@ -90,7 +106,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-  
+
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({
@@ -129,5 +145,15 @@ export class SuperTagRepository extends Repository<SuperTag> {
       .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
       .getRawMany();
     return superTags as superDefaultTag[];
+  }
+
+  async countSuperTag(superTagId: number)
+  : Promise<number> {
+    const count = await this.count({
+      where: {
+        id: superTagId,
+      },
+    });
+    return count;
   }
 }
