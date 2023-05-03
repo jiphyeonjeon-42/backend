@@ -106,6 +106,19 @@ export class TagsService {
       await this.queryRunner.release();
     }
   }
+
+  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+    try {
+      await this.queryRunner.startTransaction();
+      await this.subTagRepository.mergeTags(subTagIds, superTagId, userId);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
+  }
 }
 
 export default TagsService;
