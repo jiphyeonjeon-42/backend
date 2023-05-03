@@ -1,4 +1,4 @@
-import { Like, QueryRunner } from 'typeorm';
+import { In, Like, QueryRunner } from 'typeorm';
 import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
@@ -105,6 +105,17 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
+  }
+
+  async isValidTagIds(subTagIds: number[], superTagId: number): Promise<boolean> {
+    const superTagCount = await this.superTagRepository.countSuperTag({ id: superTagId });
+    if (superTagCount === 0) {
+      return false;
+    }
+    const subTagCounts: number[] = await Promise.all(
+      subTagIds.map((id) => this.subTagRepository.countSubTag({ id })),
+    );
+    return subTagCounts.every((count) => count > 0);
   }
 
   async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
