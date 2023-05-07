@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { createDefaultTags, createSuperTags } from '../tags/tags.controller';
-
+import {
+  createDefaultTags, createSuperTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags,
+} from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
 
@@ -478,7 +479,7 @@ router
    *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
    *          schema:
    *            type: string
-   *            example: 깐깐하게 배우는 C
+   *            example: 개발자의 코드
    *            nullable: true
    *      responses:
    *        '200':
@@ -501,7 +502,7 @@ router
    *                        title:
    *                          description: 태그가 등록된 도서의 제목
    *                          type: string
-   *                          example: 깐깐하게 배우는 C
+   *                          example: 개발자의 코드
    *                        id:
    *                          description: 태그 고유 id
    *                          type: integer
@@ -553,7 +554,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/tags', authValidate(roleSet.all) /* , searchSubTag */);
+  .get('/' /* , authValidate(roleSet.librarian) */, searchSubDefaultTags);
 
 router
   /**
@@ -610,7 +611,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/{superTagId}/sub', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/:superTagId/sub' /* , authValidate(roleSet.librarian) */, searchSubTags);
 
 router
   /**
@@ -671,4 +672,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/tags/merge', authValidate(roleSet.librarian) /* , searchSubTag */);
+  .get('/:bookInfoId' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
