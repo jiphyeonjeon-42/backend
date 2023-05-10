@@ -35,6 +35,11 @@ export class SubTagRepository extends Repository<SubTag> {
 
     await this.insert(insertObject);
   }
+  
+  //TODO: subtag - roleset은 all로 두지만, 자기자신만 삭제한다
+  async deleteSubTag(subTagsId: number, deleteUser: number): Promise<void> {
+    await this.update(subTagsId, { isDeleted: 1, updateUserId: deleteUser });
+  }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
@@ -78,4 +83,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
+
+  //TODO: supertag - roleset은 librarian으로 두고, 섭태그가 안에 있는지 확인하기 
+  async deleteSuperTag(superTagsId: number, deleteUser: number): Promise<void> {
+    await this.update(superTagsId, { isDeleted: 1, updateUserId: deleteUser });
+  }
+  
 }
