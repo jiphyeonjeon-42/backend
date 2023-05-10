@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createDefaultTags, createSuperTags } from '../tags/tags.controller';
+import { createDefaultTags, createSuperTags, deleteSubTags, deleteSuperTags } from '../tags/tags.controller';
 
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -379,7 +379,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.all) /* (deleteReviews) */);
+  .delete('/:reviewsId', authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -439,7 +439,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.librarian) /* (deleteReviews) */);
+  .delete('/:reviewsId', authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
