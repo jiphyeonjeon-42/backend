@@ -53,6 +53,15 @@ export class TagsService {
       await this.queryRunner.release();
     }
   }
+
+  async deleteSuperTag(superTagsId: number, deleteUser: number) {
+    await this.superTagRepository.deleteSuperTag(superTagsId, deleteUser);
+  }
+
+  async deleteSubTag(subTagsId: number, deleteUser: number) {
+    await this.subTagRepository.deleteSubTag(subTagsId, deleteUser);
+  }
+
 }
 
 export default TagsService;
