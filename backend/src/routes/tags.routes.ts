@@ -14,15 +14,16 @@ import { roleSet } from '../auth/auth.type';
 export const path = '/tags';
 export const router = Router();
 
+router
 /**
  * @openapi
  * /api/tags:
  *    patch:
  *      description: 태그를 수정한다.
  *      tags:
- *        - tags
- *      parameters:
+ *      - tags
  *      requestBody:
+ *        required: true
  *        content:
  *          application/json:
  *            schema:
@@ -96,96 +97,98 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/tags' /* , authValidate(roleSet.librarian) */, updateSuperTags);
+  .patch('/', authValidate(roleSet.librarian), updateSuperTags);
 
+router
 /**
- * @openapi
- * /api/tags/merge:
- *    patch:
- *      description: 태그를 병합한다.
- *      tags:
- *        - tags
- *      parameters:
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                subTagIds:
- *                  description: 병합될 서브 태그의 id 리스트
- *                  type: list
- *                  required: true
- *                  example: [1, 2, 3, 5, 10]
- *                superTagId:
- *                  description: 슈퍼 태그의 id
- *                  type: integer
- *                  required: true
- *                  example: 2
- *      responses:
- *        '200':
- *          description: 병합 후의 슈퍼 태그를 반환합니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  id:
- *                    description: 슈퍼 태그의 id
- *                    type: integer
- *                    example: 3
- *                  content:
- *                    description: 태그 내용
- *                    type: string
- *                    example: "병합된_태그"
- *                  count:
- *                    description: 해당 슈퍼 태그에 속한 서브 태그의 개수
- *                    type: integer
- *                    example: 3
- *        '901':
- *          description: 권한이 없습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 901
- *        '904':
- *          description: 존재하지 않는 태그 ID 입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 904
- *        '910':
- *          description: 유효하지 않은 양식의 태그 ID 입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 910
- *        '500':
- *          description: DB Error
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                description: error decription
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    description: 에러코드
- *                    example: 1
- */
-router.patch('/tags/merge', authValidate(roleSet.librarian), mergeTags);
+  * @openapi
+  * /api/tags/merge:
+  *    patch:
+  *      description: 태그를 병합한다.
+  *      tags:
+  *      - tags
+  *      parameters:
+  *      requestBody:
+  *        required: true
+  *        content:
+  *          application/json:
+  *            schema:
+  *              type: object
+  *              properties:
+  *                subTagIds:
+  *                  description: 병합될 서브 태그의 id 리스트
+  *                  type: list
+  *                  required: true
+  *                  example: [1, 2, 3, 5, 10]
+  *                superTagId:
+  *                  description: 슈퍼 태그의 id
+  *                  type: integer
+  *                  required: true
+  *                  example: 2
+  *      responses:
+  *        '200':
+  *          description: 병합 후의 슈퍼 태그를 반환합니다.
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                properties:
+  *                  id:
+  *                    description: 슈퍼 태그의 id
+  *                    type: integer
+  *                    example: 3
+  *                  content:
+  *                    description: 태그 내용
+  *                    type: string
+  *                    example: "병합된_태그"
+  *                  count:
+  *                    description: 해당 슈퍼 태그에 속한 서브 태그의 개수
+  *                    type: integer
+  *                    example: 3
+  *        '901':
+  *          description: 권한이 없습니다.
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                properties:
+  *                  errorCode:
+  *                    type: integer
+  *                    example: 901
+  *        '904':
+  *          description: 존재하지 않는 태그 ID 입니다.
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                properties:
+  *                  errorCode:
+  *                    type: integer
+  *                    example: 904
+  *        '910':
+  *          description: 유효하지 않은 양식의 태그 ID 입니다.
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                properties:
+  *                  errorCode:
+  *                    type: integer
+  *                    example: 910
+  *        '500':
+  *          description: DB Error
+  *          content:
+  *            application/json:
+  *              schema:
+  *                type: object
+  *                description: error decription
+  *                properties:
+  *                  errorCode:
+  *                    type: number
+  *                    description: 에러코드
+  *                    example: 1
+  */
+  .patch('/tags/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
@@ -539,7 +542,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/' /* , authValidate(roleSet.librarian) */, searchSubDefaultTags);
+  .get('/', authValidate(roleSet.librarian), searchSubDefaultTags);
 
 router
   /**
@@ -596,7 +599,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub' /* , authValidate(roleSet.librarian) */, searchSubTags);
+  .get('/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**
@@ -657,4 +660,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:bookInfoId' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
+  .get('/:bookInfoId', authValidate(roleSet.librarian), searchSuperDefaultTags);
