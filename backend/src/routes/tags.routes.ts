@@ -107,7 +107,6 @@ router
   *      description: 태그를 병합한다.
   *      tags:
   *      - tags
-  *      parameters:
   *      requestBody:
   *        required: true
   *        content:
@@ -188,7 +187,7 @@ router
   *                    description: 에러코드
   *                    example: 1
   */
-  .patch('/tags/merge', authValidate(roleSet.librarian), mergeTags);
+  .patch('/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
