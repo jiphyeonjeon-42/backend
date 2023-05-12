@@ -71,6 +71,7 @@ export const mergeTags = async (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log(`req.body: ${JSON.stringify(req.body)}`);
   const { id: tokenId } = req.user as any;
   const superTagId = parseInt(req?.body?.superTagId, 10);
   const rawSubTagIds = req?.body?.subTagIds;
@@ -80,12 +81,12 @@ export const mergeTags = async (
   });
   const tagsService = new TagsService();
   if (await tagsService.isValidTagIds(subTagIds, superTagId) === false) {
-    next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   try {
     await tagsService.mergeTags(subTagIds, superTagId, parseInt(tokenId, 10));
   } catch (e) {
-    next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+    return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
   return res.status(status.CREATED).send();
 };
@@ -96,23 +97,24 @@ export const updateSuperTags = async (
   next: NextFunction,
 ) => {
   const { id: tokenId } = req.user as any;
-  const superTagId = parseInt(req?.params?.superTagId, 10);
+  const superTagId = parseInt(req?.body?.id, 10);
   const content = req?.body?.content;
   const tagsService = new TagsService();
   const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === false) {
-    next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isExistingSuperTag(superTagId, content) === true) {
-    next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
+    console.log('already existing super tag');
+    return next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
   }
   if (await tagsService.isDefaultTag(superTagId) === true) {
-    next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   try {
     await tagsService.updateSuperTags(tokenId, superTagId, content);
   } catch (e) {
-    next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+    return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
   return res.status(status.OK).send();
 };
