@@ -71,7 +71,6 @@ export const mergeTags = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(`req.body: ${JSON.stringify(req.body)}`);
   const { id: tokenId } = req.user as any;
   const superTagId = parseInt(req?.body?.superTagId, 10);
   const rawSubTagIds = req?.body?.subTagIds;
@@ -80,6 +79,9 @@ export const mergeTags = async (
     subTagIds.push(parseInt(subTagId, 10));
   });
   const tagsService = new TagsService();
+  if (await tagsService.isDefaultTag(superTagId) === true) {
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+  }
   if (await tagsService.isValidTagIds(subTagIds, superTagId) === false) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
@@ -105,7 +107,6 @@ export const updateSuperTags = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isExistingSuperTag(superTagId, content) === true) {
-    console.log('already existing super tag');
     return next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
   }
   if (await tagsService.isDefaultTag(superTagId) === true) {
