@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   createDefaultTags,
   createSuperTags,
+  updateSuperTags,
   mergeTags,
   searchSubDefaultTags,
   searchSubTags,
@@ -32,21 +33,10 @@ export const router = Router();
  *                  type: integer
  *                  example: 1
  *                  required: true
- *                type:
- *                  description: 수정할 태그의 타입
- *                  type: string
- *                  enum: [super, sub, default]
- *                  example: super
- *                  required: true
  *                content:
  *                  description: 슈퍼 태그 내용
  *                  type: string
  *                  example: "수정할_내용_적기"
- *                visible:
- *                  description: 태그의 공개 여부
- *                  type: string
- *                  example: public
- *                  enum: [public, private]
  *      responses:
  *        '200':
  *          description: 수정된 슈퍼 태그를 반환한다.
@@ -59,20 +49,10 @@ export const router = Router();
  *                    description: 수정된 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
- *                  type:
- *                    description: 수정된 슈퍼 태그의 타입
- *                    type: string
- *                    example: "super"
- *                    enum: [super, sub, default]
  *                  content:
  *                    description: 수정된 슈퍼 태그 내용
  *                    type: string
  *                    example: "수정된_태그"
- *                  visible:
- *                    description: 수정된 슈퍼 태그의 공개 여부
- *                    type: string
- *                    example: "public"
- *                    enum: [public, private]
  *        '900':
  *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
@@ -116,7 +96,7 @@ export const router = Router();
  *                    description: 에러코드
  *                    example: 1
  */
-router.patch('/tags', authValidate(roleSet.all) /* ,update */);
+router.patch('/tags' /* , authValidate(roleSet.librarian) */, updateSuperTags);
 
 /**
  * @openapi

@@ -81,6 +81,18 @@ export class SuperTagRepository extends Repository<SuperTag> {
     );
   }
 
+  async getSuperTags(conditions: object) {
+    const superTags = await this.find({
+      select: [
+        'id',
+        'content',
+        'bookInfoId',
+      ],
+      where: conditions,
+    });
+    return superTags;
+  }
+
   async getDefaultTagId(bookInfoId: number)
   : Promise<SuperTag | null> {
     const defaultTag = await this.findOne({
@@ -153,5 +165,13 @@ export class SuperTagRepository extends Repository<SuperTag> {
       where: conditions,
     });
     return count;
+  }
+
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string)
+  : Promise<void> {
+    await this.update(
+      { id: superTagId },
+      { content, updateUserId, updatedAt: new Date() },
+    );
   }
 }

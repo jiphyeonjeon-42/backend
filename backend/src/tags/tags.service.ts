@@ -130,6 +130,41 @@ export class TagsService {
       await this.queryRunner.release();
     }
   }
+
+  async isExistingSuperTag(superTagId: number, content: string): Promise<boolean> {
+    const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
+    const { bookInfoId } = superTag[0];
+    const duplicates: number = await this.superTagRepository.countSuperTag(
+      { content, bookInfoId },
+    );
+    if (duplicates === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string) {
+    try {
+      await this.queryRunner.startTransaction();
+      await this.superTagRepository.updateSuperTags(updateUserId, superTagId, content);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
+  }
+
+  async isDefaultTag(superTagId: number): Promise<boolean> {
+    const superTags: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
+    const { bookInfoId } = superTags[0];
+    const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
+    if (defaultTag === null || superTagId !== defaultTag.id) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export default TagsService;
