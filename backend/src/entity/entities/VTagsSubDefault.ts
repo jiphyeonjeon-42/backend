@@ -15,6 +15,7 @@ import User from './User';
     .addSelect('sp.id', 'superTagId')
     .addSelect('sp.content', 'superContent')
     .addSelect('sb.isPublic', 'isPublic')
+    .addSelect('sb.isDeleted', 'isDeleted')
     .from(SuperTag, 'sp')
     .innerJoin(SubTag, 'sb', 'sb.superTagId = sp.id')
     .innerJoin(BookInfo, 'bi', 'bi.id = sp.bookInfoId')
@@ -47,6 +48,9 @@ export class VTagsSubDefault {
 
   @ViewColumn()
   isPublic: boolean;
+
+  @ViewColumn()
+  isDeleted: boolean;
 }
 
 export default VTagsSubDefault;

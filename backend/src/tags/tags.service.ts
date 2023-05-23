@@ -25,7 +25,7 @@ export class TagsService {
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
     try {
       await this.queryRunner.startTransaction();
-      const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
+      const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTag(bookInfoId);
       let defaultTagId;
       if (defaultTag === null) {
         defaultTagId = await this.superTagRepository.createSuperTag('default', bookInfoId, userId);
@@ -76,31 +76,41 @@ export class TagsService {
   }
 
   async searchSubTags(superTagId: number): Promise<Object> {
-    const subTags = await this.subTagRepository.getSubTags({ superTagId });
+    const subTags = await this.subTagRepository.getSubTags({
+      superTagId,
+      isDeleted: 0,
+      isPublic: 1,
+    });
     return subTags;
   }
 
   async searchSuperDefaultTags(bookInfoId: number): Promise<Object> {
     let superDefaultTags: Array<superDefaultTag> = [];
     superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
-    const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
-    const defaultTags = await this.subTagRepository.getSubTags(
-      { superTagId: defaultTagId, isPublic: 1 },
-    );
-    defaultTags.forEach((defaultTag) => {
-      superDefaultTags.push({
-        id: defaultTag.id,
-        content: defaultTag.content,
-        count: 0,
+    const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
+    if (defaultTag) {
+      const defaultTags = await this.subTagRepository.getSubTags(
+        {
+          superTagId: defaultTag.id,
+          isPublic: 1,
+          isDeleted: 0,
+        },
+      );
+      defaultTags.forEach((dt) => {
+        superDefaultTags.push({
+          id: dt.id,
+          content: dt.content,
+          count: 0,
+        });
       });
-    });
+    }
     return superDefaultTags;
   }
 
   async createSuperTags(userId: number, bookInfoId: number, content: string) {
-		try {
+    try {
       await this.queryRunner.startTransaction();
-			await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
+      await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {
       await this.queryRunner.rollbackTransaction();
@@ -170,7 +180,7 @@ export class TagsService {
   async isDefaultTag(superTagId: number): Promise<boolean> {
     const superTags: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
     const { bookInfoId } = superTags[0];
-    const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
+    const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTag(bookInfoId);
     if (defaultTag === null || superTagId !== defaultTag.id) {
       return false;
     }
