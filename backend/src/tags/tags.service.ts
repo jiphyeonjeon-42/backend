@@ -84,16 +84,21 @@ export class TagsService {
     let superDefaultTags: Array<superDefaultTag> = [];
     superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
     const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
-    const defaultTags = await this.subTagRepository.getSubTags(
-      { superTagId: defaultTagId, isPublic: 1 },
-    );
-    defaultTags.forEach((defaultTag) => {
-      superDefaultTags.push({
-        id: defaultTag.id,
-        content: defaultTag.content,
-        count: 0,
+    if (defaultTagId) {
+      const defaultTags = await this.subTagRepository.getSubTags(
+        {
+          superTagId: defaultTagId,
+          isPublic: 1,
+        },
+      );
+      defaultTags.forEach((defaultTag) => {
+        superDefaultTags.push({
+          id: defaultTag.id,
+          content: defaultTag.content,
+          count: 0,
+        });
       });
-    });
+    }
     return superDefaultTags;
   }
 
