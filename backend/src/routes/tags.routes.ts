@@ -3,6 +3,7 @@ import {
   createDefaultTags,
   createSuperTags,
   updateSuperTags,
+  updateSubTags,
   mergeTags,
   searchSubDefaultTags,
   searchSubTags,
@@ -17,9 +18,9 @@ export const router = Router();
 router
 /**
  * @openapi
- * /api/tags:
+ * /api/tags/super:
  *    patch:
- *      description: 태그를 수정한다.
+ *      description: 슈퍼 태그를 수정한다.
  *      tags:
  *      - tags
  *      requestBody:
@@ -41,6 +42,14 @@ router
  *      responses:
  *        '200':
  *          description: 슈퍼 태그 수정 성공.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: integer
+ *                    example: 1
  *        '900':
  *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
@@ -82,66 +91,142 @@ router
  *                    type: number
  *                    example: 500
  */
-  .patch('/', authValidate(roleSet.librarian), updateSuperTags);
+  .patch('/super', authValidate(roleSet.librarian), updateSuperTags);
 
 router
 /**
-  * @openapi
-  * /api/tags/merge:
-  *    patch:
-  *      description: 태그를 병합한다.
-  *      tags:
-  *      - tags
-  *      requestBody:
-  *        required: true
-  *        content:
-  *          application/json:
-  *            schema:
-  *              type: object
-  *              properties:
-  *                subTagIds:
-  *                  description: 병합될 서브 태그의 id 리스트
-  *                  type: list
-  *                  required: true
-  *                  example: [1, 2, 3, 5, 10]
-  *                superTagId:
-  *                  description: 슈퍼 태그의 id
-  *                  type: integer
-  *                  required: true
-  *                  example: 2
-  *      responses:
-  *        '200':
-  *          description: 슈퍼 태그 수정 성공.
-  *        '900':
-  *          description: 태그의 양식이 올바르지 않습니다.
-  *          content:
-  *            application/json:
-  *              schema:
-  *                type: object
-  *                properties:
-  *                  errorCode:
-  *                    type: integer
-  *                    example: 900
-  *        '902':
-  *          description: 이미 존재하는 태그입니다.
-  *          content:
-  *            application/json:
-  *              schema:
-  *                type: object
-  *                properties:
-  *                  errorCode:
-  *                    type: integer
-  *                    example: 902
-  *        '906':
-  *          description: 디폴트 태그에는 병합할 수 없습니다.
-  *          content:
-  *            application/json:
-  *              schema:
-  *                type: object
-  *                properties:
-  *                  errorCode:
-  *                    type: integer
-  *                     example: 906
+ * @openapi
+ * /api/tags/sub:
+ *    patch:
+ *      description: 서브 태그를 수정한다.
+ *      tags:
+ *      - tags
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                id:
+ *                  description: 수정할 태그의 id
+ *                  type: integer
+ *                  example: 1
+ *                  required: true
+ *                content:
+ *                  description: 슈퍼 태그 내용
+ *                  type: string
+ *                  example: "수정할_내용_적기"
+ *      responses:
+ *        '200':
+ *          description: 서브 태그 수정 성공.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: integer
+ *                    example: 1
+ *        '900':
+ *          description: 태그의 양식이 올바르지 않습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 900
+ *        '901':
+ *          description: 권한이 없습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 902
+ *        '905':
+ *          description: DB 에러로 인한 업데이트 실패
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    example: 500
+ */
+.patch('/sub', authValidate(roleSet.all), updateSubTags);
+
+router
+/**
+ * @openapi
+ * /api/tags/merge:
+ *    patch:
+ *      description: 태그를 병합한다.
+ *      tags:
+ *      - tags
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                subTagIds:
+ *                  description: 병합될 서브 태그의 id 리스트
+ *                  type: list
+ *                  required: true
+ *                  example: [1, 2, 3, 5, 10]
+ *                superTagId:
+ *                  description: 슈퍼 태그의 id
+ *                  type: integer
+ *                  required: true
+ *                  example: 2
+ *      responses:
+ *        '200':
+ *          description: 슈퍼 태그 수정 성공.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: integer
+ *                    example: 1
+ *        '900':
+ *          description: 태그의 양식이 올바르지 않습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 900
+ *        '902':
+ *          description: 이미 존재하는 태그입니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 902
+ *        '906':
+ *          description: 디폴트 태그에는 병합할 수 없습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 906
  *        '910':
  *          description: 유효하지 않은 태그 id입니다.
  *          content:
@@ -151,18 +236,18 @@ router
  *                properties:
  *                  errorCode:
  *                    type: integer
- *                     example: 910
-  *        '905':
-  *          description: DB 에러로 인한 업데이트 실패
-  *          content:
-  *            application/json:
-  *              schema:
-  *                type: object
-  *                properties:
-  *                  errorCode:
-  *                    type: number
-  *                    example: 500
-  */
+ *                    example: 910
+ *        '905':
+ *          description: DB 에러로 인한 업데이트 실패
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    example: 500
+ */
   .patch('/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
