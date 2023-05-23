@@ -11,6 +11,7 @@ import ErrorResponse from '../utils/error/errorResponse';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 import SuperTag from '../entity/entities/SuperTag';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
+import user from '../entity/entities/User';
 
 export class SubTagRepository extends Repository<SubTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
@@ -49,6 +50,13 @@ export class SubTagRepository extends Repository<SubTag> {
     return subTags;
   }
 
+  async getSubTagUserId(subTagId: number) {
+    const subTag = await this.findOne({
+      where: { id: subTagId },
+    });
+    return subTag?.userId;
+  }
+
   async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
     await this.update(
       { id: In(subTagIds) },
@@ -62,6 +70,13 @@ export class SubTagRepository extends Repository<SubTag> {
       where: conditions,
     });
     return count;
+  }
+
+  async updateSubTags(userId: number, subTagId: number, isPublic: number) {
+    await this.update(
+      { id: subTagId },
+      { isPublic, updateUserId: userId, updatedAt: new Date() },
+    );
   }
 }
 

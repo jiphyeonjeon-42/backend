@@ -4,6 +4,7 @@ import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
 import { superDefaultTag } from '../DTO/tags.model';
+import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class TagsService {
   private readonly subTagRepository : SubTagRepository;
@@ -164,6 +165,36 @@ export class TagsService {
       return false;
     }
     return true;
+  }
+
+  async isExistingSubTag(subTagId: number): Promise<boolean> {
+    const count: number = await this.subTagRepository.countSubTag({ id: subTagId });
+    if (count === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async isAuthorizedUser(userId: number, subTagId: number): Promise<boolean> {
+    const subTagUserId = await this.subTagRepository.getSubTagUserId(subTagId);
+    if (subTagUserId !== userId) {
+      return false;
+    }
+    return true;
+  }
+
+  async updateSubTags(userId: number, subTagId: number, visibility: string): Promise<void> {
+    const isPublic = (visibility === 'public') ? 1 : 0;
+    try {
+      await this.queryRunner.startTransaction();
+      await this.subTagRepository.updateSubTags(userId, subTagId, isPublic);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
   }
 }
 

@@ -113,10 +113,10 @@ router
  *                  type: integer
  *                  example: 1
  *                  required: true
- *                content:
- *                  description: 슈퍼 태그 내용
+ *                visibility:
+ *                  description: 서브 태그의 공개 여부
  *                  type: string
- *                  example: "수정할_내용_적기"
+ *                  example: public, private
  *      responses:
  *        '200':
  *          description: 서브 태그 수정 성공.

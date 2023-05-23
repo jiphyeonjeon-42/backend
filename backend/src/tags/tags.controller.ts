@@ -119,3 +119,29 @@ export const updateSuperTags = async (
   }
   return res.status(status.OK).send();
 };
+
+export const updateSubTags = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { id: tokenId } = req.user as any;
+  const subTagId = parseInt(req?.body?.id, 10);
+  const visibility = req?.body?.visibility;
+  const tagsService = new TagsService();
+  if (visibility !== 'public' && visibility !== 'private') {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
+  }
+  if (await tagsService.isExistingSubTag(subTagId) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+  }
+  if (await tagsService.isAuthorizedUser(tokenId, subTagId) === false) {
+    return next(new ErrorResponse(errorCode.UNAUTHORIZED_TAGS, 403));
+  }
+  try {
+    await tagsService.updateSubTags(tokenId, subTagId, visibility);
+  } catch (e) {
+    return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+  }
+  return res.status(status.OK).send();
+};
