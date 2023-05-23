@@ -1,17 +1,15 @@
 import {
-  In,
-  InsertResult, Like, QueryRunner, Repository,
+  In, InsertResult, Like, QueryRunner, Repository,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
 import User from '../entity/entities/User';
+import SuperTag from '../entity/entities/SuperTag';
 import ErrorResponse from '../utils/error/errorResponse';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
-import SuperTag from '../entity/entities/SuperTag';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
-import user from '../entity/entities/User';
 
 export class SubTagRepository extends Repository<SubTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
@@ -36,6 +34,10 @@ export class SubTagRepository extends Repository<SubTag> {
       updateUserId: userId,
     };
     await this.insert(insertObject);
+  }
+  
+  async deleteSubTag(subTagsId: number, deleteUser: number): Promise<void> {
+    await this.update(subTagsId, { isDeleted: 1, updateUserId: deleteUser });
   }
 
   async getSubTags(conditions: object) {
@@ -82,7 +84,6 @@ export class SubTagRepository extends Repository<SubTag> {
 
 export class SuperTagRepository extends Repository<SuperTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
-
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -133,7 +134,11 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-
+  
+  async deleteSuperTag(superTagsId: number, deleteUser: number): Promise<void> {
+    await this.update(superTagsId, { isDeleted: 1, updateUserId: deleteUser });
+  }
+  
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({

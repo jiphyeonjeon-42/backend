@@ -3,6 +3,9 @@ import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
+import ErrorResponse from "../utils/error/errorResponse";
+import { DBError } from '../mysql';
+import { ErrorCode } from '@slack/web-api';
 import { superDefaultTag } from '../DTO/tags.model';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
@@ -79,7 +82,6 @@ export class TagsService {
 
   async searchSuperDefaultTags(bookInfoId: number): Promise<Object> {
     let superDefaultTags: Array<superDefaultTag> = [];
-
     superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
     const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
     const defaultTags = await this.subTagRepository.getSubTags(
@@ -96,9 +98,9 @@ export class TagsService {
   }
 
   async createSuperTags(userId: number, bookInfoId: number, content: string) {
-    try {
+		try {
       await this.queryRunner.startTransaction();
-      await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
+			await this.superTagRepository.createSuperTag(content, bookInfoId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {
       await this.queryRunner.rollbackTransaction();
@@ -106,6 +108,14 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
+  }
+
+  async deleteSuperTag(superTagsId: number, deleteUser: number) {
+    await this.superTagRepository.deleteSuperTag(superTagsId, deleteUser);
+  }
+
+  async deleteSubTag(subTagsId: number, deleteUser: number) {
+    await this.subTagRepository.deleteSubTag(subTagsId, deleteUser);
   }
 
   async isValidTagIds(subTagIds: number[], superTagId: number): Promise<boolean> {

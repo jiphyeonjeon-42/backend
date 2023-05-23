@@ -7,7 +7,9 @@ import {
   mergeTags,
   searchSubDefaultTags,
   searchSubTags,
-  searchSuperDefaultTags
+  searchSuperDefaultTags,
+  deleteSubTags,
+  deleteSuperTags,
 } from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -431,7 +433,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.all) /* (deleteReviews) */);
+  .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -491,7 +493,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.librarian) /* (deleteReviews) */);
+  .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
