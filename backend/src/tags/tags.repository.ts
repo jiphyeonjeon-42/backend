@@ -170,18 +170,13 @@ export class SuperTagRepository extends Repository<SuperTag> {
   async getSuperTagsWithSubCount(bookInfoId: number)
     : Promise<superDefaultTag[]> {
     const superTags = await this.createQueryBuilder('sp')
-      .select('id', 'id')
-      .addSelect('content', 'content')
-      .loadRelationCountAndMap(
-        'sp.subTagCount',
-        'sp.subTags',
-        'count',
-        (qb) => qb.where(
-          'sp.bookInfoId = :bookInfoId',
-          { bookInfoId },
-        ),
-      )
-      .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
+      .select('sp.id', 'id')
+      .addSelect('sp.content', 'content')
+      .addSelect((subQuery) => subQuery
+        .select('COUNT(sb.id)')
+        .from(SubTag, 'sb')
+        .where('sb.superTagId = sp.id'), 'count')
+      .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\'', { bookInfoId })
       .getRawMany();
     return superTags as superDefaultTag[];
   }
