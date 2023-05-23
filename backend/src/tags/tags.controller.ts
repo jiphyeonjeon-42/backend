@@ -90,7 +90,7 @@ export const mergeTags = async (
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
-  return res.status(status.OK).send();
+  return res.status(status.OK).send({ id: superTagId });
 };
 
 export const updateSuperTags = async (
@@ -117,7 +117,7 @@ export const updateSuperTags = async (
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
-  return res.status(status.OK).send();
+  return res.status(status.OK).send({ id: superTagId });
 };
 
 export const updateSubTags = async (
@@ -143,5 +143,5 @@ export const updateSubTags = async (
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
-  return res.status(status.OK).send();
+  return res.status(status.OK).send({ id: subTagId });
 };
