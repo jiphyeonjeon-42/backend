@@ -11,5 +11,6 @@ export interface subDefaultTag {
 export interface superDefaultTag {
   id: number;
   content: string;
+  login: string;
   count: number;
 }
