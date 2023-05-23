@@ -379,7 +379,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.all), deleteSubTags);
+  .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -439,7 +439,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.librarian), deleteSuperTags);
+  .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
