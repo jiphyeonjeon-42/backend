@@ -16,7 +16,7 @@ export const createDefaultTags = async (
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
-  const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
+  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content.length > 42 || regex.test(content) === false) next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   await tagsService.createDefaultTags(tokenId, bookInfoId, content);
   return res.status(status.CREATED).send();
@@ -31,7 +31,7 @@ export const createSuperTags = async (
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
-  const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
+  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g; 
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === false) next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   await tagsService.createSuperTags(tokenId, bookInfoId, content);
   return res.status(status.CREATED).send();
@@ -124,7 +124,7 @@ export const updateSuperTags = async (
   const superTagId = parseInt(req?.body?.id, 10);
   const content = req?.body?.content;
   const tagsService = new TagsService();
-  const regex: RegExp = /^[A-Za-zㅎ가-힣0-9_]+$/;
+  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
