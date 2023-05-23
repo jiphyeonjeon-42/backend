@@ -100,6 +100,7 @@ export class TagsService {
         superDefaultTags.push({
           id: dt.id,
           content: dt.content,
+          login: dt.login,
           count: 0,
         });
       });

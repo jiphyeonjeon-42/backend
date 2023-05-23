@@ -172,6 +172,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const superTags = await this.createQueryBuilder('sp')
       .select('sp.id', 'id')
       .addSelect('sp.content', 'content')
+      .addSelect('NULL', 'login')
       .addSelect((subQuery) => subQuery
         .select('COUNT(sb.id)')
         .from(SubTag, 'sb')
