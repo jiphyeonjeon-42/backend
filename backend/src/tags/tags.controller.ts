@@ -42,7 +42,7 @@ export const createSuperTags = async (
     res: Response,
   ) => {
     const { id: tokenId } = req.user as any;
-    const superTagId = req?.params?.superTagId;
+    const superTagId = req?.params?.tagId;
     const tagsService = new TagsService();
     await tagsService.deleteSuperTag(parseInt(superTagId, 10), tokenId);
     return res.status(status.OK).send();
@@ -53,7 +53,7 @@ export const createSuperTags = async (
     res: Response,
   ) => {
     const { id: tokenId } = req.user as any;
-    const subTagId = req?.params?.reviewsId;
+    const subTagId = req?.params?.tagId;
     const tagsService = new TagsService();
     await tagsService.deleteSubTag(parseInt(subTagId, 10), tokenId);
     return res.status(status.OK).send();
