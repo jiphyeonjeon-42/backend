@@ -116,7 +116,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     return superTags;
   }
 
-  async getDefaultTagId(bookInfoId: number)
+  async getDefaultTag(bookInfoId: number)
   : Promise<SuperTag | null> {
     const defaultTag = await this.findOne({
       select: [
@@ -175,8 +175,8 @@ export class SuperTagRepository extends Repository<SuperTag> {
       .addSelect((subQuery) => subQuery
         .select('COUNT(sb.id)')
         .from(SubTag, 'sb')
-        .where('sb.superTagId = sp.id'), 'count')
-      .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\'', { bookInfoId })
+        .where('sb.superTagId = sp.id AND sb.isDeleted IS FALSE AND sb.isPublic IS TRUE'), 'count')
+      .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\' AND sp.isDeleted IS FALSE', { bookInfoId })
       .getRawMany();
     return superTags as superDefaultTag[];
   }
