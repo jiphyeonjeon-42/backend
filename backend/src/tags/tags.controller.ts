@@ -93,17 +93,14 @@ export const mergeTags = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const tagsService = new TagsService();
   const { id: tokenId } = req.user as any;
-  if (await tagsService.isLibrarian(tokenId) === false) {
-    return next(new ErrorResponse(errorCode.UNAUTHORIZED_TAGS, 401));
-  }
   const superTagId = parseInt(req?.body?.superTagId, 10);
   const rawSubTagIds = req?.body?.subTagIds;
   const subTagIds: number[] = [];
   rawSubTagIds.forEach((subTagId: string) => {
     subTagIds.push(parseInt(subTagId, 10));
   });
+  const tagsService = new TagsService();
   if (await tagsService.isDefaultTag(superTagId) === true) {
     return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
   }

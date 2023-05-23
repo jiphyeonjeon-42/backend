@@ -201,13 +201,4 @@ export class SuperTagRepository extends Repository<SuperTag> {
       { content, updateUserId, updatedAt: new Date() },
     );
   }
-
-  async getRole(userId: number): Promise<number> {
-    const user: User | null = await this.userRepo.findOne({
-      select: ['role'],
-      where: { id: userId },
-    });
-    if (!user) { return -1; }
-    return user.role;
-  }
 }
