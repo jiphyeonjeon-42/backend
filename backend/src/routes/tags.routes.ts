@@ -292,7 +292,7 @@ router
    *                examples:
    *                  유효하지 않은 content 길이 :
    *                    value:
-   *                      errorCode: 801
+   *                      errorCode: 910
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -352,7 +352,7 @@ router
    *                examples:
    *                  유효하지 않은 content 길이 :
    *                    value:
-   *                      errorCode: 801
+   *                      errorCode: 910
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -399,7 +399,7 @@ router
    *                examples:
    *                 적절하지 않는 tagId 값:
    *                   value:
-   *                     errorCode: 800
+   *                     errorCode: 900
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -421,7 +421,7 @@ router
    *                      errorCode: 109
    *                  토큰 userId와 태그 userID 불일치 && 사서 권한 없음 :
    *                    value :
-   *                      errorCode: 801
+   *                      errorCode: 901
    *         '404':
    *            description: 존재하지 않는 tagsId.
    *            content:
@@ -431,7 +431,7 @@ router
    *                examples:
    *                  존재하지 않는 tagsId :
    *                    value:
-   *                      errorCode: 804
+   *                      errorCode: 903
    */
   .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
 
@@ -459,7 +459,7 @@ router
    *                examples:
    *                 적절하지 않는 tagId 값:
    *                   value:
-   *                     errorCode: 800
+   *                     errorCode: 900
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -481,7 +481,7 @@ router
    *                      errorCode: 109
    *                  토큰 userId와 태그 userID 불일치 && 사서 권한 없음 :
    *                    value :
-   *                      errorCode: 801
+   *                      errorCode: 901
    *         '404':
    *            description: 존재하지 않는 tagsId.
    *            content:
@@ -491,7 +491,7 @@ router
    *                examples:
    *                  존재하지 않는 tagsId :
    *                    value:
-   *                      errorCode: 804
+   *                      errorCode: 903
    */
   .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
 
