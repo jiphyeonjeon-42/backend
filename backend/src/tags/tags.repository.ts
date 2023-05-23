@@ -1,24 +1,25 @@
 import {
-  InsertResult, Like, QueryRunner, Repository,
+  In, InsertResult, Like, QueryRunner, Repository,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import jipDataSource from '../app-data-source';
 import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
-import BookInfo from '../entity/entities/BookInfo';
 import User from '../entity/entities/User';
-import ErrorResponse from '../utils/error/errorResponse';
 import SuperTag from '../entity/entities/SuperTag';
+import ErrorResponse from '../utils/error/errorResponse';
+import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
+import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class SubTagRepository extends Repository<SubTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
       entityManager,
     );
   }
@@ -32,19 +33,57 @@ export class SubTagRepository extends Repository<SubTag> {
       content,
       updateUserId: userId,
     };
-
     await this.insert(insertObject);
   }
   
-  //TODO: subtag - roleset은 all로 두지만, 자기자신만 삭제한다
   async deleteSubTag(subTagsId: number, deleteUser: number): Promise<void> {
     await this.update(subTagsId, { isDeleted: 1, updateUserId: deleteUser });
+  }
+
+  async getSubTags(conditions: object) {
+    const subTags = await this.vSubDefaultRepo.find({
+      select: [
+        'id',
+        'content',
+        'login',
+      ],
+      where: conditions,
+    });
+    return subTags;
+  }
+
+  async getSubTagUserId(subTagId: number) {
+    const subTag = await this.findOne({
+      where: { id: subTagId },
+    });
+    return subTag?.userId;
+  }
+
+  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+    await this.update(
+      { id: In(subTagIds) },
+      { superTagId, updateUserId: userId, updatedAt: new Date() },
+    );
+  }
+
+  async countSubTag(conditions: object)
+  : Promise<number> {
+    const count = await this.count({
+      where: conditions,
+    });
+    return count;
+  }
+
+  async updateSubTags(userId: number, subTagId: number, isPublic: number) {
+    await this.update(
+      { id: subTagId },
+      { isPublic, updateUserId: userId, updatedAt: new Date() },
+    );
   }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
-  private readonly bookInfoRepo: Repository<BookInfo>;
-
+  private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -52,10 +91,22 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SuperTag, entityManager);
     this.entityManager = entityManager;
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
+      VTagsSubDefault,
       this.entityManager,
     );
+  }
+
+  async getSuperTags(conditions: object) {
+    const superTags = await this.find({
+      select: [
+        'id',
+        'content',
+        'bookInfoId',
+      ],
+      where: conditions,
+    });
+    return superTags;
   }
 
   async getDefaultTagId(bookInfoId: number)
@@ -83,10 +134,64 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-
-  //TODO: supertag - roleset은 librarian으로 두고, 섭태그가 안에 있는지 확인하기 
+  
   async deleteSuperTag(superTagsId: number, deleteUser: number): Promise<void> {
     await this.update(superTagsId, { isDeleted: 1, updateUserId: deleteUser });
   }
   
+  async getSubAndSuperTags(page: number, limit: number, conditions: Object)
+    : Promise<[subDefaultTag[], number]> {
+    const [items, count] = await this.vSubDefaultRepo.findAndCount({
+      select: [
+        'bookInfoId',
+        'title',
+        'id',
+        'createdAt',
+        'login',
+        'content',
+        'superContent',
+      ],
+      where: conditions,
+      order: { id: 'DESC' },
+      skip: page * limit,
+      take: limit,
+    });
+    const convertedItems = items as subDefaultTag[];
+    return [convertedItems, count];
+  }
+
+  async getSuperTagsWithSubCount(bookInfoId: number)
+    : Promise<superDefaultTag[]> {
+    const superTags = await this.createQueryBuilder('sp')
+      .select('id', 'id')
+      .addSelect('content', 'content')
+      .loadRelationCountAndMap(
+        'sp.subTagCount',
+        'sp.subTags',
+        'count',
+        (qb) => qb.where(
+          'sp.bookInfoId = :bookInfoId',
+          { bookInfoId },
+        ),
+      )
+      .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
+      .getRawMany();
+    return superTags as superDefaultTag[];
+  }
+
+  async countSuperTag(conditions: object)
+  : Promise<number> {
+    const count = await this.count({
+      where: conditions,
+    });
+    return count;
+  }
+
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string)
+  : Promise<void> {
+    await this.update(
+      { id: superTagId },
+      { content, updateUserId, updatedAt: new Date() },
+    );
+  }
 }

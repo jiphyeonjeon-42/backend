@@ -8,7 +8,7 @@ import User from '../entity/entities/User';
 import Lending from '../entity/entities/Lending';
 import Book from '../entity/entities/Book';
 import reservation from '../entity/entities/Reservation';
-import { Meta } from '../users/users.type';
+import { Meta } from '../DTO/common.interface';
 
 class ReservationsRepository extends Repository<reservation> {
   private readonly bookInfo: Repository<BookInfo>;

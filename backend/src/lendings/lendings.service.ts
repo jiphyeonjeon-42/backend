@@ -2,7 +2,7 @@
 /* eslint-disable consistent-return */
 import { IsNull, Like } from 'typeorm';
 import { publishMessage } from '../slack/slack.service';
-import { Meta } from '../users/users.type';
+import { Meta } from '../DTO/common.interface';
 import { formatDate } from '../utils/dateFormat';
 import * as errorCode from '../utils/error/errorCode';
 import UsersRepository from '../users/users.repository';

@@ -1,5 +1,5 @@
 import { Like } from 'typeorm';
-import { Meta } from '../users/users.type';
+import { Meta } from '../DTO/common.interface';
 import HistoriesRepository from './histories.repository';
 import UsersRepository from '../users/users.repository';
 

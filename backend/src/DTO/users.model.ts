@@ -14,7 +14,6 @@ export interface Lending {
 export interface User {
   id: number,
   email: string,
-  password: string,
   nickname: string,
   intraId: number,
   slack?: string,
@@ -23,4 +22,7 @@ export interface User {
   role: number,
   reservations?: [],
   lendings?: Lending[],
+}
+export interface PrivateUser extends User {
+  password: string,
 }
