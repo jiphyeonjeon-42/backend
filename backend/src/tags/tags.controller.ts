@@ -80,7 +80,7 @@ export const mergeTags = async (
   });
   const tagsService = new TagsService();
   if (await tagsService.isDefaultTag(superTagId) === true) {
-    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+    return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
   }
   if (await tagsService.isValidTagIds(subTagIds, superTagId) === false) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
@@ -90,7 +90,7 @@ export const mergeTags = async (
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
-  return res.status(status.CREATED).send();
+  return res.status(status.OK).send();
 };
 
 export const updateSuperTags = async (
@@ -110,7 +110,7 @@ export const updateSuperTags = async (
     return next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
   }
   if (await tagsService.isDefaultTag(superTagId) === true) {
-    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+    return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
   }
   try {
     await tagsService.updateSuperTags(tokenId, superTagId, content);
