@@ -1,4 +1,5 @@
 import {
+  In,
   InsertResult, Like, QueryRunner, Repository,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -7,9 +8,10 @@ import SubTag from '../entity/entities/SubTag';
 import * as errorCode from '../utils/error/errorCode';
 import User from '../entity/entities/User';
 import ErrorResponse from '../utils/error/errorResponse';
-import { subDefaultTag, superDefaultTag } from './DTO.temp';
+import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 import SuperTag from '../entity/entities/SuperTag';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
+import user from '../entity/entities/User';
 
 export class SubTagRepository extends Repository<SubTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
@@ -47,6 +49,35 @@ export class SubTagRepository extends Repository<SubTag> {
     });
     return subTags;
   }
+
+  async getSubTagUserId(subTagId: number) {
+    const subTag = await this.findOne({
+      where: { id: subTagId },
+    });
+    return subTag?.userId;
+  }
+
+  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+    await this.update(
+      { id: In(subTagIds) },
+      { superTagId, updateUserId: userId, updatedAt: new Date() },
+    );
+  }
+
+  async countSubTag(conditions: object)
+  : Promise<number> {
+    const count = await this.count({
+      where: conditions,
+    });
+    return count;
+  }
+
+  async updateSubTags(userId: number, subTagId: number, isPublic: number) {
+    await this.update(
+      { id: subTagId },
+      { isPublic, updateUserId: userId, updatedAt: new Date() },
+    );
+  }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {
@@ -63,6 +94,18 @@ export class SuperTagRepository extends Repository<SuperTag> {
       VTagsSubDefault,
       this.entityManager,
     );
+  }
+
+  async getSuperTags(conditions: object) {
+    const superTags = await this.find({
+      select: [
+        'id',
+        'content',
+        'bookInfoId',
+      ],
+      where: conditions,
+    });
+    return superTags;
   }
 
   async getDefaultTagId(bookInfoId: number)
@@ -90,7 +133,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-  
+
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({
@@ -129,5 +172,21 @@ export class SuperTagRepository extends Repository<SuperTag> {
       .where('sp.bookInfoId = :bookInfoId', { bookInfoId })
       .getRawMany();
     return superTags as superDefaultTag[];
+  }
+
+  async countSuperTag(conditions: object)
+  : Promise<number> {
+    const count = await this.count({
+      where: conditions,
+    });
+    return count;
+  }
+
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string)
+  : Promise<void> {
+    await this.update(
+      { id: superTagId },
+      { content, updateUserId, updatedAt: new Date() },
+    );
   }
 }

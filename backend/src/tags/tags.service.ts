@@ -1,9 +1,10 @@
-import { Like, QueryRunner } from 'typeorm';
+import { In, Like, QueryRunner } from 'typeorm';
 import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
-import { superDefaultTag } from './DTO.temp';
+import { superDefaultTag } from '../DTO/tags.model';
+import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
 export class TagsService {
   private readonly subTagRepository : SubTagRepository;
@@ -81,7 +82,9 @@ export class TagsService {
 
     superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
     const defaultTagId = await this.superTagRepository.getDefaultTagId(bookInfoId);
-    const defaultTags = await this.subTagRepository.getSubTags({ superTagId: defaultTagId });
+    const defaultTags = await this.subTagRepository.getSubTags(
+      { superTagId: defaultTagId, isPublic: 1 },
+    );
     defaultTags.forEach((defaultTag) => {
       superDefaultTags.push({
         id: defaultTag.id,
@@ -100,6 +103,95 @@ export class TagsService {
     } catch (e) {
       await this.queryRunner.rollbackTransaction();
       throw new Error(errorCode.CREATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
+  }
+
+  async isValidTagIds(subTagIds: number[], superTagId: number): Promise<boolean> {
+    const superTagCount = await this.superTagRepository.countSuperTag({ id: superTagId });
+    if (superTagCount === 0) {
+      return false;
+    }
+    const subTagCounts: number[] = await Promise.all(
+      subTagIds.map((id) => this.subTagRepository.countSubTag({ id })),
+    );
+    return subTagCounts.every((count) => count > 0);
+  }
+
+  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+    try {
+      await this.queryRunner.startTransaction();
+      await this.subTagRepository.mergeTags(subTagIds, superTagId, userId);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
+  }
+
+  async isExistingSuperTag(superTagId: number, content: string): Promise<boolean> {
+    const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
+    const { bookInfoId } = superTag[0];
+    const duplicates: number = await this.superTagRepository.countSuperTag(
+      { content, bookInfoId },
+    );
+    if (duplicates === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string) {
+    try {
+      await this.queryRunner.startTransaction();
+      await this.superTagRepository.updateSuperTags(updateUserId, superTagId, content);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
+    } finally {
+      await this.queryRunner.release();
+    }
+  }
+
+  async isDefaultTag(superTagId: number): Promise<boolean> {
+    const superTags: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
+    const { bookInfoId } = superTags[0];
+    const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTagId(bookInfoId);
+    if (defaultTag === null || superTagId !== defaultTag.id) {
+      return false;
+    }
+    return true;
+  }
+
+  async isExistingSubTag(subTagId: number): Promise<boolean> {
+    const count: number = await this.subTagRepository.countSubTag({ id: subTagId });
+    if (count === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async isAuthorizedUser(userId: number, subTagId: number): Promise<boolean> {
+    const subTagUserId = await this.subTagRepository.getSubTagUserId(subTagId);
+    if (subTagUserId !== userId) {
+      return false;
+    }
+    return true;
+  }
+
+  async updateSubTags(userId: number, subTagId: number, visibility: string): Promise<void> {
+    const isPublic = (visibility === 'public') ? 1 : 0;
+    try {
+      await this.queryRunner.startTransaction();
+      await this.subTagRepository.updateSubTags(userId, subTagId, isPublic);
+      await this.queryRunner.commitTransaction();
+    } catch (e) {
+      await this.queryRunner.rollbackTransaction();
+      throw new Error(errorCode.UPDATE_FAIL_TAGS);
     } finally {
       await this.queryRunner.release();
     }
