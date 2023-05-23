@@ -48,6 +48,7 @@ router
  *                type: object
  *                properties:
  *                  id:
+ *                    description: 수정된 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
  *        '900':
@@ -126,6 +127,7 @@ router
  *                type: object
  *                properties:
  *                  id:
+ *                    description: 수정된 서브 태그의 id
  *                    type: integer
  *                    example: 1
  *        '900':
@@ -195,6 +197,7 @@ router
  *                type: object
  *                properties:
  *                  id:
+ *                    description: 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
  *        '900':
