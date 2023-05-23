@@ -41,6 +41,19 @@ jobs:
           NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
           NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
           NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}" > .env
+
+    - name: setup node.js
+      uses: actions/setup-node@master
+      with:
+        node-version: 16.x
+
+    - name: install dependencies
+      run: |
+        cd backend && yarn install
+
+    - name: build file
+      run: |
+        cd backend && yarn build
           
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
