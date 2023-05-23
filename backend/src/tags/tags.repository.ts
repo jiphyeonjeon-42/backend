@@ -35,7 +35,7 @@ export class SubTagRepository extends Repository<SubTag> {
     };
     await this.insert(insertObject);
   }
-  
+
   async deleteSubTag(subTagsId: number, deleteUser: number): Promise<void> {
     await this.update(subTagsId, { isDeleted: 1, updateUserId: deleteUser });
   }
@@ -84,6 +84,9 @@ export class SubTagRepository extends Repository<SubTag> {
 
 export class SuperTagRepository extends Repository<SuperTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
+
+  private readonly userRepo: Repository<User>;
+
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -93,6 +96,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     this.entityManager = entityManager;
     this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
       VTagsSubDefault,
+      this.entityManager,
+    );
+    this.userRepo = new Repository<User>(
+      User,
       this.entityManager,
     );
   }
@@ -134,11 +141,11 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const insertResult = await this.entityManager.insert(SuperTag, insertObject);
     return insertResult.identifiers[0].id;
   }
-  
+
   async deleteSuperTag(superTagsId: number, deleteUser: number): Promise<void> {
     await this.update(superTagsId, { isDeleted: 1, updateUserId: deleteUser });
   }
-  
+
   async getSubAndSuperTags(page: number, limit: number, conditions: Object)
     : Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({
@@ -193,5 +200,14 @@ export class SuperTagRepository extends Repository<SuperTag> {
       { id: superTagId },
       { content, updateUserId, updatedAt: new Date() },
     );
+  }
+
+  async getRole(userId: number): Promise<number> {
+    const user: User | null = await this.userRepo.findOne({
+      select: ['role'],
+      where: { id: userId },
+    });
+    if (!user) { return -1; }
+    return user.role;
   }
 }

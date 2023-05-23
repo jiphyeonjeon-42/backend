@@ -705,19 +705,25 @@ router
    *                      count:
    *                        description: 슈퍼 태그에 속한 서브 태그 개수. 슈퍼 태그는 기본값이 1이며, 0이면 디폴트 태그를 의미한다.
    *                        type: integer
+   *                      login:
+   *                        description: 태그를 작성한 카뎃의 인트라 id. 슈퍼 태그는 기본값이 null이며, 디폴트 태그만 작성자 값이 있다.
    *                    example:
    *                    - id: 0
    *                      content: 1서클_추천_책
    *                      count: 3
+   *                      login:
    *                    - id: 42
    *                      content: 커리어
    *                      count: 1
+   *                      login:
    *                    - id: 0
    *                      content: yena가_추천하는
    *                      count: 0
+   *                      login: yena
    *                    - id: 42
    *                      content: 마법같은_파이썬
    *                      count: 0
+   *                      login: yena
    *        '400':
    *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
    *        '401':
@@ -725,4 +731,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:bookInfoId', authValidate(roleSet.librarian), searchSuperDefaultTags);
+  .get('/:bookInfoId', authValidate(roleSet.all), searchSuperDefaultTags);

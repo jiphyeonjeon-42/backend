@@ -206,6 +206,14 @@ export class TagsService {
       await this.queryRunner.release();
     }
   }
+
+  async isLibrarian(userId: number): Promise<boolean> {
+    const role = await this.superTagRepository.getRole(userId);
+    if (role === 2) {
+      return true;
+    }
+    return false;
+  }
 }
 
 export default TagsService;
