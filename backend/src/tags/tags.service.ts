@@ -1,11 +1,11 @@
 import { In, Like, QueryRunner } from 'typeorm';
+import { ErrorCode } from '@slack/web-api';
 import SuperTag from '../entity/entities/SuperTag';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import jipDataSource from '../app-data-source';
 import * as errorCode from '../utils/error/errorCode';
-import ErrorResponse from "../utils/error/errorResponse";
+import ErrorResponse from '../utils/error/errorResponse';
 import { DBError } from '../mysql';
-import { ErrorCode } from '@slack/web-api';
 import { superDefaultTag } from '../DTO/tags.model';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
 
@@ -86,7 +86,11 @@ export class TagsService {
 
   async searchSuperDefaultTags(bookInfoId: number): Promise<Object> {
     let superDefaultTags: Array<superDefaultTag> = [];
-    superDefaultTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
+    const superTags = await this.superTagRepository.getSuperTagsWithSubCount(bookInfoId);
+    superDefaultTags = superTags.map((sp) => ({
+      ...sp,
+      count: Number(sp.count),
+    }));
     const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
     if (defaultTag) {
       const defaultTags = await this.subTagRepository.getSubTags(

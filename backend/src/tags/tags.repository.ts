@@ -174,7 +174,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
       .addSelect('sp.content', 'content')
       .addSelect('NULL', 'login')
       .addSelect((subQuery) => subQuery
-        .select('COUNT(sb.id)')
+        .select('COUNT(sb.id)', 'count')
         .from(SubTag, 'sb')
         .where('sb.superTagId = sp.id AND sb.isDeleted IS FALSE AND sb.isPublic IS TRUE'), 'count')
       .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\' AND sp.isDeleted IS FALSE', { bookInfoId })
