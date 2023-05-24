@@ -576,6 +576,10 @@ router
    *                          description: 슈퍼 태그의 내용
    *                          type: string
    *                          example: 1서클_추천_책
+   *                        visibility:
+   *                          description: 공개 여부. 공개는 public, 비공개는 private이다.
+   *                          type: string
+   *                          example: public
    *                  meta:
    *                    description: 모든 태그 수와 관련된 정보
    *                    type: object
