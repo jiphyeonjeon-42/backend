@@ -6,7 +6,7 @@ export interface subDefaultTag {
   login: string;
   content: string;
   superContent: string;
-  visibility: string;
+  visibility: "public" | "private";
 }
 
 export interface superDefaultTag {
