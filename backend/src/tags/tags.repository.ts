@@ -169,7 +169,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
 
   async getSuperTagsWithSubCount(bookInfoId: number)
     : Promise<superDefaultTag[]> {
-    const rawSuperTags = await this.createQueryBuilder('sp')
+    const superTags = await this.createQueryBuilder('sp')
       .select('sp.id', 'id')
       .addSelect('sp.content', 'content')
       .addSelect('NULL', 'login')
@@ -179,12 +179,6 @@ export class SuperTagRepository extends Repository<SuperTag> {
         .where('sb.superTagId = sp.id AND sb.isDeleted IS FALSE AND sb.isPublic IS TRUE'), 'count')
       .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\' AND sp.isDeleted IS FALSE', { bookInfoId })
       .getRawMany();
-    const superTags = rawSuperTags.map((raw) => {
-      return {
-        ...raw,
-        count: Number(raw.count),
-      };
-    });
     return superTags as superDefaultTag[];
   }
 
