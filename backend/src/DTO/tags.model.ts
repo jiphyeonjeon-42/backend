@@ -6,6 +6,7 @@ export interface subDefaultTag {
   login: string;
   content: string;
   superContent: string;
+  visibility: string;
 }
 
 export interface superDefaultTag {
