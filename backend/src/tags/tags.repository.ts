@@ -10,6 +10,7 @@ import SuperTag from '../entity/entities/SuperTag';
 import ErrorResponse from '../utils/error/errorResponse';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 import VTagsSubDefault from '../entity/entities/VTagsSubDefault';
+import BookInfo from '../entity/entities/BookInfo';
 
 export class SubTagRepository extends Repository<SubTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
@@ -87,6 +88,8 @@ export class SuperTagRepository extends Repository<SuperTag> {
 
   private readonly userRepo: Repository<User>;
 
+  private readonly bookInfoRepo: Repository<BookInfo>;
+
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -100,6 +103,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     );
     this.userRepo = new Repository<User>(
       User,
+      this.entityManager,
+    );
+    this.bookInfoRepo = new Repository<BookInfo>(
+      BookInfo,
       this.entityManager,
     );
   }
@@ -196,5 +203,12 @@ export class SuperTagRepository extends Repository<SuperTag> {
       { id: superTagId },
       { content, updateUserId, updatedAt: new Date() },
     );
+  }
+
+  async countBookInfoId(bookInfoId: number): Promise<number> {
+    const count = await this.bookInfoRepo.count({
+      where: { id: bookInfoId },
+    });
+    return count;
   }
 }

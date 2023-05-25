@@ -221,6 +221,14 @@ export class TagsService {
       await this.queryRunner.release();
     }
   }
+
+  async isValidBookInfoId(bookInfoId: number): Promise<boolean> {
+    const count: number = await this.superTagRepository.countBookInfoId(bookInfoId);
+    if (count === 0) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export default TagsService;
