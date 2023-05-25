@@ -219,7 +219,6 @@ export class TagsService {
   }
 
   async isValidBookInfoId(bookInfoId: number): Promise<boolean> {
-    console.log(`bookInfoId: ${bookInfoId}`);
     const count: number = await this.superTagRepository.countBookInfoId(bookInfoId);
     if (count === 0) {
       return false;
