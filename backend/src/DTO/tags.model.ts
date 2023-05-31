@@ -14,5 +14,5 @@ export interface superDefaultTag {
   content: string;
   login: string;
   count: number;
-  type: string;
+  type: 'super' | 'default';
 }
