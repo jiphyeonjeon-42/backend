@@ -1,7 +1,8 @@
-FROM alpine:3.14
-RUN apk add yarn
+FROM node:20-alpine
+RUN apk add pnpm --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+
 COPY . .
-RUN yarn
+RUN pnpm install
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "up" ]
