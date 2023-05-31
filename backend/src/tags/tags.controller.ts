@@ -20,7 +20,7 @@ export const createDefaultTags = async (
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (content === '' || content.length > 42 || regex.test(content) === true) 
+  if (content === '' || content.length > 42 || regex.test(content) === true)
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   await tagsService.createDefaultTags(tokenId, bookInfoId, content);
   return res.status(status.CREATED).send();
@@ -39,7 +39,7 @@ export const createSuperTags = async (
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) { 
+  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   await tagsService.createSuperTags(tokenId, bookInfoId, content);
@@ -165,9 +165,6 @@ export const updateSubTags = async (
   }
   if (await tagsService.isExistingSubTag(subTagId) === false) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
-  }
-  if (await tagsService.isAuthorizedUser(tokenId, subTagId) === false) {
-    return next(new ErrorResponse(errorCode.UNAUTHORIZED_TAGS, 403));
   }
   try {
     await tagsService.updateSubTags(tokenId, subTagId, visibility);
