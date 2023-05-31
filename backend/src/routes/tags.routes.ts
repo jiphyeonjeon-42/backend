@@ -527,9 +527,9 @@ router
    *            default:
    *            example: null
    *            enum: [null, public, private]
-   *        - name: title
+   *        - name: query
    *          in: query
-   *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
+   *          description: 태그가 달린 도서명 또는 태그의 내용으로 검색한다.
    *          schema:
    *            type: string
    *            example: 개발자의 코드
