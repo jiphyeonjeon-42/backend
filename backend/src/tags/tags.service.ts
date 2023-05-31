@@ -44,7 +44,7 @@ export class TagsService {
 
   async searchSubDefaultTags(page: number, limit: number, visibility: string, title: string)
   : Promise<Object> {
-    const conditions: any = {};
+    const conditions: any = { isDeleted: 0 };
     switch (visibility) {
       case 'public':
         conditions.isPublic = 1;
@@ -53,7 +53,6 @@ export class TagsService {
         conditions.isPublic = 0;
         break;
       default:
-        conditions.isPublic = 1;
         break;
     }
     if (title) { conditions.title = Like(`%${title}%`); }
@@ -220,6 +219,14 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
+  }
+
+  async isValidBookInfoId(bookInfoId: number): Promise<boolean> {
+    const count: number = await this.superTagRepository.countBookInfoId(bookInfoId);
+    if (count === 0) {
+      return false;
+    }
+    return true;
   }
 }
 
