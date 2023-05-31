@@ -89,6 +89,7 @@ export class TagsService {
     superDefaultTags = superTags.map((sp) => ({
       ...sp,
       count: Number(sp.count),
+      type: 'super',
     }));
     const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
     if (defaultTag) {
@@ -105,6 +106,7 @@ export class TagsService {
           content: dt.content,
           login: dt.login,
           count: 0,
+          type: 'default',
         });
       });
     }
