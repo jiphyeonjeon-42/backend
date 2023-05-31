@@ -1,6 +1,7 @@
 FROM node:20-alpine
-RUN apk add pnpm --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
-
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="${PATH}:${PNPM_HOME}"
+RUN npm install --global pnpm
 COPY . .
 RUN pnpm install
 
