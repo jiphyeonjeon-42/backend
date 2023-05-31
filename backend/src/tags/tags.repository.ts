@@ -164,6 +164,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
         'login',
         'content',
         'superContent',
+        'visibility',
       ],
       where: conditions,
       order: { id: 'DESC' },
