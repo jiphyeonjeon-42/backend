@@ -12,7 +12,7 @@ env:
   S3_BUCKET_NAME: jipbackdeploy
   CODE_DEPLOY_APPLICATION_NAME: jipcodedeployapp
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: jipcodedeploygroup
-  
+
 jobs:
   deploy:
     name: Deploy
@@ -47,28 +47,31 @@ jobs:
       with:
         node-version: 16.x
 
+    - name: setup pnpm
+      uses: pnpm/action-setup@v2
+
     - name: install dependencies
       run: |
-        cd backend && yarn install
+        cd backend && pnpm install
 
     - name: build file
       run: |
-        cd backend && yarn build
-          
+        cd backend && pnpm build
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
-        
+
     - name: Upload to AWS S3
       run: |
         aws deploy push \
           --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
           --source .
-          
+
     - name: Deploy to AWS EC2 from S3
       run: |
          aws deploy create-deployment \
