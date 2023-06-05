@@ -20,7 +20,8 @@ export const createDefaultTags = async (
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (content === '' || content.length > 42 || regex.test(content) === true) return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
+  if (content === '' || content.length > 42 || regex.test(content) === true)
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   await tagsService.createDefaultTags(tokenId, bookInfoId, content);
   return res.status(status.CREATED).send();
 };
