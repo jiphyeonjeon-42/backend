@@ -134,20 +134,41 @@ export class TagsService {
     await this.subTagRepository.deleteSubTag(subTagsId, deleteUser);
   }
 
-  async isValidTagIds(subTagIds: number[], superTagId: number): Promise<boolean> {
-    const superTagCount = await this.superTagRepository.countSuperTag({ id: superTagId });
-    if (superTagCount === 0) {
-      return false;
-    }
-    const subTagCounts: number[] = await Promise.all(
-      subTagIds.map((id) => this.subTagRepository.countSubTag({ id })),
-    );
-    return subTagCounts.every((count) => count > 0);
+  async isValidSuperTagId(superTagId: number, bookInfoId: number): Promise<boolean> {
+    const superTagCount = await this.superTagRepository.countSuperTag({
+      id: superTagId,
+      bookInfoId,
+    });
+    return superTagCount > 0;
   }
 
-  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+  async isValidSubTagId(subTagId: number | number[]): Promise<boolean> {
+    if (Array.isArray(subTagId)) {
+      const subTagCounts: number[] = await Promise.all(
+        subTagId.map((id) => this.subTagRepository.countSubTag({ id })),
+      );
+      return subTagCounts.every((count) => count > 0);
+    }
+    const subTagCount = await this.subTagRepository.countSubTag({ id: subTagId });
+    return subTagCount > 0;
+  }
+
+  async mergeTags(
+    bookInfoId: number,
+    subTagIds: number[],
+    rawSuperTagId: number | null,
+    userId: number,
+  ) {
+    let superTagId: number | null = 0;
+
     try {
       await this.queryRunner.startTransaction();
+      if (rawSuperTagId === null) {
+        const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
+        if (defaultTag === null) {
+          superTagId = await this.superTagRepository.createSuperTag('default', bookInfoId, userId);
+        } else { superTagId = defaultTag.id; }
+      } else { superTagId = rawSuperTagId; }
       await this.subTagRepository.mergeTags(subTagIds, superTagId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {

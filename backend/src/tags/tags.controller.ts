@@ -103,21 +103,23 @@ export const mergeTags = async (
   next: NextFunction,
 ) => {
   const { id: tokenId } = req.user as any;
-  const superTagId = parseInt(req?.body?.superTagId, 10);
-  const rawSubTagIds = req?.body?.subTagIds;
-  const subTagIds: number[] = [];
-  rawSubTagIds.forEach((subTagId: string) => {
-    subTagIds.push(parseInt(subTagId, 10));
-  });
+  const bookInfoId: number = req?.body?.bookInfoId;
+  const superTagId: number = req?.body?.superTagId;
+  const subTagIds: number[] = req?.body?.subTagIds;
   const tagsService = new TagsService();
-  if (await tagsService.isDefaultTag(superTagId) === true) {
-    return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
+
+  if (await tagsService.isValidBookInfoId(bookInfoId) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (await tagsService.isValidTagIds(subTagIds, superTagId) === false) {
+  if (superTagId !== null
+      && await tagsService.isValidSuperTagId(superTagId, bookInfoId) === false) {
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+  }
+  if (await tagsService.isValidSubTagId(subTagIds) === false) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   try {
-    await tagsService.mergeTags(subTagIds, superTagId, parseInt(tokenId, 10));
+    await tagsService.mergeTags(bookInfoId, subTagIds, superTagId, parseInt(tokenId, 10));
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
   }
