@@ -104,7 +104,7 @@ export const mergeTags = async (
 ) => {
   const { id: tokenId } = req.user as any;
   const bookInfoId: number = Number(req?.params?.bookInfoId);
-  const superTagId: number = req?.body?.superTagId;
+  const superTagId: number = Number(req?.body?.superTagId);
   const subTagIds: number[] = req?.body?.subTagIds;
   const tagsService = new TagsService();
 
