@@ -134,15 +134,20 @@ export class TagsService {
     await this.subTagRepository.deleteSubTag(subTagsId, deleteUser);
   }
 
-  async isValidTagIds(subTagIds: number[], superTagId: number): Promise<boolean> {
+  async isValidSuperTagId(superTagId: number): Promise<boolean> {
     const superTagCount = await this.superTagRepository.countSuperTag({ id: superTagId });
-    if (superTagCount === 0) {
-      return false;
+    return superTagCount > 0;
+  }
+
+  async isValidSubTagId(subTagId: number | number[]): Promise<boolean> {
+    if (Array.isArray(subTagId)) {
+      const subTagCounts: number[] = await Promise.all(
+        subTagId.map((id) => this.subTagRepository.countSubTag({ id })),
+      );
+      return subTagCounts.every((count) => count > 0);
     }
-    const subTagCounts: number[] = await Promise.all(
-      subTagIds.map((id) => this.subTagRepository.countSubTag({ id })),
-    );
-    return subTagCounts.every((count) => count > 0);
+    const subTagCount = await this.subTagRepository.countSubTag({ id: subTagId });
+    return subTagCount > 0;
   }
 
   async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
