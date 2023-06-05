@@ -186,7 +186,7 @@ router
  *                  required: true
  *                  example: [1, 2, 3, 5, 10]
  *                superTagId:
- *                  description: 슈퍼 태그의 id
+ *                  description: 슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.
  *                  type: integer
  *                  required: true
  *                  example: 2
