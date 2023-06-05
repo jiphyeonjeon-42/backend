@@ -168,11 +168,17 @@ router
 router
 /**
  * @openapi
- * /api/tags/merge:
+ * /api/tags/{bookInfoId}/merge:
  *    patch:
  *      description: 태그를 병합한다.
  *      tags:
  *      - tags
+ *      parameters:
+ *      - in: path
+ *        name: bookInfoId
+ *        description: 병합할 책 정보의 id
+ *        required: true
+ *        type: integer
  *      requestBody:
  *        required: true
  *        content:
@@ -253,7 +259,7 @@ router
  *                    type: number
  *                    example: 500
  */
-  .patch('/merge', authValidate(roleSet.librarian), mergeTags);
+  .patch('/:bookInfoId/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
   /**

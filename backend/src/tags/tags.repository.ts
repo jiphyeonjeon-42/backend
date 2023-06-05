@@ -81,6 +81,16 @@ export class SubTagRepository extends Repository<SubTag> {
       { isPublic, updateUserId: userId, updatedAt: new Date() },
     );
   }
+
+  async getBookInfoIdBySubTagId(subTagId: number) {
+    const subTag = await this.findOne({
+      select: [
+        'bookInfoId',
+      ],
+      where: { id: subTagId },
+    });
+    return subTag?.bookInfoId;
+  }
 }
 
 export class SuperTagRepository extends Repository<SuperTag> {

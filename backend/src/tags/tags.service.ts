@@ -134,8 +134,11 @@ export class TagsService {
     await this.subTagRepository.deleteSubTag(subTagsId, deleteUser);
   }
 
-  async isValidSuperTagId(superTagId: number): Promise<boolean> {
-    const superTagCount = await this.superTagRepository.countSuperTag({ id: superTagId });
+  async isValidSuperTagId(superTagId: number, bookInfoId: number): Promise<boolean> {
+    const superTagCount = await this.superTagRepository.countSuperTag({
+      id: superTagId,
+      bookInfoId,
+    });
     return superTagCount > 0;
   }
 
@@ -150,9 +153,22 @@ export class TagsService {
     return subTagCount > 0;
   }
 
-  async mergeTags(subTagIds: number[], superTagId: number, userId: number) {
+  async mergeTags(
+    bookInfoId: number,
+    subTagIds: number[],
+    rawSuperTagId: number | null,
+    userId: number,
+  ) {
+    let superTagId: number | null = 0;
+
     try {
       await this.queryRunner.startTransaction();
+      if (rawSuperTagId === null) {
+        const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
+        if (defaultTag === null) {
+          superTagId = await this.superTagRepository.createSuperTag('default', bookInfoId, userId);
+        } else { superTagId = defaultTag.id; }
+      } else { superTagId = rawSuperTagId; }
       await this.subTagRepository.mergeTags(subTagIds, superTagId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {
