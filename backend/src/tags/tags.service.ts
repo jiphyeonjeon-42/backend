@@ -245,6 +245,9 @@ export class TagsService {
   }
 
   async isValidBookInfoId(bookInfoId: number): Promise<boolean> {
+    if (bookInfoId === null || bookInfoId === undefined || bookInfoId === 0) {
+      return false;
+    }
     const count: number = await this.superTagRepository.countBookInfoId(bookInfoId);
     if (count === 0) {
       return false;
