@@ -262,6 +262,17 @@ export class TagsService {
     }
     return true;
   }
+
+  async isDuplicatedSuperTag(content: string, bookInfoId: number): Promise<boolean> {
+    const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({
+      content,
+      bookInfoId,
+    });
+    if (superTag.length === 0) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export default TagsService;

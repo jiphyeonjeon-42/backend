@@ -40,11 +40,14 @@ export const createSuperTags = async (
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
   const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
+  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
+  }
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
-    return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
+  if (await tagsService.isDuplicatedSuperTag(content, bookInfoId)) {
+    return next(new ErrorResponse(errorCode.DUPLICATED_SUPER_TAGS, 400));
   }
   await tagsService.createSuperTags(tokenId, bookInfoId, content);
   return res.status(status.CREATED).send();
