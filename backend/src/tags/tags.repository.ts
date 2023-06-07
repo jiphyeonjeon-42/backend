@@ -111,6 +111,14 @@ export class SuperTagRepository extends Repository<SuperTag> {
     );
   }
 
+  async getSuperTagLogin(superTagId: number): Promise<string | null> {
+    const superTag = await this.find({
+      where: { id: superTagId },
+      relations: ['user'],
+    });
+    return superTag[0].user.nickname;
+  }
+
   async getSuperTags(conditions: object) {
     const superTags = await this.find({
       select: [
