@@ -42,8 +42,9 @@ export const createSuperTags = async (
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
-  await tagsService.createSuperTags(tokenId, bookInfoId, content);
-  return res.status(status.CREATED).send();
+  const superTagInsertion = await tagsService.createSuperTags(tokenId, bookInfoId, content);
+  
+  return res.status(status.CREATED).send(superTagInsertion);
 };
 
 export const deleteSuperTags = async (
