@@ -296,9 +296,15 @@ router
    *                schema:
    *                  type: object
    *                examples:
-   *                  유효하지 않은 content 길이 :
+   *                  유효하지 않은 content 형식 :
    *                    value:
-   *                      errorCode: 910
+   *                      errorCode: 900
+   *                  유효하지 않은 bookInfoId:
+   *                    value:
+   *                      errorCode: 907
+   *                  디폴트 태그의 내용이 중복됨:
+   *                    value:
+   *                      errorCode: 909
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -356,9 +362,15 @@ router
    *                schema:
    *                  type: object
    *                examples:
-   *                  유효하지 않은 content 길이 :
+   *                  유효하지 않은 content 형식 :
    *                    value:
-   *                      errorCode: 910
+   *                      errorCode: 900
+   *                  유효하지 않은 bookInfoId:
+   *                    value:
+   *                      errorCode: 907
+   *                  슈퍼 태그의 내용이 중복됨:
+   *                    value:
+   *                      errorCode: 908
    *         '401':
    *            description: 권한 없음.
    *            content:
