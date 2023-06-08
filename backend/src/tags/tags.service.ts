@@ -267,6 +267,28 @@ export class TagsService {
     }
     return true;
   }
+
+  async isDuplicatedSubDefaultTag(content: string, bookInfoId: number): Promise<boolean> {
+    const subDefaultTag: VTagsSubDefault[] = await this.subTagRepository.getSubTags({
+      content,
+      bookInfoId,
+    });
+    if (subDefaultTag.length === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async isDuplicatedSuperTag(content: string, bookInfoId: number): Promise<boolean> {
+    const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({
+      content,
+      bookInfoId,
+    });
+    if (superTag.length === 0) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export default TagsService;
