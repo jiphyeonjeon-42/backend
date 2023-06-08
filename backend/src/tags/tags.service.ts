@@ -42,20 +42,24 @@ export class TagsService {
     }
   }
 
-  async searchSubDefaultTags(page: number, limit: number, visibility: string, title: string)
+  async searchSubDefaultTags(page: number, limit: number, visibility: string, query: string)
   : Promise<Object> {
-    const conditions: any = { isDeleted: 0 };
-    switch (visibility) {
-      case 'public':
-        conditions.isPublic = 1;
-        break;
-      case 'private':
-        conditions.isPublic = 0;
-        break;
-      default:
-        break;
+    const conditions: Array<Object> = [];
+    const deleteAndVisibility: any = { isDeleted: 0, isPublic: null };
+
+    if (visibility === 'public') {
+      deleteAndVisibility.isPublic = 1;
+    } else if (visibility === 'private') {
+      deleteAndVisibility.isPublic = 0;
     }
-    if (title) { conditions.title = Like(`%${title}%`); }
+    if (query) {
+      conditions.push(
+        { ...deleteAndVisibility, title: Like(`%${query}%`) },
+        { ...deleteAndVisibility, content: Like(`%${query}%`) },
+      );
+    } else {
+      conditions.push(deleteAndVisibility);
+    }
     const [items, count] = await this.superTagRepository.getSubAndSuperTags(
       page,
       limit,
