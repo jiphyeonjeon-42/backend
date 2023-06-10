@@ -197,6 +197,7 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
+    return superTagId;
   }
 
   async isExistingSuperTag(superTagId: number, content: string): Promise<boolean> {
