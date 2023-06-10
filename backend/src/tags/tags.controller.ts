@@ -50,7 +50,7 @@ export const createSuperTags = async (
     return next(new ErrorResponse(errorCode.DUPLICATED_SUPER_TAGS, 400));
   }
   const superTagInsertion = await tagsService.createSuperTags(tokenId, bookInfoId, content);
-  
+
   return res.status(status.CREATED).send(superTagInsertion);
 };
 
@@ -119,7 +119,7 @@ export const mergeTags = async (
   if (await tagsService.isValidBookInfoId(bookInfoId) === false) {
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (superTagId !== null
+  if (superTagId !== 0
       && await tagsService.isValidSuperTagId(superTagId, bookInfoId) === false) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
