@@ -50,18 +50,22 @@ export const createSuperTags = async (
     return next(new ErrorResponse(errorCode.DUPLICATED_SUPER_TAGS, 400));
   }
   const superTagInsertion = await tagsService.createSuperTags(tokenId, bookInfoId, content);
-  
+
   return res.status(status.CREATED).send(superTagInsertion);
 };
 
 export const deleteSuperTags = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   const { id: tokenId } = req.user as any;
-  const superTagId = req?.params?.tagId;
+  const superTagId = Number(req?.params?.tagId);
   const tagsService = new TagsService();
-  await tagsService.deleteSuperTag(parseInt(superTagId, 10), tokenId);
+  if (superTagId === 0 || Number.isNaN(superTagId)) {
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+  }
+  await tagsService.deleteSuperTag(superTagId, tokenId);
   return res.status(status.OK).send();
 };
 
