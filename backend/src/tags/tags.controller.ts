@@ -62,6 +62,7 @@ export const deleteSuperTags = async (
   const { id: tokenId } = req.user as any;
   const superTagId = Number(req?.params?.tagId);
   const tagsService = new TagsService();
+
   if (superTagId === 0 || Number.isNaN(superTagId)) {
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
@@ -72,11 +73,16 @@ export const deleteSuperTags = async (
 export const deleteSubTags = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   const { id: tokenId } = req.user as any;
-  const subTagId = req?.params?.tagId;
+  const subTagId = Number(req?.params?.tagId);
   const tagsService = new TagsService();
-  await tagsService.deleteSubTag(parseInt(subTagId, 10), tokenId);
+
+  if (subTagId === 0 || Number.isNaN(subTagId)) {
+    return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
+  }
+  await tagsService.deleteSubTag(subTagId, tokenId);
   return res.status(status.OK).send();
 };
 
