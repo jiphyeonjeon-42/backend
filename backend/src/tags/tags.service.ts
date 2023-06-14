@@ -22,6 +22,10 @@ export class TagsService {
     this.superTagRepository = new SuperTagRepository(this.queryRunner);
   }
 
+  async releaseConnection() {
+    if (this.queryRunner.isReleased === false) await this.queryRunner.release();
+  }
+
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
     try {
       await this.queryRunner.startTransaction();
@@ -118,7 +122,6 @@ export class TagsService {
   }
 
   async createSuperTags(userId: number, bookInfoId: number, content: string) {
-
     let superTagsInsertion: superDefaultTag;
     try {
       await this.queryRunner.startTransaction();
@@ -128,7 +131,6 @@ export class TagsService {
 
       if (superLogin === null)
         throw new Error(errorCode.CREATE_FAIL_TAGS);
-
       superTagsInsertion = {
         id: superTag[0].id,
         content: superTag[0].content,

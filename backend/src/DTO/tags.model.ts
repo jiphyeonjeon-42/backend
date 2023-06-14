@@ -1,4 +1,4 @@
-export interface subDefaultTag {
+export type subDefaultTag = {
   bookInfoId: number;
   title: string;
   id: number;
@@ -9,7 +9,7 @@ export interface subDefaultTag {
   visibility: 'public' | 'private';
 }
 
-export interface superDefaultTag {
+export type superDefaultTag = {
   id: number;
   content: string;
   login: string;

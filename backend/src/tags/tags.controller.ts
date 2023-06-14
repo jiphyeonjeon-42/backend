@@ -18,15 +18,19 @@ export const createDefaultTags = async (
   const tagsService = new TagsService();
   const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content.length > 42 || regex.test(content) === true) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
   if (await tagsService.isDuplicatedSubDefaultTag(content, bookInfoId)) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DUPLICATED_SUB_DEFAULT_TAGS, 400));
   }
   await tagsService.createDefaultTags(tokenId, bookInfoId, content);
+  await tagsService.releaseConnection();
   return res.status(status.CREATED).send();
 };
 
@@ -41,16 +45,19 @@ export const createSuperTags = async (
   const tagsService = new TagsService();
   const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
   if (await tagsService.isDuplicatedSuperTag(content, bookInfoId)) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DUPLICATED_SUPER_TAGS, 400));
   }
   const superTagInsertion = await tagsService.createSuperTags(tokenId, bookInfoId, content);
-
+  await tagsService.releaseConnection();
   return res.status(status.CREATED).send(superTagInsertion);
 };
 
@@ -62,6 +69,7 @@ export const deleteSuperTags = async (
   const superTagId = req?.params?.tagId;
   const tagsService = new TagsService();
   await tagsService.deleteSuperTag(parseInt(superTagId, 10), tokenId);
+  await tagsService.releaseConnection();
   return res.status(status.OK).send();
 };
 
@@ -73,6 +81,7 @@ export const deleteSubTags = async (
   const subTagId = req?.params?.tagId;
   const tagsService = new TagsService();
   await tagsService.deleteSubTag(parseInt(subTagId, 10), tokenId);
+  await tagsService.releaseConnection();
   return res.status(status.OK).send();
 };
 
@@ -85,8 +94,14 @@ export const searchSubDefaultTags = async (
   const visibility: string = parseCheck.stringQueryParse(req?.query?.visibility);
   const query: string = parseCheck.stringQueryParse(req?.query?.query);
   const tagsService = new TagsService();
-  return res.status(status.OK)
-    .json(await tagsService.searchSubDefaultTags(page, limit, visibility, query));
+  const subDefaultTags: Object = await tagsService.searchSubDefaultTags(
+    page,
+    limit,
+    visibility,
+    query,
+  );
+  await tagsService.releaseConnection();
+  return res.status(status.OK).json(subDefaultTags);
 };
 
 export const searchSubTags = async (
@@ -94,7 +109,10 @@ export const searchSubTags = async (
   res: Response,
 ) => {
   const superTagId: number = parseInt(req.params.superTagId, 10);
-  return res.status(status.OK).json(await new TagsService().searchSubTags(superTagId));
+  const tagsService = new TagsService();
+  const subTags = await tagsService.searchSubTags(superTagId);
+  await tagsService.releaseConnection();
+  return res.status(status.OK).json(subTags);
 };
 
 export const searchSuperDefaultTags = async (
@@ -102,7 +120,10 @@ export const searchSuperDefaultTags = async (
   res: Response,
 ) => {
   const bookInfoId: number = parseInt(req.params.bookInfoId, 10);
-  return res.status(status.OK).json(await new TagsService().searchSuperDefaultTags(bookInfoId));
+  const tagsService = new TagsService();
+  const superDefaultTags = await tagsService.searchSuperDefaultTags(bookInfoId);
+  await tagsService.releaseConnection();
+  return res.status(status.OK).json(superDefaultTags);
 };
 
 export const mergeTags = async (
@@ -118,13 +139,16 @@ export const mergeTags = async (
   let returnSuperTagId = 0;
 
   if (await tagsService.isValidBookInfoId(bookInfoId) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
   if (superTagId !== 0
       && await tagsService.isValidSuperTagId(superTagId, bookInfoId) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   if (await tagsService.isValidSubTagId(subTagIds) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   try {
@@ -136,6 +160,8 @@ export const mergeTags = async (
     );
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+  } finally {
+    await tagsService.releaseConnection();
   }
   return res.status(status.OK).send({ id: returnSuperTagId });
 };
@@ -151,18 +177,23 @@ export const updateSuperTags = async (
   const tagsService = new TagsService();
   const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isExistingSuperTag(superTagId, content) === true) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
   }
   if (await tagsService.isDefaultTag(superTagId) === true) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
   }
   try {
     await tagsService.updateSuperTags(tokenId, superTagId, content);
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+  } finally {
+    await tagsService.releaseConnection();
   }
   return res.status(status.OK).send({ id: superTagId });
 };
@@ -177,15 +208,19 @@ export const updateSubTags = async (
   const visibility = req?.body?.visibility;
   const tagsService = new TagsService();
   if (visibility !== 'public' && visibility !== 'private') {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
   if (await tagsService.isExistingSubTag(subTagId) === false) {
+    await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
   try {
     await tagsService.updateSubTags(tokenId, subTagId, visibility);
   } catch (e) {
     return next(new ErrorResponse(errorCode.UPDATE_FAIL_TAGS, 500));
+  } finally {
+    await tagsService.releaseConnection();
   }
   return res.status(status.OK).send({ id: subTagId });
 };
