@@ -1,4 +1,4 @@
-export interface Meta {
+export type Meta = {
   totalItems: number,
   itemCount: number,
   itemsPerPage: number,
@@ -6,13 +6,13 @@ export interface Meta {
   currentPage: number
 }
 
-export interface searchQuery {
+export type searchQuery = {
   nickname: string,
   page?: string,
   limit?: string,
 }
 
-export interface createQuery {
+export type createQuery = {
   email: string,
   password: string,
 }

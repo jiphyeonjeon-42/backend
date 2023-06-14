@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2';
 
-export interface BookInfo extends RowDataPacket {
+export type BookInfo = RowDataPacket & {
   id?: number;
   title: string;
   author: string;
@@ -13,7 +13,7 @@ export interface BookInfo extends RowDataPacket {
   updatedAt: Date;
 }
 
-export interface BookEach extends RowDataPacket {
+export type BookEach = RowDataPacket & {
     id?: number;
     donator: string;
     donatorId?: number;
@@ -24,7 +24,7 @@ export interface BookEach extends RowDataPacket {
     infoId: number;
 }
 
-export interface Book {
+export type Book = {
     title: string;
     author: string;
     publisher: string;
@@ -37,12 +37,12 @@ export interface Book {
     status: number;
 }
 
-export interface categoryCount extends RowDataPacket {
+export type categoryCount = RowDataPacket & {
     name: string;
     count: number;
 }
 
-export interface lending extends RowDataPacket {
+export type lending = RowDataPacket & {
     lendingCreatedAt: Date;
     returningCreatedAt: Date;
 }
