@@ -106,6 +106,7 @@ class ReservationsRepository extends Repository<reservation> {
     return lenderableBookItemNum;
   }
 
+  // Todo: return 값 수정할 것
   async alreadyLendedBooks(userId: number, bookInfoId: number) {
     const lendedBooks = this.lending
       .createQueryBuilder('l')
@@ -117,6 +118,7 @@ class ReservationsRepository extends Repository<reservation> {
     return lendedBooks;
   }
 
+  // Todo: return 값 수정할 것
   async getReservedBooks(userId: number, bookInfoId: number) {
     const reservedBooks = this
       .createQueryBuilder('r')
