@@ -51,7 +51,7 @@ class ReservationsRepository extends Repository<reservation> {
   }
 
   // 유저가 연체 중인지 확인
-  async isOverdueUser(userId: number) {
+  async isOverdueUser(userId: number): Promise<boolean> {
     return this.user
       .createQueryBuilder('u')
       .select('u.id')
@@ -127,7 +127,7 @@ class ReservationsRepository extends Repository<reservation> {
     return reservedBooks;
   }
 
-  async createReservation(userId: number, bookInfoId:number) {
+  async createReservation(userId: number, bookInfoId:number): Promise<void> {
     await this.createQueryBuilder()
       .insert()
       .into(reservation)
@@ -135,7 +135,7 @@ class ReservationsRepository extends Repository<reservation> {
       .execute();
   }
 
-  async searchReservations(query: string, filter: string, page: number, limit: number) {
+  async searchReservations(query: string, filter: string, page: number, limit: number): Promise<{ meta: Meta; items: reservation[] }> {
     const searchAll = this
       .createQueryBuilder('r')
       .select('r.id', 'reservationsId')
