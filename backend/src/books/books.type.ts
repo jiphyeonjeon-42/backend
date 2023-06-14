@@ -1,4 +1,4 @@
-export interface SearchBookInfoQuery {
+export type SearchBookInfoQuery = {
     query: string;
     sort: string;
     page: string;
@@ -6,12 +6,12 @@ export interface SearchBookInfoQuery {
     category: string;
 }
 
-export interface SortInfoType {
+export type SortInfoType = {
     sort: string;
     limit: string;
 }
 
-export interface LendingBookList {
+export type LendingBookList = {
     id: number;
     title: string;
     author: string;
@@ -23,7 +23,7 @@ export interface LendingBookList {
     lendingCnt: number;
 }
 
-export interface CreateBookInfo {
+export type CreateBookInfo = {
     infoId: number;
     callSign: string;
     title: string;
@@ -37,7 +37,7 @@ export interface CreateBookInfo {
     donatorId: number | null;
 }
 
-export interface UpdateBookInfo {
+export type UpdateBookInfo = {
   id: number;
   title: string;
   author: string;
@@ -47,7 +47,7 @@ export interface UpdateBookInfo {
   categoryId?: string;
 }
 
-export interface UpdateBook {
+export type UpdateBook = {
   id: number;
   callSign: string;
   status: number;
