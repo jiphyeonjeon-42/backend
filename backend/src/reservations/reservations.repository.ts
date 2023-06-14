@@ -173,7 +173,7 @@ class ReservationsRepository extends Repository<reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
-    const items = await searchAll.offset(limit * page).limit(limit).getRawMany();
+    const items = await searchAll.offset(limit * page).limit(limit).getRawMany<reservation>();
     const totalItems = await searchAll.getCount();
     const meta : Meta = {
       totalItems,
