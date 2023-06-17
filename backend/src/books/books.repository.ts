@@ -159,7 +159,7 @@ class BooksRepository extends Repository<Book> {
   }
 
   async createBookInfo(
-    target: CreateBookInfo,
+    target: Pick<CreateBookInfo, 'pubdate'> & BookInfo,
   ): Promise<BookInfo> {
     const bookInfo: BookInfo = {
       title: target.title,
@@ -174,7 +174,7 @@ class BooksRepository extends Repository<Book> {
   }
 
   async createBook(
-    target: CreateBookInfo,
+    target: Pick<CreateBookInfo, 'donator' | 'donatorId' | 'callSign' | 'infoId'>,
   ): Promise<void> {
     const book: Book = {
       donator: target.donator,
@@ -186,5 +186,6 @@ class BooksRepository extends Repository<Book> {
     await this.books.save(book);
   }
 }
+type CreateBookParam = Pick<CreateBookInfo, 'donator' | 'donatorId' | 'callSign' | 'infoId'>;
 
 export default BooksRepository;

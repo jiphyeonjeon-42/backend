@@ -83,7 +83,7 @@ export const search = async (
   return { items: bookList, meta };
 };
 
-export const createBook = async (book: CreateBookInfo) => {
+export const createBook = async (book: Omit<CreateBookInfo, 'callSign' | 'infoId' | 'donatorId' >) => {
   const transactionQueryRunner = jipDataSource.createQueryRunner();
   const booksRepository = new BooksRepository(transactionQueryRunner);
   const isbn = book.isbn === undefined ? '' : book.isbn;

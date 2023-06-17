@@ -82,7 +82,7 @@ export default class UsersRepository extends Repository<User> {
         'slack',
         'penaltyEndDate',
         'role',
-        'password'
+        'password',
       ],
       where: conditions,
       take: limit,
@@ -96,8 +96,6 @@ export default class UsersRepository extends Repository<User> {
     });
     return [customUsers, count];
   }
-
-  
 
   async getLending(users: { userId: number; }[]) {
     if (users.length !== 0) return this.userLendingRepo.find({ where: users });

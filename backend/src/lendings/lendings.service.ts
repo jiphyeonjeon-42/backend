@@ -133,6 +133,7 @@ export const returnBook = async (
   } finally {
     await transaction.release();
   }
+  return ({});
 };
 
 export const search = async (

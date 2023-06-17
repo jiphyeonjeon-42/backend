@@ -2,6 +2,7 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
+import { z } from 'zod';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
 import isNullish from '../utils/isNullish';
@@ -27,24 +28,46 @@ const bookStatusFormatValidator = (bookStatus : number) => {
   return true;
 };
 
+export const createBookSchema = z.object({
+  body: z.object({
+    title: z.string(),
+    isbn: z.string().length(13).transform(Number).optional(),
+    author: z.string(),
+    publisher: z.string().min(1),
+    image: z.string().url().optional(),
+    categoryId: z.coerce.number(),
+    pubdate: z.string().regex(/^[0-9]{8}$/),
+    donator: z.string().optional(),
+  }),
+});
+export type CreateBookSchema = z.infer<typeof createBookSchema>;
+
 export const createBook = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const {
-    title, author, categoryId, pubdate,
-  } = req.body;
-  if (!(title && author && categoryId && pubdate)) {
+  const result = createBookSchema.safeParse(req);
+
+  // const {
+  //   title, author, categoryId, pubdate,
+  // } = req.body;
+  if (!result.success) {
+    if (pubdateFormatValidator(pubdate) === false) {
+      return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
+    }
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
-  if (pubdateFormatValidator(pubdate) === false) {
-    return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
-  }
+  const {
+    body: {
+      title, author, categoryId, pubdate,
+    },
+  } = result.data;
+
   try {
     return res
       .status(status.OK)
-      .send(await BooksService.createBook(req.body));
+      .send(await BooksService.createBook(result.data.body as types.CreateBookInfo));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -296,18 +319,25 @@ export const deleteLike = async (
   return 0;
 };
 
+const getLikeSchema = z.object({
+  user: z.object({
+    id: z.coerce.number(),
+  }),
+  params: z.object({
+    bookInfoId: z.coerce.number(),
+  }),
+});
+
 export const getLikeInfo = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // parameters
-  const { id } = req.user as any;
-  const parameter = String(req?.params);
-  const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
-
-  // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  const parsed = getLikeSchema.safeParse(req);
+  if (!parsed.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+  const { user: { id }, params: { bookInfoId } } = parsed.data;
 
   // 로직수행 및 에러처리
   try {
