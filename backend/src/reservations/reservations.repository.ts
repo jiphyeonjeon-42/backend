@@ -51,7 +51,7 @@ class ReservationsRepository extends Repository<reservation> {
   }
 
   // 유저가 연체 중인지 확인
-  async isOverdueUser(userId: number) {
+  async isOverdueUser(userId: number): Promise<boolean> {
     return this.user
       .createQueryBuilder('u')
       .select('u.id')
@@ -106,6 +106,7 @@ class ReservationsRepository extends Repository<reservation> {
     return lenderableBookItemNum;
   }
 
+  // Todo: return 값 수정할 것
   async alreadyLendedBooks(userId: number, bookInfoId: number) {
     const lendedBooks = this.lending
       .createQueryBuilder('l')
@@ -117,6 +118,7 @@ class ReservationsRepository extends Repository<reservation> {
     return lendedBooks;
   }
 
+  // Todo: return 값 수정할 것
   async getReservedBooks(userId: number, bookInfoId: number) {
     const reservedBooks = this
       .createQueryBuilder('r')
@@ -127,7 +129,7 @@ class ReservationsRepository extends Repository<reservation> {
     return reservedBooks;
   }
 
-  async createReservation(userId: number, bookInfoId:number) {
+  async createReservation(userId: number, bookInfoId:number): Promise<void> {
     await this.createQueryBuilder()
       .insert()
       .into(reservation)
@@ -135,7 +137,7 @@ class ReservationsRepository extends Repository<reservation> {
       .execute();
   }
 
-  async searchReservations(query: string, filter: string, page: number, limit: number) {
+  async searchReservations(query: string, filter: string, page: number, limit: number): Promise<{ meta: Meta; items: reservation[] }> {
     const searchAll = this
       .createQueryBuilder('r')
       .select('r.id', 'reservationsId')
@@ -173,7 +175,7 @@ class ReservationsRepository extends Repository<reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
-    const items = await searchAll.offset(limit * page).limit(limit).getRawMany();
+    const items = await searchAll.offset(limit * page).limit(limit).getRawMany<reservation>();
     const totalItems = await searchAll.getCount();
     const meta : Meta = {
       totalItems,

@@ -42,7 +42,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     page: number,
     sort: 'ASC' | 'DESC' | undefined,
     limit: number,
-  ) {
+  ): Promise<Reviews[]> {
     const reviews = this.createQueryBuilder('reviews')
       .select('reviews.id', 'reviewsId')
       .addSelect('reviews.userId', 'reviewerId')
@@ -67,7 +67,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     }
     const ret = await reviews.offset(page * limit)
       .limit(limit)
-      .getRawMany();
+      .getRawMany<Reviews>();
     return ret;
   }
 
