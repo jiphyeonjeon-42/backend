@@ -115,8 +115,8 @@ class BooksRepository extends Repository<Book> {
       .leftJoin(Category, 'category', 'category.id = book_info.categoryId')
       .limit(limit)
       .groupBy('book_info.id')
-      .orderBy('title', 'ASC')
       .orderBy(order, 'DESC')
+      .addOrderBy('title', 'ASC')
       .getRawMany<LendingBookList>();
     return lendingBookList;
   }
