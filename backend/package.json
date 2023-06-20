@@ -71,6 +71,7 @@
     "typeorm": "^0.3.11",
     "typeorm-model-generator": "^0.4.6",
     "winston": "^3.6.0",
-    "winston-daily-rotate-file": "^4.6.1"
+    "winston-daily-rotate-file": "^4.6.1",
+    "zod": "^3.21.4"
   }
 }
