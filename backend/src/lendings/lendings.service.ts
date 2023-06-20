@@ -155,7 +155,7 @@ export const search = async (
       filterQuery.push({ returnedAt: IsNull(), callSign: Like(`%${query}%`) });
       break;
     case 'bookId':
-      filterQuery.push({ returnedAt: IsNull(), bookId: Like(`%${query}%`) });
+      filterQuery.push({ returnedAt: IsNull(), bookId: query });
       break;
     default:
       filterQuery.push([
