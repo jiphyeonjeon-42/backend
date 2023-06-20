@@ -4,13 +4,14 @@
     "es2021": true,
     "jest": true
   },
-  "extends": ["airbnb-base"],
+  "root": true,
+  "extends": ["airbnb-base", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
   "rules": {
     "import/extensions": [
       "error",
@@ -21,7 +22,9 @@
         "json": "never"
       }
     ],
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "error"
   },
   "settings": {
     "import/resolver": {
