@@ -15,10 +15,13 @@ import BookInfo from '../entity/entities/BookInfo';
 export class SubTagRepository extends Repository<SubTag> {
   private readonly vSubDefaultRepo: Repository<VTagsSubDefault>;
 
+  private readonly entityManager;
+
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
+    this.entityManager = entityManager;
     this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
       VTagsSubDefault,
       entityManager,
@@ -26,7 +29,7 @@ export class SubTagRepository extends Repository<SubTag> {
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string, superTagId: number)
-  : Promise<void> {
+  : Promise<number> {
     const insertObject: QueryDeepPartialEntity<SubTag> = {
       superTagId,
       userId,
@@ -34,7 +37,8 @@ export class SubTagRepository extends Repository<SubTag> {
       content,
       updateUserId: userId,
     };
-    await this.insert(insertObject);
+    const insertResult = await this.entityManager.insert(SubTag, insertObject);
+    return insertResult.identifiers[0].id;
   }
 
   async deleteSubTag(subTagsId: number, deleteUser: number): Promise<void> {
