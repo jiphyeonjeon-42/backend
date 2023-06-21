@@ -27,6 +27,8 @@ export class TagsService {
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
+    
+    let defaultTagsInsertion: superDefaultTag;
     try {
       await this.queryRunner.startTransaction();
       const defaultTag: SuperTag | null = await this.superTagRepository.getDefaultTag(bookInfoId);
@@ -36,7 +38,16 @@ export class TagsService {
       } else {
         defaultTagId = defaultTag.id;
       }
-      await this.subTagRepository.createDefaultTags(userId, bookInfoId, content, defaultTagId);
+      const subTagId = await this.subTagRepository.createDefaultTags(userId, bookInfoId, content, defaultTagId);
+      const subTag = await this.subTagRepository.getSubTags({ id: subTagId });
+
+      defaultTagsInsertion = {
+        id: subTag[0].id,
+        content: subTag[0].content,
+        login: subTag[0].login,
+        count: 0,
+        type: 'default',
+      };
       await this.queryRunner.commitTransaction();
     } catch (e) {
       await this.queryRunner.rollbackTransaction();
@@ -44,6 +55,8 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
+
+    return defaultTagsInsertion;
   }
 
   async searchSubDefaultTags(page: number, limit: number, visibility: string, query: string)
