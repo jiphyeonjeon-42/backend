@@ -1,5 +1,5 @@
 import * as errorCode from '../../../utils/error/errorCode';
-import ErrorResponse from "../../../utils/error/errorResponse";
+import ErrorResponse from '../../../utils/error/errorResponse';
 
 export const bookInfoParseCheck = (
   bookInfoId : string,
@@ -15,4 +15,3 @@ export const bookInfoParseCheck = (
   }
   return result;
 };
-

@@ -67,10 +67,10 @@ router
      *                    value :
      *                      errorCode: 109
      */
-    .post('/', authValidate(roleSet.all), wrapAsyncController(createReviews));
+  .post('/', authValidate(roleSet.all), wrapAsyncController(createReviews));
 
 router
-    /**
+/**
      * @openapi
      * /api/reviews:
      *    get:
@@ -268,10 +268,10 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
+  .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
 
-    router
-    /**
+router
+/**
      * @openapi
      * /api/reviews/my-reviews:
      *    get:
@@ -459,10 +459,10 @@ router
      *                   value :
      *                     errorCode: 109
      */
-    .get('/my-reviews', authValidate(roleSet.all), wrapAsyncController(getReviews));
+  .get('/my-reviews', authValidate(roleSet.all), wrapAsyncController(getReviews));
 
 router
-    /**
+/**
      * @openapi
      * /api/reviews/{reviewsId}:
      *    put:
@@ -536,10 +536,10 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .put('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+  .put('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
 
-    router
-    /**
+router
+/**
      * @openapi
      * /api/reviews/{reviewsId}:
      *    patch:
@@ -557,10 +557,10 @@ router
      *         '200':
      *            description: 리뷰가 DB에 정상적으로 fetch됨.
      */
-    .patch('/:reviewsId', authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
+  .patch('/:reviewsId', authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
 
 router
-    /**
+/**
      * @openapi
      * /api/reviews/{reviewsId}:
      *    delete:
@@ -617,4 +617,4 @@ router
      *                    value:
      *                      errorCode: 804
      */
-    .delete('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(deleteReviews));
+  .delete('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(deleteReviews));

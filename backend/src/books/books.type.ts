@@ -73,7 +73,7 @@ export enum categoryIds{
     'B',
     'e',
     'n',
-    'N' ,
+    'N',
     'j',
     'a',
     'f',

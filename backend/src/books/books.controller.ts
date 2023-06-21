@@ -12,7 +12,7 @@ import LikesService from './likes.service';
 
 const likesService = new LikesService();
 
-const pubdateFormatValidator = (pubdate: String | Date) => {
+const pubdateFormatValidator = (pubdate: string | Date) => {
   const regexConditon = /^[0-9]{8}$/;
   if (regexConditon.test(String(pubdate)) === false) {
     return false;

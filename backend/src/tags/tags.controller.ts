@@ -16,7 +16,7 @@ export const createDefaultTags = async (
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
-  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
+  const regex = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content.length > 42 || regex.test(content) === true) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
@@ -43,7 +43,7 @@ export const createSuperTags = async (
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
-  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
+  const regex = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
@@ -142,8 +142,8 @@ export const mergeTags = async (
   next: NextFunction,
 ) => {
   const { id: tokenId } = req.user as any;
-  const bookInfoId: number = Number(req?.params?.bookInfoId);
-  const superTagId: number = Number(req?.body?.superTagId);
+  const bookInfoId = Number(req?.params?.bookInfoId);
+  const superTagId = Number(req?.body?.superTagId);
   const subTagIds: number[] = req?.body?.subTagIds;
   const tagsService = new TagsService();
   let returnSuperTagId = 0;
@@ -185,7 +185,7 @@ export const updateSuperTags = async (
   const superTagId = parseInt(req?.body?.id, 10);
   const content = req?.body?.content;
   const tagsService = new TagsService();
-  const regex: RegExp = /[^가-힣a-zA-Z0-9_]/g;
+  const regex = /[^가-힣a-zA-Z0-9_]/g;
   if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));

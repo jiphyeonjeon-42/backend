@@ -163,7 +163,7 @@ router
  *                    type: number
  *                    example: 500
  */
-.patch('/sub', authValidate(roleSet.librarian), updateSubTags);
+  .patch('/sub', authValidate(roleSet.librarian), updateSubTags);
 
 router
 /**
