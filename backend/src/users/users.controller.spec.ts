@@ -1,41 +1,23 @@
 import { UserSearchRequestQuerySchema } from './users.types';
 
-describe('zod test: UserSearchRequest', () => {
-  test('default test', () => {
-    const parseResult = UserSearchRequestQuerySchema.safeParse({
-      id: 1,
-      nicknameOrEmail: 'test',
-      page: 1,
-      limit: 1,
-    });
-    expect(parseResult.success).toBe(true);
-    if (parseResult.success) {
-      expect(parseResult.data).toEqual({
-        id: 1,
-        nicknameOrEmail: 'test',
-        page: 1,
-        limit: 1,
-      });
-    }
+describe('UserSearchRequest query', () => {
+  test('regular query', () => {
+    const data = {
+      id: 1, nicknameOrEmail: 'test', page: 1, limit: 1,
+    };
+
+    expect(UserSearchRequestQuerySchema.safeParse(data)).toEqual({ success: true, data });
   });
-  test('edge test', () => {
-    const parseResult = UserSearchRequestQuerySchema.safeParse({
-    });
-    expect(parseResult.success).toBe(true);
-    if (parseResult.success) {
-      expect(parseResult.data).toEqual({
-        page: 0,
-        limit: 5,
-      });
-    }
+  test('default value for empty query', () => {
+    expect(UserSearchRequestQuerySchema.safeParse({}))
+      .toEqual({ success: true, data: { page: 0, limit: 5 } });
   });
   test('fail test', () => {
-    const parseResult = UserSearchRequestQuerySchema.safeParse({
-      id: 'abcd',
-      nicknameOrEmail: 'test',
-      page: 1,
-      limit: 1,
-    });
+    const error = {
+      id: 'abcd', nicknameOrEmail: 'test', page: 1, limit: 1,
+    };
+
+    const parseResult = UserSearchRequestQuerySchema.safeParse(error);
     expect(parseResult.success).toBe(false);
   });
 });
