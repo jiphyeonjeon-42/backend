@@ -11,6 +11,7 @@
     "build": "npx tsc -p .",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
     "prod": "npx tsc -p . && yarn start",
+    "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
   },
   "devDependencies": {
