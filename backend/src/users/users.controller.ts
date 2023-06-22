@@ -3,12 +3,14 @@ import { NextFunction, Request, Response } from 'express';
 import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
 import { z } from 'zod';
+import { P, match } from 'ts-pattern';
 import ErrorResponse from '../utils/error/errorResponse';
 import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
 import { UserSearchRequestQuerySchema } from './users.types';
+import { Meta } from '../DTO/common.interface';
 
 const usersService = new UsersService();
 
@@ -21,32 +23,24 @@ export const search = async (
   if (!parsed.success) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
-  const {
-    id, nicknameOrEmail, page, limit,
-  } = parsed.data;
-  let items;
   try {
-    if (!nicknameOrEmail && !id) {
-      items = await usersService.searchAllUsers(limit, page);
-    } else if (nicknameOrEmail && !id) {
-      items = JSON.parse(JSON.stringify(
-        await usersService.searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
-      ));
-    } else if (!nicknameOrEmail && id) {
-      items = JSON.parse(JSON.stringify(
-        await usersService.searchUserById(id),
-      ));
-    }
-    if (items) {
-      items.items = await Promise.all(items.items.map(async (data: User) => ({
-        ...data,
-        lendings:
-          await usersService.userLendings(data.id),
-        reservations:
-          await usersService.userReservations(data.id),
-      })));
-    }
-    return res.json(items);
+    const { items: users, meta } = await match(parsed.data)
+      .returnType<Promise<{ items: User[], meta?: Meta }>>()
+      .with(
+        { nicknameOrEmail: P.string },
+        ({ nicknameOrEmail, limit, page }) => usersService
+          .searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
+      )
+      .with({ id: P.number }, ({ id }) => usersService.searchUserById(id))
+      .otherwise(({ limit, page }) => usersService.searchAllUsers(limit, page));
+
+    const items = await Promise.all(users.map(async (data: User) => ({
+      ...data,
+      lendings: await usersService.userLendings(data.id),
+      reservations: await usersService.userReservations(data.id),
+    })));
+
+    return res.json({ items, meta });
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {
