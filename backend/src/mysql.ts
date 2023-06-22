@@ -10,7 +10,7 @@ export const pool = mysql.createPool({
   port: 3306,
   user: config.database.username,
   password: config.database.password,
-  database: config.database.dbName,
+  database: config.database.database,
 });
 
 export const executeQuery = async (queryText: string, values: any[] = []): Promise<any> => {
