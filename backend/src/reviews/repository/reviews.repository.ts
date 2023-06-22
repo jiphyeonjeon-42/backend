@@ -4,7 +4,7 @@ import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
 import BookInfo from '../../entity/entities/BookInfo';
 import User from '../../entity/entities/User';
-import ErrorResponse from "../../utils/error/errorResponse";
+import ErrorResponse from '../../utils/error/errorResponse';
 
 export default class ReviewsRepository extends Repository<Reviews> {
   private readonly bookInfoRepo: Repository<BookInfo>;

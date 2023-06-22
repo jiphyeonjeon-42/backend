@@ -74,7 +74,6 @@ export class VSearchBook {
 
   @ViewColumn()
   isLendable: boolean;
-
 }
 
 export default VSearchBook;

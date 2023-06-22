@@ -66,6 +66,6 @@ class Reviews {
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
   bookInfo: BookInfo;
-}
+ }
 
 export default Reviews;

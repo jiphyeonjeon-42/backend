@@ -39,6 +39,6 @@ class Likes {
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
   bookInfo: BookInfo;
-}
+ }
 
 export default Likes;

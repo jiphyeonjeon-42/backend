@@ -142,8 +142,7 @@ export class TagsService {
       const superTag = await this.superTagRepository.getSuperTags({ id: superTagId });
       const superLogin: string | null = await this.superTagRepository.getSuperTagLogin(superTagId);
 
-      if (superLogin === null)
-        throw new Error(errorCode.CREATE_FAIL_TAGS);
+      if (superLogin === null) throw new Error(errorCode.CREATE_FAIL_TAGS);
       superTagsInsertion = {
         id: superTag[0].id,
         content: superTag[0].content,
@@ -194,7 +193,7 @@ export class TagsService {
     rawSuperTagId: number,
     userId: number,
   ) {
-    let superTagId: number = 0;
+    let superTagId = 0;
 
     try {
       await this.queryRunner.startTransaction();

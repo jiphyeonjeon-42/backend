@@ -98,7 +98,7 @@ export const router = Router();
  *                  errorCode:
  *                    description:
  *                    type: integer
- *                    example: 502(패널티 기간) || 503(대출이 가능한 책) || 504(이미 예약중) || 505(이미 대출중), ... 
+ *                    example: 502(패널티 기간) || 503(대출이 가능한 책) || 504(이미 예약중) || 505(이미 대출중), ...
  * */
 
 /**

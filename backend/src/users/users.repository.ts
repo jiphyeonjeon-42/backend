@@ -62,7 +62,7 @@ export default class UsersRepository extends Repository<User> {
     const customUsers = users as unknown as models.User[];
     customUsers.forEach((user) => {
       const penaltyEndDate: Date = user.penaltyEndDate as Date;
-      const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);
+      const formattedPenaltyEndDate: string = formatDate(penaltyEndDate);
       user.penaltyEndDate = formattedPenaltyEndDate as unknown as Date;
     });
     return [customUsers, count];
@@ -82,7 +82,7 @@ export default class UsersRepository extends Repository<User> {
         'slack',
         'penaltyEndDate',
         'role',
-        'password'
+        'password',
       ],
       where: conditions,
       take: limit,
@@ -91,13 +91,11 @@ export default class UsersRepository extends Repository<User> {
     const customUsers = users as unknown as models.PrivateUser[];
     customUsers.forEach((user) => {
       const penaltyEndDate: Date = user.penaltyEndDate as Date;
-      const formattedPenaltyEndDate: String = formatDate(penaltyEndDate);
+      const formattedPenaltyEndDate: string = formatDate(penaltyEndDate);
       user.penaltyEndDate = formattedPenaltyEndDate as unknown as Date;
     });
     return [customUsers, count];
   }
-
-  
 
   async getLending(users: { userId: number; }[]) {
     if (users.length !== 0) return this.userLendingRepo.find({ where: users });

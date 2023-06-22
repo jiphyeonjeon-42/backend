@@ -63,7 +63,6 @@ class Reservation {
 
   @Column('int', { name: 'bookId', nullable: true })
    bookId: number | null;
-
  }
 
 export default Reservation;
