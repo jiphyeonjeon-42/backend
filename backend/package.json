@@ -8,9 +8,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/server.js",
-    "build": "npx tsc -p .",
+    "build": "npx tsc -p ./tsconfig.prod.json",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/server.ts",
-    "prod": "npx tsc -p . && yarn start",
+    "prod": "npx tsc -p ./tsconfig.prod.json && npm start",
     "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
   },
