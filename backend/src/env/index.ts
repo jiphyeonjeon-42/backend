@@ -5,6 +5,7 @@ import { getModeOption } from './modeSchema';
 import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
 import { getOauth42ApiOption, getOauthUrlOption } from './oauth42ApiSchema';
+import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 
 // .env 파일을 읽어서 process.env에 추가
 dotenv.config();
@@ -15,6 +16,7 @@ export const oauthUrlOption = getOauthUrlOption(process.env);
 export const oauth42ApiOption = getOauth42ApiOption(process.env);
 export const naverBookApiOption = getNaverBookApiOption(process.env);
 export const nationalIsbnApiKey = getNationalIsbnApiOption(process.env);
+export const botOAuthToken = getSlackbotOAuthToken(process.env);
 export const jwtOption = {
   ...getJwtOption(connectMode)(oauthUrlOption),
   secret: getJwtSecret(process.env),
