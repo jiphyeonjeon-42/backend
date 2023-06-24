@@ -1,6 +1,6 @@
+import { LogLevel, LogLevelOption } from './config.type';
 import { RuntimeMode } from './runtimeOption';
 
-export type LogLevel = keyof typeof levels;
 export const levels = {
   error: 0,
   warn: 1,
@@ -17,7 +17,7 @@ export const colors: Record<LogLevel, string> = {
   debug: 'blue',
 } as const;
 
-export const getLogLevelOption = (mode: RuntimeMode) => {
+export const getLogLevelOption = (mode: RuntimeMode): LogLevelOption => {
   const logLevel = (mode === 'development' ? 'debug' : 'http');
   const consoleLogLevel = (mode === 'production' ? 'error' : 'debug');
 

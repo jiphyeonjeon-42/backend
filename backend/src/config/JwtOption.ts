@@ -1,15 +1,7 @@
 import { z } from 'zod';
+import { JwtOption, OauthUrlOption } from './config.type';
 import { nonempty } from './envObject';
 import { Mode } from './modeOption';
-import { OauthUrlOption } from './oauthOption';
-
-export type JwtOption = {
-  issuer: string | 'localhost'
-  domain: string | 'localhost'
-
-  /** Secure Cookie에 저장하므로 https 연결시에만 참이어야 함 */
-  secure: boolean;
-};
 
 type getJwtOption = (mode: Mode) => (option: OauthUrlOption) => JwtOption;
 export const getJwtOption: getJwtOption = (mode) => ({ redirectURL, clientURL }) => {

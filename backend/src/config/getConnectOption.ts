@@ -1,9 +1,7 @@
-import { z } from 'zod';
+/* eslint-disable import/prefer-default-export */
+import { ConnectOption } from './config.type';
 import { localSchema, prodSchema, rdsSchema } from './dbSchema';
 import { Mode } from './modeOption';
-
-/** DB 모드에 따라 사용할 DB 연결 옵션 */
-export type ConnectOption = z.infer<ReturnType<typeof getConnectOptionSchema>>;
 
 /** DB 모드에 따라 사용할 DB 연결 옵션 스키마를 고르는 함수 */
 const getConnectOptionSchema = (mode: Mode) => {

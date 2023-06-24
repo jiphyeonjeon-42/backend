@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Oauth42ApiOption, OauthUrlOption } from './config.type';
 import { nonempty, url } from './envObject';
 
 export const oauthUrlSchema = z.object({
@@ -11,14 +12,14 @@ export const oauth42Schema = z.object({
   CLIENT_SECRET: nonempty,
 });
 
-export type OauthUrlOption = ReturnType<typeof getOauthUrlOption>;
-export const getOauthUrlOption = (processEnv: NodeJS.ProcessEnv) => oauthUrlSchema
+export const getOauthUrlOption = (processEnv: NodeJS.ProcessEnv): OauthUrlOption => oauthUrlSchema
   .transform((v) => ({
     redirectURL: v.REDIRECT_URL,
     clientURL: v.CLIENT_URL,
   })).parse(processEnv);
 
-export const getOauth42ApiOption = (processEnv: NodeJS.ProcessEnv) => oauth42Schema
+// eslint-disable-next-line max-len
+export const getOauth42ApiOption = (processEnv: NodeJS.ProcessEnv): Oauth42ApiOption => oauth42Schema
   .transform((v) => ({
     id: v.CLIENT_ID,
     secret: v.CLIENT_SECRET,
