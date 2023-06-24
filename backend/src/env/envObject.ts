@@ -6,6 +6,9 @@ export const numeric = z.string().regex(/^\d+$/).transform(Number);
 /** 비어있지 않은 문자열 */
 export const nonempty = z.string().nonempty();
 
+/** 자바스크립트 URL 객체로 파싱 가능한 문자열 */
+export const url = z.string().trim().url();
+
 /**
  * 키 목록으로부터 zod 환경변수 스키마를 생성해주는 헬퍼
  *

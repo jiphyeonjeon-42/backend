@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { connectOption, oauth42ApiOption } from './env';
+import { connectOption, oauth42ApiOption, oauthUrlOption } from './env';
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ const config = {
     port: 3306,
     ...connectOption,
   },
-  client: oauth42ApiOption,
+  client: { ...oauthUrlOption, ...oauth42ApiOption },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'secret',
   },
