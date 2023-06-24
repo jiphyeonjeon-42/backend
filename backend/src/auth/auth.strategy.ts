@@ -1,14 +1,17 @@
 import { Request } from 'express';
 import { Strategy as FortyTwoStrategy } from 'passport-42';
 import { ExtractJwt, Strategy as JWTStrategy, VerifiedCallback } from 'passport-jwt';
-import config from '../config';
-import { jwtOption } from '../env';
+import { jwtOption, oauth42ApiOption, oauthUrlOption } from '../env';
+
+const credentials = {
+  clientID: oauth42ApiOption.id,
+  clientSecret: oauth42ApiOption.secret,
+};
 
 export const FtStrategy = new FortyTwoStrategy(
   {
-    clientID: config.client.id,
-    clientSecret: config.client.secret,
-    callbackURL: `${config.client.redirectURL}/api/auth/token`,
+    ...credentials,
+    callbackURL: `${oauthUrlOption.redirectURL}/api/auth/token`,
   },
   (accessToken: any, refreshToken: any, profile: any, cb: Function) => {
     const { id, login } = profile._json; // eslint-disable-line no-underscore-dangle
@@ -22,9 +25,8 @@ export const FtStrategy = new FortyTwoStrategy(
 
 export const FtAuthentication = new FortyTwoStrategy(
   {
-    clientID: config.client.id,
-    clientSecret: config.client.secret,
-    callbackURL: `${config.client.redirectURL}/api/auth/intraAuthentication`,
+    ...credentials,
+    callbackURL: `${oauthUrlOption.redirectURL}/api/auth/intraAuthentication`,
   },
   (accessToken: any, refreshToken: any, profile: any, cb: Function) => {
     const { id, login } = profile._json; // eslint-disable-line no-underscore-dangle
