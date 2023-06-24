@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { getJwtOption, getJwtSecret } from './JwtOption';
 import { getConnectOption } from './getConnectOption';
+import { getLogLevelOption } from './logOption';
 import { getModeOption } from './modeSchema';
 import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
@@ -23,3 +24,4 @@ export const jwtOption = {
   ...getJwtOption(connectMode)(oauthUrlOption),
   secret: getJwtSecret(process.env),
 };
+export const logLevelOption = getLogLevelOption(runtimeMode);

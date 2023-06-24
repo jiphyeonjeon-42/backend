@@ -7,38 +7,19 @@ import {
   transports,
 } from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
+import { logLevelOption } from '../env';
+import {
+  colors,
+  levels,
+} from '../env/logOption';
 
 const {
   combine, timestamp, printf, colorize, errors,
 } = format;
 
-const logDir = '../../logs';
-
-export const levels = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  debug: 4,
-} as const;
-type LogLevel = keyof typeof levels;
-
-const colors: Record<LogLevel, string> = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'green',
-  http: 'magenta',
-  debug: 'blue',
-} as const;
 addColors(colors);
 
-const level = (): LogLevel => {
-  const env = process.env.NODE_ENV || 'development';
-  const isDevelopment = env === 'development';
-  return isDevelopment ? 'debug' : 'http';
-};
-
-const consoleLevel = (): LogLevel => (process.env.NODE_ENV === 'production' ? 'error' : 'debug');
+const logDir = '../../logs';
 const logTimestampFormat = 'YYYY-MM-DD HH:mm:ss:ms';
 const datePattern = 'YYYY-MM-DD';
 
@@ -54,7 +35,7 @@ const logFormat = combine(
 
 const consoleOpts = {
   handleExceptions: true,
-  level: consoleLevel(),
+  level: logLevelOption.consoleLogLevel,
   format: combine(
     colorize({ all: true }),
     timestamp({ format: logTimestampFormat }),
@@ -62,7 +43,7 @@ const consoleOpts = {
 };
 
 const logger = createLogger({
-  level: level(),
+  level: logLevelOption.logLevel,
   levels,
   format: logFormat,
   transports: [
