@@ -5,11 +5,13 @@ import { getModeOption } from './modeSchema';
 import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
 import { getOauth42ApiOption, getOauthUrlOption } from './oauth42ApiSchema';
+import { getRuntimeMode } from './runtimeOption';
 import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 
 // .env 파일을 읽어서 process.env에 추가
 dotenv.config();
 
+export const runtimeMode = getRuntimeMode(process.env);
 export const connectMode = getModeOption(process.env);
 export const connectOption = getConnectOption(connectMode)(process.env);
 export const oauthUrlOption = getOauthUrlOption(process.env);
