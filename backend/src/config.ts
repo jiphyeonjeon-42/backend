@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { connectOption } from './env';
+import { connectOption } from './env/env';
 
 dotenv.config();
 
