@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
-import config from '../config';
 import { User } from '../DTO/users.model';
+import { jwtOption } from '../env';
 
 /**
  * User 정보를 가지고 token 만들기
@@ -13,10 +13,10 @@ export const issueJwt = (user: User) => {
   const payload = {
     id: user.id,
   };
-  const secretKey = config.jwt.secret;
+  const secretKey = jwtOption.secret;
   const options = {
     expiresIn: '480m',
-    issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
+    issuer: jwtOption.issuer,
   };
   return jwt.sign(payload, secretKey, options);
 };
@@ -35,10 +35,10 @@ export const saveJwt = async (req: Request, res: Response, user: User) : Promise
   const token = issueJwt(user);
   res.cookie('access_token', token, {
     httpOnly: true,
-    secure: config.mode === 'prod', // ANCHOR https 연결시에는 true로 설정해주어야함.
+    secure: jwtOption.secure, // ANCHOR https 연결시에는 true로 설정해주어야함.
     sameSite: 'lax',
     path: '/',
-    domain: config.mode === 'prod' ? '42library.kr' : 'localhost',
+    domain: jwtOption.domain,
     expires: new Date(new Date().getTime() + 1000 * 60 * 480),
   });
 };

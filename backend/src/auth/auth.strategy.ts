@@ -1,7 +1,8 @@
 import { Request } from 'express';
 import { Strategy as FortyTwoStrategy } from 'passport-42';
-import { Strategy as JWTStrategy, ExtractJwt, VerifiedCallback } from 'passport-jwt';
+import { ExtractJwt, Strategy as JWTStrategy, VerifiedCallback } from 'passport-jwt';
 import config from '../config';
+import { jwtOption } from '../env';
 
 export const FtStrategy = new FortyTwoStrategy(
   {
@@ -40,9 +41,9 @@ export const JwtStrategy = new JWTStrategy(
     jwtFromRequest: ExtractJwt.fromExtractors([
       (req: Request) => req?.cookies?.access_token,
     ]),
-    secretOrKey: config.jwt.secret,
+    secretOrKey: jwtOption.secret,
     ignoreExpiration: false,
-    issuer: config.mode === 'local' ? 'localhost' : 'server.42library.kr',
+    issuer: jwtOption.issuer,
     passReqToCallback: true,
   },
   (req: Request, payload: any, done: VerifiedCallback) => {

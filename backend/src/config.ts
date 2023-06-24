@@ -11,9 +11,6 @@ const config = {
     ...connectOption,
   },
   client: { ...oauthUrlOption, ...oauth42ApiOption },
-  jwt: {
-    secret: process.env.JWT_SECRET ?? 'secret',
-  },
 };
 
 export default config;

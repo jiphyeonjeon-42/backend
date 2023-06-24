@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { getJwtOption, getJwtSecret } from './JwtOption';
 import { getConnectOption } from './getConnectOption';
 import { getModeOption } from './modeSchema';
 import { getNaverBookApiOption } from './naverBookApiOption';
@@ -12,3 +13,7 @@ export const connectOption = getConnectOption(connectMode)(process.env);
 export const oauthUrlOption = getOauthUrlOption(process.env);
 export const oauth42ApiOption = getOauth42ApiOption(process.env);
 export const naverBookApiOption = getNaverBookApiOption(process.env);
+export const jwtOption = {
+  ...getJwtOption(connectMode)(oauthUrlOption),
+  secret: getJwtSecret(process.env),
+};

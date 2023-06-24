@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { verify } from 'jsonwebtoken';
 import * as status from 'http-status';
-import UsersService from '../users/users.service';
-import { role } from './auth.type';
+import { verify } from 'jsonwebtoken';
 import { User } from '../DTO/users.model';
-import config from '../config';
+import { jwtOption } from '../env';
+import UsersService from '../users/users.service';
+import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../utils/error/errorCode';
+import { role } from './auth.type';
 
 const usersService = new UsersService();
 
@@ -21,7 +21,7 @@ const authValidate = (roles: role[]) => async (
       throw new ErrorResponse(errorCode.NO_TOKEN, 401);
     }
     // 토큰 복호화
-    const verifyCheck = verify(req.cookies.access_token, config.jwt.secret);
+    const verifyCheck = verify(req.cookies.access_token, jwtOption.secret);
     const { id } = verifyCheck as any;
     const user: { items: User[] } = await usersService.searchUserById(id);
     // User가 없는 경우
