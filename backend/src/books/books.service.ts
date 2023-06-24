@@ -2,7 +2,7 @@
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import jipDataSource from '../app-data-source';
-import { naverBookApiOption } from '../env';
+import { nationalIsbnApiKey, naverBookApiOption } from '../env';
 import { executeQuery } from '../mysql';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
@@ -17,7 +17,7 @@ const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
   let searchResult;
   await axios
-    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${process.env.NATION_LIBRARY_KEY}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
+    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
     .then((res) => {
       searchResult = res.data.docs[0];
       const {

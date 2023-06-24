@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { getJwtOption, getJwtSecret } from './JwtOption';
 import { getConnectOption } from './getConnectOption';
 import { getModeOption } from './modeSchema';
+import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
 import { getOauth42ApiOption, getOauthUrlOption } from './oauth42ApiSchema';
 
@@ -13,6 +14,7 @@ export const connectOption = getConnectOption(connectMode)(process.env);
 export const oauthUrlOption = getOauthUrlOption(process.env);
 export const oauth42ApiOption = getOauth42ApiOption(process.env);
 export const naverBookApiOption = getNaverBookApiOption(process.env);
+export const nationalIsbnApiKey = getNationalIsbnApiOption(process.env);
 export const jwtOption = {
   ...getJwtOption(connectMode)(oauthUrlOption),
   secret: getJwtSecret(process.env),
