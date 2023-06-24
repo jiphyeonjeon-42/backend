@@ -1,16 +1,17 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
+import jipDataSource from '../app-data-source';
+import { naverBookApiOption } from '../env/env';
 import { executeQuery } from '../mysql';
+import * as errorCode from '../utils/error/errorCode';
+import { logger } from '../utils/logger';
 import { StringRows } from '../utils/types';
 import * as models from './books.model';
+import BooksRepository from './books.repository';
 import {
   categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';
-import * as errorCode from '../utils/error/errorCode';
-import { logger } from '../utils/logger';
-import BooksRepository from './books.repository';
-import jipDataSource from '../app-data-source';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -41,8 +42,8 @@ const getAuthorInNaver = async (isbn: string) => {
   https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
       {
         headers: {
-          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
-          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+          'X-Naver-Client-Id': `${naverBookApiOption.client}`,
+          'X-Naver-Client-Secret': `${naverBookApiOption.secret}`,
         },
       },
     )
