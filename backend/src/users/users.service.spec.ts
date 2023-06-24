@@ -3,6 +3,7 @@ import { QueryRunner } from 'typeorm';
 import jipDataSource from '../app-data-source';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
+import { connectMode } from '../env';
 
 const usersService = new UsersService();
 
@@ -14,7 +15,7 @@ describe('UsersService', () => {
     await jipDataSource.initialize().then(
       () => {
         logger.info('typeORM INIT SUCCESS');
-        logger.info(process.env.MODE);
+        logger.info(connectMode);
       },
     ).catch(
       (e) => {

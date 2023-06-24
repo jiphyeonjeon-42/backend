@@ -3,6 +3,7 @@ import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import router from './routes';
 import swaggerOptions from './swagger/swagger';
 import errorHandler from './utils/error/errorHandler';
@@ -10,9 +11,9 @@ import { FtStrategy, JwtStrategy, FtAuthentication } from './auth/auth.strategy'
 import { logger, morganMiddleware } from './utils/logger';
 import errorConverter from './utils/error/errorConverter';
 import jipDataSource from './app-data-source';
+import { connectMode } from './env';
 
 const app: express.Application = express();
-const cors = require('cors');
 
 app.use(morganMiddleware);
 app.use(cookieParser());
@@ -36,7 +37,7 @@ passport.use('jwt', JwtStrategy);
 jipDataSource.initialize().then(
   () => {
     logger.info('typeORM INIT SUCCESS');
-    logger.info(process.env.MODE);
+    logger.info(connectMode);
   },
 ).catch(
   (e) => {
