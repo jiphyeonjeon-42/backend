@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const numeric = z.string().regex(/^\d+$/).transform(Number);
 
 /** 비어있지 않은 문자열 */
-const nonempty = z.string().nonempty();
+export const nonempty = z.string().nonempty();
 
 /**
  * 키 목록으로부터 zod 환경변수 스키마를 생성해주는 헬퍼
