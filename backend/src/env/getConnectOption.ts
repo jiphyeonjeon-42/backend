@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { localSchema, prodSchema, rdsSchema } from './dbSchema';
-import { Mode } from './modeSchema';
+import { Mode } from './modeOption';
 
 /** DB 모드에 따라 사용할 DB 연결 옵션 */
 export type ConnectOption = z.infer<ReturnType<typeof getConnectOptionSchema>>;

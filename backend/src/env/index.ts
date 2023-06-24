@@ -2,10 +2,10 @@ import dotenv from 'dotenv';
 import { getJwtOption, getJwtSecret } from './JwtOption';
 import { getConnectOption } from './getConnectOption';
 import { getLogLevelOption } from './logOption';
-import { getModeOption } from './modeSchema';
+import { getModeOption } from './modeOption';
 import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
-import { getOauth42ApiOption, getOauthUrlOption } from './oauth42ApiSchema';
+import { getOauth42ApiOption, getOauthUrlOption } from './oauthOption';
 import { getRuntimeMode } from './runtimeOption';
 import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 

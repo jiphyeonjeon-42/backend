@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { nonempty } from './envObject';
-import { Mode } from './modeSchema';
-import { OauthUrlOption } from './oauth42ApiSchema';
+import { Mode } from './modeOption';
+import { OauthUrlOption } from './oauthOption';
 
 export type JwtOption = {
   issuer: string | 'localhost'
