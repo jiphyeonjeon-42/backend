@@ -2,7 +2,7 @@
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import jipDataSource from '../app-data-source';
-import { naverBookApiOption } from '../env/env';
+import { naverBookApiOption } from '../env';
 import { executeQuery } from '../mysql';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';

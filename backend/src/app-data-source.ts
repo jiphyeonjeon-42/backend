@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { connectOption } from './env/env';
+import { connectOption } from './env';
 
 export const option: DataSourceOptions = {
   type: 'mysql',

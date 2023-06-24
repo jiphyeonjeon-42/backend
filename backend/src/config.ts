@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { connectOption, oauth42ApiOption } from './env/env';
+import { connectOption, oauth42ApiOption } from './env';
 
 dotenv.config();
 
