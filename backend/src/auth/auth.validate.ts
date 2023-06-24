@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as status from 'http-status';
 import { verify } from 'jsonwebtoken';
 import { User } from '../DTO/users.model';
-import { jwtOption } from '../env';
+import { jwtOption } from '../config';
 import UsersService from '../users/users.service';
 import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';

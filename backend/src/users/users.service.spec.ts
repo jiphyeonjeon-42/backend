@@ -1,9 +1,9 @@
 /* eslint no-console: "off" */
 import { QueryRunner } from 'typeorm';
 import jipDataSource from '../app-data-source';
-import UsersService from './users.service';
+import { connectMode } from '../config';
 import { logger } from '../utils/logger';
-import { connectMode } from '../env';
+import UsersService from './users.service';
 
 const usersService = new UsersService();
 

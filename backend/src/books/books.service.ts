@@ -2,7 +2,7 @@
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import jipDataSource from '../app-data-source';
-import { nationalIsbnApiKey, naverBookApiOption } from '../env';
+import { nationalIsbnApiKey, naverBookApiOption } from '../config';
 import { executeQuery } from '../mysql';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
@@ -10,7 +10,8 @@ import { StringRows } from '../utils/types';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
-  categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  categoryIds,
 } from './books.type';
 
 const getInfoInNationalLibrary = async (isbn: string) => {

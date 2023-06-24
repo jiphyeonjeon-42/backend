@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { Strategy as FortyTwoStrategy } from 'passport-42';
 import { ExtractJwt, Strategy as JWTStrategy, VerifiedCallback } from 'passport-jwt';
-import { jwtOption, oauth42ApiOption, oauthUrlOption } from '../env';
+import { jwtOption, oauth42ApiOption, oauthUrlOption } from '../config';
 
 const credentials = {
   clientID: oauth42ApiOption.id,

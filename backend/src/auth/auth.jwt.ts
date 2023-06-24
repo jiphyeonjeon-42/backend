@@ -1,7 +1,7 @@
-import * as jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
+import * as jwt from 'jsonwebtoken';
 import { User } from '../DTO/users.model';
-import { jwtOption } from '../env';
+import { jwtOption } from '../config';
 
 /**
  * User 정보를 가지고 token 만들기

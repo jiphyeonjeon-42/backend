@@ -1,10 +1,10 @@
 import { WebClient } from '@slack/web-api';
 import { ResultSetHeader } from 'mysql2';
-import { executeQuery } from '../mysql';
 import * as models from '../DTO/users.model';
+import { botOAuthToken as token } from '../config';
+import { executeQuery } from '../mysql';
 import UsersService from '../users/users.service';
 import { logger } from '../utils/logger';
-import { botOAuthToken as token } from '../env';
 
 const usersService = new UsersService();
 

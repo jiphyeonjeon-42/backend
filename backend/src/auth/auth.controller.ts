@@ -1,16 +1,16 @@
-import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
-import UsersService from '../users/users.service';
-import * as authService from './auth.service';
-import * as authJwt from './auth.jwt';
 import * as models from '../DTO/users.model';
-import { role } from './auth.type';
+import { oauth42ApiOption, oauthUrlOption } from '../config';
 import { updateSlackIdByUserId } from '../slack/slack.service';
+import UsersService from '../users/users.service';
+import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../utils/error/errorCode';
-import { oauth42ApiOption, oauthUrlOption } from '../env';
+import * as authJwt from './auth.jwt';
+import * as authService from './auth.service';
+import { role } from './auth.type';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = oauth42ApiOption.id;

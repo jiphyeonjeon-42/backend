@@ -6,7 +6,7 @@ import {
 } from '../auth/auth.controller';
 import { roleSet } from '../auth/auth.type';
 import authValidate from '../auth/auth.validate';
-import { oauthUrlOption } from '../env';
+import { oauthUrlOption } from '../config';
 import * as errorCode from '../utils/error/errorCode';
 
 export const path = '/auth';
