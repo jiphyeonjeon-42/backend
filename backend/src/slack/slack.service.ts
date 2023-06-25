@@ -1,7 +1,8 @@
 import { WebClient } from '@slack/web-api';
 import { ResultSetHeader } from 'mysql2';
-import { executeQuery } from '../mysql';
 import * as models from '../DTO/users.model';
+import { botOAuthToken as token } from '../config';
+import { executeQuery } from '../mysql';
 import UsersService from '../users/users.service';
 import { logger } from '../utils/logger';
 
@@ -24,9 +25,6 @@ export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
   `);
   return result;
 };
-
-// Read a token from the environment variables
-const token = process.env.BOT_USER_OAUTH_ACCESS_TOKEN;
 
 // Initialize
 const web = new WebClient(token);
