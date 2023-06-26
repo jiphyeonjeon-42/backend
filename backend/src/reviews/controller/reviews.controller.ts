@@ -59,36 +59,45 @@ export const getReviews: RequestHandler = async (req, res, next) => {
     ));
 };
 
-export const updateReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenUserId } = req.user as any;
+export const updateReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  const { id } = parsedId.data;
+
   const content = errorCheck.contentParseCheck(req?.body?.content);
   const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
-  await reviewsService.updateReviews(reviewsId, tokenUserId, content);
+
+  await reviewsService.updateReviews(reviewsId, id, content);
   return res.status(status.OK).send();
 };
 
-export const deleteReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
+export const deleteReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  const { id } = parsedId.data;
+
   const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
   const reviewsUserId = await errorCheck.reviewsIdExistCheck(reviewsId);
-  errorCheck.idAndTokenIdSameCheck(reviewsUserId, tokenId);
-  await reviewsService.deleteReviews(reviewsId, tokenId);
+
+  errorCheck.idAndTokenIdSameCheck(reviewsUserId, id);
+  await reviewsService.deleteReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
 
-export const patchReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
+export const patchReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  const { id } = parsedId.data;
+
   const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
+
   await errorCheck.reviewsIdExistCheck(reviewsId);
-  await reviewsService.patchReviews(reviewsId, tokenId);
+  await reviewsService.patchReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
