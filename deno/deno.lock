@@ -1,0 +1,19 @@
+{
+  "version": "2",
+  "remote": {
+    "https://deno.land/x/copb@v1.0.1/lib/copb.ts": "49c807431a38eda063b2f99f69c8ebdb9c316a7fc3957b618932e78bee3361fb",
+    "https://deno.land/x/copb@v1.0.1/mod.ts": "664b6af5d0bf0339e3461ac69e6b06f052a322b7bfc1ec2fbc701fb525c56ba3",
+    "https://deno.land/x/copb@v1.0.1/version.ts": "e1ce0be2da17592e301891cbffa0f00490c987be292434b852022c81d4d6800e",
+    "https://deno.land/x/iter@v3.0.0/fp.ts": "8915a147be95ec929345e8e32595bb1f02d86077b8a0c4c4d7ed9a3b1ca25b5a",
+    "https://deno.land/x/iter@v3.0.0/lib/combiners.ts": "e5534fae89e34b0b40c9afcad678669c94ba1392eaf227e8f4f2dbb47667fb0a",
+    "https://deno.land/x/iter@v3.0.0/lib/effectors.ts": "e08ab735c39d36a9c7a48b34f0316c99f41a5ef722744517a0fde0375f27b727",
+    "https://deno.land/x/iter@v3.0.0/lib/generators.ts": "93626f77f00076b3a558e228eaeacd74acbbb88cf561833774eea899ba6b983f",
+    "https://deno.land/x/iter@v3.0.0/lib/internal/util.ts": "b1977c55adaae362424f1f55f9c3964785c4262c8356432eb27f56c6795c7ec4",
+    "https://deno.land/x/iter@v3.0.0/lib/reducers.ts": "16e72cab40ceb29fcc1888239aef2406e186f629142bf3a86209138b4fa23959",
+    "https://deno.land/x/iter@v3.0.0/lib/transformers.ts": "d79df1383bd4eb01bd1758f28a815e1d360f9a74e17119e3a4486ef26597b78c",
+    "https://deno.land/x/iter@v3.0.0/lib/types.ts": "a407ea4a09575d3812b851e06f744cc94466d033e2a2e30b7e4e60f83a9128ee",
+    "https://deno.land/x/iter@v3.0.0/version.ts": "ba6ceb0cacf6037ef2f6b4c81181a488c78ab6cfa5abd0f3412e76c8b9f7458c",
+    "https://deno.land/x/outdent@v0.8.0/mod.ts": "72630e680dcc36d5ae556fbff6900b12706c81a6fd592345fc98bcc0878fb3ca",
+    "https://deno.land/x/outdent@v0.8.0/src/index.ts": "6dc3df4108d5d6fedcdb974844d321037ca81eaaa16be6073235ff3268841a22"
+  }
+}

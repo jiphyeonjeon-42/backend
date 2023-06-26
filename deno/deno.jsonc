@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "startup": "cd ../backend; hyperfine 'pnpm dev:ts-node' 'pnpm dev:ts-node-swc' 'pnpm dev:tsx' 'pnpm dev:swc-node'",
+    "refresh": "bash autotouch.sh",
+    "report": "deno run --allow-read bench.ts",
+    "md": "sh md.sh && deno fmt report.md"
+  },
+  "fmt": {
+    "semiColons": false,
+    "lineWidth": 100
+  },
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true
+  }
+}
