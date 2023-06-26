@@ -87,10 +87,10 @@ export const queryTest = async () => {
     const newRow = row;
     [newRow.lending] = lendings;
     // eslint-disable-next-line no-console
-    console.log(lendings[0]);
+    // console.log(lendings[0]);
     return newRow;
   }));
 
   // eslint-disable-next-line no-console
-  console.log(newRows);
+  // console.log(newRows);
 };

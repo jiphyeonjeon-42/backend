@@ -8,11 +8,11 @@ export const option: DataSourceOptions = {
   entities: [
     `${__dirname}/**/entities/*.{js,ts}`,
   ],
-  logging: true,
+  // logging: true,
   //  synchronize: true,
   poolSize: 200,
 };
-console.log(__dirname);
+// console.log(__dirname);
 const jipDataSource = new DataSource(option);
 
 export default jipDataSource;

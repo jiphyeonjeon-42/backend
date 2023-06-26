@@ -18,7 +18,7 @@ const app: express.Application = express();
 app.use(morganMiddleware);
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({
   origin: [
@@ -36,8 +36,9 @@ passport.use('jwt', JwtStrategy);
 
 jipDataSource.initialize().then(
   () => {
-    logger.info('typeORM INIT SUCCESS');
-    logger.info(connectMode);
+    // logger.info('typeORM INIT SUCCESS');
+    // logger.info(connectMode);
+    console.log('server :', new Date().toISOString());
   },
 ).catch(
   (e) => {
