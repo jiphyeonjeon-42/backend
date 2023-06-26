@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import SubTag from './SubTag';
 import User from './User';
@@ -46,19 +47,19 @@ export default class SuperTag {
   content: string;
 
   @OneToMany(() => SubTag, (subTag) => subTag.superTag)
-  subTags: SubTag[];
+  subTags: Relation<SubTag[]>;
 
   @ManyToOne(() => User, (user) => user.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+  user: Relation<User>;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-  bookInfo: BookInfo;
+  bookInfo: Relation<BookInfo>;
 }

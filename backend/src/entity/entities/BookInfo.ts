@@ -1,5 +1,5 @@
 import {
-  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
+  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation,
 } from 'typeorm';
 import Book from './Book';
 import Category from './Category';
@@ -48,26 +48,26 @@ class BookInfo {
   categoryId?: number;
 
   @OneToMany(() => Book, (book) => book.info)
-  books?: Book[];
+  books?: Relation<Book[]>;
 
   @ManyToOne(() => Category, (category) => category.bookInfos, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'categoryId', referencedColumnName: 'id' }])
-  category?: Category;
+  category?: Relation<Category>;
 
   @OneToMany(() => Likes, (likes) => likes.bookInfo)
-  likes?: Likes[];
+  likes?: Relation<Likes[]>;
 
   @OneToMany(() => Reservation, (reservation) => reservation.bookInfo)
-  reservations?: Reservation[];
+  reservations?: Relation<Reservation[]>;
 
   @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
-  reviews?: Reviews[];
+  reviews?: Relation<Reviews[]>;
 
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
-  superTags?: SuperTag[];
+  superTags?: Relation<SuperTag[]>;
 }
 
 export default BookInfo;

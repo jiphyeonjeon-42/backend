@@ -4,6 +4,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import Book from './Book';
 import Lending from './Lending';
@@ -63,31 +64,31 @@ class User {
   updatedAt: Date;
 
   @OneToMany(() => Book, (book) => book.donator2)
-  books: Book[];
+  books: Relation<Book[]>;
 
   @OneToMany(() => Lending, (lending) => lending.user)
-  lendings: Lending[];
+  lendings: Relation<Lending[]>;
 
   @OneToMany(() => Lending, (lending) => lending.lendingLibrarian)
-  lendings2: Lending[];
+  lendings2: Relation<Lending[]>;
 
   @OneToMany(() => Lending, (lending) => lending.returningLibrarian)
-  lendings3: Lending[];
+  lendings3: Relation<Lending[]>;
 
   @OneToMany(() => Likes, (likes) => likes.user)
-  likes: Likes[];
+  likes: Relation<Likes[]>;
 
   @OneToMany(() => Reservation, (reservation) => reservation.user)
-  reservations: Reservation[];
+  reservations: Relation<Reservation[]>;
 
   @OneToMany(() => Reviews, (reviews) => reviews.user)
-  reviews: Reviews[];
+  reviews: Relation<Reviews[]>;
 
   @OneToMany(() => SubTag, (subtag) => subtag.userId)
-  subTag: SubTag[];
+  subTag: Relation<SubTag[]>;
 
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
-  superTags: SuperTag[];
+  superTags: Relation<SuperTag[]>;
 }
 
 export default User;

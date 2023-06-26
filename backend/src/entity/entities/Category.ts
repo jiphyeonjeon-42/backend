@@ -4,6 +4,7 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import BookInfo from './BookInfo';
 
@@ -18,7 +19,7 @@ class Category {
   name: string;
 
   @OneToMany(() => BookInfo, (bookInfo) => bookInfo.category)
-  bookInfos: BookInfo[];
+  bookInfos: Relation<BookInfo[]>;
 }
 
 export default Category;

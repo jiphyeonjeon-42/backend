@@ -1,5 +1,5 @@
 import {
-  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
+  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation,
 } from 'typeorm';
 import BookInfo from './BookInfo';
 import User from './User';
@@ -28,7 +28,7 @@ class Book {
   })
   createdAt?: Date;
 
-  @Column()
+  @Column('int')
   infoId: number;
 
   @Column('datetime', {
@@ -45,20 +45,20 @@ class Book {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'infoId', referencedColumnName: 'id' }])
-  info?: BookInfo;
+  info?: Relation<BookInfo>;
 
   @ManyToOne(() => User, (user) => user.books, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'donatorId', referencedColumnName: 'id' }])
-  donator2?: User;
+  donator2?: Relation<User>;
 
   @OneToMany(() => Lending, (lending) => lending.book)
-  lendings?: Lending[];
+  lendings?: Relation<Lending[]>;
 
   @OneToMany(() => Reservation, (reservation) => reservation.book)
-  reservations?: Reservation[];
+  reservations?: Relation<Reservation[]>;
 }
 
 export default Book;

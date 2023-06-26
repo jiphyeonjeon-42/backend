@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import User from './User';
 import BookInfo from './BookInfo';
@@ -45,21 +46,21 @@ class Reservation {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+  user: Relation<User>;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-  bookInfo: BookInfo;
+  bookInfo: Relation<BookInfo>;
 
   @ManyToOne(() => Book, (book) => book.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
-  book: Book;
+  book: Relation<Book>;
 
   @Column('int', { name: 'bookId', nullable: true })
    bookId: number | null;

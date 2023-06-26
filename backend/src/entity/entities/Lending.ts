@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import Book from './Book';
 import User from './User';
@@ -53,7 +54,7 @@ class Lending {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookId', referencedColumnName: 'id' }])
-  book: Book;
+  book: Relation<Book>;
 
   @Column({ name: 'bookId', type: 'int' })
   bookId: number;
@@ -63,7 +64,7 @@ class Lending {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+  user: Relation<User>;
 
   @Column({ name: 'userId', type: 'int' })
   userId: number;
@@ -73,14 +74,14 @@ class Lending {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'lendingLibrarianId', referencedColumnName: 'id' }])
-  lendingLibrarian: User;
+  lendingLibrarian: Relation<User>;
 
   @ManyToOne(() => User, (user) => user.lendings3, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'returningLibrarianId', referencedColumnName: 'id' }])
-  returningLibrarian: User;
+  returningLibrarian: Relation<User>;
  }
 
 export default Lending;

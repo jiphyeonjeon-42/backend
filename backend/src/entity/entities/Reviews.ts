@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 import User from './User';
 import BookInfo from './BookInfo';
@@ -58,14 +59,14 @@ class Reviews {
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+  user: Relation<User>;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.reviews, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-  bookInfo: BookInfo;
+  bookInfo: Relation<BookInfo>;
  }
 
 export default Reviews;
