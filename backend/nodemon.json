@@ -1,0 +1,5 @@
+{
+  "events": {
+    "start": "echo watcher: $(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)"
+  }
+}

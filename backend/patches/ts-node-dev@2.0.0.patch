@@ -1,0 +1,14 @@
+diff --git a/lib/index.js b/lib/index.js
+index c90b18743c166779c6591094c8920394a6cb0b9c..eaa00434fb753c27272c97c8099583ef0844242a 100755
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -221,7 +221,8 @@ exports.runDev = function (script, scriptArgs, nodeArgs, opts) {
+             notify('Restarting', 'manual restart from user');
+         }
+         else {
+-            notify('Restarting', file + ' has been modified');
++          console.log('watcher: ' + new Date().toISOString())
++            // notify('Restarting', file + ' has been modified');
+         }
+         compiler.compileChanged(file);
+         if (starting) {
