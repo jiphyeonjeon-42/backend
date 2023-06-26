@@ -8,7 +8,7 @@ import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
-import { UserSearchRequestQuerySchema } from './users.types';
+import { searchSchema } from './users.types';
 
 const usersService = new UsersService();
 
@@ -17,7 +17,7 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const parsed = UserSearchRequestQuerySchema.safeParse(req.query);
+  const parsed = searchSchema.safeParse(req.query);
   if (!parsed.success) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
