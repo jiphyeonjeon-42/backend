@@ -2,13 +2,12 @@ import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
-import { z } from 'zod';
 import ErrorResponse from '../utils/error/errorResponse';
 import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
-import { searchSchema } from './users.types';
+import { createSchema, searchSchema } from './users.types';
 
 const usersService = new UsersService();
 
@@ -62,11 +61,11 @@ export const search = async (
 };
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body;
-  const pwSchema = new PasswordValidator();
-  if (!email || !password) {
+  const parsed = createSchema.parse(req.body);
+  if (!parsed.success) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
+  const { email, password } = parsed.data;
   try {
     pwSchema
       .is().min(10)
