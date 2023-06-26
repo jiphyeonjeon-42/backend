@@ -18,7 +18,7 @@ const app: express.Application = express();
 app.use(morganMiddleware);
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({
   origin: [
