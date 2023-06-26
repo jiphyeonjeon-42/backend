@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "ts-node": {
+    // "transpileOnly": true, <-- needs to be manually passed in on cli
+    "swc": true,
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+}
