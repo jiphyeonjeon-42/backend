@@ -1,23 +1,31 @@
 import {
-  Request, Response,
+  Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
 import * as errorCheck from './utils/errorCheck';
 import * as parseCheck from './utils/parseCheck';
-import { contentParseCheck } from './utils/errorCheck';
 import ReviewsService from '../service/reviews.service';
+import { createReviewsSchema, userSchema } from './reviews.type';
+import ErrorResponse from '../../utils/error/errorResponse';
+import * as errorCode from '../../utils/error/errorCode';
 
 const reviewsService = new ReviewsService();
 
-export const createReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const bookInfoId = req?.body?.bookInfoId;
-  const content = req?.body?.content;
-  contentParseCheck(content);
-  await reviewsService.createReviews(tokenId, bookInfoId, content);
+export const createReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedBody = createReviewsSchema.safeParse(req.body);
+
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedBody.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_CONTENT, 400));
+  }
+
+  const { id } = parsedId.data;
+  const { bookInfoId, content } = parsedBody.data;
+
+  await reviewsService.createReviews(id, bookInfoId, content);
   return res.status(status.OK).send();
 };
 
