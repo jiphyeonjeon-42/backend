@@ -11,7 +11,23 @@ export const reviewsIdSchema = positiveInt;
 
 export const contentSchema = z.string().min(10).max(420);
 
-export const sortSchema = z.enum(['ASC', 'DESC']);
+export type Sort = 'ASC' | 'DESC';
+export const sortSchema = z.string().toUpperCase()
+  .refine((s): s is Sort => s === 'ASC' || s === 'DESC')
+  .default('DESC' as const);
+
+/** 0: 공개, 1: 비공개, -1: 전체 리뷰 */
+type Disabled = 0 | 1 | -1;
+const disabledSchema = z.coerce.number().int().refine(
+  (n): n is Disabled => [-1, 0, 1].includes(n),
+  (n) => ({ message: `0: 공개, 1: 비공개, -1: 전체 리뷰, 입력값: ${n}` }),
+);
+
+export const queryOptionSchema = z.object({
+  page: positiveInt.default(0),
+  limit: positiveInt.default(10),
+  sort: sortSchema,
+});
 
 export const createReviewsSchema = z.object({
   bookInfoId: bookInfoIdSchema,
@@ -19,18 +35,7 @@ export const createReviewsSchema = z.object({
 });
 
 export const getReviewsSchema = z.object({
-  isMyReview: z.boolean(),
-  titleOrNickname: z.string(),
-  disabled: z.number(),
-  page: positiveInt,
-  limit: positiveInt,
-  sort: sortSchema,
-});
-
-export const updateReviewsSchema = z.object({
-  content: contentSchema,
-});
-
-export const reviewIdParamSchema = z.object({
-  reviewsId: positiveInt,
-});
+  isMyReview: z.boolean().default(false),
+  titleOrNickname: z.string().optional(),
+  disabled: disabledSchema,
+}).merge(queryOptionSchema);

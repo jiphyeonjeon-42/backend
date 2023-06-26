@@ -5,7 +5,9 @@ import * as status from 'http-status';
 import * as errorCheck from './utils/errorCheck';
 import * as parseCheck from './utils/parseCheck';
 import ReviewsService from '../service/reviews.service';
-import { createReviewsSchema, userSchema } from './reviews.type';
+import {
+  createReviewsSchema, getReviewsSchema, queryOptionSchema, userSchema,
+} from './reviews.type';
 import ErrorResponse from '../../utils/error/errorResponse';
 import * as errorCode from '../../utils/error/errorCode';
 
@@ -29,23 +31,27 @@ export const createReviews: RequestHandler = async (req, res, next) => {
   return res.status(status.OK).send();
 };
 
-export const getReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const isMyReview = parseCheck.booleanQueryParse(req.query.isMyReview);
-  const titleOrNickname = parseCheck.stringQueryParse(req?.query?.titleOrNickname);
-  const disabled = parseCheck.disabledParse(Number(req?.query?.disabled));
-  const page = parseCheck.pageParse(parseInt(String(req?.query?.page), 10));
-  const sort = parseCheck.sortParse(req?.query?.sort);
-  const limit = parseCheck.limitParse(parseInt(String(req?.query?.limit), 10));
+export const getReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedQuery = getReviewsSchema.safeParse(req.query);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedQuery.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, 400));
+  }
+
+  const { id } = parsedId.data;
+  const {
+    isMyReview, titleOrNickname, disabled, page, sort, limit,
+  } = parsedQuery.data;
+
   return res
     .status(status.OK)
     .json(await reviewsService.getReviewsPage(
-      tokenId,
+      id,
       isMyReview,
-      titleOrNickname,
+      titleOrNickname ?? '',
       disabled,
       page,
       sort,
