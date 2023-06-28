@@ -1,43 +1,62 @@
 import {
-  Request, Response,
+  Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
 import * as errorCheck from './utils/errorCheck';
 import * as parseCheck from './utils/parseCheck';
-import { contentParseCheck } from './utils/errorCheck';
 import ReviewsService from '../service/reviews.service';
+import {
+  createReviewsSchema,
+  deleteReviewsSchema,
+  getReviewsSchema,
+  patchReviewsSchema,
+  queryOptionSchema,
+  userSchema,
+} from './reviews.type';
+import ErrorResponse from '../../utils/error/errorResponse';
+import * as errorCode from '../../utils/error/errorCode';
 
 const reviewsService = new ReviewsService();
 
-export const createReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const bookInfoId = req?.body?.bookInfoId;
-  const content = req?.body?.content;
-  contentParseCheck(content);
-  await reviewsService.createReviews(tokenId, bookInfoId, content);
+export const createReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedBody = createReviewsSchema.safeParse(req.body);
+
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedBody.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_CONTENT, 400));
+  }
+
+  const { id } = parsedId.data;
+  const { bookInfoId, content } = parsedBody.data;
+
+  await reviewsService.createReviews(id, bookInfoId, content);
   return res.status(status.OK).send();
 };
 
-export const getReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const isMyReview = parseCheck.booleanQueryParse(req.query.isMyReview);
-  const titleOrNickname = parseCheck.stringQueryParse(req?.query?.titleOrNickname);
-  const disabled = parseCheck.disabledParse(Number(req?.query?.disabled));
-  const page = parseCheck.pageParse(parseInt(String(req?.query?.page), 10));
-  const sort = parseCheck.sortParse(req?.query?.sort);
-  const limit = parseCheck.limitParse(parseInt(String(req?.query?.limit), 10));
+export const getReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedQuery = getReviewsSchema.safeParse(req.query);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedQuery.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, 400));
+  }
+
+  const { id } = parsedId.data;
+  const {
+    isMyReview, titleOrNickname, disabled, page, sort, limit,
+  } = parsedQuery.data;
+
   return res
     .status(status.OK)
     .json(await reviewsService.getReviewsPage(
-      tokenId,
+      id,
       isMyReview,
-      titleOrNickname,
+      titleOrNickname ?? '',
       disabled,
       page,
       sort,
@@ -45,36 +64,53 @@ export const getReviews = async (
     ));
 };
 
-export const updateReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenUserId } = req.user as any;
+export const updateReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  const { id } = parsedId.data;
+
   const content = errorCheck.contentParseCheck(req?.body?.content);
   const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
-  await reviewsService.updateReviews(reviewsId, tokenUserId, content);
+
+  await reviewsService.updateReviews(reviewsId, id, content);
   return res.status(status.OK).send();
 };
 
-export const deleteReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
+export const deleteReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedParams = deleteReviewsSchema.safeParse(req.params);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedParams.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_ID, 400));
+  }
+  const { id } = parsedId.data;
+  const { reviewsId } = parsedParams.data;
+
   const reviewsUserId = await errorCheck.reviewsIdExistCheck(reviewsId);
-  errorCheck.idAndTokenIdSameCheck(reviewsUserId, tokenId);
-  await reviewsService.deleteReviews(reviewsId, tokenId);
+  errorCheck.idAndTokenIdSameCheck(reviewsUserId, id);
+
+  await reviewsService.deleteReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
 
-export const patchReviews = async (
-  req: Request,
-  res: Response,
-) => {
-  const { id: tokenId } = req.user as any;
-  const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
+export const patchReviews: RequestHandler = async (req, res, next) => {
+  const parsedId = userSchema.safeParse(req.user);
+  const parsedParams = patchReviewsSchema.safeParse(req.params);
+  if (!parsedId.success) {
+    return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
+  }
+  if (!parsedParams.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_ID, 400));
+  }
+  const { id } = parsedId.data;
+  const { reviewsId } = parsedParams.data;
+
   await errorCheck.reviewsIdExistCheck(reviewsId);
-  await reviewsService.patchReviews(reviewsId, tokenId);
+
+  await reviewsService.patchReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
