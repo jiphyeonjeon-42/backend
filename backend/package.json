@@ -15,6 +15,7 @@
     "dev:ts-node": "npx ts-node src/server.ts",
     "dev:ts-node-swc": "npx ts-node --swc src/server.ts",
     "dev:swc-node": "node -r @swc-node/register src/server.ts",
+    "dev:swc-node-watch": "node --watch-preserve-output --watch -r @swc-node/register src/server.ts | ../deno/nodetimestamp.sh",
     "dev:tsx-watch": "npx tsx watch --clear-screen=false src/server.ts",
     "dev:ts-node-dev": "npx ts-node-dev --transpile-only src/server.ts",
     "dev:ts-node-dev-swc": "npx ts-node-dev --transpile-only --loader @swc-node/register src/server.ts",

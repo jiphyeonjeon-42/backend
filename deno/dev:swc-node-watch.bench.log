@@ -1,0 +1,208 @@
+
+> 42-jiphyeonjeon-backend-3rd@1.0.0 dev:swc-node-watch /home/scarf/repo/lib42/backend/backend
+> node --watch-preserve-output --watch -r @swc-node/register src/server.ts | ../deno/nodetimestamp.sh
+
+(node:1143797) ExperimentalWarning: Watch mode is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+server : 2023-06-28T02:53:15.339Z
+watcher: 2023-06-28T02:53:16.433Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:17.835Z
+watcher: 2023-06-28T02:53:20.434Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:21.841Z
+watcher: 2023-06-28T02:53:24.436Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:26.539Z
+watcher: 2023-06-28T02:53:28.438Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:29.794Z
+watcher: 2023-06-28T02:53:32.441Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:33.780Z
+watcher: 2023-06-28T02:53:36.443Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:38.583Z
+watcher: 2023-06-28T02:53:40.445Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:41.870Z
+watcher: 2023-06-28T02:53:44.448Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:45.873Z
+watcher: 2023-06-28T02:53:48.451Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:49.833Z
+watcher: 2023-06-28T02:53:52.454Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:53.827Z
+watcher: 2023-06-28T02:53:56.455Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:53:57.854Z
+watcher: 2023-06-28T02:54:00.457Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:01.864Z
+watcher: 2023-06-28T02:54:04.459Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:05.886Z
+watcher: 2023-06-28T02:54:08.461Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:09.880Z
+watcher: 2023-06-28T02:54:12.464Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:13.936Z
+watcher: 2023-06-28T02:54:16.467Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:17.864Z
+watcher: 2023-06-28T02:54:20.470Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:21.877Z
+watcher: 2023-06-28T02:54:24.471Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:25.983Z
+watcher: 2023-06-28T02:54:28.473Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:29.837Z
+watcher: 2023-06-28T02:54:32.474Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:33.846Z
+watcher: 2023-06-28T02:54:36.477Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:37.808Z
+watcher: 2023-06-28T02:54:40.480Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:41.865Z
+watcher: 2023-06-28T02:54:44.482Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:45.838Z
+watcher: 2023-06-28T02:54:48.486Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:49.895Z
+watcher: 2023-06-28T02:54:52.487Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:53.849Z
+watcher: 2023-06-28T02:54:56.489Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:54:57.853Z
+watcher: 2023-06-28T02:55:00.491Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:01.890Z
+watcher: 2023-06-28T02:55:04.494Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:06.046Z
+watcher: 2023-06-28T02:55:08.495Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:09.829Z
+watcher: 2023-06-28T02:55:12.498Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:14.031Z
+watcher: 2023-06-28T02:55:16.500Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:17.848Z
+watcher: 2023-06-28T02:55:20.502Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:22.040Z
+watcher: 2023-06-28T02:55:24.504Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:25.875Z
+watcher: 2023-06-28T02:55:28.506Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:29.855Z
+watcher: 2023-06-28T02:55:32.510Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:33.889Z
+watcher: 2023-06-28T02:55:36.511Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:38.615Z
+watcher: 2023-06-28T02:55:40.515Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:41.924Z
+watcher: 2023-06-28T02:55:44.516Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:45.900Z
+watcher: 2023-06-28T02:55:48.519Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:49.886Z
+watcher: 2023-06-28T02:55:52.522Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:53.886Z
+watcher: 2023-06-28T02:55:56.522Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:55:57.954Z
+watcher: 2023-06-28T02:56:00.526Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:01.914Z
+watcher: 2023-06-28T02:56:04.530Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:05.894Z
+watcher: 2023-06-28T02:56:08.532Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:10.090Z
+watcher: 2023-06-28T02:56:12.536Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:13.904Z
+watcher: 2023-06-28T02:56:16.539Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:17.962Z
+watcher: 2023-06-28T02:56:20.540Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:21.913Z
+watcher: 2023-06-28T02:56:24.543Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:25.914Z
+watcher: 2023-06-28T02:56:28.545Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:29.871Z
+watcher: 2023-06-28T02:56:32.548Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:33.879Z
+watcher: 2023-06-28T02:56:36.549Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:37.941Z
+watcher: 2023-06-28T02:56:40.553Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:41.899Z
+watcher: 2023-06-28T02:56:44.555Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:45.890Z
+watcher: 2023-06-28T02:56:48.557Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:49.897Z
+watcher: 2023-06-28T02:56:52.559Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:53.953Z
+watcher: 2023-06-28T02:56:56.561Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:56:58.875Z
+watcher: 2023-06-28T02:57:00.564Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:01.918Z
+watcher: 2023-06-28T02:57:04.565Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:05.977Z
+watcher: 2023-06-28T02:57:08.569Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:09.959Z
+watcher: 2023-06-28T02:57:12.571Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:14.102Z
+watcher: 2023-06-28T02:57:16.573Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:17.994Z
+watcher: 2023-06-28T02:57:20.576Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:21.977Z
+watcher: 2023-06-28T02:57:24.579Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:25.920Z
+watcher: 2023-06-28T02:57:28.580Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:29.932Z
+watcher: 2023-06-28T02:57:32.582Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:33.937Z
+watcher: 2023-06-28T02:57:36.585Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:37.939Z
+watcher: 2023-06-28T02:57:40.587Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:41.938Z
+watcher: 2023-06-28T02:57:44.590Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:45.950Z
+watcher: 2023-06-28T02:57:48.591Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:49.930Z
+watcher: 2023-06-28T02:57:52.593Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:53.989Z
+watcher: 2023-06-28T02:57:56.595Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:57:57.960Z
+watcher: 2023-06-28T02:58:00.596Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:02.951Z
+watcher: 2023-06-28T02:58:04.598Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:05.994Z
+watcher: 2023-06-28T02:58:08.600Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:10.144Z
+watcher: 2023-06-28T02:58:12.602Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:13.996Z
+watcher: 2023-06-28T02:58:16.604Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:18.109Z
+watcher: 2023-06-28T02:58:20.606Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:21.938Z
+watcher: 2023-06-28T02:58:24.608Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:26.011Z
+watcher: 2023-06-28T02:58:28.611Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:30.014Z
+watcher: 2023-06-28T02:58:32.613Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:33.972Z
+watcher: 2023-06-28T02:58:36.617Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:37.989Z
+watcher: 2023-06-28T02:58:40.618Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:42.174Z
+watcher: 2023-06-28T02:58:44.621Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:45.999Z
+watcher: 2023-06-28T02:58:48.623Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:50.015Z
+watcher: 2023-06-28T02:58:52.624Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:54.032Z
+watcher: 2023-06-28T02:58:56.628Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:58:58.046Z
+watcher: 2023-06-28T02:59:00.630Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:02.052Z
+watcher: 2023-06-28T02:59:04.631Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:05.973Z
+watcher: 2023-06-28T02:59:08.634Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:10.007Z
+watcher: 2023-06-28T02:59:12.636Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:14.154Z
+watcher: 2023-06-28T02:59:16.638Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:17.979Z
+watcher: 2023-06-28T02:59:20.641Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:22.041Z
+watcher: 2023-06-28T02:59:24.644Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:26.004Z
+watcher: 2023-06-28T02:59:28.646Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:29.990Z
+watcher: 2023-06-28T02:59:32.648Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:33.993Z
+watcher: 2023-06-28T02:59:36.650Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:38.067Z
+watcher: 2023-06-28T02:59:40.652Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:41.992Z
+watcher: 2023-06-28T02:59:44.654Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:46.697Z
+watcher: 2023-06-28T02:59:48.656Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:49.992Z
+watcher: 2023-06-28T02:59:52.658Z <- Restarting 'src/server.ts'
+server : 2023-06-28T02:59:54.003Z
+Completed running 'src/server.ts'
