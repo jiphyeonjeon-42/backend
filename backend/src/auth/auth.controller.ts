@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
+import { randomUUID } from 'crypto';
 import * as models from '../DTO/users.model';
 import { oauth42ApiOption, oauthUrlOption } from '../config';
 import { updateSlackIdByUserId } from '../slack/slack.service';
@@ -30,7 +31,7 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
       // 회원가입
       try {
         const email = `${nickName}@student.42seoul.kr`;
-        await usersService.createUser(String(email), await bcrypt.hash(String(email), 10));
+        await usersService.createUser(String(email), await bcrypt.hash(randomUUID(), 10));
         const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
         await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
         await updateSlackIdByUserId(newUser.items[0].id);
