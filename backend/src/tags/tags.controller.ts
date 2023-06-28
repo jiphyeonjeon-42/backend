@@ -29,9 +29,13 @@ export const createDefaultTags = async (
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DUPLICATED_SUB_DEFAULT_TAGS, 400));
   }
-  await tagsService.createDefaultTags(tokenId, bookInfoId, content);
+  const defaultTagInsertion = await tagsService.createDefaultTags(
+    tokenId,
+    bookInfoId,
+    content
+  );
   await tagsService.releaseConnection();
-  return res.status(status.CREATED).send();
+  return res.status(status.CREATED).send(defaultTagInsertion);
 };
 
 export const createSuperTags = async (
