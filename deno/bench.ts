@@ -1,4 +1,6 @@
 import * as it from "https://deno.land/x/iter@v3.0.0/fp.ts"
+import { curryIterFunction } from "https://deno.land/x/iter@v3.0.0/lib/internal/util.ts"
+import { IterableCircular } from "https://deno.land/x/iter@v3.0.0/lib/types.ts";
 import { b, c, p } from "https://deno.land/x/copb@v1.0.1/mod.ts"
 import { BenchResult, benchmark } from "./calc.ts"
 import { outdent } from "https://deno.land/x/outdent@v0.8.0/mod.ts"
@@ -28,11 +30,34 @@ export const printBenchmarkMd = (res: BenchResult) => {
 const runBench = b(printBenchmarkMd)(benchmark)
 const isoDatePattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/
 
+function dropWhile<T>(it: Iterable<T>, fn: (x: T) => boolean): IterableCircular<T> {
+  return {
+    *[Symbol.iterator]() {
+      const iterator = it[Symbol.iterator]();
+      let x = iterator.next();
+      while (!x.done && fn(x.value)) {
+        x = iterator.next()
+      }
+      while (!x.done) {
+        yield x.value;
+        x = iterator.next();
+      }
+    },
+  };
+}
+
+const dropWhileCurried = curryIterFunction(dropWhile)
+
+const watcher = "watcher:"
+const server = "server :"
+
 const pipeline = c(p
-  (it.filter<string>(x => x.startsWith("watcher:") || x.startsWith("server :")))
+  (dropWhileCurried<string>(x => !x.startsWith(watcher)))
+  (it.filter<string>(x => x.startsWith(watcher) || x.startsWith(server)))
   (it.map(x => x.match(isoDatePattern)![0]))
   (it.map(x => new Date(x).valueOf()))
   (it.chunkify(2))
+  (it.filter((pair): pair is [number, number] => pair.length === 2))
   (it.map(([a, b]) => b - a))
 )
 
