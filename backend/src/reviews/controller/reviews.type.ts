@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const positiveInt = z.number().int().nonnegative();
+export const positiveInt = z.coerce.number().int().nonnegative();
 
 export const userSchema = z.object({
   id: positiveInt,
@@ -29,13 +29,26 @@ export const queryOptionSchema = z.object({
   sort: sortSchema,
 });
 
-export const createReviewsSchema = z.object({
-  bookInfoId: bookInfoIdSchema,
-  content: contentSchema,
-});
-
 export const getReviewsSchema = z.object({
   isMyReview: z.boolean().default(false),
   titleOrNickname: z.string().optional(),
   disabled: disabledSchema,
 }).merge(queryOptionSchema);
+
+export const createReviewsSchema = z.object({
+  bookInfoId: bookInfoIdSchema,
+  content: contentSchema,
+});
+
+export const updateReviewsSchema = z.object({
+  reviewsId: reviewsIdSchema,
+  content: contentSchema,
+});
+
+export const deleteReviewsSchema = z.object({
+  reviewsId: reviewsIdSchema,
+});
+
+export const patchReviewsSchema = z.object({
+  reviewsId: reviewsIdSchema,
+});

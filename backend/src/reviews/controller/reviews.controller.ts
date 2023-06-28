@@ -6,7 +6,12 @@ import * as errorCheck from './utils/errorCheck';
 import * as parseCheck from './utils/parseCheck';
 import ReviewsService from '../service/reviews.service';
 import {
-  createReviewsSchema, getReviewsSchema, queryOptionSchema, userSchema,
+  createReviewsSchema,
+  deleteReviewsSchema,
+  getReviewsSchema,
+  patchReviewsSchema,
+  queryOptionSchema,
+  userSchema,
 } from './reviews.type';
 import ErrorResponse from '../../utils/error/errorResponse';
 import * as errorCode from '../../utils/error/errorCode';
@@ -75,29 +80,37 @@ export const updateReviews: RequestHandler = async (req, res, next) => {
 
 export const deleteReviews: RequestHandler = async (req, res, next) => {
   const parsedId = userSchema.safeParse(req.user);
+  const parsedParams = deleteReviewsSchema.safeParse(req.params);
   if (!parsedId.success) {
     return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
   }
+  if (!parsedParams.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_ID, 400));
+  }
   const { id } = parsedId.data;
+  const { reviewsId } = parsedParams.data;
 
-  const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
   const reviewsUserId = await errorCheck.reviewsIdExistCheck(reviewsId);
-
   errorCheck.idAndTokenIdSameCheck(reviewsUserId, id);
+
   await reviewsService.deleteReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
 
 export const patchReviews: RequestHandler = async (req, res, next) => {
   const parsedId = userSchema.safeParse(req.user);
+  const parsedParams = patchReviewsSchema.safeParse(req.params);
   if (!parsedId.success) {
     return next(new ErrorResponse(errorCode.NO_MATCHING_USER, 400));
   }
+  if (!parsedParams.success) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT_REVIEWS_ID, 400));
+  }
   const { id } = parsedId.data;
-
-  const reviewsId = errorCheck.reviewsIdParseCheck(req?.params?.reviewsId);
+  const { reviewsId } = parsedParams.data;
 
   await errorCheck.reviewsIdExistCheck(reviewsId);
+
   await reviewsService.patchReviews(reviewsId, id);
   return res.status(status.OK).send();
 };
