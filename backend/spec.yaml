@@ -3276,16 +3276,8 @@ paths:
 
       responses:
         '200':
-
-          '400':
-            description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
-
-          '401':
-            description: 태그 기록을 조회할 권한이 없는 사용자
-
-          '500':
-            description: db 에러
-
+          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면
+            superContent에 super 태그의 내용이 들어간다.
           content:
             application/json:
               schema:
@@ -3358,8 +3350,14 @@ paths:
 
                 type: object
 
-          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면
-            superContent에 super 태그의 내용이 들어간다.
+        '400':
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+
+        '401':
+          description: 태그 기록을 조회할 권한이 없는 사용자
+
+        '500':
+          description: db 에러
 
       summary: 서브/디폴트 태그 정보를 검색한다.
 
