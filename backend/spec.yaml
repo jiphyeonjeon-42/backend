@@ -2423,8 +2423,8 @@ paths:
             type: string
 
       responses:
-
         '200':
+          description: 리뷰 검색 성공
           content:
             application/json:
 
@@ -2536,6 +2536,7 @@ paths:
                 type: object
 
         '400':
+          description: 적절하지 않은 값
           content:
             application/json:
               examples:
