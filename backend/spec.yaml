@@ -2102,29 +2102,62 @@ paths:
                 type: object
           description: 예약한 책에 걸려있는 예약수를 확인한다. (본인이 방금한거 포함)
         '400':
+          description: 예약에 실패함
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   errorCode:
-                    description: 올바르지 않은 입력
+                    type: integer
                     enum:
                       - 2
-                    type: integer
-                type: object
-          description: 잘못된 정보를 입력한 경우
-        400_case2:
-          content:
-            application/json:
-              schema:
-                properties:
-                  errorCode:
-                    description:
-                    example: 502(패널티 기간) || 503(대출이 가능한 책) || 504(이미 예약중) || 505(이미
-                      대출중), ...
-                    type: integer
-                type: object
-          description: 예약에 실패한 경우
+                      - 502
+                      - 503
+                      - 504
+                      - 505
+                      - 506
+                      - 507
+                      - 508
+                      - 509
+                    description: |
+                      - 2: 올바르지 않은 입력
+                      - 502: 패널티 기간
+                      - 503: 대출이 가능한 책
+                      - 504: 이미 예약중인 책
+                      - 505: 이미 대출중인 책
+                      - 506: 이미 2권 대출중
+                      - 507: 사용자가 존재하지 않음
+                      - 508: RESERVATION_NOT_EXIST
+                      - 509: NOT_RESERVED
+              examples:
+                올바르지 않은 입력:
+                  value:
+                    errorCode: 2
+                패널티 기간:
+                  value:
+                    errorCode: 502
+                대출이 가능한 책:
+                  value:
+                    errorCode: 503
+                이미 예약중인 책:
+                  value:
+                    errorCode: 504
+                이미 대출중인 책:
+                  value:
+                    errorCode: 505
+                이미 2권 대출중:
+                  value:
+                    errorCode: 506
+                사용자가 존재하지 않음:
+                  value:
+                    errorCode: 507
+                RESERVATION_NOT_EXIST:
+                  value:
+                    errorCode: 508
+                NOT_RESERVED:
+                  value:
+                    errorCode: 509
 
       summary: 유저의 예약 생성
 
