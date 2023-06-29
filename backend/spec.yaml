@@ -1,0 +1,4358 @@
+components: {}
+
+info:
+  contact:
+    email: ezemango@gmail.com
+    name: jolim
+    url: https://github.com/evelon/
+  description: 42-jiphyeonjeon web service, that is, 42library's APIs with Express
+    and documented with Swagger
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT.html
+  title: 42-jiphyoenjeon web service API
+  version: 0.1.0
+
+openapi: 3.0.0
+
+paths:
+
+  /api/auth/getIntraAuthentication:
+    get:
+      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
+      responses:
+        '302':
+          description: 정상적으로 42 Api로 이동
+          headers:
+            Location:
+              description: 42 Api 주소로 이동
+              schema:
+                format: uri
+                type: string
+      tags:
+        - auth
+
+  /api/auth/intraAuthentication:
+    get:
+
+      description: 42 intra 인증을 실시한다. redirect 되어 들어오기에 반환값 확인 불가.
+
+      responses:
+
+        '302':
+          description: 성공적으로 토큰 발급
+          headers:
+            Location:
+              description: 브라우저에 유저정보를 저장 하는 frontend /auth 주소로 이동
+              schema:
+                format: uri
+                type: string
+
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: ID, PW 값이 없는 잘못된 요청
+
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 토큰이 없을 경우, 이미 인증된 회원의 경우 에러
+
+        '410':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
+
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 예상 하지 못한 오류
+
+      tags:
+        - auth
+
+  /api/auth/login:
+    post:
+
+      description: 입력된 회원정보를 Users DB에서 확인하여, Token을 발급해 쿠키에 저장해준다.
+
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                id:
+                  type: string
+                password:
+                  type: string
+              type: object
+        description: 로그인할 유저 정보
+        required: true
+
+      responses:
+
+        '204':
+          description: 성공적으로 토큰 발급
+
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: ID, PW 값이 없는 잘못된 요청
+
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: ID를 찾을 수 없는 경우
+
+        '403':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: PW가 틀린 경우
+
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 예상 하지 못한 오류
+
+      tags:
+        - auth
+
+  /api/auth/logout:
+    post:
+      description: 발급한 token을 소멸시킨다.
+      responses:
+        '204':
+          description: 정상적으로 token 삭제 완료
+      tags:
+        - auth
+
+  /api/auth/me:
+    get:
+
+      description: 클라이언트의 로그인된 유저 정보를 받아온다.
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  email:
+                    description: email
+                    example: seongyle@student.42seoul.kr
+                    type: string
+                  id:
+                    description: 로그인한 유저의 PK
+                    example: 42
+                    type: integer
+                  intra:
+                    description: 인트라 아이디 (인트라아이디가 없다면 email)
+                    example: seongyle
+                    type: string
+                  librarian:
+                    description: 사서 여부
+                    type: boolean
+                type: object
+          description: 로그인 되어 있는 유저의 정보를 반환한다.
+
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 토큰이 없을 경우 에러
+
+        '403':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 권한이 맞지 않을때 에러
+
+        '410':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
+
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 예상 하지 못한 오류
+
+      tags:
+        - auth
+
+  /api/auth/oauth:
+    get:
+      description: 42 Api에 API key값을 추가해서 요청한다. redirect 되기에 반환값 확인 불가
+      responses:
+        '302':
+          description: 정상적으로 42 Api로 이동
+          headers:
+            Location:
+              description: 42 Api 주소로 이동
+              schema:
+                format: uri
+                type: string
+      tags:
+        - auth
+
+  /api/auth/token:
+    get:
+      description: 42 OAuth Api의 반환값을 이용하여 토큰을 발급한다. redirect 되기에 반환값 확인 불가.
+      responses:
+        '302':
+          description: 성공적으로 토큰 발급
+          headers:
+            Location:
+              description: 브라우저에 유저정보를 저장 하는 frontend /auth 주소로 이동
+              schema:
+                format: uri
+                type: string
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 42 api와 연동된 ID가 없음, [front에서 알림 후 회원가입창으로 이동]
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 예상 하지 못한 오류
+      tags:
+        - auth
+
+  /api/book-info/{bookInfoId}/reviews:
+    get:
+
+      description: 책 리뷰 10개를 반환한다. 최종 페이지의 경우 1 <= n <= 10 개의 값이 반환될 수 있다. content에는
+        리뷰에 대한 정보를, finalPage 에는 해당 페이지가 마지막인지에 대한 여부를 boolean 값으로 반환한다. finalReviewsId는
+        마지막 리뷰의 Id를 반환하며, 반환할 아이디가 존재하지 않는 경우에는 해당 인자를 반환하지 않는다.
+
+      parameters:
+        - description: bookInfoId에 해당 하는 리뷰 페이지를 반환한다.
+          in: path
+          name: bookInfoId
+          required: true
+          schema:
+            type: number
+        - description: 해당 reviewsId를 조건으로 asc 기준 이후, desc 기준 이전의 페이지를 반환한다. 기본값은 첫
+            페이지를 반환한다.
+          in: query
+          name: reviewsId
+          required: false
+          schema:
+            type: number
+        - description: asc, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다. 기본값은 asd으로 한다.
+          in: query
+          name: sort
+          required: false
+          schema:
+            type: string
+        - description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
+          in: query
+          name: limit
+          schema:
+            type: number
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+
+              examples:
+                default(bookInfoId = 1):
+                  value:
+                    items:
+                      - bookInfoId: 1
+                        content: hello
+                        nickname: sechung1
+                        reviewerId: 100
+                        reviewsId: 1
+                        title: 클린코드
+                      - bookInfoId: 1
+                        content: hello
+                        nickname: sechung2
+                        reviewerId: 101
+                        reviewsId: 2
+                        title: 클린코드
+                      - bookInfoId: 1
+                        content: hello
+                        nickname: sechung3
+                        reviewerId: 102
+                        reviewsId: 3
+                        title: 클린코드
+                      - bookInfoId: 1
+                        content: hello
+                        nickname: sechung4
+                        reviewerId: 103
+                        reviewsId: 4
+                        title: 클린코드
+                      - bookInfoId: 1
+                        content: hello
+                        nickname: sechung5
+                        reviewerId: 104
+                        reviewsId: 5
+                        title: 클린코드
+                    meta:
+                      finalPage: false
+                      finalReviewsId: 104
+                      itemsPerPage: 5
+                      totalItems: 100
+                      totalPages: 20
+
+              schema:
+                type: object
+
+          description: 성공적으로 리뷰 페이지 반환
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 bookInfoId 값:
+                  value:
+                    errorCode: 2
+                적절하지 않는 reviewsId 값:
+                  value:
+                    errorCode: 800
+                적절하지 않는 sort 값:
+                  value:
+                    errorCode: 2
+              schema:
+                type: object
+          description: 적절하지 않은 인자값이 들어온 경우의 에러
+
+      tags:
+        - bookInfo/reviews
+
+  /api/books/create:
+
+    get:
+
+      description: 책 생성을 위한 정보를 반환합니다.
+
+      parameters:
+        - description: isbn번호
+          in: query
+          name: isbnQuery
+          required: true
+          schema:
+            example: 9791191114225
+            type: string
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                description: ISBN으로 국립중앙도서관에서 검색후에 정보를 반환, 이미지는 교보문고에서 가지고 옴
+
+                properties:
+                  bookInfo:
+                    properties:
+                      author:
+                        description: 저자
+                        example: '지은이: 김영하'
+                        nullable: false
+                        type: string
+                      category:
+                        description: 십진분류법상 대분류
+                        example: '8'
+                        nullable: true
+                        type: string
+                      image:
+                        description: 책 표지 이미지 주소
+                        example: http://image.kyobobook.co.kr/images/book/xlarge/225/x9791191114225.jpg
+                        nullable: true
+                        type: string
+                      isbn:
+                        description: ISBN 번호
+                        example: '9791191114225'
+                        nullable: false
+                        type: string
+                      pubdate:
+                        description: 출판일자
+                        example: '20220502'
+                        format: date
+                        nullable: false
+                        type: string
+                      publisher:
+                        description: 출판사
+                        example: 복복서가
+                        nullable: false
+                        type: string
+                      title:
+                        description: 책의 제목
+                        example: 작별인사
+                        nullable: false
+                        type: string
+                    type: object
+
+                type: object
+
+          description: 국립중앙도서관에서 ISBN으로 검색한뒤에 책정보를 반환
+
+        실패 케이스 1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 303
+                type: object
+          description: 국립중앙 도서관 API에서 ISBN 검색이 실패
+
+        실패 케이스 2:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 310
+                type: object
+          description: 네이버 책검색 API에서 ISBN 검색이 실패
+
+      tags:
+        - books
+
+    post:
+
+      description: 책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                author:
+                  example: 김영하
+                  nullable: false
+                  type: string
+                categoryId:
+                  example: 1
+                  nullable: false
+                  type: string
+                donator:
+                  example: seongyle
+                  nullable: true
+                  type: string
+                image:
+                  example: https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608
+                  nullable: true
+                  type: string
+                isbn:
+                  example: 9788065960874
+                  nullable: true
+                  type: string
+                pubdate:
+                  example: '20220502'
+                  nullable: false
+                  type: string
+                publisher:
+                  example: 복복서가
+                  nullable: false
+                  type: string
+                title:
+                  example: 작별인사 (김영하 장편소설)
+                  nullable: false
+                  type: string
+              type: object
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: 성공했을 때 삽인된 callsign 값을 반환합니다.
+                example:
+                  callsign: c11.22.v1.c2
+                type: object
+          description: 책 정보 정상적으로 insert됨.
+        실패 케이스 1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 308
+                type: object
+          description: 예상치 못한 에러로 책 정보 insert에 실패함.
+        실패 케이스 2:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 309
+                type: object
+          description: 보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음
+        실패 케이스 3:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 311
+                type: object
+          description: 입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+
+      tags:
+        - books
+
+  /api/books/info:
+    get:
+
+      description: 책 정보를 기준에 따라 정렬한다. 정렬기준이 popular일 경우 당일으로부터 42일간 인기순으로 한다.
+
+      parameters:
+        - description: 정렬 기준
+          in: query
+          name: sort
+          required: true
+          schema:
+            enum:
+              - new
+              - popular
+            type: string
+        - description: 한 페이지 표시 개수
+          in: query
+          name: limit
+          required: true
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+                  items:
+
+                    description: 정렬된 책들의 목록
+
+                    items:
+
+                      properties:
+
+                        author:
+                          description: 저자
+                          example: 탁연상
+                          type: string
+
+                        createdAt:
+                          description: 생성일자
+                          example: '2021-12-07T11:06:48.861Z'
+                          format: date
+                          type: string
+
+                        id:
+                          description: 고유 id
+                          example: 340
+                          type: integer
+
+                        image:
+                          description: 표지 사진
+                          example: https://image.kyobobook.co.kr/images/book/xlarge/394/x9791195982394.jpg
+                          type: string
+
+                        isbn:
+                          description: 책의 isbn
+                          example: 9791195982394
+                          type: string
+
+                        lendingCnt:
+                          description: 전체기간동안 책이 빌려진 횟수
+                          example: 1
+                          type: number
+
+                        publishedAt:
+                          description: 출판일자
+                          example: '2020-05-31T15:00:00.000Z'
+                          format: date
+                          type: string
+
+                        publisher:
+                          description: 출판사
+                          example: DigitalNew
+                          type: string
+
+                        title:
+                          description: 제목
+                          example: '한눈에 보이는 무료 글꼴 가이드: 영어편'
+                          type: string
+
+                        updatedAt:
+                          description: 갱신일자
+                          example: '2022-03-06T09:29:04.340Z'
+                          format: date
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                type: object
+
+          description: 기준에 따라 정렬된 책들을 반환한다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                example:
+                  errorCode: 300
+                type: object
+          description: 클라이언트 오류
+
+      tags:
+        - books
+
+  /api/books/info/search:
+    get:
+
+      description: 책 정보를 검색하여 가져온다.
+
+      parameters:
+        - description: 검색어
+          in: query
+          name: query
+          schema:
+            type: string
+        - description: 정렬 기준
+          in: query
+          name: sort
+          schema:
+            enum:
+              - title
+              - popular
+              - new
+            type: string
+        - description: 페이지 수
+          in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - description: 한 페이지 표시 개수
+          in: query
+          name: limit
+          required: true
+          schema:
+            type: integer
+        - description: 검색할 카테고리
+          in: query
+          name: category
+          schema:
+            type: string
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  categories:
+                    description: 검색된 목록의 카테고리 분류
+                    items:
+                      properties:
+                        count:
+                          description: 검색된 개수
+                          example: 1
+                          type: integer
+                        name:
+                          description: 카테고리 이름
+                          example: 예술
+                          type: string
+                      type: object
+                    type: array
+
+                  items:
+
+                    description: 검색된 책들의 목록
+
+                    items:
+
+                      properties:
+
+                        author:
+                          description: 저자
+                          example: 탁연상
+                          type: string
+
+                        createdAt:
+                          description: 생성일자
+                          example: '2021-12-07T11:06:48.861Z'
+                          format: date
+                          type: string
+
+                        id:
+                          description: 고유 id
+                          example: 340
+                          type: integer
+
+                        image:
+                          description: 표지 사진
+                          example: https://image.kyobobook.co.kr/images/book/xlarge/394/x9791195982394.jpg
+                          type: string
+
+                        isbn:
+                          description: 책의 isbn
+                          example: 9791195982394
+                          type: string
+
+                        lendingCnt:
+                          description: 대출 횟수
+                          example: 0
+                          type: integer
+
+                        publishedAt:
+                          description: 출판일자
+                          example: '2020-05-31T15:00:00.000Z'
+                          format: date
+                          type: string
+
+                        publisher:
+                          description: 출판사
+                          example: DigitalNew
+                          type: string
+
+                        title:
+                          description: 제목
+                          example: '한눈에 보이는 무료 글꼴 가이드: 영어편'
+                          type: string
+
+                        updatedAt:
+                          description: 갱신일자
+                          example: '2022-03-06T09:29:04.340Z'
+                          format: date
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 책 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 검색 결과를 반환한다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                example:
+                  errorCode: 300
+                type: object
+          description: query, page, limit 중 하나 이상이 없다.
+
+      tags:
+        - books
+
+  /api/books/info/{bookInfoId}/like:
+
+    delete:
+      operationId: deleteLike
+      parameters:
+        - description: book_info 테이블의 id
+          in: path
+          name: bookInfoId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: false Content
+        errorcase-1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 601
+                type: object
+          description: bookInfoId가 유효하지 않음
+        errorcase-2:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 603
+                type: object
+          description: 존재하지 않는 좋아요데이터를 삭제하려 함.
+      summary: Delete a like
+      tags:
+        - like
+
+    get:
+
+      description: Get info about likenum and whether user press like button
+
+      operationId: findLikeInfo
+
+      parameters:
+        - description: book_info 테이블의 id
+          in: path
+          name: bookInfoId
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: 책에 대한 좋아요 정보를 가져옵니다.
+                example:
+                  bookInfoId: 123
+                  isLiked: true
+                  likeNum: 15
+                properties:
+                  bookInfoId:
+                    description: 좋아요할 bookInfo의 id
+                    type: integer
+                  isLiked:
+                    description: 사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부
+                    type: boolean
+                  likeNum:
+                    description: 이 책에 눌린 좋아요의 수
+                    type: integer
+                type: object
+          description: successful operation
+        errorcase-1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 601
+                type: object
+          description: bookInfoId가 유효하지 않음
+
+      summary: Get like info
+
+      tags:
+        - like
+
+    post:
+
+      operationId: addLike
+
+      parameters:
+        - description: book_info 테이블의 id
+          in: path
+          name: bookInfoId
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: 성공했을 때 생성된 like 데이터를 반환합니다.
+                example:
+                  bookInfoId: 456
+                  userId: 123
+                properties:
+                  bookInfoId:
+                    description: 좋아요할 bookInfo의 id
+                    type: integer
+                  userId:
+                    description: 좋아요를 누른 유저의 id
+                    type: integer
+                type: object
+          description: Success
+        실패 케이스 1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 601
+                type: object
+          description: bookInfoId가 유효하지 않음
+        실패 케이스 2:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 602
+                type: object
+          description: 중복된 like데이터가 이미 존재함.
+
+      summary: Add a new like to the book
+
+      tags:
+        - like
+
+  /api/books/info/{id}:
+    get:
+
+      description: book_info테이블의 ID기준으로 책 한 종류의 정보를 가져온다.
+
+      parameters:
+        - description: 책의 id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  author:
+                    description: 저자
+                    example: 조던 B. 피터슨
+                    type: string
+
+                  books:
+                    description: 비치된 책들
+                    items:
+                      properties:
+                        callSign:
+                          description: 청구기호
+                          example: h1.18.v1.c1
+                          type: string
+                        donator:
+                          description: 책의 기부자
+                          example: seongyle
+                          nullable: true
+                          type: string
+                        dueDate:
+                          description: 반납 예정 일자, 대출가능 시 '-'
+                          example: 21.08.05
+                          format: date
+                          type: string
+                        id:
+                          description: 실물 책의 id
+                          example: 3
+                          type: integer
+                        isLendable:
+                          description: 책의 대출가능여부
+                          example: 1
+                          type: boolean
+                        isReserved:
+                          description: 책의 예약 여부
+                          example: 1
+                          type: boolean
+                        status:
+                          description: 책의 상태 (0:양호 1:분실 2:파손 3:지정도서)
+                          example: 1
+                          type: number
+                      type: object
+                    type: array
+
+                  category:
+                    description: 카테고리
+                    example: 프로그래밍
+                    type: string
+
+                  id:
+                    description: 책의 id
+                    example: 4261
+                    type: integer
+
+                  image:
+                    description: 이미지 주소
+                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
+                    nullable: true
+                    type: string
+
+                  isbn:
+                    description: isbn
+                    example: '9791196067694'
+                    type: string
+
+                  publishedAt:
+                    description: 출판일자
+                    example: 2018년 10월
+                    type: string
+
+                  publisher:
+                    description: 출판사
+                    example: 메이븐
+                    type: string
+
+                  title:
+                    description: 제목
+                    example: 12가지 인생의 법칙
+                    type: string
+
+                type: object
+
+          description: 조회 결과를 반환한다.
+
+        400_case1:
+          content:
+            application/json:
+              schema:
+                description: error description
+                example:
+                  errorCode: 300
+                type: object
+          description: id가 숫자가 아니다.
+
+        400_case2:
+          content:
+            application/json:
+              schema:
+                description: error description
+                example:
+                  errorCode: 304
+                type: object
+          description: 유효하지않은 infoId 값.
+
+      tags:
+        - books
+
+  /api/books/search:
+    get:
+
+      description: 정보를 검색하여 가져온다. 책이 대출할 수 있는지 확인 할 수 있음
+
+      parameters:
+        - description: 검색어
+          in: query
+          name: query
+          required: false
+          schema:
+            type: string
+        - description: 페이지 수
+          in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - description: 한 페이지 표시 개수
+          in: query
+          name: limit
+          required: true
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 검색된 책들의 목록
+
+                    items:
+
+                      properties:
+
+                        author:
+                          description: 저자
+                          example: 김찬희
+                          type: string
+
+                        bookId:
+                          description: Book Id
+                          example: '1'
+                          type: integer
+
+                        bookInfoId:
+                          description: 고유 bookInfo id
+                          example: 55
+                          type: integer
+
+                        callSign:
+                          description: 청구 기호
+                          example: c1.99.v1.c9
+                          type: string
+
+                        category:
+                          description: 카데고리
+                          example: 기술교양
+                          type: string
+
+                        categoryId:
+                          description: 카데고리 Id
+                          example: 5
+                          type: integer
+
+                        image:
+                          description: 이미지 URL 주소
+                          example: 이미지 주소
+                          type: string
+
+                        isLendable:
+                          description: 대출 가능 여부
+                          example: 1
+                          type: boolean
+
+                        isbn:
+                          description: 책의 isbn
+                          example: 9791195982394
+                          type: string
+
+                        publishedAt:
+                          description: 출판일자
+                          example: 20200505
+                          type: string
+
+                        publisher:
+                          description: 출판사
+                          example: DigitalNew
+                          type: string
+
+                        status:
+                          description: Book status
+                          example: '2'
+                          type: integer
+
+                        title:
+                          description: 제목
+                          example: chanheki search
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 책 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 검색 결과를 반환한다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                example:
+                  errorCode: 300
+                type: object
+          description: query, page, limit 중 하나 이상이 없다.
+
+      tags:
+        - books
+
+  /api/books/update:
+    patch:
+
+      description: 책 정보를 수정합니다. book_info table or book table
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+
+              properties:
+
+                author:
+                  description: 저자
+                  example: 김영하
+                  nullable: true
+                  type: string
+
+                bookId:
+                  description: bookId
+                  example: 1
+                  nullable: false
+                  type: integer
+
+                bookInfoId:
+                  description: bookInfoId
+                  example: 1
+                  nullable: false
+                  type: integer
+
+                callSign:
+                  description: 청구기호
+                  example: h1.18.v1.c1
+                  nullable: true
+                  type: string
+
+                categoryId:
+                  description: categoryId
+                  example: 1
+                  nullable: false
+                  type: integer
+
+                image:
+                  description: 표지이미지
+                  example: https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608
+                  nullable: true
+                  type: string
+
+                publishedAt:
+                  description: 출판연월
+                  example: '20200505'
+                  nullable: true
+                  type: string
+
+                publisher:
+                  description: 출판사
+                  example: 복복서가
+                  nullable: true
+                  type: string
+
+                status:
+                  description: 도서 상태
+                  example: 0
+                  nullable: false
+                  type: integer
+
+                title:
+                  description: 제목
+                  example: 작별인사 (김영하 장편소설)
+                  nullable: true
+                  type: string
+
+              type: object
+
+      responses:
+        '204':
+          description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
+        실패 케이스 1:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 312
+                type: object
+          description: 예상치 못한 에러로 책 정보 patch에 실패.
+        실패 케이스 2:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 313
+                type: object
+          description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
+        실패 케이스 3:
+          content:
+            application/json:
+              schema:
+                example:
+                  errorCode: 311
+                type: object
+          description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+
+      tags:
+        - books
+
+  /api/books/{id}:
+    get:
+
+      description: book테이블의 ID기준으로 책 한 종류의 정보를 가져온다.
+
+      parameters:
+        - description: book 테이블의 id
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  author:
+                    description: 저자
+                    example: 조던 B. 피터슨
+                    type: string
+
+                  callSign:
+                    description: 청구기호
+                    example: h1.18.v1.c1
+                    type: string
+
+                  category:
+                    description: 카테고리
+                    example: 프로그래밍
+                    type: string
+
+                  donator:
+                    description: 책의 기부자
+                    example: seongyle
+                    type: string
+
+                  dueDate:
+                    description: 반납 예정 일자, 대출가능 시 '-'
+                    example: 21.08.05
+                    format: date
+                    type: string
+
+                  id:
+                    description: book테이블의 id
+                    example: 4261
+                    type: integer
+
+                  image:
+                    description: 이미지 주소
+                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F3943658%3Ftimestamp%3D20210706194852
+                    type: string
+
+                  isLendable:
+                    description: 책의 대출가능여부
+                    example: 1
+                    type: boolean
+
+                  isbn:
+                    description: isbn
+                    example: '9791196067694'
+                    type: string
+
+                  publishedAt:
+                    description: 출판일자
+                    example: 2018년 10월
+                    type: string
+
+                  publisher:
+                    description: 출판사
+                    example: 메이븐
+                    type: string
+
+                  title:
+                    description: 제목
+                    example: 12가지 인생의 법칙
+                    type: string
+
+                type: object
+
+          description: 조회 결과를 반환한다.
+
+      tags:
+        - books
+
+  /api/histories:
+    get:
+
+      description: 현재까지의 대출 기록을 최신순으로 가져온다. 사서라면 모든 사용자의 기록을, 사서가 아니라면 본인의 기록만 볼  수
+        있다.
+
+      parameters:
+        - description: 대출/반납의 기록 범위
+          in: query
+          name: who
+          required: true
+          schema:
+            enum:
+              - all
+              - my
+            type: string
+        - description: 검색어
+          in: query
+          name: query
+          required: false
+          schema:
+            type: string
+        - description: 어떤 값들로 검색하고 싶은지 결정하는 필터
+          in: query
+          name: type
+          required: false
+          schema:
+            enum:
+              - user
+              - title
+              - callsign
+              - bookId
+            type: string
+        - description: 페이지 수
+          in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - description: 한 페이지 표시 개수
+          in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 검색된 대출 기록들의 목록
+
+                    example:
+                      - bookInfoId: '123'
+                        callSign: K23.17.v1.c1
+                        createdAt: '2022-12-07T10:24:57.708Z'
+                        dueDate: '2022-12-21T10:24:57.708Z'
+                        id: 135
+                        lendingCondition: ''
+                        lendingLibrarianNickName: chanheki
+                        login: chanheki
+                        penaltyDays: 0
+                        returnedAt: '2022-12-07T10:24:57.708Z'
+                        returningCondition: ''
+                        returningLibrarianNickname:
+                        title: 모두의 데이터 과학 with 파이썬
+                      - bookInfoId: '123'
+                        callSign: C5.13.v1.c1
+                        createdAt: '2022-10-28T10:24:57.708Z'
+                        dueDate: '2022-11-11T10:24:57.708Z'
+                        id: 136
+                        image: https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg
+                        lendingCondition: ''
+                        lendingLibrarianNickName: chanheki
+                        login: seongyle1
+                        penaltyDays: 0
+                        returnedAt:
+                        returningLibrarianNickname: seongyle
+                        title: TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)
+
+                    items:
+
+                      properties:
+
+                        bookInfoId:
+                          description: book_info의 id
+                          example: 123
+                          type: integer
+
+                        callSign:
+                          description: 청구 기호
+                          example: C5.13.v1.c1
+                          type: string
+
+                        createdAt:
+                          description: lending 생성 일시
+                          example: '2022-05-05'
+                          format: date
+                          type: string
+
+                        dueDate:
+                          description: 반납 마감 일시
+                          example: '2022-05-05'
+                          format: date
+                          type: string
+
+                        id:
+                          description: 고유 id
+                          example: 777
+                          type: integer
+
+                        image:
+                          description: 책의 이미지 주소
+                          example: https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg
+                          type: string
+
+                        lendingCondition:
+                          description: 대출시 책 상태
+                          example: 이상 없음
+                          type: string
+
+                        lendingLibrarianNickName:
+                          description: 대출해준 사서 이름
+                          example: chanheki
+                          type: string
+
+                        login:
+                          description: 대출자 아이디
+                          example: chanheki
+                          type: string
+
+                        penaltyDays:
+                          description: 연체 일
+                          example: 777
+                          type: integer
+
+                        returnedAt:
+                          description: 반납 일시
+                          example: '2022-05-05'
+                          format: date
+                          type: string
+
+                        returningCondition:
+                          description: 반납시 책 상태
+                          example: 이상 없음
+                          type: string
+
+                        returningLibrarianNickname:
+                          description: 반납해준 사서 이름(없으면 null)
+                          example: seongyle
+                          type: string
+
+                        title:
+                          description: 책 제목
+                          example: TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 )
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 대출 기록 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 대출 기록 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 대출 기록 결과 수
+                        example: 5
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 대출 기록 결과 수
+                        example: 5
+                        type: integer
+                      totalItems:
+                        description: 전체 대출 기록 결과 수
+                        example: 25
+                        type: integer
+                      totalPages:
+                        description: 전체 대출 기록 페이지 수
+                        example: 5
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 대출 기록을 반환한다.
+
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 700
+                    type: integer
+                type: object
+          description: 사서권한 없은 유저가 전체 대출/반납 기록을 조회하려고 함
+
+      tags:
+        - histories
+
+  /api/lendings:
+    post:
+
+      description: 대출 기록을 생성한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookId:
+                  example: 33
+                  type: integer
+                condition:
+                  example: 이상 없음
+                  type: string
+                userId:
+                  example: 45
+                  type: integer
+              required:
+                - bookId
+                - userId
+                - condition
+              type: object
+        description: bookId와 userId는 각각 대출할 도서와 대출할 회원의 pk, condition은 대출 당시 책 상태를
+          의미한다.
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  dueDate:
+                    example: '2022-12-12'
+                    format: date
+                    type: string
+                type: object
+          description: 생성된 대출기록의 반납일자를 반환.
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 2
+                    type: integer
+                type: object
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+        '401':
+          description: 대출을 생성할 권한이 없는 사용자
+        '500':
+          description: db 에러
+
+      summary: 대출 기록 생성
+
+      tags:
+        - lendings
+
+  /api/lendings/return:
+    patch:
+
+      description: 대출 레코드에 반납 처리를 한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                condition:
+                  type: string
+                lendingId:
+                  type: integer
+              required:
+                - lendingId
+                - condition
+              type: object
+        description: lendingId는 대출 고유 아이디, condition은 반납 당시 책 상태
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  reservedBook:
+                    description: 반납된 책이 예약이 되어있는지 알려줌
+                    example: true
+                    type: boolean
+                type: object
+          description: 반납처리 완료, 반납된 책이 예약이 되어있는지 알려줌
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    type: integer
+                type: object
+          description: 에러코드 0 dto에러 잘못된 json key, 1 db 에러 알 수 없는 lending id 등
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    type: integer
+                type: object
+          description: 알 수 없는 사용자 0 로그인 안 된 유저 1 사서권한없음
+
+      summary: 반납 처리
+
+      tags:
+        - lendings
+
+  /api/lendings/search:
+    get:
+
+      description: 대출 기록의 정보를 검색하여 보여준다.
+
+      parameters:
+        - description: 검색 결과의 페이지
+          in: query
+          name: page
+          schema:
+            default: 1
+            example: 3
+            type: integer
+        - description: 검색 결과 한 페이지당 보여줄 결과물의 개수
+          in: query
+          name: limit
+          schema:
+            default: 5
+            example: 3
+            type: integer
+        - description: 검색 결과를 정렬할 기준
+          in: query
+          name: sort
+          schema:
+            default: new
+            enum:
+              - new
+              - old
+            type: string
+        - description: 대출 기록에서 검색할 단어, 검색 가능한 필드 [user, title, callSign, bookId]
+          in: query
+          name: query
+          schema:
+            example: 파이썬
+            type: string
+        - description: query를 조회할 항목
+          in: query
+          name: type
+          schema:
+            enum:
+              - user
+              - title
+              - callSign
+              - bookId
+            type: string
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 검색된 책들의 목록
+
+                    example:
+                      - callSign: O40.15.v1.c1
+                        condition: 양호
+                        dueDate: 2021.09.20
+                        id: 2
+                        login: minkykim
+                        penaltyDays: 0
+                        title: 소프트웨어 장인(로버트 C. 마틴 시리즈)
+                      - callSign: H19.19.v1.c1
+                        condition: 이상없음
+                        dueDate: 2022.06.07
+                        id: 42
+                        login: jwoo
+                        penaltyDays: 2
+                        title: '클린 아키텍처: 소프트웨어 구조와 설계의 원칙'
+
+                    items:
+                      properties:
+                        callSign:
+                          description: 대출된 책의 청구기호
+                          type: string
+                        condition:
+                          description: 대출 당시 책 상태
+                          type: string
+                        createdAt:
+                          format: date
+                          type: string
+                        dueDate:
+                          description: 반납기한
+                          format: date
+                          type: string
+                        id:
+                          description: 대출 고유 id
+                          type: integer
+                        login:
+                          description: 대출한 카뎃의 인트라 id
+                          type: string
+                        penaltyDays:
+                          description: 현재 대출 기록의 연체 일수
+                          type: integer
+                        title:
+                          description: 대출된 책의 제목
+                          type: string
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 대출 조회 결과에 대한 요약 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 2
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 2
+                        type: integer
+                      totalItems:
+                        description: 전체 대출 검색 결과 건수
+                        example: 2
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 대출 기록을 반환한다.
+
+        '400':
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+
+        '401':
+          description: 대출을 조회할 권한이 없는 사용자
+
+        '500':
+          description: db 에러
+
+      summary: 대출 기록 정보 조회
+
+      tags:
+        - lendings
+
+  /api/lendings/{lendingId}:
+    get:
+
+      description: 특정 대출 기록의 상세 정보를 보여준다.
+
+      parameters:
+        - description: 대출 기록의 고유 아이디
+          in: path
+          name: lendingId
+          required: true
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+                properties:
+                  callSign:
+                    description: 대출된 책의 청구기호
+                    example: H1.13.v1.c1
+                    type: string
+                  condition:
+                    description: 대출 당시 책 상태
+                    example: 양호
+                    type: string
+                  createdAt:
+                    description: 대출 일자(대출 레코드 생성 일자)
+                    example: 2021.09.06.
+                    format: date
+                    type: string
+                  dueDate:
+                    description: 반납기한
+                    example: 2021.09.20
+                    format: date
+                    type: string
+                  id:
+                    description: 대출 고유 id
+                    example: 2
+                    type: integer
+                  image:
+                    description: 대출된 책의 표지
+                    example: https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1633934%3Ftimestamp%3D20210706193409
+                    type: string
+                  login:
+                    description: 대출한 카뎃의 인트라 id
+                    example: minkykim
+                    type: string
+                  penaltyDays:
+                    description: 현재 대출 기록의 연체 일수
+                    example: 2
+                    type: integer
+                  title:
+                    description: 대출된 책의 제목
+                    example: 소프트웨어 장인(로버트 C. 마틴 시리즈)
+                    type: string
+                type: object
+
+          description: 대출 기록을 반환한다.
+
+        '400':
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 lendingId 등
+
+        '401':
+          description: 대출을 조회할 권한이 없는 사용자
+
+        '500':
+          description: db 에러
+
+      summary: 특정 대출 기록 조회
+
+      tags:
+        - lendings
+
+  /api/reservations:
+    post:
+
+      description: jwt로 인증된 유저가 예약을 생성한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookInfoId:
+                  description: 예약 대상이 되는 책 정보의 id
+                  example: 34
+                  type: integer
+              type: object
+        required: true
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  count:
+                    description: 예약 순위
+                    example: 2
+                    type: integer
+                type: object
+          description: 예약한 책에 걸려있는 예약수를 확인한다. (본인이 방금한거 포함)
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    description: 올바르지 않은 입력
+                    enum:
+                      - 2
+                    type: integer
+                type: object
+          description: 잘못된 정보를 입력한 경우
+        400_case2:
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    description:
+                    example: 502(패널티 기간) || 503(대출이 가능한 책) || 504(이미 예약중) || 505(이미
+                      대출중), ...
+                    type: integer
+                type: object
+          description: 예약에 실패한 경우
+
+      summary: 유저의 예약 생성
+
+      tags:
+        - reservations
+
+  /api/reservations/cancel/{id}:
+    patch:
+      description: 예약을 취소한다.
+      parameters:
+        - description: 예약 고유 아이디
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 예약 취소처리 완료
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    type: integer
+                type: object
+          description: 에러코드 0 dto에러 잘못된 json key 1 존재하지 않는 예약 아이디
+        '401':
+          description: 알 수 없는 사용자
+      summary: 예약 취소
+      tags:
+        - reservations
+
+  /api/reservations/count:
+    get:
+      description: 책 예약 대기 수를 확인한다.
+      parameters:
+        - description: bookInfo에 해당하는 예약 대기 수를 확인할 수 있다.
+          in: query
+          name: bookInfo
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  count:
+                    description: 예약 순위
+                    example: 0
+                    type: integer
+                type: object
+          description: 예약 대기 정보를 반환한다.
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    description: 여러 가지 경우의 에러를 나타내는 코드
+                    example: 2
+                    type: integer
+                type: object
+          description: 잘못된 정보를 입력한 경우
+      summary: 예약 대기 확인
+      tags:
+        - reservations
+
+  /api/reservations/search:
+    get:
+
+      description: 사서는 모든 예약 정보를 조회할 수 있다.
+
+      parameters:
+        - description: 조회하기 위한 검색어 (인트라아이디, 책제목, 청구기호 중 일부)
+          in: query
+          name: query
+          schema:
+            type: string
+        - description: 페이지 수
+          in: query
+          name: page
+          schema:
+            default: 1
+            type: integer
+        - description: 한 페이지 표시 개수
+          in: query
+          name: limit
+          schema:
+            default: 5
+            type: integer
+        - description: 조회 범위를 제한하기 위한 필터 옵션
+          in: query
+          name: filter
+          schema:
+            default: pending
+            enum:
+              - pending
+              - expired
+              - waiting
+              - all
+            type: string
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 검색된 책들의 목록
+
+                    example:
+                      - callSign: A2.24.
+                        createdAt: 2022.04.23
+                        endAt: 2022.05.06
+                        image: http://image.kyobobook.co.kr/images/book/xlarge/885/x9791186659885.jpg
+                        login: doby
+                        penaltyDays: 3
+                        reservationId: 2
+                        status: 0
+                        title: 컴퓨터 구조
+                      - callSign: H19.19.v1.c1
+                        createdAt: 2022.04.03
+                        endAt: 2022.05.06
+                        image: http://image.kyobobook.co.kr/images/book/xlarge/885/x9791186659885.jpg
+                        login: tkim
+                        penaltyDays: 0
+                        reservationId: 3
+                        status: 0
+                        title: 코딩도장 튜토리얼로 배우는 python
+
+                    items:
+                      properties:
+                        bookId:
+                          description: book id
+                          type: integer
+                        callSign:
+                          description: 예약된 책 청구기호
+                          type: string
+                        createdAt:
+                          description: 예약 생성일
+                          format: date
+                          type: string
+                        endAt:
+                          description: 예약 만료일
+                          format: date
+                          type: string
+                        image:
+                          description: 예약된 책 표지 사진
+                          type: string
+                        login:
+                          description: 예약한 사람의 login ID
+                          type: string
+                        penaltyDays:
+                          description: 예약한 사람의 연체 정보
+                          type: integer
+                        reservationId:
+                          description: 예약 고유 id
+                          type: integer
+                        status:
+                          description: 예약 상태
+                          type: integer
+                        title:
+                          description: 예약된 책 제목
+                          type: string
+                        userId:
+                          description: 유저 ID
+                          type: integer
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 예약 건수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 2
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 2
+                        type: integer
+                      totalItems:
+                        description: 전체 예약 검색 결과 건수
+                        example: 2
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 검색 결과를 반환한다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                example: query, page, limit, filter 중 하나에 유효하지 않은 value가 들어온 경우
+                type: string
+          description: query, page, limit, filter중 하나에 유효하지 않은 value가 들어온 경우
+
+        '401':
+          description: 사서 권한 없는 요청
+
+      summary: 예약 검색
+
+      tags:
+        - reservations
+
+  /api/reviews:
+
+    get:
+
+      description: 책 리뷰 10개를 반환한다. 최종 페이지의 경우 1 <= n <= 10 개의 값이 반환될 수 있다. content에는
+        리뷰에 대한 정보를, finalPage 에는 해당 페이지가 마지막인지에 대한 여부를 boolean 값으로 반환한다.
+
+      parameters:
+        - description: 책 제목 또는 닉네임을 검색어로 받는다.
+          in: query
+          name: titleOrNickname
+          schema:
+            type: string
+        - description: 해당하는 페이지를 보여준다.
+          in: query
+          name: page
+          required: false
+          schema:
+            type: number
+        - description: 0이라면 공개 리뷰를, 1이라면 비공개 리뷰를, -1이라면 모든 리뷰를 가져온다.
+          in: query
+          name: disabled
+          required: true
+          schema:
+            type: number
+        - description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
+          in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - description: asc, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.
+          in: query
+          name: sort
+          required: false
+          schema:
+            type: string
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+
+              examples:
+                bookInfo 기준:
+                  value:
+
+                    items:
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: sechung
+                        reviewerId: 100
+                        reviewsId: 1
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 101
+                        reviewsId: 2
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 102
+                        reviewsId: 3
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 103
+                        reviewsId: 4
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 104
+                        reviewsId: 5
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 105
+                        reviewsId: 6
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 106
+                        reviewsId: 7
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 107
+                        reviewsId: 8
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 108
+                        reviewsId: 9
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 109
+                        reviewsId: 10
+                        title: 클린코드
+
+                    meta:
+                      currentPage: 1
+                      finalPage: false
+                      itemCount: 10
+                      itemsPerPage: 10
+                      totalItems: 100
+                      totalPages: 20
+
+              schema:
+                type: object
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 bookInfoId 값:
+                  value:
+                    errorCode: 2
+                적절하지 않는 page 값:
+                  value:
+                    errorCode: 2
+                적절하지 않는 sort 값:
+                  value:
+                    errorCode: 2
+                적절하지 않는 userId 값:
+                  value:
+                    errorCode: 2
+              schema:
+                type: object
+
+        '401':
+          content:
+            application/json:
+              examples:
+                사서 권한 없음:
+                  value:
+                    errorCode: 100
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+      tags:
+        - reviews
+
+    post:
+
+      description: 책 리뷰를 작성한다. content 길이는 10글자 이상 420글자 이하로 입력하여야 한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookInfoId:
+                  example: 42
+                  nullable: false
+                  type: number
+                content:
+                  example: 책이 좋네요 열글자.
+                  nullable: false
+                  type: string
+              required:
+                - bookInfoId
+                - content
+              type: object
+        required: true
+
+      responses:
+        '201':
+          description: 리뷰가 DB에 정상적으로 insert됨.
+        '400':
+          content:
+            application/json:
+              examples:
+                유효하지 않은 content 길이:
+                  value:
+                    errorCode: 801
+              schema:
+                type: object
+          description: 잘못된 요청.
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+      tags:
+        - reviews
+
+  /api/reviews/my-reviews:
+    get:
+
+      description: 자기자신에 대한 모든 Review 데이터를 가져온다. 내부적으로 getReview와 같은 함수를 사용한다.
+
+      parameters:
+        - description: 책 제목 또는 닉네임을 검색어로 받는다.
+          in: query
+          name: titleOrNickname
+          schema:
+            type: string
+        - description: 한 페이지에서 몇 개의 게시글을 가져올 지 결정한다. [default = 10]
+          in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - description: 해당하는 페이지를 보여준다.
+          in: query
+          name: page
+          required: false
+          schema:
+            type: number
+        - description: asd, desc 값을 통해 시간순으로 정렬된 페이지를 반환한다.
+          in: query
+          name: sort
+          required: false
+          schema:
+            type: string
+        - description: true 라면 마이페이지 용도의 리뷰를, false 라면 모든 리뷰를 가져온다.
+          in: query
+          name: isMyReview
+          schema:
+            default: false
+            type: boolean
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+
+              examples:
+                bookInfo 기준:
+                  value:
+
+                    items:
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: sechung
+                        reviewerId: 100
+                        reviewsId: 1
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 101
+                        reviewsId: 2
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 102
+                        reviewsId: 3
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 103
+                        reviewsId: 4
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 104
+                        reviewsId: 5
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 105
+                        reviewsId: 6
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 106
+                        reviewsId: 7
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 107
+                        reviewsId: 8
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 108
+                        reviewsId: 9
+                        title: 클린코드
+
+                      - bookInfoId: 1
+                        content: hello
+                        createdAt: '2022-11-09T06:56:15.640Z'
+                        intraId: default@student.42seoul.kr
+                        nickname: chanheki
+                        reviewerId: 109
+                        reviewsId: 10
+                        title: 클린코드
+
+                    meta:
+                      currentPage: 1
+                      finalPage: false
+                      itemCount: 10
+                      itemsPerPage: 10
+                      totalItems: 100
+                      totalPages: 20
+
+              schema:
+                type: object
+
+          description: 성공적으로 리뷰를 가져왔을 때.
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 page 값:
+                  value:
+                    errorCode: 2
+                적절하지 않는 sort 값:
+                  value:
+                    errorCode: 2
+              schema:
+                type: object
+          description: 잘못된 요청.
+
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+      tags:
+        - reviews
+
+  /api/reviews/{reviewsId}:
+
+    delete:
+
+      description: 책 리뷰를 삭제한다. 작성자와 사서 권한이 있는 사용자만 삭제할 수 있다.
+
+      parameters:
+        - description: 들어온 reviewsId에 해당하는 리뷰를 삭제한다.
+          in: path
+          name: reviewsId
+          required: true
+
+      responses:
+
+        '200':
+          description: 리뷰가 DB에서 정상적으로 delete됨.
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 reviewsId 값:
+                  value:
+                    errorCode: 800
+              schema:
+                type: object
+
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 userId와 리뷰 userID 불일치 && 사서 권한 없음:
+                  value:
+                    errorCode: 801
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+        '404':
+          content:
+            application/json:
+              examples:
+                존재하지 않는 reviewsId:
+                  value:
+                    errorCode: 804
+              schema:
+                type: object
+          description: 존재하지 않는 reviewsId.
+
+      tags:
+        - reviews
+
+    patch:
+      description: 책 리뷰의 비활성화 여부를 토글 방식으로 변환
+      parameters:
+        - description: 수정할 reviews ID
+          in: path
+          name: reviewsId
+          required: true
+      requestBody:
+        required: false
+      responses:
+        '200':
+          description: 리뷰가 DB에 정상적으로 fetch됨.
+      tags:
+        - reviews
+
+    put:
+
+      description: 책 리뷰를 수정한다. 작성자만 수정할 수 있다. content 길이는 10글자 이상 100글자 이하로 입력하여야
+        한다.
+
+      parameters:
+        - description: 수정할 reviews ID
+          in: path
+          name: reviewsId
+          required: true
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  example: 책이 좋네요 열글자.
+                  nullable: false
+                  type: string
+              type: object
+        required: true
+
+      responses:
+
+        '200':
+          description: 리뷰가 DB에 정상적으로 update됨.
+
+        '400':
+          content:
+            application/json:
+              examples:
+                유효하지 않은 content 길이:
+                  value:
+                    errorCode: 801
+                적절하지 않는 reviewsId 값:
+                  value:
+                    errorCode: 800
+              schema:
+                type: object
+          description: 클라이언트 요청이 유효하지 않음.
+
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 Disabled Reviews는 수정할 수 없음.:
+                  value:
+                    errorCode: 805
+                토큰 userId와 리뷰 userID 불일치 && 사서 권한 없음:
+                  value:
+                    errorCode: 801
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+        '404':
+          content:
+            application/json:
+              examples:
+                존재하지 않는 reviewsId:
+                  value:
+                    errorCode: 804
+              schema:
+                type: object
+          description: 존재하지 않는 reviewsId.
+
+      tags:
+        - reviews
+
+  /api/slack/updateSlackList:
+    get:
+
+      description: 인증된 회원의 Slack ID를 추가한다. (사서만 가능)
+
+      responses:
+
+        '204':
+          description: 정상적으로 검사 완료
+
+        '401':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 토큰이 없을 경우 에러
+
+        '403':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 권한이 맞지 않을때 에러
+
+        '410':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 해당 토큰의 유저가 DB에 없을 경우의 에러
+
+        '500':
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                type: object
+          description: 예상 하지 못한 오류
+
+      tags:
+        - auth
+
+  /api/stock/search:
+    get:
+
+      description: 책 재고 정보를 검색해 온다.
+
+      parameters:
+        - description: 페이지
+          in: query
+          name: page
+          schema:
+            type: integer
+        - description: 한 페이지에 들어올 검색결과 수
+          in: query
+          name: limit
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 재고 정보 목록
+
+                    items:
+
+                      properties:
+
+                        author:
+                          description: 저자
+                          example: 김선우
+                          type: string
+
+                        bookId:
+                          description: 도서 번호
+                          example: 3
+                          type: integer
+
+                        bookInfoId:
+                          description: 도서 정보 번호
+                          example: 2
+                          type: integer
+
+                        callSign:
+                          description: 책의 고유 호출 번호
+                          example: C5.13.v1.c2
+                          type: string
+
+                        category:
+                          description: 책의 카테고리 정보
+                          example: 네트워크
+                          type: string
+
+                        categoryId:
+                          description: 책의 캬테고리 번호
+                          example: 2
+                          type: number
+
+                        donator:
+                          description: 기부자 닉네임
+                          example: ''
+                          type: string
+
+                        image:
+                          description: 이미지 주소
+                          example: https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg
+                          format: uri
+                          type: string
+
+                        isbn:
+                          description: isbn
+                          example: '9788998756444'
+                          format: number
+                          type: string
+
+                        pubishedAt:
+                          description: 출판일
+                          example: 20220522
+                          format: date
+                          type: string
+
+                        publisher:
+                          description: 출판사
+                          example: 한빛아카데미
+                          type: string
+
+                        status:
+                          description: 책의 상태 정보
+                          example: 0
+                          type: number
+
+                        title:
+                          description: 책 제목
+                          example: TCP IP 윈도우 소켓 프로그래밍
+                          type: string
+
+                        updatedAt:
+                          description: 책 정보의 마지막 변경 날짜
+                          example: 2022-07-09-22:49:33
+                          format: date
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 재고 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 검색 결과를 반환한다.
+
+        '500':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: Server Error
+
+      tags:
+        - stock
+
+  /api/stock/update:
+    patch:
+      description: 책 재고를 확인하고 업데이트
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  description: bookId
+                  type: number
+              type: object
+      responses:
+        '200':
+          description: 재고가 정상적으로 update 됨.
+        '307':
+          description: update 할 수 없는 bookId
+      tags:
+        - stock
+
+  /api/tags:
+    get:
+
+      description: 서브/디폴트 태그 정보를 검색한다. 이는 태그 관리 페이지에서 사용한다.
+
+      parameters:
+        - description: 검색 결과의 페이지.
+          in: query
+          name: page
+          schema:
+            default: 0
+            example: 0
+            type: integer
+        - description: 검색 결과 한 페이지당 보여줄 결과물의 개수.
+          in: query
+          name: limit
+          schema:
+            default: 10
+            example: 10
+            type: integer
+        - description: 공개 및 비공개 여부로, public 이면 공개, private 이면 비공개, null이면 모든 서브 및
+            디폴트 태그만 가져온다.
+          in: query
+          name: visibility
+          schema:
+            default:
+            enum:
+              -
+              - public
+              - private
+            example:
+            type: string
+        - description: 태그가 달린 도서명 또는 태그의 내용으로 검색한다.
+          in: query
+          name: query
+          schema:
+            example: 개발자의 코드
+            nullable: true
+            type: string
+
+      responses:
+        '200':
+
+          '400':
+            description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+
+          '401':
+            description: 태그 기록을 조회할 권한이 없는 사용자
+
+          '500':
+            description: db 에러
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+                    description: 태그 목록
+                    items:
+                      properties:
+                        bookInfoId:
+                          description: 태그가 등록된 도서의 infoId
+                          example: 1
+                          type: integer
+                        content:
+                          description: 서브/디폴트 태그의 내용
+                          example: yena가_추천하는
+                          type: string
+                        createdAt:
+                          description: 태그가 등록된 시간
+                          example: '2023-04-12'
+                          type: string
+                        id:
+                          description: 태그 고유 id
+                          example: 1
+                          type: integer
+                        login:
+                          description: 태그를 작성한 카뎃의 닉네임
+                          example: yena
+                          type: string
+                        superContent:
+                          description: 슈퍼 태그의 내용
+                          example: 1서클_추천_책
+                          type: string
+                        title:
+                          description: 태그가 등록된 도서의 제목
+                          example: 개발자의 코드
+                          type: string
+                        visibility:
+                          description: 공개 여부. 공개는 public, 비공개는 private이다.
+                          example: public
+                          type: string
+                      type: object
+                    type: array
+
+                  meta:
+                    description: 모든 태그 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 10
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 서브/디폴트 태그들을 반환한다. 디폴트 태그라면 superContent에 null이 들어가고, 서브 태그라면
+            superContent에 super 태그의 내용이 들어간다.
+
+      summary: 서브/디폴트 태그 정보를 검색한다.
+
+      tags:
+        - tags
+
+  /api/tags/default:
+    post:
+
+      description: 디폴트(자식) 태그를 생성한다. 태그 길이는 42자 미만으로 해야한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookInfoId:
+                  example: 42
+                  nullable: false
+                  type: number
+                content:
+                  example: Python
+                  nullable: false
+                  type: string
+              required:
+                - bookInfoId
+                - content
+              type: object
+        required: true
+
+      responses:
+        '201':
+          description: 태그가 DB에 정상적으로 insert됨.
+        '400':
+          content:
+            application/json:
+              examples:
+                디폴트 태그의 내용이 중복됨:
+                  value:
+                    errorCode: 909
+                유효하지 않은 bookInfoId:
+                  value:
+                    errorCode: 907
+                유효하지 않은 content 형식:
+                  value:
+                    errorCode: 900
+              schema:
+                type: object
+          description: 잘못된 요청.
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+      tags:
+        - tags
+
+  /api/tags/sub:
+    patch:
+
+      description: 서브 태그를 수정한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  description: 수정할 태그의 id
+                  example: 1
+                  type: integer
+                visibility:
+                  description: 서브 태그의 공개 여부
+                  example: public, private
+                  type: string
+              required:
+                - id
+              type: object
+        required: true
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: 수정된 서브 태그의 id
+                    example: 1
+                    type: integer
+                type: object
+          description: 서브 태그 수정 성공.
+
+        '900':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 900
+                    type: integer
+                type: object
+          description: 태그의 양식이 올바르지 않습니다.
+
+        '901':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 902
+                    type: integer
+                type: object
+          description: 권한이 없습니다.
+
+        '905':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 500
+                    type: number
+                type: object
+          description: DB 에러로 인한 업데이트 실패
+
+      tags:
+        - tags
+
+  /api/tags/sub/{tagId}:
+    delete:
+
+      description: 서브, 디폴트 태그를 삭제한다. 작성자만 태그를 삭제할 수 있다.
+
+      parameters:
+        - description: 들어온 tagId에 해당하는 태그를 삭제한다.
+          in: path
+          name: tagId
+          required: true
+
+      responses:
+
+        '200':
+          description: 태그가 DB에서 정상적으로 delete됨.
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 tagId 값:
+                  value:
+                    errorCode: 900
+              schema:
+                type: object
+
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 userId와 태그 userID 불일치 && 사서 권한 없음:
+                  value:
+                    errorCode: 901
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+        '404':
+          content:
+            application/json:
+              examples:
+                존재하지 않는 tagsId:
+                  value:
+                    errorCode: 903
+              schema:
+                type: object
+          description: 존재하지 않는 tagsId.
+
+      tags:
+        - tags
+
+  /api/tags/super:
+
+    patch:
+
+      description: 슈퍼 태그를 수정한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                content:
+                  description: 슈퍼 태그 내용
+                  example: 수정할_내용_적기
+                  type: string
+                id:
+                  description: 수정할 태그의 id
+                  example: 1
+                  type: integer
+              required:
+                - id
+              type: object
+        required: true
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: 수정된 슈퍼 태그의 id
+                    example: 1
+                    type: integer
+                type: object
+          description: 슈퍼 태그 수정 성공.
+
+        '900':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 900
+                    type: integer
+                type: object
+          description: 태그의 양식이 올바르지 않습니다.
+
+        '902':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 902
+                    type: integer
+                type: object
+          description: 이미 존재하는 태그입니다.
+
+        '905':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 500
+                    type: number
+                type: object
+          description: DB 에러로 인한 업데이트 실패
+
+        '906':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 906
+                    type: integer
+                type: object
+          description: 디폴트 태그입니다.
+
+      tags:
+        - tags
+
+    post:
+
+      description: 슈퍼(부모) 태그를 생성한다. 태그 길이는 42자 미만으로 해야한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookInfoId:
+                  example: 42
+                  nullable: false
+                  type: number
+                content:
+                  example: Python
+                  nullable: false
+                  type: string
+              required:
+                - bookInfoId
+                - content
+              type: object
+        required: true
+
+      responses:
+        '201':
+          description: 태그가 DB에 정상적으로 insert됨.
+        '400':
+          content:
+            application/json:
+              examples:
+                슈퍼 태그의 내용이 중복됨:
+                  value:
+                    errorCode: 908
+                유효하지 않은 bookInfoId:
+                  value:
+                    errorCode: 907
+                유효하지 않은 content 형식:
+                  value:
+                    errorCode: 900
+              schema:
+                type: object
+          description: 잘못된 요청.
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+      tags:
+        - tags
+
+  /api/tags/super/{tagId}:
+    delete:
+
+      description: 슈퍼 태그를 삭제한다. 사서 권한이 있는 사용자만 삭제할 수 있다.
+
+      parameters:
+        - description: 들어온 tagId에 해당하는 태그를 삭제한다.
+          in: path
+          name: tagId
+          required: true
+
+      responses:
+
+        '200':
+          description: 태그가 DB에서 정상적으로 delete됨.
+
+        '400':
+          content:
+            application/json:
+              examples:
+                적절하지 않는 tagId 값:
+                  value:
+                    errorCode: 900
+              schema:
+                type: object
+
+        '401':
+          content:
+            application/json:
+              examples:
+                토큰 userId와 태그 userID 불일치 && 사서 권한 없음:
+                  value:
+                    errorCode: 901
+                토큰 누락:
+                  value:
+                    errorCode: 100
+                토큰 만료:
+                  value:
+                    errorCode: 108
+                토큰 유저 존재하지 않음:
+                  value:
+                    errorCode: 101
+                토큰 유효하지 않음:
+                  value:
+                    errorCode: 109
+              schema:
+                type: object
+          description: 권한 없음.
+
+        '404':
+          content:
+            application/json:
+              examples:
+                존재하지 않는 tagsId:
+                  value:
+                    errorCode: 903
+              schema:
+                type: object
+          description: 존재하지 않는 tagsId.
+
+      tags:
+        - tags
+
+  /api/tags/{bookInfoId}:
+    get:
+
+      description: 슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다. 이는 도서 상세 페이지
+        및 태그 병합 페이지에서 사용된다.
+
+      parameters:
+        - description: 태그를 조회할 도서의 infoId
+          in: path
+          name: bookInfoId
+          required: true
+          schema:
+            example: 1
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+                  items:
+
+                    description: 슈퍼 태그, 디폴트 태그 목록
+
+                    example:
+                      - content: 1서클_추천_책
+                        count: 3
+                        id: 0
+                        login:
+                        type: super
+                      - content: 커리어
+                        count: 1
+                        id: 42
+                        login:
+                        type: super
+                      - content: yena가_추천하는
+                        count: 0
+                        id: 0
+                        login: yena
+                        type: default
+                      - content: 마법같은_파이썬
+                        count: 0
+                        id: 42
+                        login: yena
+                        type: default
+
+                    properties:
+                      content:
+                        description: 슈퍼 태그 내용
+                        type: string
+                      count:
+                        description: 슈퍼 태그에 속한 서브 태그 개수. 슈퍼 태그는 기본값이 1이며, 0이면 디폴트
+                          태그를 의미한다.
+                        type: integer
+                      id:
+                        description: 슈퍼 태그 고유 id
+                        type: integer
+                      login:
+                        description: 태그를 작성한 카뎃의 인트라 id. 슈퍼 태그는 기본값이 null이며, 디폴트 태그만
+                          작성자 값이 있다.
+                        type: string
+                      type:
+                        description: 태그의 타입. 슈퍼 태그는 'super'이며, 디폴트 태그는 'default'이다.
+                        type: string
+
+                    type: object
+
+                type: object
+
+          description: 슈퍼 태그, 디폴트 태그들을 반환한다.
+
+        '400':
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+
+        '401':
+          description: 태그 기록을 조회할 권한이 없는 사용자
+
+        '500':
+          description: db 에러
+
+      summary: 도서에 등록된 슈퍼 태그, 디폴트 태그 목록을 가져온다.
+
+      tags:
+        - tags
+
+  /api/tags/{bookInfoId}/merge:
+    patch:
+
+      description: 태그를 병합한다.
+
+      parameters:
+        - description: 병합할 책 정보의 id
+          in: path
+          name: bookInfoId
+          required: true
+          type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                subTagIds:
+                  description: 병합될 서브 태그의 id 리스트
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                    - 5
+                    - 10
+                  type: array
+                superTagId:
+                  description: 슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.
+                  example: 2
+                  type: integer
+              required:
+                - subTagIds
+                - superTagId
+              type: object
+        required: true
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: 슈퍼 태그의 id
+                    example: 1
+                    type: integer
+                type: object
+          description: 슈퍼 태그 수정 성공.
+
+        '900':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 900
+                    type: integer
+                type: object
+          description: 태그의 양식이 올바르지 않습니다.
+
+        '902':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 902
+                    type: integer
+                type: object
+          description: 이미 존재하는 태그입니다.
+
+        '905':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 500
+                    type: number
+                type: object
+          description: DB 에러로 인한 업데이트 실패
+
+        '906':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 906
+                    type: integer
+                type: object
+          description: 디폴트 태그에는 병합할 수 없습니다.
+
+        '910':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 910
+                    type: integer
+                type: object
+          description: 유효하지 않은 태그 id입니다.
+
+      tags:
+        - tags
+
+  /api/tags/{superTagId}/sub:
+    get:
+
+      description: superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의 서브
+        태그를 가져올 때 사용한다.
+
+      parameters:
+        - description: 서브 태그를 조회할 슈퍼 태그의 id
+          in: path
+          name: superTagId
+          required: true
+
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    description: 슈퍼 태그에 속한 서브 태그 목록
+                    example:
+                      - content: 도커_쿠버네티스
+                        id: 0
+                        login: yena
+                      - content: 도커
+                        id: 42
+                        login: yena
+                      - content: 도커
+                        id: 50
+                        login: jang-cho
+                    items:
+                      properties:
+                        content:
+                          description: 서브 태그의 내용
+                          type: string
+                        id:
+                          description: 서브 태그 고유 id
+                          type: integer
+                        login:
+                          description: 서브 태그를 작성한 카뎃의 인트라 id
+                          type: string
+                      type: object
+                    type: array
+                type: object
+          description: 슈퍼 태그에 속한 서브 태그들을 반환한다.
+        '400':
+          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+        '401':
+          description: 태그 기록을 조회할 권한이 없는 사용자
+        '500':
+          description: db 에러
+
+      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다.
+
+      tags:
+        - tags
+
+  /api/users/EasterEgg:
+    get:
+      description: 집현전 개발 버전을 확인합니다.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  version:
+                    description: 에러코드
+                    example: gshim.v1
+                    type: string
+                type: object
+          description: 수정된 유저 정보를 반환합니다.
+      tags:
+        - users
+
+  /api/users/create:
+    post:
+      description: 유저를 생성한다.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              type: object
+      responses:
+        '201':
+          description: 유저 생성 성공!
+        '400':
+          content:
+            application/json:
+              schema:
+                description: 200, 201, 205 에러 가능
+                properties:
+                  errorCode:
+                    description: error description
+                    example: 200
+                    type: number
+                type: object
+          description: 입력된 인자가 부적절합니다
+        '500':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: Server Error
+      tags:
+        - users
+
+  /api/users/myupdate:
+    patch:
+
+      description: 유저 정보를 변경한다.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              type: object
+
+      responses:
+
+        '200':
+          description: 유저 정보 변경 성공!
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 200
+                    type: number
+                type: object
+          description: 들어온 인자가 없습니다..
+
+        '403':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 206
+                    type: number
+                type: object
+          description: 수정하려는 계정이 본인의 계정이 아닙니다
+
+        '409':
+          content:
+            application/json:
+              schema:
+                description: 203, 204 에러
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 204
+                    type: number
+                type: object
+          description: 수정하려는 값이 중복됩니다
+
+        '500':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: Server Error
+
+      tags:
+        - users
+
+  /api/users/search:
+    get:
+
+      description: 유저 정보를 검색해 온다. query 가 null이면 모든 유저를 검색한다.
+
+      parameters:
+        - description: 검색할 유저의 nickname or email
+          in: query
+          name: nicknameOrEmail
+          schema:
+            type: string
+        - description: 페이지
+          in: query
+          name: page
+          schema:
+            type: integer
+        - description: 한 페이지에 들어올 검색결과 수
+          in: query
+          name: limit
+          schema:
+            type: integer
+        - description: 검색할 유저의 id
+          in: query
+          name: id
+          schema:
+            type: integer
+
+      responses:
+
+        '200':
+
+          content:
+            application/json:
+              schema:
+
+                properties:
+
+                  items:
+
+                    description: 유저 정보 목록
+
+                    items:
+
+                      properties:
+
+                        email:
+                          description: 이메일
+                          example: kyungsle@gmail.com
+                          type: string
+
+                        id:
+                          description: 유저 번호
+                          example: 3
+                          type: integer
+
+                        intraId:
+                          description: 인트라 고유 번호
+                          example: 10068
+                          type: integer
+
+                        lendings:
+                          description: 해당 유저의 대출 정보
+                          example: []
+                          type: array
+
+                        nickname:
+                          description: 닉네임
+                          example: kyungsle
+                          type: string
+
+                        overDueDay:
+                          description: 현재 연체된 날수
+                          example: 0
+                          format: number
+                          type: string
+
+                        penaltyEndDate:
+                          description: 패널티 끝나는 날짜
+                          example: '2022-05-22'
+                          format: date
+                          type: string
+
+                        reservations:
+                          description: 해당 유저의 예약 정보
+                          example: []
+                          type: array
+
+                        role:
+                          description: 권한
+                          example: 2
+                          type: integer
+
+                        slack:
+                          description: slack 멤버 Id
+                          example: U035MUEUGKW
+                          type: string
+
+                      type: object
+
+                    type: array
+
+                  meta:
+                    description: 유저 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+
+                type: object
+
+          description: 검색 결과를 반환한다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 200
+                    type: number
+                type: object
+          description: Client Error Bad Request
+
+        '500':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: Server Error
+
+      tags:
+        - users
+
+  /api/users/update/{id}:
+    patch:
+
+      description: 유저 정보를 변경한다.
+
+      parameters:
+        - description: 변경할 유저의 id 값
+          in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                intraId:
+                  type: integer
+                nickname:
+                  type: string
+                penaltyEndDate:
+                  example: '2022-06-18'
+                  format: date
+                  type: string
+                role:
+                  type: integer
+                slack:
+                  type: string
+              type: object
+
+      responses:
+
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  intraId:
+                    description: 인트라 ID
+                    example: 10035
+                    type: string
+                  nickname:
+                    description: 에러코드
+                    example: jimin
+                    type: string
+                  penaltyEbdDate:
+                    description: 패널티가 끝나는 날
+                    example: '2022-06-18'
+                    type: string
+                  role:
+                    description: 유저의 권한
+                    example: 2
+                    type: string
+                  slack:
+                    description: slack 맴버 변수
+                    example: U02LNNDRC9F
+                    type: string
+                type: object
+          description: 수정된 유저 정보를 반환합니다.
+
+        '400':
+          content:
+            application/json:
+              schema:
+                properties:
+                  errorCode:
+                    example: 200
+                    type: integer
+                type: object
+          description: nickname, intraId, slack, role 중 아무것도 없습니다..
+
+        '500':
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: DB Error
+
+      tags:
+        - users
+
+servers:
+  - url: http://localhost:3000/
+
+tags: []
