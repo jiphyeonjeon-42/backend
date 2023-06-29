@@ -3872,7 +3872,8 @@ paths:
           in: path
           name: bookInfoId
           required: true
-          type: integer
+          schema:
+            type: integer
 
       requestBody:
         content:
