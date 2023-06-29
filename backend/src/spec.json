@@ -996,7 +996,7 @@
                           },
                           "dueDate": {
                             "description": "반납 예정 일자, 대출가능 시 '-'",
-                            "type": "date",
+                            "type": "string", "format": "date",
                             "example": "21.08.05"
                           },
                           "isLendable": {
@@ -1515,7 +1515,7 @@
                     },
                     "dueDate": {
                       "description": "반납 예정 일자, 대출가능 시 '-'",
-                      "type": "date",
+                      "type": "string", "format": "date",
                       "example": "21.08.05"
                     },
                     "isLendable": {
@@ -2007,17 +2007,17 @@
                           },
                           "createdAt": {
                             "description": "lending 생성 일시",
-                            "type": "Date",
+                            "type": "string", "format": "date",
                             "example": "2022-05-05"
                           },
                           "returnedAt": {
                             "description": "반납 일시",
-                            "type": "Date",
+                            "type": "string", "format": "date",
                             "example": "2022-05-05"
                           },
                           "dueDate": {
                             "description": "반납 마감 일시",
-                            "type": "Date",
+                            "type": "string", "format": "date",
                             "example": "2022-05-05"
                           },
                           "lendingLibrarianNickName": {
@@ -5329,7 +5329,7 @@
                     "type": "integer"
                   },
                   "penaltyEndDate": {
-                    "type": "date",
+                    "type": "string", "format": "date",
                     "example": "2022-06-18"
                   }
                 }
