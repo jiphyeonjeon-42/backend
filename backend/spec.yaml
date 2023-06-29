@@ -3466,39 +3466,37 @@ paths:
                     type: integer
                 type: object
           description: 서브 태그 수정 성공.
-
-        '900':
-          content:
-            application/json:
-              schema:
-                properties:
-                  errorCode:
-                    example: 900
-                    type: integer
-                type: object
+        '400':
           description: 태그의 양식이 올바르지 않습니다.
-
-        '901':
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   errorCode:
-                    example: 902
                     type: integer
-                type: object
+                    enum: [900]
+        401: # TODO: 임의 HTTP 오류 코드
           description: 권한이 없습니다.
-
-        '905':
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   errorCode:
-                    example: 500
-                    type: number
-                type: object
+                    type: integer
+                    enum: [902]
+
+        '500':
           description: DB 에러로 인한 업데이트 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [905]
 
       tags:
         - tags
