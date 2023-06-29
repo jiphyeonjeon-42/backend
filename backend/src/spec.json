@@ -491,6 +491,7 @@
         ],
         "responses": {
           "200": {
+            "description": "성공적으로 리뷰 페이지 반환",
             "content": {
               "application/json": {
                 "schema": {
@@ -555,6 +556,7 @@
             }
           },
           "400": {
+            "description": "적절하지 않은 인자값이 들어온 경우의 에러",
             "content": {
               "application/json": {
                 "schema": {
@@ -910,6 +912,7 @@
         ],
         "parameters": [
           {
+            "required": true,
             "name": "id",
             "in": "path",
             "description": "책의 id",
@@ -1447,6 +1450,7 @@
         ],
         "parameters": [
           {
+            "required": true,
             "name": "id",
             "in": "path",
             "description": "book 테이블의 id",
@@ -1622,15 +1626,7 @@
         ],
         "responses": {
           "204": {
-            "description": "No Content",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": null,
-                  "description": null
-                }
-              }
-            }
+            "description": "No Content"
           },
           "errorcase-1": {
             "description": "bookInfoId가 유효하지 않음",
@@ -1804,15 +1800,7 @@
         },
         "responses": {
           "204": {
-            "description": "성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.",
-            "content": {
-              "application": {
-                "schema": {
-                  "type": null,
-                  "description": "성공했을 때 http 상태코드 204 값을 반환."
-                }
-              }
-            }
+            "description": "성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환."
           },
           "실패 케이스 1": {
             "description": "예상치 못한 에러로 책 정보 patch에 실패.",
@@ -1997,8 +1985,8 @@
                           },
                           "title": {
                             "description": "책 제목",
-                            "type": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 )",
-                            "example": 777
+                            "type": "string",
+                            "example": "TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 )"
                           },
                           "bookInfoId": {
                             "description": "book_info의 id",
@@ -2138,7 +2126,8 @@
                   "type": "object",
                   "properties": {
                     "dueDate": {
-                      "type": "date | string",
+                      "type": "string",
+                      "format": "date",
                       "example": "2022-12-12"
                     }
                   }
@@ -2629,9 +2618,9 @@
                   "type": "object",
                   "properties": {
                     "errorCode": {
-                      "description": null,
+                      "description": "올바르지 않은 입력",
                       "type": "integer",
-                      "example": 2
+                      "enum": [2]
                     }
                   }
                 }
@@ -2908,16 +2897,18 @@
                   "bookInfoId": {
                     "type": "number",
                     "nullable": false,
-                    "required": true,
                     "example": 42
                   },
                   "content": {
                     "type": "string",
                     "nullable": false,
-                    "required": true,
                     "example": "책이 좋네요 열글자."
                   }
-                }
+                },
+                "required": [
+                  "bookInfoId",
+                  "content"
+                ]
               }
             }
           }
@@ -3270,15 +3261,16 @@
           {
             "name": "isMyReview",
             "in": "query",
-            "default": false,
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "default": false
             },
             "description": "true 라면 마이페이지 용도의 리뷰를, false 라면 모든 리뷰를 가져온다."
           }
         ],
         "responses": {
           "200": {
+            "description": "성공적으로 리뷰를 가져왔을 때.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3404,6 +3396,7 @@
             }
           },
           "400": {
+            "description": "잘못된 요청.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3482,7 +3475,7 @@
                 "properties": {
                   "content": {
                     "type": "string",
-                    "nullable": "false경",
+                    "nullable": false,
                     "example": "책이 좋네요 열글자."
                   }
                 }
@@ -3495,6 +3488,7 @@
             "description": "리뷰가 DB에 정상적으로 update됨."
           },
           "400": {
+            "description": "클라이언트 요청이 유효하지 않음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3992,15 +3986,15 @@
                   "id": {
                     "description": "수정할 태그의 id",
                     "type": "integer",
-                    "example": 1,
-                    "required": true
+                    "example": 1
                   },
                   "content": {
                     "description": "슈퍼 태그 내용",
                     "type": "string",
                     "example": "수정할_내용_적기"
                   }
-                }
+                },
+                "required": ["id"]
               }
             }
           }
@@ -4104,16 +4098,15 @@
                   "bookInfoId": {
                     "type": "number",
                     "nullable": false,
-                    "required": true,
                     "example": 42
                   },
                   "content": {
                     "type": "string",
                     "nullable": false,
-                    "required": true,
                     "example": "Python"
                   }
-                }
+                },
+                "required": ["bookInfoId", "content"]
               }
             }
           }
@@ -4200,15 +4193,17 @@
                   "id": {
                     "description": "수정할 태그의 id",
                     "type": "integer",
-                    "example": 1,
-                    "required": true
+                    "example": 1
                   },
                   "visibility": {
                     "description": "서브 태그의 공개 여부",
                     "type": "string",
                     "example": "public, private"
                   }
-                }
+                },
+                "required": [
+                  "id"
+                ]
               }
             }
           }
@@ -4306,8 +4301,7 @@
                 "properties": {
                   "subTagIds": {
                     "description": "병합될 서브 태그의 id 리스트",
-                    "type": "list",
-                    "required": true,
+                    "type": "array",
                     "example": [
                       1,
                       2,
@@ -4319,10 +4313,13 @@
                   "superTagId": {
                     "description": "슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.",
                     "type": "integer",
-                    "required": true,
                     "example": 2
                   }
-                }
+                },
+                "required": [
+                  "subTagIds",
+                  "superTagId"
+                ]
               }
             }
           }
@@ -4444,16 +4441,18 @@
                   "bookInfoId": {
                     "type": "number",
                     "nullable": false,
-                    "required": true,
                     "example": 42
                   },
                   "content": {
                     "type": "string",
                     "nullable": false,
-                    "required": true,
                     "example": "Python"
                   }
-                }
+                },
+                "required": [
+                  "bookInfoId",
+                  "content"
+                ]
               }
             }
           }
