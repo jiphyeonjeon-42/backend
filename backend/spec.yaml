@@ -3717,6 +3717,8 @@ paths:
           in: path
           name: tagId
           required: true
+          schema:
+            type: integer
 
       responses:
 
@@ -3724,6 +3726,7 @@ paths:
           description: 태그가 DB에서 정상적으로 delete됨.
 
         '400':
+          description: 잘못된 요청.
           content:
             application/json:
               examples:
