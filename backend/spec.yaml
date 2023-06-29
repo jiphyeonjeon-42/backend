@@ -1004,22 +1004,26 @@ paths:
                     type: integer
                 type: object
           description: Success
-        실패 케이스 1:
+        400:
+          description: 유효하지 않은 입력
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 601
                 type: object
-          description: bookInfoId가 유효하지 않음
-        실패 케이스 2:
-          content:
-            application/json:
-              schema:
-                example:
-                  errorCode: 602
-                type: object
-          description: 중복된 like데이터가 이미 존재함.
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [601, 602]
+                    description: |
+                      - 601: bookInfoId가 유효하지 않음
+                      - 602: 중복된 like데이터가 이미 존재함.
+              examples:
+                bookInfoId가 유효하지 않음:
+                  value:
+                    errorCode: 601
+                중복된 like데이터가 이미 존재함:
+                  value:
+                    errorCode: 602
 
       summary: Add a new like to the book
 
