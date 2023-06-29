@@ -3511,6 +3511,8 @@ paths:
           description: 들어온 tagId에 해당하는 태그를 삭제한다.
           in: path
           required: true
+          schema:
+            type: integer
 
       responses:
 
