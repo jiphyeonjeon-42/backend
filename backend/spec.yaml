@@ -1135,25 +1135,27 @@ paths:
 
           description: 조회 결과를 반환한다.
 
-        400_case1:
+        400:
+          description: 유효하지 않은 입력
           content:
             application/json:
               schema:
                 description: error description
-                example:
-                  errorCode: 300
                 type: object
-          description: id가 숫자가 아니다.
-
-        400_case2:
-          content:
-            application/json:
-              schema:
-                description: error description
-                example:
-                  errorCode: 304
-                type: object
-          description: 유효하지않은 infoId 값.
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [300, 304]
+                    description: |
+                      - 300: id가 숫자가 아님.
+                      - 304: 유효하지않은 infoId 값.
+              examples:
+                id가 숫자가 아님:
+                  value:
+                    errorCode: 300
+                유효하지않은 infoId 값:
+                  value:
+                    errorCode: 304
 
       tags:
         - books
@@ -1389,30 +1391,39 @@ paths:
       responses:
         '204':
           description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
-        실패 케이스 1:
+        400:
+          description: 올바르지 않은 요청
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 312
                 type: object
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [311, 313]
+                    description: |
+                      - 311: 입력한 publishedAt field가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+                      - 313: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
+              examples:
+                311:
+                  description: 입력한 publishedAt field가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+                  value:
+                    errorCode: 311
+                313:
+                  description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
+                  value:
+                    errorCode: 313
+        500:
           description: 예상치 못한 에러로 책 정보 patch에 실패.
-        실패 케이스 2:
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 313
                 type: object
-          description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
-        실패 케이스 3:
-          content:
-            application/json:
-              schema:
-                example:
-                  errorCode: 311
-                type: object
-          description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [312]
+                    description: 예상치 못한 에러로 책 정보 patch에 실패.
 
       tags:
         - books
