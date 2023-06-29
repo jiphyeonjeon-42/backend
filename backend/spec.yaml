@@ -2836,10 +2836,12 @@ paths:
       description: 책 리뷰를 삭제한다. 작성자와 사서 권한이 있는 사용자만 삭제할 수 있다.
 
       parameters:
-        - description: 들어온 reviewsId에 해당하는 리뷰를 삭제한다.
+        - name: reviewsId
+          description: 들어온 reviewsId에 해당하는 리뷰를 삭제한다.
           in: path
-          name: reviewsId
           required: true
+          schema:
+            type: integer
 
       responses:
 
@@ -2847,6 +2849,7 @@ paths:
           description: 리뷰가 DB에서 정상적으로 delete됨.
 
         '400':
+          description: 잘못된 요청.
           content:
             application/json:
               examples:
