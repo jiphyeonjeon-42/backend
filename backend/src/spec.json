@@ -129,7 +129,7 @@
                       "type": "boolean"
                     },
                     "email": {
-                      "decription": "email",
+                      "description": "email",
                       "type": "string",
                       "example": "seongyle@student.42seoul.kr"
                     }
@@ -769,7 +769,7 @@
               "application/json": {
                 "schema": {
                   "type": "json",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": {
                     "errorCode": 300
                   }
@@ -891,7 +891,7 @@
               "application/json": {
                 "schema": {
                   "type": "json",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": {
                     "errorCode": 300
                   }
@@ -963,7 +963,7 @@
                       "example": "2018년 10월"
                     },
                     "isbn": {
-                      "descriptoin": "isbn",
+                      "description": "isbn",
                       "type": "string",
                       "example": "9791196067694"
                     },
@@ -1023,7 +1023,7 @@
               "application/json": {
                 "schema": {
                   "type": "json",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": {
                     "errorCode": 300
                   }
@@ -1037,7 +1037,7 @@
               "application/json": {
                 "schema": {
                   "type": "json",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": {
                     "errorCode": 304
                   }
@@ -1207,7 +1207,7 @@
               "application/json": {
                 "schema": {
                   "type": "json",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": {
                     "errorCode": 300
                   }
@@ -1499,7 +1499,7 @@
                       "example": "2018년 10월"
                     },
                     "isbn": {
-                      "descriptoin": "isbn",
+                      "description": "isbn",
                       "type": "string",
                       "example": "9791196067694"
                     },
@@ -2026,12 +2026,12 @@
                             "example": "chanheki"
                           },
                           "returningLibrarianNickname": {
-                            "decripttion": "반납해준 사서 이름(없으면 null)",
+                            "description": "반납해준 사서 이름(없으면 null)",
                             "type": "string",
                             "example": "seongyle"
                           },
                           "image": {
-                            "decription": "책의 이미지 주소",
+                            "description": "책의 이미지 주소",
                             "type": "string",
                             "example": "https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg"
                           }
@@ -2752,7 +2752,7 @@
                             "format": "date"
                           },
                           "endAt": {
-                            "descrdiption": "예약 만료일",
+                            "description": "예약 만료일",
                             "type": "string",
                             "format": "date"
                           },
@@ -2837,7 +2837,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "description": "error decription",
+                  "description": "error description",
                   "example": "query, page, limit, filter 중 하나에 유효하지 않은 value가 들어온 경우"
                 }
               }
@@ -3930,7 +3930,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5194,7 +5194,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5212,7 +5212,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5278,7 +5278,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5397,7 +5397,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5445,7 +5445,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5463,7 +5463,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
@@ -5499,7 +5499,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "error decription",
+                  "description": "error description",
                   "properties": {
                     "errorCode": {
                       "type": "number",
