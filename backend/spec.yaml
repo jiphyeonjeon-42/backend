@@ -1405,12 +1405,10 @@ paths:
                       - 311: 입력한 publishedAt field가 알맞은 형식이 아님. 기대하는 형식 "20220807"
                       - 313: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
               examples:
-                311:
-                  description: 입력한 publishedAt field가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+                입력한 publishedAt field가 알맞은 형식이 아님. 기대하는 형식 "20220807":
                   value:
                     errorCode: 311
-                313:
-                  description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
+                수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음:
                   value:
                     errorCode: 313
         500:
