@@ -953,14 +953,21 @@ paths:
                     type: integer
                 type: object
           description: successful operation
-        errorcase-1:
+        400:
+          description: bookInfoId가 유효하지 않음
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 601
                 type: object
-          description: bookInfoId가 유효하지 않음
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [601]
+                    description: |
+                      - 601: bookInfoId가 유효하지 않음
+                example:
+                  description: bookInfoId가 유효하지 않음
+                  errorCode: 601
 
       summary: Get like info
 
