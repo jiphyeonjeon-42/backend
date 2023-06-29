@@ -2917,10 +2917,12 @@ paths:
         한다.
 
       parameters:
-        - description: 수정할 reviews ID
+        - name: reviewsId
+          description: 수정할 reviews ID
           in: path
-          name: reviewsId
           required: true
+          schema:
+            type: integer
 
       requestBody:
         content:
