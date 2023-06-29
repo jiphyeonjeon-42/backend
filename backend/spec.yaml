@@ -3605,49 +3605,41 @@ paths:
                 type: object
           description: 슈퍼 태그 수정 성공.
 
-        '900':
+        '400':
           content:
             application/json:
               schema:
                 properties:
                   errorCode:
-                    example: 900
+                    enum: [900, 902, 906]
                     type: integer
+                    description: |
+                      - 900: 태그의 양식이 올바르지 않습니다.
+                      - 902: 이미 존재하는 태그입니다.
+                      - 906: 디폴트 태그입니다.
                 type: object
-          description: 태그의 양식이 올바르지 않습니다.
+              examples:
+                적절하지 않는 tagId 값:
+                  value:
+                    errorCode: 900
+                이미 존재하는 태그:
+                  value:
+                    errorCode: 902
+                디폴트 태그:
+                  value:
+                    errorCode: 906
+          description: 태그 수정에 실패했습니다.
 
-        '902':
+        '500':
           content:
             application/json:
               schema:
                 properties:
                   errorCode:
-                    example: 902
-                    type: integer
-                type: object
-          description: 이미 존재하는 태그입니다.
-
-        '905':
-          content:
-            application/json:
-              schema:
-                properties:
-                  errorCode:
-                    example: 500
+                    enum: [500]
                     type: number
                 type: object
           description: DB 에러로 인한 업데이트 실패
-
-        '906':
-          content:
-            application/json:
-              schema:
-                properties:
-                  errorCode:
-                    example: 906
-                    type: integer
-                type: object
-          description: 디폴트 태그입니다.
 
       tags:
         - tags
