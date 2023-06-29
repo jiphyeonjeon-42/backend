@@ -890,22 +890,29 @@ paths:
       responses:
         '204':
           description: false Content
-        errorcase-1:
+
+        400:
+          description: 유효하지 않은 입력
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 601
                 type: object
-          description: bookInfoId가 유효하지 않음
-        errorcase-2:
-          content:
-            application/json:
-              schema:
-                example:
-                  errorCode: 603
-                type: object
-          description: 존재하지 않는 좋아요데이터를 삭제하려 함.
+                properties:
+                  errorCode:
+                    type: integer
+                    enum: [601, 603]
+                    description: |
+                      - 601: bookInfoId가 유효하지 않음
+                      - 603: 존재하지 않는 좋아요데이터를 삭제하려 함.
+              examples:
+                bookInfoId가 유효하지 않음:
+                  value:
+                    errorCode: 601
+                존재하지 않는 좋아요데이터를 삭제하려 함:
+                  value:
+                    errorCode: 603
+
+
       summary: Delete a like
       tags:
         - like
