@@ -2899,12 +2899,12 @@ paths:
     patch:
       description: 책 리뷰의 비활성화 여부를 토글 방식으로 변환
       parameters:
-        - description: 수정할 reviews ID
+        - name: reviewsId
+          description: 수정할 reviews ID
           in: path
-          name: reviewsId
           required: true
-      requestBody:
-        required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: 리뷰가 DB에 정상적으로 fetch됨.
