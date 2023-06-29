@@ -422,11 +422,8 @@ paths:
         - bookInfo/reviews
 
   /api/books/create:
-
     get:
-
       description: 책 생성을 위한 정보를 반환합니다.
-
       parameters:
         - description: isbn번호
           in: query
@@ -437,13 +434,10 @@ paths:
             type: string
 
       responses:
-
-        '200':
-
+        200:
           content:
             application/json:
               schema:
-
                 description: ISBN으로 국립중앙도서관에서 검색후에 정보를 반환, 이미지는 교보문고에서 가지고 옴
 
                 properties:
@@ -486,28 +480,31 @@ paths:
                         nullable: false
                         type: string
                     type: object
-
                 type: object
 
           description: 국립중앙도서관에서 ISBN으로 검색한뒤에 책정보를 반환
 
-        실패 케이스 1:
+        500:
+          description: ISBN 검색이 실패한 경우
           content:
             application/json:
               schema:
-                example:
-                  errorCode: 303
                 type: object
-          description: 국립중앙 도서관 API에서 ISBN 검색이 실패
-
-        실패 케이스 2:
-          content:
-            application/json:
-              schema:
-                example:
-                  errorCode: 310
-                type: object
-          description: 네이버 책검색 API에서 ISBN 검색이 실패
+                properties:
+                  errorCode:
+                    enum: [303, 310]
+                    nullable: false
+                    type: number
+                    description: |
+                      - 303: 국립중앙도서관 API에서 ISBN 검색이 실패
+                      - 310: 네이버 책검색 API에서 ISBN 검색이 실패
+              examples:
+                국립중앙도서관 API에서 ISBN 검색이 실패:
+                  value:
+                    errorCode: 303
+                네이버 책검색 API에서 ISBN 검색이 실패:
+                  value:
+                    errorCode: 310
 
       tags:
         - books
@@ -3443,9 +3440,9 @@ paths:
       description: 서브, 디폴트 태그를 삭제한다. 작성자만 태그를 삭제할 수 있다.
 
       parameters:
-        - description: 들어온 tagId에 해당하는 태그를 삭제한다.
+        - name: tagId
+          description: 들어온 tagId에 해당하는 태그를 삭제한다.
           in: path
-          name: tagId
           required: true
 
       responses:
@@ -3454,6 +3451,7 @@ paths:
           description: 태그가 DB에서 정상적으로 delete됨.
 
         '400':
+          description: 잘못된 요청.
           content:
             application/json:
               examples:
