@@ -768,7 +768,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "error description",
                   "example": {
                     "errorCode": 300
@@ -890,7 +890,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "error description",
                   "example": {
                     "errorCode": 300
@@ -1022,7 +1022,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "error description",
                   "example": {
                     "errorCode": 300
@@ -1036,7 +1036,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "error description",
                   "example": {
                     "errorCode": 304
@@ -1206,7 +1206,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "error description",
                   "example": {
                     "errorCode": 300
@@ -1281,7 +1281,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "성공했을 때 삽인된 callsign 값을 반환합니다.",
                   "example": {
                     "callsign": "c11.22.v1.c2"
@@ -1295,7 +1295,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 308
                   }
@@ -1308,7 +1308,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 309
                   }
@@ -1321,7 +1321,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 311
                   }
@@ -1415,7 +1415,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 303
                   }
@@ -1428,7 +1428,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 310
                   }
@@ -1580,7 +1580,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 601
                   }
@@ -1593,7 +1593,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 602
                   }
@@ -1637,7 +1637,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 601
                   }
@@ -1650,7 +1650,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 603
                   }
@@ -1684,7 +1684,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "description": "책에 대한 좋아요 정보를 가져옵니다.",
                   "example": {
                     "bookInfoId": 123,
@@ -1697,7 +1697,7 @@
                       "description": "좋아요할 bookInfo의 id"
                     },
                     "isLiked": {
-                      "type": "bool",
+                      "type": "boolean",
                       "description": "사용자가 이 책에 대하여 좋아요를 눌렀는 지 여부"
                     },
                     "likeNum": {
@@ -1714,7 +1714,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 601
                   }
@@ -1819,7 +1819,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 312
                   }
@@ -1832,7 +1832,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 313
                   }
@@ -1845,7 +1845,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "json",
+                  "type": "object",
                   "example": {
                     "errorCode": 311
                   }
