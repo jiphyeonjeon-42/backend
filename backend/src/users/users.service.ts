@@ -15,20 +15,16 @@ export default class UsersService {
     const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
     const lending = await this.usersRepository
       .getLending(usersIdList) as unknown as models.Lending[];
-    if (items) {
-      return items.map((item: models.User) => {
-        const rtnObj: models.User = Object.assign(item);
-        rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
-        rtnObj.overDueDay = 0;
-        if (rtnObj.lendings.length) {
-          rtnObj.lendings.forEach((lend: models.Lending) => {
-            rtnObj.overDueDay += (+lend.overDueDay);
-          });
-        }
-        return rtnObj;
+
+    return items.map((item: models.User) => {
+      const rtnObj: models.User = Object.assign(item);
+      rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
+      rtnObj.overDueDay = 0;
+      rtnObj.lendings.forEach((lend: models.Lending) => {
+        rtnObj.overDueDay += (+lend.overDueDay);
       });
-    }
-    return items;
+      return rtnObj;
+    });
   }
 
   async userLendings(userId: number) {
