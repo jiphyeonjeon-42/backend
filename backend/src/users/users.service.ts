@@ -11,15 +11,15 @@ export default class UsersService {
     this.usersRepository = new UsersRepository();
   }
 
-  async setOverDueDay(items: models.User[]): Promise<models.User[]> {
-    const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
+  async setOverDueDay(users: models.User[]): Promise<models.User[]> {
+    const usersIdList = users.map((user) => ({ userId: user.id }));
     const lending = await this.usersRepository
       .getLending(usersIdList) as unknown as models.Lending[];
 
-    return items.map((item: models.User) => {
-      const lendings = lending.filter((lend) => lend.userId === item.id);
+    return users.map((user) => {
+      const lendings = lending.filter((lend) => lend.userId === user.id);
       const overDueDay = lendings.reduce((acc, cur) => acc + cur.overDueDay, 0);
-      return { ...item, lendings, overDueDay };
+      return { ...user, lendings, overDueDay };
     });
   }
 
