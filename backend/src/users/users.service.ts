@@ -19,10 +19,7 @@ export default class UsersService {
     return items.map((item: models.User) => {
       const rtnObj: models.User = Object.assign(item);
       rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
-      rtnObj.overDueDay = 0;
-      rtnObj.lendings.forEach((lend: models.Lending) => {
-        rtnObj.overDueDay += (+lend.overDueDay);
-      });
+      rtnObj.overDueDay = rtnObj.lendings.reduce((acc, cur) => acc + cur.overDueDay, 0);
       return rtnObj;
     });
   }
