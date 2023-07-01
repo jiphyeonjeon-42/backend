@@ -1,6 +1,15 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
 
+/**
+ * 공통 에러 스키마
+ */
+export const commonErrorSchema = z
+  .object({
+    code: z.number(),
+    message: z.string()
+  })
+
 const postApiauthlogin_Body = z.object({
   id: z.string(),
   password: z.string(),
@@ -42,22 +51,22 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `ID, PW 값이 없는 잘못된 요청`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 401,
         description: `토큰이 없을 경우, 이미 인증된 회원의 경우 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 410,
         description: `해당 토큰의 유저가 DB에 없을 경우의 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 500,
         description: `예상 하지 못한 오류`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
     ],
   },
@@ -80,22 +89,22 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `ID, PW 값이 없는 잘못된 요청`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 401,
         description: `ID를 찾을 수 없는 경우`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 403,
         description: `PW가 틀린 경우`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 500,
         description: `예상 하지 못한 오류`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
     ],
   },
@@ -121,22 +130,22 @@ export const endpoints = makeApi([
       {
         status: 401,
         description: `토큰이 없을 경우 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 403,
         description: `권한이 맞지 않을때 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 410,
         description: `해당 토큰의 유저가 DB에 없을 경우의 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 500,
         description: `예상 하지 못한 오류`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
     ],
   },
@@ -172,12 +181,12 @@ export const endpoints = makeApi([
         status: 401,
         description:
           `42 api와 연동된 ID가 없음, [front에서 알림 후 회원가입창으로 이동]`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 500,
         description: `예상 하지 못한 오류`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
     ],
   },
@@ -191,22 +200,22 @@ export const endpoints = makeApi([
       {
         status: 401,
         description: `토큰이 없을 경우 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 403,
         description: `권한이 맞지 않을때 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 410,
         description: `해당 토큰의 유저가 DB에 없을 경우의 에러`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
       {
         status: 500,
         description: `예상 하지 못한 오류`,
-        schema: z.object({ code: z.number(), message: z.string() }),
+        schema: commonErrorSchema,
       },
     ],
   },
