@@ -17,7 +17,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/reviews",
     description:
-      `책 리뷰 10개를 반환한다. 최종 페이지의 경우 1 &lt;&#x3D; n &lt;&#x3D; 10 개의 값이 반환될 수 있다. content에는 리뷰에 대한 정보를, finalPage 에는 해당 페이지가 마지막인지에 대한 여부를 boolean 값으로 반환한다.`,
+      "책 리뷰 10개를 반환한다. 최종 페이지의 경우 1 <= n <= 10 개의 값이 반환될 수 있다. content에는 리뷰에 대한 정보를, finalPage 에는 해당 페이지가 마지막인지에 대한 여부를 boolean 값으로 반환한다.",
     requestFormat: "json",
     parameters: [
       {
