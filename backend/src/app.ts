@@ -2,18 +2,19 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import passport from 'passport';
-import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { zodiosApp } from '@zodios/express';
+
 import jipDataSource from './app-data-source';
 import { FtAuthentication, FtStrategy, JwtStrategy } from './auth/auth.strategy';
 import { connectMode } from './config';
 import router from './routes';
-import swaggerOptions from './swagger/swagger';
 import errorConverter from './utils/error/errorConverter';
 import errorHandler from './utils/error/errorHandler';
 import { logger, morganMiddleware } from './utils/logger';
+import { document, newDocument } from './openapi';
 
-const app: express.Application = express();
+const app = zodiosApp();
 
 app.use(morganMiddleware);
 app.use(cookieParser());
@@ -45,13 +46,15 @@ jipDataSource.initialize().then(
   },
 );
 
-// Swagger 연결
-const specs = swaggerJsdoc(swaggerOptions);
-app.use(
-  '/swagger',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true }),
-);
+// Swagger (기존)
+app.use('/swagger.json', (_, res) => res.json(document));
+app.use('/swagger', swaggerUi.serveFiles(document));
+app.use('/swagger', swaggerUi.setup(undefined, { swaggerUrl: '/swagger.json', explorer: true }));
+
+// Swagger (신규)
+app.use('/docs.json', (_, res) => res.json(newDocument));
+app.use('/docs', swaggerUi.serveFiles(newDocument));
+app.use('/docs', swaggerUi.setup(undefined, { swaggerUrl: '/docs.json', explorer: true }));
 
 // dev route
 app.use('/api', router);
