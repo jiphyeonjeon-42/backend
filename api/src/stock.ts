@@ -93,8 +93,6 @@ export const endpoints = makeApi([
   },
 ])
 
-export const StockApi = new Zodios(endpoints)
+export const StockClient = new Zodios(endpoints)
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options)
-}
+

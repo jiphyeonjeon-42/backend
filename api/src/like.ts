@@ -87,8 +87,6 @@ export const endpoints = makeApi([
   },
 ])
 
-export const LikeApi = new Zodios(endpoints)
+export const LikeClient = new Zodios(endpoints)
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options)
-}
+
