@@ -1,6 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
-import { paginationMetaSchema } from "./shared/paginationMetaSchema"
+import { paginationMetaSchema } from "./shared/paginationSchema"
 
 const postApiuserscreate_Body = z.object({
   email: z.string(),

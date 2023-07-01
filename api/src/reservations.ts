@@ -1,6 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
-import { paginationMetaSchema } from "./shared/paginationMetaSchema"
+import { paginationMetaSchema } from "./shared/paginationSchema"
 
 const postApireservations_Body = z.object({
   bookInfoId: z.number().int().describe("예약 대상이 되는 책 정보의 id"),

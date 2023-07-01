@@ -12,3 +12,4 @@ export const paginationMetaSchema = z
     totalPages: z.number().int().describe("전체 페이지 수"),
   })
   .describe("페이지네이션 정보");
+

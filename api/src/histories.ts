@@ -1,6 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
-import { paginationMetaSchema } from "./shared/paginationMetaSchema"
+import { paginationMetaSchema } from "./shared/paginationSchema"
 
 const who = z.enum(["all", "my"]).describe("대출/반납의 기록 범위")
 const type = z
