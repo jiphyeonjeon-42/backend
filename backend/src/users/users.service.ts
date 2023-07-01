@@ -11,7 +11,7 @@ export default class UsersService {
     this.usersRepository = new UsersRepository();
   }
 
-  async setOverDueDay(users: models.User[]): Promise<models.User[]> {
+  async withLendingInfo(users: models.User[]): Promise<models.User[]> {
     const usersIdList = users.map((user) => ({ userId: user.id }));
     const lending = await this.usersRepository
       .getLending(usersIdList) as unknown as models.Lending[];
@@ -38,7 +38,7 @@ export default class UsersService {
       { nickname: Like(`%${nicknameOrEmail}%`) },
       { email: Like(`%${nicknameOrEmail}`) },
     ], limit, page);
-    const setItems = await this.setOverDueDay(items);
+    const setItems = await this.withLendingInfo(items);
     const meta: types.Meta = {
       totalItems: count,
       itemCount: setItems.length,
@@ -51,7 +51,7 @@ export default class UsersService {
 
   async searchUserById(id: number) {
     let items = (await this.usersRepository.searchUserBy({ id }, 0, 0))[0];
-    items = await this.setOverDueDay(items);
+    items = await this.withLendingInfo(items);
     return { items };
   }
 
@@ -72,7 +72,7 @@ export default class UsersService {
 
   async searchAllUsers(limit: number, page: number) {
     const [items, count] = await this.usersRepository.searchUserBy(1, limit, page);
-    const setItems = await this.setOverDueDay(items);
+    const setItems = await this.withLendingInfo(items);
     const meta: types.Meta = {
       totalItems: count,
       itemCount: setItems.length,
