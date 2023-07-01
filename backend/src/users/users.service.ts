@@ -11,6 +11,11 @@ export default class UsersService {
     this.usersRepository = new UsersRepository();
   }
 
+  /**
+   * 기존 사용자 배열에 대출과 연체 정보를 추가하여 반환합니다.
+   *
+   * @returns 사용자의 대출 정보를 포함한 사용자 정보 배열
+   */
   async withLendingInfo(users: models.User[]): Promise<models.User[]> {
     const usersIdList = users.map((user) => ({ userId: user.id }));
     const lending = await this.usersRepository
