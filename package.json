@@ -1,0 +1,13 @@
+{
+  "name": "@jiphyeonjeon/workspace",
+  "version": "1.0.0",
+  "author": "The Jiphyeonjeon developers",
+  "license": "ISC",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiphyeonjeon-42/backend.git"
+  },
+
+  "packageManager": "^pnpm@8.0.0"
+}

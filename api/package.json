@@ -1,12 +1,13 @@
 {
   "name": "@jiphyeonjeon/api",
+  "private": true,
   "version": "0.0.1",
   "description": "shared api for jiphyeonjeon online library service",
   "main": "index.js",
   "scripts": {
     "spec": "openapi-zod-client ./spec.yaml -o ./api.stock.client.ts   --api-client-name=jiphyeon --implicit-required=true --complexity-threshold=2 --with-description --group-strategy='tag-file'"
   },
-  "keywords": [],
+  "keywords": ["42seoul", "jiphyeonjeon"],
   "author": "",
   "license": "ISC",
   "dependencies": {
