@@ -1,67 +1,55 @@
+import morgan from 'morgan';
+import path from 'path';
 import {
-  createLogger, transports, format, addColors,
+  addColors,
+  createLogger,
+  format,
+  transports,
 } from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
-import path from 'path';
-import morgan from 'morgan';
+import { logLevelOption } from '../config';
+import {
+  colors,
+  levels,
+} from '../config/logOption';
 
 const {
   combine, timestamp, printf, colorize, errors,
 } = format;
 
-const logDir = '../../logs';
-
-const levels = {
-  error: 0,
-  warn: 1,
-  info: 2,
-  http: 3,
-  debug: 4,
-};
-
-const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'green',
-  http: 'magenta',
-  debug: 'blue',
-};
 addColors(colors);
 
-const level = () => {
-  const env = process.env.NODE_ENV || 'development';
-  const isDevelopment = env === 'development';
-  return isDevelopment ? 'debug' : 'http';
-};
+const logDir = '../../logs';
+const logTimestampFormat = 'YYYY-MM-DD HH:mm:ss:ms';
+const datePattern = 'YYYY-MM-DD';
 
 const logFormat = combine(
   errors({ stack: true }),
-  timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+  timestamp({ format: logTimestampFormat }),
   printf((info) => {
-    if (info.stack) {
-      return `${info.timestamp} ${info.level}: ${info.message} \n Error Stack: ${info.stack}`;
-    }
-    return `${info.timestamp} ${info.level}: ${info.message}`;
+    const message = `${info.timestamp} ${info.level}: ${info.message}`;
+
+    return message + (info.stack ? `\n Error Stack: ${info.stack}` : '');
   }),
 );
 
 const consoleOpts = {
   handleExceptions: true,
-  level: process.env.NODE_ENV === 'production' ? 'error' : 'debug',
+  level: logLevelOption.consoleLogLevel,
   format: combine(
     colorize({ all: true }),
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+    timestamp({ format: logTimestampFormat }),
   ),
 };
 
 const logger = createLogger({
-  level: level(),
+  level: logLevelOption.logLevel,
   levels,
   format: logFormat,
   transports: [
     new WinstonDaily({
       level: 'error',
-      datePattern: 'YYYY-MM-DD',
+      datePattern,
       dirname: path.join(__dirname, logDir, '/error'),
       filename: '%DATE%.error.log',
       maxFiles: 30,
@@ -69,7 +57,7 @@ const logger = createLogger({
     }),
     new WinstonDaily({
       level: 'debug',
-      datePattern: 'YYYY-MM-DD',
+      datePattern,
       dirname: path.join(__dirname, logDir, '/all'),
       filename: '%DATE%.all.log',
       maxFiles: 7,
