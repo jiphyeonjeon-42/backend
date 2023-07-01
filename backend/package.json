@@ -46,7 +46,7 @@
     "typescript": "5.0.4"
   },
   "dependencies": {
-    "@jiphyeonjeon/api": "workspace:^0.0.1",
+    "@jiphyeonjeon/api": "workspace:../api",
     "@slack/web-api": "^6.7.1",
     "@zodios/core": "^10.9.2",
     "@zodios/express": "^10.6.1",

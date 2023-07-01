@@ -27,7 +27,7 @@ importers:
   backend:
     dependencies:
       '@jiphyeonjeon/api':
-        specifier: workspace:^0.0.1
+        specifier: workspace:../api
         version: link:../api
       '@slack/web-api':
         specifier: ^6.7.1
