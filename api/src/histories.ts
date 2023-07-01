@@ -1,5 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
+import { paginationMetaSchema } from "./shared/paginationMetaSchema"
 
 const who = z.enum(["all", "my"]).describe("대출/반납의 기록 범위")
 const type = z
@@ -69,15 +70,7 @@ export const endpoints = makeApi([
           }),
         )
         .describe("검색된 대출 기록들의 목록"),
-      meta: z
-        .object({
-          currentPage: z.number().int().describe("현재 대출 기록 페이지"),
-          itemCount: z.number().int().describe("현재 대출 기록 결과 수"),
-          itemsPerPage: z.number().int().describe("페이지 대출 기록 결과 수"),
-          totalItems: z.number().int().describe("전체 대출 기록 결과 수"),
-          totalPages: z.number().int().describe("전체 대출 기록 페이지 수"),
-        })
-        .describe("대출 기록 수와 관련된 정보"),
+      meta: paginationMetaSchema,
     }),
     errors: [
       {

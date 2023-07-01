@@ -1,5 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
+import { paginationMetaSchema } from "./shared/paginationMetaSchema"
 
 const postApireservations_Body = z.object({
   bookInfoId: z.number().int().describe("예약 대상이 되는 책 정보의 id"),
@@ -167,15 +168,7 @@ export const endpoints = makeApi([
           }),
         )
         .describe("검색된 책들의 목록"),
-      meta: z
-        .object({
-          currentPage: z.number().int().describe("현재 페이지"),
-          itemCount: z.number().int().describe("현재 페이지 검색 결과 수"),
-          itemsPerPage: z.number().int().describe("페이지 당 검색 결과 수"),
-          totalItems: z.number().int().describe("전체 예약 검색 결과 건수"),
-          totalPages: z.number().int().describe("전체 결과 페이지 수"),
-        })
-        .describe("예약 건수와 관련된 정보"),
+      meta: paginationMetaSchema,
     }),
     errors: [
       {

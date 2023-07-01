@@ -1,5 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core"
 import { z } from "zod"
+import { paginationMetaSchema } from "./shared/paginationMetaSchema"
 
 const postApilendings_Body = z.object({
   bookId: z.number().int(),
@@ -157,15 +158,7 @@ export const endpoints = makeApi([
           }),
         )
         .describe("검색된 책들의 목록"),
-      meta: z
-        .object({
-          currentPage: z.number().int().describe("현재 페이지"),
-          itemCount: z.number().int().describe("현재 페이지 검색 결과 수"),
-          itemsPerPage: z.number().int().describe("페이지 당 검색 결과 수"),
-          totalItems: z.number().int().describe("전체 대출 검색 결과 건수"),
-          totalPages: z.number().int().describe("전체 결과 페이지 수"),
-        })
-        .describe("대출 조회 결과에 대한 요약 정보"),
+      meta: paginationMetaSchema,
     }),
     errors: [
       {
