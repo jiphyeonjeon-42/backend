@@ -17,10 +17,9 @@ export default class UsersService {
       .getLending(usersIdList) as unknown as models.Lending[];
 
     return items.map((item: models.User) => {
-      const rtnObj: models.User = Object.assign(item);
-      rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
-      rtnObj.overDueDay = rtnObj.lendings.reduce((acc, cur) => acc + cur.overDueDay, 0);
-      return rtnObj;
+      const lendings = lending.filter((lend) => lend.userId === item.id);
+      const overDueDay = lendings.reduce((acc, cur) => acc + cur.overDueDay, 0);
+      return { ...item, lendings, overDueDay };
     });
   }
 
