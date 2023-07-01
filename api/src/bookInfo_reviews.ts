@@ -47,12 +47,12 @@ export const endpoints = makeApi([
           .optional(),
       },
     ],
-    response: z.object({}),
+    response: z.void(),
     errors: [
       {
         status: 400,
         description: `적절하지 않은 인자값이 들어온 경우의 에러`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },

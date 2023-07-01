@@ -85,7 +85,7 @@ export const endpoints = makeApi([
         schema: postApibookscreate_Body,
       },
     ],
-    response: z.object({}),
+    response: z.void(),
     errors: [
       {
         status: 400,
@@ -140,7 +140,7 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `클라이언트 오류`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -215,7 +215,7 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `query, page, limit 중 하나 이상이 없다.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -326,7 +326,7 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `query, page, limit 중 하나 이상이 없다.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },

@@ -61,17 +61,17 @@ export const endpoints = makeApi([
           .optional(),
       },
     ],
-    response: z.object({}),
+    response: z.void(),
     errors: [
       {
         status: 400,
         description: `적절하지 않은 값`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -93,12 +93,12 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -151,17 +151,17 @@ export const endpoints = makeApi([
           .optional(),
       },
     ],
-    response: z.object({}),
+    response: z.void(),
     errors: [
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -186,17 +186,17 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 404,
         description: `존재하지 않는 reviewsId.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -237,17 +237,17 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `클라이언트 요청이 유효하지 않음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 404,
         description: `존재하지 않는 reviewsId.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },

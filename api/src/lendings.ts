@@ -13,7 +13,6 @@ const patchApilendingsreturn_Body = z.object({
 const sort__3 = z
   .enum(["new", "old"])
   .describe("검색 결과를 정렬할 기준")
-  .optional()
   .default("new")
 const type__2 = z
   .enum(["user", "title", "callSign", "bookId"])
@@ -108,7 +107,6 @@ export const endpoints = makeApi([
           .number()
           .int()
           .describe("검색 결과의 페이지")
-          .optional()
           .default(1),
       },
       {
@@ -118,7 +116,6 @@ export const endpoints = makeApi([
           .number()
           .int()
           .describe("검색 결과 한 페이지당 보여줄 결과물의 개수")
-          .optional()
           .default(5),
       },
       {

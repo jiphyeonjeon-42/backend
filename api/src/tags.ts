@@ -55,7 +55,6 @@ export const endpoints = makeApi([
           .number()
           .int()
           .describe("검색 결과 한 페이지당 보여줄 결과물의 개수.")
-          .optional()
           .default(10),
       },
       {
@@ -139,12 +138,12 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -202,17 +201,17 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 404,
         description: `존재하지 않는 tagsId.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -268,12 +267,12 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },
@@ -298,17 +297,17 @@ export const endpoints = makeApi([
       {
         status: 400,
         description: `잘못된 요청.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 401,
         description: `권한 없음.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
       {
         status: 404,
         description: `존재하지 않는 tagsId.`,
-        schema: z.object({}),
+        schema: z.void(),
       },
     ],
   },

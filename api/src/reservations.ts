@@ -7,7 +7,6 @@ const postApireservations_Body = z.object({
 const filter = z
   .enum(["pending", "expired", "waiting", "all"])
   .describe("조회 범위를 제한하기 위한 필터 옵션")
-  .optional()
   .default("pending")
 
 export const schemas = {
@@ -133,7 +132,7 @@ export const endpoints = makeApi([
       {
         name: "page",
         type: "Query",
-        schema: z.number().int().describe("페이지 수").optional().default(1),
+        schema: z.number().int().describe("페이지 수").default(1),
       },
       {
         name: "limit",
@@ -142,7 +141,6 @@ export const endpoints = makeApi([
           .number()
           .int()
           .describe("한 페이지 표시 개수")
-          .optional()
           .default(5),
       },
       {
