@@ -6,6 +6,9 @@
   "repository": "https://github.com/jiphyeonjeon-42/backend-express.git",
   "author": "jolim, chanykim, tkim, jimin, wocho, seongyle, seunam",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node dist/server.js",
     "build": "npx tsc -p ./tsconfig.prod.json",
