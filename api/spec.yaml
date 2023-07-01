@@ -3056,7 +3056,6 @@ paths:
 
   /api/stock/search:
     get:
-
       description: 책 재고 정보를 검색해 온다.
 
       parameters:

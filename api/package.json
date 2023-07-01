@@ -1,0 +1,20 @@
+{
+  "name": "@jiphyeonjeon/api",
+  "version": "0.0.1",
+  "description": "shared api for jiphyeonjeon online library service",
+  "main": "index.js",
+  "scripts": {
+    "spec": "openapi-zod-client ./spec.yaml -o ./api.stock.client.ts   --api-client-name=jiphyeon --implicit-required=true --complexity-threshold=2 --with-description --group-strategy='tag-file'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zodios/core": "^10.9.2",
+    "openapi-zod-client": "link:../../openapi-zod-client/lib",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "openapi-filter": "^3.2.3"
+  }
+}
