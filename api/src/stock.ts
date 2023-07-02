@@ -13,14 +13,14 @@ export const schemas = {
 export const endpoints = makeApi([
   {
     method: "get",
-    path: "/api/stock/search",
+    path: "/search",
     description: `책 재고 정보를 검색해 온다.`,
     requestFormat: "json",
     parameters: [
       {
         name: "page",
         type: "Query",
-        schema: z.number().int().describe("페이지").optional(),
+        schema: z.number().int().describe("페이지").default(0),
       },
       {
         name: "limit",
@@ -29,7 +29,7 @@ export const endpoints = makeApi([
           .number()
           .int()
           .describe("한 페이지에 들어올 검색결과 수")
-          .optional(),
+          .default(10),
       },
     ],
     response: z.object({
@@ -45,11 +45,11 @@ export const endpoints = makeApi([
             donator: z.string().describe("기부자 닉네임"),
             image: z.string().url().describe("이미지 주소"),
             isbn: z.string().describe("isbn"),
-            pubishedAt: z.string().describe("출판일"),
+            publishedAt: z.string().describe("출판일"),
             publisher: z.string().describe("출판사"),
             status: z.number().describe("책의 상태 정보"),
             title: z.string().describe("책 제목"),
-            updatedAt: z.string().describe("책 정보의 마지막 변경 날짜"),
+            updatedAt: z.date().describe("책 정보의 마지막 변경 날짜"),
           }),
         )
         .describe("재고 정보 목록"),
@@ -65,7 +65,7 @@ export const endpoints = makeApi([
   },
   {
     method: "patch",
-    path: "/api/stock/update",
+    path: "/update",
     description: `책 재고를 확인하고 업데이트`,
     requestFormat: "json",
     parameters: [
@@ -78,7 +78,7 @@ export const endpoints = makeApi([
     response: z.void(),
     errors: [
       {
-        status: 307,
+        status: 400,
         description: `update 할 수 없는 bookId`,
         schema: z.void(),
       },

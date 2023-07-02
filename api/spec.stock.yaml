@@ -1,0 +1,134 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /api/stock/search:
+    get:
+      x-internal: true
+      description: 책 재고 정보를 검색해 온다.
+      parameters:
+        - description: 페이지
+          in: query
+          name: page
+          schema:
+            type: integer
+        - description: 한 페이지에 들어올 검색결과 수
+          in: query
+          name: limit
+          schema:
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    description: 재고 정보 목록
+                    items:
+                      properties:
+                        author:
+                          description: 저자
+                          example: 김선우
+                          type: string
+                        bookId:
+                          description: 도서 번호
+                          example: 3
+                          type: integer
+                        bookInfoId:
+                          description: 도서 정보 번호
+                          example: 2
+                          type: integer
+                        callSign:
+                          description: 책의 고유 호출 번호
+                          example: C5.13.v1.c2
+                          type: string
+                        category:
+                          description: 책의 카테고리 정보
+                          example: 네트워크
+                          type: string
+                        categoryId:
+                          description: 책의 캬테고리 번호
+                          example: 2
+                          type: number
+                        donator:
+                          description: 기부자 닉네임
+                          example: ""
+                          type: string
+                        image:
+                          description: 이미지 주소
+                          example: https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg
+                          format: uri
+                          type: string
+                        isbn:
+                          description: isbn
+                          example: "9788998756444"
+                          format: number
+                          type: string
+                        pubishedAt:
+                          description: 출판일
+                          example: 20220522
+                          format: date
+                          type: string
+                        publisher:
+                          description: 출판사
+                          example: 한빛아카데미
+                          type: string
+                        status:
+                          description: 책의 상태 정보
+                          example: 0
+                          type: number
+                        title:
+                          description: 책 제목
+                          example: TCP IP 윈도우 소켓 프로그래밍
+                          type: string
+                        updatedAt:
+                          description: 책 정보의 마지막 변경 날짜
+                          example: 2022-07-09-22:49:33
+                          format: date
+                          type: string
+                      type: object
+                    type: array
+                  meta:
+                    description: 재고 수와 관련된 정보
+                    properties:
+                      currentPage:
+                        description: 현재 페이지
+                        example: 1
+                        type: integer
+                      itemCount:
+                        description: 현재 페이지 검색 결과 수
+                        example: 1
+                        type: integer
+                      itemsPerPage:
+                        description: 페이지 당 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalItems:
+                        description: 전체 검색 결과 수
+                        example: 1
+                        type: integer
+                      totalPages:
+                        description: 전체 결과 페이지 수
+                        example: 1
+                        type: integer
+                    type: object
+                type: object
+          description: 검색 결과를 반환한다.
+        "500":
+          content:
+            application/json:
+              schema:
+                description: error description
+                properties:
+                  errorCode:
+                    description: 에러코드
+                    example: 1
+                    type: number
+                type: object
+          description: Server Error
+      tags:
+        - stock

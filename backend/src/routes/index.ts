@@ -13,9 +13,7 @@ import * as tags from './tags.routes';
 const router = Router();
 
 //  ELB healthcheck 를 위한 /api/health endpoint
-router.get('/health', (req, res) => {
-  res.status(200).send();
-});
+router.get('/health', (_, res) => res.status(200).send());
 router.use(auth.path, auth.router);
 router.use(books.path, books.router);
 router.use(lendings.path, lendings.router);

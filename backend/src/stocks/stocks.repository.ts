@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   LessThan,
   QueryRunner, Repository,
@@ -5,7 +6,11 @@ import {
 import { startOfDay, addDays } from 'date-fns';
 import jipDataSource from '../app-data-source';
 import book from '../entity/entities/Book';
-import VStock from '../entity/entities/VStock';
+import { VStock } from '../entity/entities/VStock';
+
+export class StockNotFoundError extends Error {
+  constructor(bookId: number) { super(`Stock with id ${bookId} not found`); }
+}
 
 class StocksRepository extends Repository<book> {
   private readonly vStock: Repository<VStock>;
@@ -15,13 +20,10 @@ class StocksRepository extends Repository<book> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(book, entityManager);
 
-    this.vStock = new Repository<VStock>(
-      VStock,
-      entityManager,
-    );
+    this.vStock = new Repository(VStock, entityManager);
   }
 
-  async getAllStocksAndCount(limit:number, page:number)
+  async getAllStocksAndCount(limit: number, page: number)
   : Promise<[VStock[], number]> {
     const today = startOfDay(new Date());
     const [items, totalItems] = await this.vStock
@@ -35,16 +37,21 @@ class StocksRepository extends Repository<book> {
     return [items, totalItems];
   }
 
-  async getStockById(bookId: number) {
+  async getStockById(bookId: number): Promise<VStock | StockNotFoundError> {
     const stock = await this.vStock
       .findOneBy({ bookId });
-    if (stock === null) { throw new Error('701'); }
-    return stock;
+
+    return stock ?? new StockNotFoundError(bookId);
   }
 
-  async updateBook(bookId: number) {
-    await this
+  async updateBook(bookId: number): Promise<null | StockNotFoundError> {
+    const result = await this
       .update(bookId, { updatedAt: new Date() });
+
+    if (result.affected === 0) {
+      return new StockNotFoundError(bookId);
+    }
+    return null;
   }
 }
 export default StocksRepository;

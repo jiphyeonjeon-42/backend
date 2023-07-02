@@ -13,3 +13,11 @@ export const paginationMetaSchema = z
   })
   .describe("페이지네이션 정보");
 
+export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
+
+export const positiveInt = z.coerce.number().int().nonnegative();
+
+export type Sort = 'ASC' | 'DESC';
+export const sortSchema = z.string().toUpperCase()
+  .refine((s): s is Sort => s === 'ASC' || s === 'DESC')
+  .default('DESC' as const);

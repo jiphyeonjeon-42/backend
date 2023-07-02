@@ -1,0 +1,33 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.11
+paths:
+  /pet:
+    put:
+      tags:
+        - pet
+      description: Update an existing pet by Id
+      operationId: updatePet
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestOptions"
+components:
+  schemas:
+    RequestOptions:
+      type: object
+      properties:
+        temperature:
+          type: number
+          description: Temperature of the model. Higher values means more creative responses. A value of zero always provides the same output for a given input - we trim your cost by 5x if you do so, as we can cache the output and pass on the savings to you.
+          example: 0.5
+          minimum: 0
+          maximum: 1
+          default: 0
+      default:
+        temperature: 0
+        model: gpt-3.5-turbo

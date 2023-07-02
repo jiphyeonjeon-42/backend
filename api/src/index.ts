@@ -10,3 +10,5 @@ export { endpoints as ReviewsApi, ReviewsClient } from "./reviews"
 export { endpoints as StockApi, StockClient } from "./stock"
 export { endpoints as TagsApi, TagsClient } from "./tags"
 export { endpoints as UsersApi, UsersClient } from "./users"
+
+export * from "./shared"

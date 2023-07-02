@@ -1,11 +1,12 @@
-import { Router } from 'express';
+import { zodiosRouter } from '@zodios/express';
+import { StockApi } from '@jiphyeonjeon/api';
 import { stockSearch, stockUpdate } from '../stocks/stocks.controller';
 
 export const path = '/stock';
 
-export const router = Router();
-router
+export const router = zodiosRouter(StockApi);
 
+router
 /**
  * @openapi
  * /api/stock/search:
