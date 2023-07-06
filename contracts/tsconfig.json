@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "buildOptions": {
+    "incremental": true
+  },
+  "compilerOptions": {
+    "outDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "declaration": true,
+    "declarationMap": true
+  }
+}
