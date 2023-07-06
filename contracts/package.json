@@ -1,0 +1,21 @@
+{
+  "name": "@jiphyeonjeon-42/contracts",
+  "version": "0.0.3-alpha",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "dev": "npx tsc -w"
+  },
+  "dependencies": {
+    "@ts-rest/core": "^3.26.4",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/node": "18.16.1",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.1.6"
+  }
+}

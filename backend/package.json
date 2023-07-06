@@ -1,5 +1,5 @@
 {
-  "name": "42-jiphyeonjeon-backend-3rd",
+  "name": "@jiphyeonjeon-42/backend",
   "version": "1.0.0",
   "description": "3rd of 42-jiphyeonjeon web service backend",
   "main": "./dist/server.js",
@@ -11,9 +11,9 @@
   },
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register --project ./tsconfig.prod.json src/server.ts",
-    "build": "echo '번들러 사용중이지 않아 빌드시 tsconfig paths 적용이 불가합니다' && exit 1",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec ts-node -r tsconfig-paths/register src/server.ts",
-    "prod": "pnpm start",
+    "build": "pnpm --filter='@jiphyeonjeon-42/contracts' build",
+    "dev": "nodemon --watch src --watch ../contracts/dist --exec ts-node src/server.ts",
+    "prod": "pnpm build && pnpm start",
     "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
   },
@@ -26,15 +26,15 @@
     "@types/jest": "^29.5.2",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.4",
-    "@types/node": "^18.16.1",
+    "@types/node": "18.16.1",
     "@types/node-schedule": "^2.1.0",
     "@types/passport": "^1.0.12",
     "@types/passport-jwt": "^3.0.8",
     "@types/swagger-jsdoc": "^6.0.1",
     "@types/swagger-ui-express": "^4.1.3",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
-    "eslint": "^8.43.0",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "eslint": "^8.45.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
@@ -43,7 +43,7 @@
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "5.0.4"
+    "typescript": "5.1.6"
   },
   "dependencies": {
     "@slack/web-api": "^6.7.1",
