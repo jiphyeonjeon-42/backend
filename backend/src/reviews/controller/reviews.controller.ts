@@ -16,7 +16,7 @@ import {
 import ErrorResponse from '../../utils/error/errorResponse';
 import * as errorCode from '../../utils/error/errorCode';
 
-const reviewsService = new ReviewsService();
+export const reviewsService = new ReviewsService();
 
 export const createReviews: RequestHandler = async (req, res, next) => {
   const parsedId = userSchema.safeParse(req.user);

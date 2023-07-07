@@ -4,10 +4,17 @@ import express from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { contract } from '@jiphyeonjeon-42/contracts';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { generateOpenApi } from '@ts-rest/open-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { createExpressEndpoints } from '@ts-rest/express';
 import jipDataSource from './app-data-source';
 import { FtAuthentication, FtStrategy, JwtStrategy } from './auth/auth.strategy';
 import { connectMode } from './config';
 import router from './routes';
+import routerV2 from './routes/v2';
 import swaggerOptions from './swagger/swagger';
 import errorConverter from './utils/error/errorConverter';
 import errorHandler from './utils/error/errorHandler';
@@ -47,14 +54,33 @@ jipDataSource.initialize().then(
 
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
+app.get('/swagger.json', (_req, res) => res.json(specs));
 app.use(
   '/swagger',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true }),
+  swaggerUi.serveFiles(undefined, { swaggerUrl: '/swagger.json' }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/swagger.json' }),
+);
+
+const v2Specs = generateOpenApi(contract, {
+  info: {
+    title: 'Reviews Patch API (WIP)',
+    version: '0.0.2-alpha',
+  },
+}, {
+  setOperationId: true,
+});
+app.get('/docs.json', (_req, res) => res.json(v2Specs));
+app.use(
+  '/docs',
+  swaggerUi.serveFiles(undefined, { swaggerUrl: '/docs.json' }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/docs.json' }),
 );
 
 // dev route
 app.use('/api', router);
+
+// dev/v2 route
+createExpressEndpoints(contract, routerV2, app);
 
 // 에러 핸들러
 app.use(errorConverter);
