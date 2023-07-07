@@ -8,14 +8,14 @@
     "dev": "npx tsc -w"
   },
   "dependencies": {
-    "@ts-rest/core": "^3.26.4",
-    "zod": "^3.21.4"
+    "@anatine/zod-openapi": "^2.0.1",
+    "openapi3-ts": "^4.1.2"
   },
   "devDependencies": {
-    "@types/node": "18.16.1",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
-    "typescript": "^5.1.6"
+    "@apidevtools/swagger-cli": "^4.0.4",
+    "openapi-endpoint-trimmer": "^2.0.0"
   }
 }
