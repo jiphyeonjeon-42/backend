@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -8,9 +8,21 @@ importers:
 
   backend:
     dependencies:
+      '@jiphyeonjeon-42/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@slack/web-api':
         specifier: ^6.7.1
         version: 6.7.1
+      '@ts-rest/core':
+        specifier: ^3.26.4
+        version: 3.26.4(zod@3.21.4)
+      '@ts-rest/express':
+        specifier: ^3.26.4
+        version: 3.26.4(@ts-rest/core@3.26.4)(express@4.17.2)(zod@3.21.4)
+      '@ts-rest/open-api':
+        specifier: ^3.26.4
+        version: 3.26.4(@ts-rest/core@3.26.4)(zod@3.21.4)
       axios:
         specifier: ^0.27.2
         version: 0.27.2
@@ -222,6 +234,17 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
+
+  /@anatine/zod-openapi@1.14.2(openapi3-ts@2.0.2)(zod@3.21.4):
+    resolution: {integrity: sha512-q0qHfnuNYVKu0Swrnnvfj9971AEyW7c8v9jCOZGCl5ZbyGMNG4RPyJkRcMi/JC8CRfdOe0IDfNm1nNsi2avprg==}
+    peerDependencies:
+      openapi3-ts: ^2.0.0 || ^3.0.0
+      zod: ^3.20.0
+    dependencies:
+      openapi3-ts: 2.0.2
+      ts-deepmerge: 6.2.0
+      zod: 3.21.4
+    dev: false
 
   /@apidevtools/json-schema-ref-parser@9.1.2:
     resolution: {integrity: sha512-r1w81DpR+KyRWd3f+rk6TNqMgedmAxZP5v5KWlXQWlgMUUtyEJch0DKEci1SorPMiSeM8XPl7MZ3miJ60JIpQg==}
@@ -1159,6 +1182,33 @@ packages:
       zod:
         optional: true
     dependencies:
+      zod: 3.21.4
+    dev: false
+
+  /@ts-rest/express@3.26.4(@ts-rest/core@3.26.4)(express@4.17.2)(zod@3.21.4):
+    resolution: {integrity: sha512-F9Xv25E/B3y4st1dWg4xfQO7i3hF3sNzgytJ7Uyh/s9AT+LM4Qgyj3g5xKK4gvSV6hG2aCzoQzuI7NkCN2wYIQ==}
+    peerDependencies:
+      '@ts-rest/core': 3.26.4
+      express: ^4.0.0
+      zod: ^3.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      '@ts-rest/core': 3.26.4(zod@3.21.4)
+      express: 4.17.2
+      zod: 3.21.4
+    dev: false
+
+  /@ts-rest/open-api@3.26.4(@ts-rest/core@3.26.4)(zod@3.21.4):
+    resolution: {integrity: sha512-RopH8p9APBVPAap6ZW9uCvfOGecSc4jud2sug9ERZvqd6KTDR8/QmMe0UHplFwdGEs+QOCtY0L2PWnHMIQ6UVg==}
+    peerDependencies:
+      '@ts-rest/core': 3.26.4
+      zod: ^3.0.0
+    dependencies:
+      '@anatine/zod-openapi': 1.14.2(openapi3-ts@2.0.2)(zod@3.21.4)
+      '@ts-rest/core': 3.26.4(zod@3.21.4)
+      openapi3-ts: 2.0.2
       zod: 3.21.4
     dev: false
 
@@ -5257,6 +5307,12 @@ packages:
     resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
     dev: false
 
+  /openapi3-ts@2.0.2:
+    resolution: {integrity: sha512-TxhYBMoqx9frXyOgnRHufjQfPXomTIHYKhSKJ6jHfj13kS8OEIhvmE8CTuQyKtjjWttAjX5DPxM1vmalEpo8Qw==}
+    dependencies:
+      yaml: 1.10.2
+    dev: false
+
   /optionator@0.8.3:
     resolution: {integrity: sha512-+IW9pACdk3XWmmTXG8m3upGUJst5XRGzxMRjXzAuJ1XnIFNvfhjjIuYkDvysnPQ7qzqVzLt78BCruntqRhWQbA==}
     engines: {node: '>= 0.8.0'}
@@ -6608,6 +6664,11 @@ packages:
       typescript: 5.1.6
     dev: true
 
+  /ts-deepmerge@6.2.0:
+    resolution: {integrity: sha512-2qxI/FZVDPbzh63GwWIZYE7daWKtwXZYuyc8YNq0iTmMUwn4mL0jRLsp6hfFlgbdRSR4x2ppe+E86FnvEpN7Nw==}
+    engines: {node: '>=14.13.1'}
+    dev: false
+
   /ts-essentials@7.0.3(typescript@5.1.6):
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
     peerDependencies:
@@ -7307,6 +7368,11 @@ packages:
 
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
+
+  /yaml@1.10.2:
+    resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
+    engines: {node: '>= 6'}
+    dev: false
 
   /yaml@2.0.0-1:
     resolution: {integrity: sha512-W7h5dEhywMKenDJh2iX/LABkbFnBxasD27oyXWDS/feDsxiw0dD5ncXdYXgkvAsXIY2MpW/ZKkr9IU30DBdMNQ==}
