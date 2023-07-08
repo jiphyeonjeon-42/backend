@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:18-alpine
 # https://github.com/pnpm/pnpm/issues/4495#issuecomment-1317831712
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"

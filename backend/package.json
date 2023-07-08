@@ -7,7 +7,7 @@
   "author": "jolim, chanykim, tkim, jimin, wocho, seongyle, seunam",
   "license": "MIT",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.3.1 || >=18.16.1 <20.0.0"
   },
   "scripts": {
     "start": "node dist/server.js",
@@ -26,7 +26,7 @@
     "@types/jest": "^29.5.2",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/morgan": "^1.9.4",
-    "@types/node": "^20.3.1",
+    "@types/node": "^18.16.1",
     "@types/node-schedule": "^2.1.0",
     "@types/passport": "^1.0.12",
     "@types/passport-jwt": "^3.0.8",
