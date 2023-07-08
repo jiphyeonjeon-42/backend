@@ -21,7 +21,7 @@ type Disabled = 0 | 1 | -1;
 const disabledSchema = z.coerce.number().int().refine(
   (n): n is Disabled => [-1, 0, 1].includes(n),
   (n) => ({ message: `0: 공개, 1: 비공개, -1: 전체 리뷰, 입력값: ${n}` }),
-);
+).default(-1);
 
 export const queryOptionSchema = z.object({
   page: positiveInt.default(0),
@@ -29,8 +29,13 @@ export const queryOptionSchema = z.object({
   sort: sortSchema,
 });
 
+export const booleanLikeSchema = z.union([
+  z.boolean(),
+  z.string().toLowerCase().refine((s) => s === 'true'),
+]);
+
 export const getReviewsSchema = z.object({
-  isMyReview: z.boolean().default(false),
+  isMyReview: booleanLikeSchema.catch(false),
   titleOrNickname: z.string().optional(),
   disabled: disabledSchema,
 }).merge(queryOptionSchema);
