@@ -147,40 +147,44 @@ class BooksRepository extends Repository<Book> {
       .getRawOne();
   }
 
-  async updateBookInfo(bookInfo: UpdateBookInfo): Promise<void> {
-    await this.bookInfo.update(bookInfo.id, bookInfo as BookInfo);
+  async updateBookInfo({
+    id, categoryId, ...rest
+  }: UpdateBookInfo): Promise<void> {
+    await this.bookInfo.update(id, {
+      id,
+      categoryId: Number(categoryId),
+      ...rest,
+    });
   }
 
   async updateBook(book: UpdateBook): Promise<void> {
     await this.books.update(book.id, book as Book);
   }
 
-  async createBookInfo(
-    target: CreateBookInfo,
-  ): Promise<BookInfo> {
-    const bookInfo: BookInfo = {
-      title: target.title,
-      author: target.author,
-      publisher: target.publisher,
-      publishedAt: target.pubdate,
-      categoryId: Number(target.categoryId),
-      isbn: target.isbn,
-      image: target.image,
-    };
-    return this.bookInfo.save(bookInfo);
+  async createBookInfo({
+    title, author, publisher, pubdate, categoryId, isbn, image,
+  }: CreateBookInfo): Promise<BookInfo> {
+    return this.bookInfo.save({
+      title,
+      author,
+      publisher,
+      publishedAt: pubdate,
+      categoryId: Number(categoryId),
+      isbn,
+      image,
+    });
   }
 
-  async createBook(
-    target: CreateBookInfo,
-  ): Promise<void> {
-    const book: Book = {
-      donator: target.donator,
-      donatorId: target.donatorId,
-      callSign: target.callSign,
+  async createBook({
+    donator, donatorId, callSign, infoId,
+  }: CreateBookInfo): Promise<void> {
+    await this.books.save({
+      donator,
+      donatorId,
+      callSign,
+      infoId,
       status: 0,
-      infoId: target.infoId,
-    };
-    await this.books.save(book);
+    });
   }
 }
 

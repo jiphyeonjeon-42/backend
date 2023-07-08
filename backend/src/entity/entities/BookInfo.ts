@@ -12,16 +12,16 @@ import SuperTag from './SuperTag';
 @Entity('book_info')
 class BookInfo {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-    id?: number;
+    id: number;
 
   @Column('varchar', { name: 'title', length: 255 })
-    title?: string;
+    title: string;
 
   @Column('varchar', { name: 'author', length: 255 })
-    author?: string;
+    author: string;
 
   @Column('varchar', { name: 'publisher', length: 255 })
-    publisher?: string;
+    publisher: string;
 
   @Column('varchar', { name: 'isbn', nullable: true, length: 255 })
     isbn?: string | null;
@@ -36,38 +36,38 @@ class BookInfo {
     name: 'createdAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-    createdAt?: Date;
+    createdAt: Date;
 
   @Column('datetime', {
     name: 'updatedAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-    updatedAt?: Date;
+    updatedAt: Date;
 
   @Column('int', { name: 'categoryId' })
-    categoryId?: number;
+    categoryId: number;
 
   @OneToMany(() => Book, (book) => book.info)
-    books?: Book[];
+    books: Book[];
 
   @ManyToOne(() => Category, (category) => category.bookInfos, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'categoryId', referencedColumnName: 'id' }])
-    category?: Category;
+    category: Category;
 
   @OneToMany(() => Likes, (likes) => likes.bookInfo)
-    likes?: Likes[];
+    likes: Likes[];
 
   @OneToMany(() => Reservation, (reservation) => reservation.bookInfo)
-    reservations?: Reservation[];
+    reservations: Reservation[];
 
   @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
-    reviews?: Reviews[];
+    reviews: Reviews[];
 
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
-    superTags?: SuperTag[];
+    superTags: SuperTag[];
 }
 
 export default BookInfo;

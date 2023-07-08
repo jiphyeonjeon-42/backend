@@ -42,7 +42,7 @@ export type UpdateBookInfo = {
   title: string;
   author: string;
   publisher: string;
-  publishedAt: string | Date;
+  publishedAt: string;
   image: string;
   categoryId?: string;
 }
