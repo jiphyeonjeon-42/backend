@@ -11,7 +11,7 @@ import Reservation from './Reservation';
 
 class Book {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-    id?: number;
+    id: number;
 
   @Column('varchar', { name: 'donator', nullable: true, length: 255 })
     donator: string | null;
@@ -26,7 +26,7 @@ class Book {
     name: 'createdAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-    createdAt?: Date;
+    createdAt: Date;
 
   @Column()
     infoId: number;
