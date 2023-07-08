@@ -98,6 +98,9 @@ importers:
       swagger-ui-express:
         specifier: ^4.3.0
         version: 4.3.0(express@4.17.2)
+      ts-pattern:
+        specifier: ^5.0.1
+        version: 5.0.1
       tsconfig-paths:
         specifier: ^4.1.1
         version: 4.1.1
@@ -6740,6 +6743,10 @@ packages:
       typescript: 5.1.6
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+
+  /ts-pattern@5.0.1:
+    resolution: {integrity: sha512-ZyNm28Lsg34Co5DS3e9DVyjlX2Y+2exkI4jqTKyU+9/OL6Y2fKOOuL8i+7no71o74C6mVS+UFoP3ekM3iCT1HQ==}
+    dev: false
 
   /tsconfig-paths@3.14.2:
     resolution: {integrity: sha512-o/9iXgCYc5L/JxCHPe3Hvh8Q/2xm5Z+p18PESBU6Ff33695QnCHBEjcytY2q19ua7Mbl/DavtBOLq+oG0RCL+g==}

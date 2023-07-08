@@ -76,6 +76,7 @@
     "reflect-metadata": "^0.1.13",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0",
+    "ts-pattern": "^5.0.1",
     "tsconfig-paths": "^4.1.1",
     "typeorm": "^0.3.11",
     "typeorm-model-generator": "^0.4.6",
