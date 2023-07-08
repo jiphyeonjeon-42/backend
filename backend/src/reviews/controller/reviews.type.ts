@@ -31,7 +31,7 @@ export const queryOptionSchema = z.object({
 
 export const booleanLikeSchema = z.union([
   z.boolean(),
-  z.string().toLowerCase().refine((s) => s === 'true'),
+  z.enum(['true', 'false']).transform((v) => v === 'true'),
 ]);
 
 export const getReviewsSchema = z.object({
