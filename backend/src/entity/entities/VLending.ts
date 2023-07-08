@@ -21,37 +21,37 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export class VLending {
   @ViewColumn()
-  id: number;
+    id: number;
 
   @ViewColumn()
-  lendingCondition: string;
+    lendingCondition: string;
 
   @ViewColumn()
-  login: string;
+    login: string;
 
   @ViewColumn()
-  penaltyDays: number;
+    penaltyDays: number;
 
   @ViewColumn()
-  bookId: number
+    bookId: number;
 
   @ViewColumn()
-  callSign: string;
+    callSign: string;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  createdAt: Date;
+    createdAt: Date;
 
   @ViewColumn()
-  returnedAt: Date;
+    returnedAt: Date;
 
   @ViewColumn()
-  dueDate: Date;
+    dueDate: Date;
 }
 
 export default VLending;

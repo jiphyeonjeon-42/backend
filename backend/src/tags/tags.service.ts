@@ -27,7 +27,6 @@ export class TagsService {
   }
 
   async createDefaultTags(userId: number, bookInfoId: number, content: string) {
-    
     let defaultTagsInsertion: superDefaultTag;
     try {
       await this.queryRunner.startTransaction();

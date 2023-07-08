@@ -12,13 +12,13 @@ import BookInfo from './BookInfo';
 @Entity('category', { schema: '42library' })
 class Category {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-  id: number;
+    id: number;
 
   @Column('varchar', { name: 'name', unique: true, length: 255 })
-  name: string;
+    name: string;
 
   @OneToMany(() => BookInfo, (bookInfo) => bookInfo.category)
-  bookInfos: BookInfo[];
+    bookInfos: BookInfo[];
 }
 
 export default Category;

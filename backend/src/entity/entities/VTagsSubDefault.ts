@@ -24,37 +24,37 @@ import User from './User';
 })
 export class VTagsSubDefault {
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  id: number;
+    id: number;
 
   @ViewColumn()
-  createdAt: string;
+    createdAt: string;
 
   @ViewColumn()
-  login: string;
+    login: string;
 
   @ViewColumn()
-  content: string;
+    content: string;
 
   @ViewColumn()
-  superTagId: number;
+    superTagId: number;
 
   @ViewColumn()
-  superContent: string;
+    superContent: string;
 
   @ViewColumn()
-  isPublic: boolean;
+    isPublic: boolean;
 
   @ViewColumn()
-  isDeleted: boolean;
+    isDeleted: boolean;
 
   @ViewColumn()
-  visibility: string;
+    visibility: string;
 }
 
 export default VTagsSubDefault;

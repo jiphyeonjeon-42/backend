@@ -16,49 +16,49 @@ import BookInfo from './BookInfo';
 @Entity('super_tag', { schema: 'jip_dev' })
 export default class SuperTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-  id: number;
+    id: number;
 
   @Column('int', { name: 'userId' })
-  userId: number;
+    userId: number;
 
   @Column('int', { name: 'bookInfoId' })
-  bookInfoId: number;
+    bookInfoId: number;
 
   @Column('datetime', {
     name: 'createdAt',
     default: () => 'current_timestamp(6)',
   })
-  createdAt: Date;
+    createdAt: Date;
 
   @Column('datetime', {
     name: 'updatedAt',
     default: () => 'current_timestamp(6)',
   })
-  updatedAt: Date;
+    updatedAt: Date;
 
   @Column('tinyint', { name: 'isDeleted', default: () => '0' })
-  isDeleted: number;
+    isDeleted: number;
 
   @Column('int', { name: 'updateUserId' })
-  updateUserId: number;
+    updateUserId: number;
 
   @Column('varchar', { name: 'content', length: 42 })
-  content: string;
+    content: string;
 
   @OneToMany(() => SubTag, (subTag) => subTag.superTag)
-  subTags: SubTag[];
+    subTags: SubTag[];
 
   @ManyToOne(() => User, (user) => user.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+    user: User;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-  bookInfo: BookInfo;
+    bookInfo: BookInfo;
 }
