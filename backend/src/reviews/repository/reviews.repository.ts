@@ -1,4 +1,8 @@
-import { Like, QueryRunner, Repository } from 'typeorm';
+import {
+  FindOptionsWhere, Like, QueryRunner, Repository,
+} from 'typeorm';
+import { P, match } from 'ts-pattern';
+import { deepEqual } from 'node:assert/strict';
 import jipDataSource from '../../app-data-source';
 import Reviews from '../../entity/entities/Reviews';
 import * as errorCode from '../../utils/error/errorCode';
@@ -71,7 +75,8 @@ export default class ReviewsRepository extends Repository<Reviews> {
     return ret;
   }
 
-  async getReviewsCounts(
+  /** @deprecated {@link getReviewsCounts}을 사용해주세요. */
+  async getReviewsCountsOld(
     reviewerId: number,
     isMyReview: boolean,
     titleOrNickname: string,
@@ -91,7 +96,27 @@ export default class ReviewsRepository extends Repository<Reviews> {
       reviews.andWhere({ disabled });
     }
     const ret = await reviews.getRawOne();
-    return ret.counts;
+    return parseInt(ret.counts, 10);
+  }
+
+  /** {@link getReviewsCountsOld}와 쿼리 결과가 다르다면 scarf005를 asignee로 버그 리포트를 작성해주세요. */
+  async getReviewsCounts(
+    reviewerId: number,
+    isMyReview: boolean,
+    titleOrNickname: string,
+    disabled: -1 | 0 | 1,
+  ): Promise<number> {
+    const where = ReviewsRepository.searchOptions(
+      reviewerId,
+      isMyReview,
+      titleOrNickname,
+      disabled,
+    );
+
+    const count = await this.count({ relations: { user: true, bookInfo: true }, where });
+    const old = await this.getReviewsCountsOld(reviewerId, isMyReview, titleOrNickname, disabled);
+    deepEqual(count, old);
+    return count;
   }
 
   async getReviewsUserId(reviewsId : number): Promise<number> {
@@ -137,5 +162,34 @@ export default class ReviewsRepository extends Repository<Reviews> {
         disabledUserId: () => `IF(disabled=FALSE, NULL, ${userId})`,
       },
     );
+  }
+
+  static searchOptions(
+    reviewerId: number,
+    isMyReview: boolean,
+    titleOrNickname: string,
+    disabled: -1 | 0 | 1,
+  ): FindOptionsWhere<Reviews> | FindOptionsWhere<Reviews>[] {
+    const base = {
+      isDeleted: false,
+      disabled: disabled !== -1 ? !!disabled : undefined,
+    } satisfies FindOptionsWhere<Reviews>;
+
+    const byUserId = () => ({
+      ...base,
+      userId: reviewerId,
+    }) satisfies FindOptionsWhere<Reviews>;
+
+    const byTitleOrNickname = () => [
+      { ...base, bookInfo: { title: Like(`%${titleOrNickname}%`) } },
+      { ...base, user: { nickname: Like(`%${titleOrNickname}%`) } },
+    ] satisfies FindOptionsWhere<Reviews>[];
+
+    const where = match({ isMyReview, titleOrNickname })
+      .with({ isMyReview: true }, byUserId)
+      .with({ isMyReview: false, titleOrNickname: P.string.minLength(1) }, byTitleOrNickname)
+      .otherwise(() => base);
+
+    return where;
   }
 }
