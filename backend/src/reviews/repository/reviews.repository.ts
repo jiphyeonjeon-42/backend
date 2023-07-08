@@ -9,6 +9,7 @@ import * as errorCode from '../../utils/error/errorCode';
 import BookInfo from '../../entity/entities/BookInfo';
 import User from '../../entity/entities/User';
 import ErrorResponse from '../../utils/error/errorResponse';
+import * as DTO from '../../DTO';
 
 export default class ReviewsRepository extends Repository<Reviews> {
   private readonly bookInfoRepo: Repository<BookInfo>;
@@ -38,7 +39,8 @@ export default class ReviewsRepository extends Repository<Reviews> {
     });
   }
 
-  async getReviewsPage(
+  /** @deprecated {@link getReviewsPage}를 사용해주세요. */
+  async getReviewsPageOld(
     reviewerId: number,
     isMyReview: boolean,
     titleOrNickname :string,
@@ -46,7 +48,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     page: number,
     sort: 'ASC' | 'DESC' | undefined,
     limit: number,
-  ): Promise<Reviews[]> {
+  ): Promise<DTO.Review[]> {
     const reviews = this.createQueryBuilder('reviews')
       .select('reviews.id', 'reviewsId')
       .addSelect('reviews.userId', 'reviewerId')
@@ -71,8 +73,46 @@ export default class ReviewsRepository extends Repository<Reviews> {
     }
     const ret = await reviews.offset(page * limit)
       .limit(limit)
-      .getRawMany<Reviews>();
+      .getRawMany();
     return ret;
+  }
+
+  /** {@link getReviewsPageOld}와 쿼리 결과가 다르다면 scarf005를 asignee로 버그 리포트를 작성해주세요. */
+  async getReviewsPage(
+    reviewerId: number,
+    isMyReview: boolean,
+    titleOrNickname: string,
+    disabled: 0 | 1 | -1,
+    page: number,
+    sort: 'ASC' | 'DESC',
+    limit: number,
+  ): Promise<Reviews[]> {
+    const where = ReviewsRepository.searchOptions(
+      reviewerId,
+      isMyReview,
+      titleOrNickname,
+      disabled,
+    );
+
+    const reviews = await this.find({
+      relations: { user: true, bookInfo: true },
+      select: {
+        id: true,
+        userId: true,
+        bookInfoId: true,
+        content: true,
+        createdAt: true,
+        disabled: true,
+        bookInfo: { title: true },
+        user: { nickname: true, intraId: true },
+      },
+      order: { id: sort },
+      where,
+      take: limit,
+      skip: page * limit,
+    });
+
+    return reviews;
   }
 
   /** @deprecated {@link getReviewsCounts}을 사용해주세요. */

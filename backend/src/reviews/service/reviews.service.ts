@@ -1,5 +1,7 @@
+import { deepEqual } from 'node:assert/strict';
 import * as errorCheck from './utils/errorCheck';
 import ReviewsRepository from '../repository/reviews.repository';
+import * as DTO from '../../DTO';
 
 export default class ReviewsService {
   private readonly reviewsRepository : ReviewsRepository;
@@ -17,12 +19,12 @@ export default class ReviewsService {
     reviewerId: number,
     isMyReview: boolean,
     titleOrNickname: string,
-    disabled: number,
+    disabled: -1 | 0 | 1,
     page: number,
     sort: 'ASC' | 'DESC',
     limit: number,
-  ) {
-    const items = await this.reviewsRepository.getReviewsPage(
+  ): Promise<{ items: DTO.Review[], meta: DTO.Meta }> {
+    const itemsOld = await this.reviewsRepository.getReviewsPageOld(
       reviewerId,
       isMyReview,
       titleOrNickname,
@@ -31,6 +33,21 @@ export default class ReviewsService {
       sort,
       limit,
     );
+    const items: DTO.Review[] = (await this.reviewsRepository.getReviewsPage(
+      reviewerId,
+      isMyReview,
+      titleOrNickname,
+      disabled,
+      page,
+      sort,
+      limit,
+    )).map(({
+      id, userId, user, bookInfo, ...rest
+    }) => ({
+      reviewsId: id, reviewerId: userId, ...user, ...bookInfo, ...rest,
+    }));
+    deepEqual(items, itemsOld);
+
     const counts = await this.reviewsRepository.getReviewsCounts(
       reviewerId,
       isMyReview,
@@ -39,6 +56,7 @@ export default class ReviewsService {
     );
     const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
     const meta = {
+      itemCount: items.length,
       totalItems: counts,
       itemsPerPage,
       totalPages: parseInt(String(counts / itemsPerPage
@@ -47,7 +65,7 @@ export default class ReviewsService {
       finalPage: page === parseInt(String(counts / itemsPerPage), 10),
       currentPage: page,
     };
-    return { items, meta };
+    return { items: itemsOld, meta };
   }
 
   async getReviewsUserId(
