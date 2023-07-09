@@ -25,17 +25,6 @@ services:
       - ./database:/docker-entrypoint-initdb.d:ro
       - ./database/data:/var/lib/mysql
 
-  migration:
-    container_name: migration
-    build:
-      context: ./migration
-    volumes:
-      - ./migration/migrations:/migrations
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-
   backend:
     container_name: backend
     #image : node:16
