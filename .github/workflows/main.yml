@@ -1,6 +1,7 @@
 name: Deploy to Amazon EC2
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -10,8 +11,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: jipbackdeploy
-  CODE_DEPLOY_APPLICATION_NAME: jipcodedeployapp
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: jipcodedeploygroup
+  CODE_DEPLOY_APPLICATION_NAME: newjiphyeonjeon
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: deploy
 
 jobs:
   deploy:
