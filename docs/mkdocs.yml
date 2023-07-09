@@ -1,11 +1,8 @@
-site_name: jiphyeonjeon develop documentation
-theme: readthedocs
+site_name: 집현전 문서
+theme:
+  name: material
+  language: ko
+
 extra:
   static_dirs:
     - docs/image
-nav:
-  - 홈: index.md
-  - 컨벤션: convention.md
-  - 이슈 전략: issue_strategy.md
-  - 깃 플로우 전략: gitflow.md
-  - 에러 코드: error.md

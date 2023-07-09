@@ -1,4 +1,4 @@
-# Welcome to Jiphyeonjeon Development Document Page
+# Welcome to Jiphyeonjeon Dev
 
 ## Project layout
 - 홈: index.md

@@ -1,5 +1,5 @@
 # 에러 코드 (Error code)
-### Common Error Code (0번대)
+## Common Error Code (0번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |0| UNKNOWN_ERROR |unknown error|
@@ -9,7 +9,7 @@
 
 ---
 
-### Auth Error Code (100번대)
+## Auth Error Code (100번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |100| NO_AUTHORIZATION |권한이 없을때|
@@ -27,7 +27,7 @@
 
 ---
 
-### User Error Code (200번대)
+## User Error Code (200번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |203| EMAIL_OVERLAP |email 중복. (이미 있는 email 로 가입)|
@@ -39,7 +39,7 @@
 
 ---
 
-### Books Error Code (300번대)
+## Books Error Code (300번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |301| SLACKID_OVERLAP | 슬랙 ID가 중복됨 |
@@ -58,7 +58,7 @@
 
 ---
 
-### Lendings Error Code (400번대)
+## Lendings Error Code (400번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |401| NO_USER_ID | 유저 없음 |
@@ -74,7 +74,7 @@
 
 ---
 
-### Reservation Error Code (500번대)
+## Reservation Error Code (500번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |501| INVALID_INFO_ID |book_info_id가 유효하지 않음|
@@ -89,7 +89,7 @@
 
 ---
 
-### Likes (600번대)
+## Likes (600번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |601| INVALID_INFO_ID_LIKES    | bookInfoId가 유효하지 않음 |
@@ -98,7 +98,7 @@
 
 ---
 
-### history (700번대)
+## history (700번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|
 |700| UNAUTHORIZED | 사서권한이 없는 사람이 모든 대출/반납 기록을 조회하려고함 |
