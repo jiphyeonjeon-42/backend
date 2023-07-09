@@ -25,17 +25,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest-8 --activate
-          pnpm config set store-dir .pnpm-store
-
       - name: setup node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: pnpm
+
+      - name: setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest-8 --activate
+          pnpm config set store-dir .pnpm-store
 
       - name: install dependencies
         working-directory: backend
