@@ -18,28 +18,28 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export class VUserLending {
   @ViewColumn()
-  userId: number;
+    userId: number;
 
   @ViewColumn()
-  lendDate: Date;
+    lendDate: Date;
 
   @ViewColumn()
-  lendingCondition: string;
+    lendingCondition: string;
 
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  duedate: Date;
+    duedate: Date;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  overDueDay: number;
+    overDueDay: number;
 }
 
 export default VUserLending;

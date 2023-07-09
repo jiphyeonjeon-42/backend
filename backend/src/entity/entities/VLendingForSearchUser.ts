@@ -21,34 +21,34 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export class VLendingForSearchUser {
   @ViewColumn()
-  userId: number;
+    userId: number;
 
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  lendDate: Date;
+    lendDate: Date;
 
   @ViewColumn()
-  lendingCondition: string;
+    lendingCondition: string;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  author: string;
+    author: string;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  duedate: Date;
+    duedate: Date;
 
   @ViewColumn()
-  overDueDay: Date;
+    overDueDay: Date;
 
   @ViewColumn()
-  reservedNum: number;
+    reservedNum: number;
 }
 
 export default VLendingForSearchUser;

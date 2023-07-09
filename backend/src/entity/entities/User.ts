@@ -19,19 +19,19 @@ import SuperTag from './SuperTag';
 @Entity('user')
 class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-  id: number;
+    id: number;
 
   @Column('varchar', { name: 'email', unique: true, length: 255 })
-  email: string;
+    email: string;
 
   @Column('varchar', { name: 'password', length: 255, select: false })
-  password: string;
+    password: string;
 
   @Column('varchar', { name: 'nickname', nullable: true, length: 255 })
-  nickname: string | null;
+    nickname: string | null;
 
   @Column('int', { name: 'intraId', nullable: true, unique: true })
-  intraId: number | null;
+    intraId: number | null;
 
   @Column('varchar', {
     name: 'slack',
@@ -39,55 +39,55 @@ class User {
     unique: true,
     length: 255,
   })
-  slack: string | null;
+    slack: string | null;
 
   @Column('datetime', {
     name: 'penaltyEndDate',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  penaltyEndDate: Date;
+    penaltyEndDate: Date;
 
   @Column('tinyint', { name: 'role', default: () => '0' })
-  role: number;
+    role: number;
 
   @Column('datetime', {
     name: 'createdAt',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  createdAt: Date;
+    createdAt: Date;
 
   @Column('datetime', {
     name: 'updatedAt',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  updatedAt: Date;
+    updatedAt: Date;
 
   @OneToMany(() => Book, (book) => book.donator2)
-  books: Book[];
+    books: Book[];
 
   @OneToMany(() => Lending, (lending) => lending.user)
-  lendings: Lending[];
+    lendings: Lending[];
 
   @OneToMany(() => Lending, (lending) => lending.lendingLibrarian)
-  lendings2: Lending[];
+    lendings2: Lending[];
 
   @OneToMany(() => Lending, (lending) => lending.returningLibrarian)
-  lendings3: Lending[];
+    lendings3: Lending[];
 
   @OneToMany(() => Likes, (likes) => likes.user)
-  likes: Likes[];
+    likes: Likes[];
 
   @OneToMany(() => Reservation, (reservation) => reservation.user)
-  reservations: Reservation[];
+    reservations: Reservation[];
 
   @OneToMany(() => Reviews, (reviews) => reviews.user)
-  reviews: Reviews[];
+    reviews: Reviews[];
 
   @OneToMany(() => SubTag, (subtag) => subtag.userId)
-  subTag: SubTag[];
+    subTag: SubTag[];
 
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
-  superTags: SuperTag[];
+    superTags: SuperTag[];
 }
 
 export default User;

@@ -32,7 +32,7 @@ export const createDefaultTags = async (
   const defaultTagInsertion = await tagsService.createDefaultTags(
     tokenId,
     bookInfoId,
-    content
+    content,
   );
   await tagsService.releaseConnection();
   return res.status(status.CREATED).send(defaultTagInsertion);

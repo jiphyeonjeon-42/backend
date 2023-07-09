@@ -28,47 +28,47 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export default class VHistories {
   @ViewColumn()
-  id: string;
+    id: string;
 
   @ViewColumn()
-  lendingCondition: string;
+    lendingCondition: string;
 
   @ViewColumn()
-  login: string;
+    login: string;
 
   @ViewColumn()
-  returningCondition: string;
+    returningCondition: string;
 
   @ViewColumn()
-  penaltyDays: number;
+    penaltyDays: number;
 
   @ViewColumn()
-  callSign: string;
+    callSign: string;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  createdAt: Date;
+    createdAt: Date;
 
   @ViewColumn()
-  returnedAt: Date;
+    returnedAt: Date;
 
   @ViewColumn()
-  updatedAt: Date;
+    updatedAt: Date;
 
   @ViewColumn()
-  dueDate: Date;
+    dueDate: Date;
 
   @ViewColumn()
-  lendingLibrarianNickName: string;
+    lendingLibrarianNickName: string;
 
   @ViewColumn()
-  returningLibrarianNickname: string;
+    returningLibrarianNickname: string;
 }
