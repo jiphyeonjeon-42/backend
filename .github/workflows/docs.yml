@@ -5,10 +5,10 @@ on:
     branches:
       - develop
 permissions:
-
+    contents: write
 defaults:
   run:
-    working-directory: docs contents: write
+    working-directory: docs 
 
 jobs:
   deploy:
