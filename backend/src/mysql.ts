@@ -1,16 +1,16 @@
-import mysql from 'mysql2/promise';
 import { FieldPacket } from 'mysql2';
-import config from './config';
+import mysql from 'mysql2/promise';
+import { connectOption } from './config';
 import { logger } from './utils/logger';
 
 export const DBError = 'DB error';
 
 export const pool = mysql.createPool({
-  host: config.database.host,
+  host: connectOption.host,
   port: 3306,
-  user: config.database.username,
-  password: config.database.password,
-  database: config.database.dbName,
+  user: connectOption.username,
+  password: connectOption.password,
+  database: connectOption.database,
 });
 
 export const executeQuery = async (queryText: string, values: any[] = []): Promise<any> => {

@@ -17,6 +17,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .addSelect('bi.image', 'image')
     .addSelect('DATE_FORMAT(l.createdAt, "%Y-%m-%d")', 'createdAt')
     .addSelect('DATE_FORMAT(l.returnedAt, "%Y-%m-%d")', 'returnedAt')
+    .addSelect('DATE_FORMAT(l.updatedAt, "%Y-%m-%d")', 'updatedAt')
     .addSelect("DATE_FORMAT(DATE_ADD(l.createdAt, interval 14 day), '%Y-%m-%d')", 'dueDate')
     .addSelect('(SELECT nickname FROM user WHERE user.id = lendingLibrarianId)', 'lendingLibrarianNickName')
     .addSelect('(SELECT nickname FROM user WHERE user.id = returningLibrarianId)', 'returningLibrarianNickname')
@@ -27,44 +28,47 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export default class VHistories {
   @ViewColumn()
-  id: string;
+    id: string;
 
   @ViewColumn()
-  lendingCondition: string;
+    lendingCondition: string;
 
   @ViewColumn()
-  login: string;
+    login: string;
 
   @ViewColumn()
-  returningCondition: string;
+    returningCondition: string;
 
   @ViewColumn()
-  penaltyDays: number;
+    penaltyDays: number;
 
   @ViewColumn()
-  callSign: string;
+    callSign: string;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  createdAt: Date;
+    createdAt: Date;
 
   @ViewColumn()
-  returnedAt: Date;
+    returnedAt: Date;
 
   @ViewColumn()
-  dueDate: Date;
+    updatedAt: Date;
 
   @ViewColumn()
-  lendingLibrarianNickName: string;
+    dueDate: Date;
 
   @ViewColumn()
-  returningLibrarianNickname: string;
+    lendingLibrarianNickName: string;
+
+  @ViewColumn()
+    returningLibrarianNickname: string;
 }

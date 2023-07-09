@@ -1,5 +1,5 @@
 import { RowDataPacket } from 'mysql2';
 
-export interface StringRows extends RowDataPacket {
+export type StringRows = RowDataPacket & {
   str: string
 }

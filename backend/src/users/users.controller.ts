@@ -2,11 +2,13 @@ import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
+import { z } from 'zod';
 import ErrorResponse from '../utils/error/errorResponse';
 import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { logger } from '../utils/logger';
 import * as errorCode from '../utils/error/errorCode';
+import { searchSchema } from './users.types';
 
 const usersService = new UsersService();
 
@@ -15,23 +17,22 @@ export const search = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const id = String(req.query.id) !== 'undefined' ? parseInt(String(req.query.id), 10) : 0;
-  const nicknameOrEmail = String(req.query.nicknameOrEmail) !== 'undefined' ? String(req.query.nicknameOrEmail) : '';
-  const page = parseInt(String(req.query.page), 10) ? parseInt(String(req.query.page), 10) : 0;
-  const limit = parseInt(String(req.query.limit), 10) ? parseInt(String(req.query.limit), 10) : 5;
-  let items;
-
-  if (limit <= 0 || page < 0) {
+  const parsed = searchSchema.safeParse(req.query);
+  if (!parsed.success) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
+  const {
+    id, nicknameOrEmail, page, limit,
+  } = parsed.data;
+  let items;
   try {
-    if (nicknameOrEmail === '' && id === 0) {
+    if (!nicknameOrEmail && !id) {
       items = await usersService.searchAllUsers(limit, page);
-    } else if (nicknameOrEmail !== '' && id === 0) {
+    } else if (nicknameOrEmail && !id) {
       items = JSON.parse(JSON.stringify(
         await usersService.searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
       ));
-    } else if (nicknameOrEmail === '' && id !== 0) {
+    } else if (!nicknameOrEmail && id) {
       items = JSON.parse(JSON.stringify(
         await usersService.searchUserById(id),
       ));

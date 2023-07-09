@@ -1,22 +1,24 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
+import jipDataSource from '../app-data-source';
+import { nationalIsbnApiKey, naverBookApiOption } from '../config';
 import { executeQuery } from '../mysql';
-import { StringRows } from '../utils/types';
-import * as models from './books.model';
-import {
-  categoryIds, CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
-} from './books.type';
 import * as errorCode from '../utils/error/errorCode';
 import { logger } from '../utils/logger';
+import { StringRows } from '../utils/types';
+import * as models from './books.model';
 import BooksRepository from './books.repository';
-import jipDataSource from '../app-data-source';
+import {
+  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  categoryIds,
+} from './books.type';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
   let searchResult;
   await axios
-    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${process.env.NATION_LIBRARY_KEY}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
+    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
     .then((res) => {
       searchResult = res.data.docs[0];
       const {
@@ -41,8 +43,8 @@ const getAuthorInNaver = async (isbn: string) => {
   https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
       {
         headers: {
-          'X-Naver-Client-Id': `${process.env.NAVER_BOOK_SEARCH_CLIENT_ID}`,
-          'X-Naver-Client-Secret': `${process.env.NAVER_BOOK_SEARCH_SECRET}`,
+          'X-Naver-Client-Id': `${naverBookApiOption.client}`,
+          'X-Naver-Client-Secret': `${naverBookApiOption.secret}`,
         },
       },
     )

@@ -88,11 +88,7 @@ class BooksRepository extends Repository<Book> {
     sort: string,
     limit: number,
   ): Promise<LendingBookList[]> {
-    const orderingArr = [
-      { createdAt: 'DESC', title: 'ASC' },
-      { lendingCnt: 'DESC', title: 'ASC' },
-    ];
-    const ordering: any = sort === 'popular' ? orderingArr[1] : orderingArr[0];
+    const order = sort === 'popular' ? 'lendingCnt' : 'createdAt';
     const lendingCondition: string = sort === 'popular'
       ? 'and lending.createdAt >= date_sub(now(), interval 42 day)'
       : '';
@@ -119,7 +115,8 @@ class BooksRepository extends Repository<Book> {
       .leftJoin(Category, 'category', 'category.id = book_info.categoryId')
       .limit(limit)
       .groupBy('book_info.id')
-      .orderBy(ordering)
+      .orderBy(order, 'DESC')
+      .addOrderBy('title', 'ASC')
       .getRawMany<LendingBookList>();
     return lendingBookList;
   }

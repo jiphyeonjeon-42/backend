@@ -78,6 +78,11 @@ export const UNAUTHORIZED_TAGS = '901';
 export const ALREADY_EXISTING_TAGS = '902';
 export const NOT_FOUND_TAGS = '903';
 export const CREATE_FAIL_TAGS = '904';
-export const INVALID_INPUT_TAG_ID = '910';
+export const UPDATE_FAIL_TAGS = '905';
+export const DEFAULT_TAG_ID = '906';
+export const INVALID_BOOKINFO_ID = '907';
+export const DUPLICATED_SUPER_TAGS = '908';
+export const DUPLICATED_SUB_DEFAULT_TAGS = '909';
+export const INVALID_TAG_ID = '910';
 
 export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';

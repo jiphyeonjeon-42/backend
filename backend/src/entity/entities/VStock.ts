@@ -32,46 +32,46 @@ import Reservation from './Reservation';
 })
 export class VStock {
   @ViewColumn()
-  bookId: number;
+    bookId: number;
 
   @ViewColumn()
-  bookInfoId: number;
+    bookInfoId: number;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  author: string;
+    author: string;
 
   @ViewColumn()
-  donator: string;
+    donator: string;
 
   @ViewColumn()
-  publisher: string;
+    publisher: string;
 
   @ViewColumn()
-  publishedAt: string;
+    publishedAt: string;
 
   @ViewColumn()
-  isbn: string;
+    isbn: string;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  status: number;
+    status: number;
 
   @ViewColumn()
-  categoryId: string;
+    categoryId: string;
 
   @ViewColumn()
-  callSign: string;
+    callSign: string;
 
   @ViewColumn()
-  category: string;
+    category: string;
 
   @ViewColumn()
-  updatedAt: Date;
+    updatedAt: Date;
 }
 
 export default VStock;

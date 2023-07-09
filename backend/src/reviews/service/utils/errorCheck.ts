@@ -1,6 +1,6 @@
 import * as errorCode from '../../../utils/error/errorCode';
 import ReviewsRepository from '../../repository/reviews.repository';
-import ErrorResponse from "../../../utils/error/errorResponse";
+import ErrorResponse from '../../../utils/error/errorResponse';
 
 const reviewsRepository = new ReviewsRepository();
 

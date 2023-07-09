@@ -27,31 +27,31 @@ import Reservation from './Reservation';
 })
 class UserReservation {
   @ViewColumn()
-  reservationId: number;
+    reservationId: number;
 
   @ViewColumn()
-  reservedBookInfoId: number;
+    reservedBookInfoId: number;
 
   @ViewColumn()
-  reservationDate: Date;
+    reservationDate: Date;
 
   @ViewColumn()
-  endAt: Date;
+    endAt: Date;
 
   @ViewColumn()
-  ranking: number;
+    ranking: number;
 
   @ViewColumn()
-  title: string;
+    title: string;
 
   @ViewColumn()
-  author: string;
+    author: string;
 
   @ViewColumn()
-  image: string;
+    image: string;
 
   @ViewColumn()
-  userId: number;
+    userId: number;
 }
 
 export default UserReservation;

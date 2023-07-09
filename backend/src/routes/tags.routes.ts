@@ -1,6 +1,15 @@
 import { Router } from 'express';
 import {
-  createDefaultTags, createSuperTags, searchSubDefaultTags, searchSubTags, searchSuperDefaultTags,
+  createDefaultTags,
+  createSuperTags,
+  updateSuperTags,
+  updateSubTags,
+  mergeTags,
+  searchSubDefaultTags,
+  searchSubTags,
+  searchSuperDefaultTags,
+  deleteSubTags,
+  deleteSuperTags,
 } from '../tags/tags.controller';
 import authValidate from '../auth/auth.validate';
 import { roleSet } from '../auth/auth.type';
@@ -8,15 +17,16 @@ import { roleSet } from '../auth/auth.type';
 export const path = '/tags';
 export const router = Router();
 
+router
 /**
  * @openapi
- * /api/tags:
+ * /api/tags/super:
  *    patch:
- *      description: 태그를 수정한다.
+ *      description: 슈퍼 태그를 수정한다.
  *      tags:
- *        - tags
- *      parameters:
+ *      - tags
  *      requestBody:
+ *        required: true
  *        content:
  *          application/json:
  *            schema:
@@ -27,24 +37,13 @@ export const router = Router();
  *                  type: integer
  *                  example: 1
  *                  required: true
- *                type:
- *                  description: 수정할 태그의 타입
- *                  type: string
- *                  enum: [super, sub, default]
- *                  example: super
- *                  required: true
  *                content:
  *                  description: 슈퍼 태그 내용
  *                  type: string
  *                  example: "수정할_내용_적기"
- *                visible:
- *                  description: 태그의 공개 여부
- *                  type: string
- *                  example: public
- *                  enum: [public, private]
  *      responses:
  *        '200':
- *          description: 수정된 슈퍼 태그를 반환한다.
+ *          description: 슈퍼 태그 수정 성공.
  *          content:
  *            application/json:
  *              schema:
@@ -54,20 +53,85 @@ export const router = Router();
  *                    description: 수정된 슈퍼 태그의 id
  *                    type: integer
  *                    example: 1
- *                  type:
- *                    description: 수정된 슈퍼 태그의 타입
- *                    type: string
- *                    example: "super"
- *                    enum: [super, sub, default]
- *                  content:
- *                    description: 수정된 슈퍼 태그 내용
- *                    type: string
- *                    example: "수정된_태그"
- *                  visible:
- *                    description: 수정된 슈퍼 태그의 공개 여부
- *                    type: string
- *                    example: "public"
- *                    enum: [public, private]
+ *        '900':
+ *          description: 태그의 양식이 올바르지 않습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 900
+ *        '902':
+ *          description: 이미 존재하는 태그입니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 902
+ *        '906':
+ *          description: 디폴트 태그입니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 906
+ *        '905':
+ *          description: DB 에러로 인한 업데이트 실패
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: number
+ *                    example: 500
+ */
+  .patch('/super', authValidate(roleSet.librarian), updateSuperTags);
+
+router
+/**
+ * @openapi
+ * /api/tags/sub:
+ *    patch:
+ *      description: 서브 태그를 수정한다.
+ *      tags:
+ *      - tags
+ *      requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                id:
+ *                  description: 수정할 태그의 id
+ *                  type: integer
+ *                  example: 1
+ *                  required: true
+ *                visibility:
+ *                  description: 서브 태그의 공개 여부
+ *                  type: string
+ *                  example: public, private
+ *      responses:
+ *        '200':
+ *          description: 서브 태그 수정 성공.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    description: 수정된 서브 태그의 id
+ *                    type: integer
+ *                    example: 1
  *        '900':
  *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
@@ -87,41 +151,36 @@ export const router = Router();
  *                properties:
  *                  errorCode:
  *                    type: integer
- *                    example: 901
- *        '902':
- *          description: 이미 존재하는 태그입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
  *                    example: 902
- *        '500':
- *          description: DB Error
+ *        '905':
+ *          description: DB 에러로 인한 업데이트 실패
  *          content:
  *            application/json:
  *              schema:
  *                type: object
- *                description: error decription
  *                properties:
  *                  errorCode:
  *                    type: number
- *                    description: 에러코드
- *                    example: 1
+ *                    example: 500
  */
-router.patch('/tags', authValidate(roleSet.all) /* ,update */);
+  .patch('/sub', authValidate(roleSet.librarian), updateSubTags);
 
+router
 /**
  * @openapi
- * /api/tags/merge:
+ * /api/tags/{bookInfoId}/merge:
  *    patch:
  *      description: 태그를 병합한다.
  *      tags:
- *        - tags
+ *      - tags
  *      parameters:
+ *      - in: path
+ *        name: bookInfoId
+ *        description: 병합할 책 정보의 id
+ *        required: true
+ *        type: integer
  *      requestBody:
+ *        required: true
  *        content:
  *          application/json:
  *            schema:
@@ -133,13 +192,13 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                  required: true
  *                  example: [1, 2, 3, 5, 10]
  *                superTagId:
- *                  description: 슈퍼 태그의 id
+ *                  description: 슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.
  *                  type: integer
  *                  required: true
  *                  example: 2
  *      responses:
  *        '200':
- *          description: 병합 후의 슈퍼 태그를 반환합니다.
+ *          description: 슈퍼 태그 수정 성공.
  *          content:
  *            application/json:
  *              schema:
@@ -148,17 +207,9 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                  id:
  *                    description: 슈퍼 태그의 id
  *                    type: integer
- *                    example: 3
- *                  content:
- *                    description: 태그 내용
- *                    type: string
- *                    example: "병합된_태그"
- *                  count:
- *                    description: 해당 슈퍼 태그에 속한 서브 태그의 개수
- *                    type: integer
- *                    example: 3
- *        '901':
- *          description: 권한이 없습니다.
+ *                    example: 1
+ *        '900':
+ *          description: 태그의 양식이 올바르지 않습니다.
  *          content:
  *            application/json:
  *              schema:
@@ -166,9 +217,9 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                properties:
  *                  errorCode:
  *                    type: integer
- *                    example: 901
- *        '904':
- *          description: 존재하지 않는 태그 ID 입니다.
+ *                    example: 900
+ *        '902':
+ *          description: 이미 존재하는 태그입니다.
  *          content:
  *            application/json:
  *              schema:
@@ -176,9 +227,19 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                properties:
  *                  errorCode:
  *                    type: integer
- *                    example: 904
+ *                    example: 902
+ *        '906':
+ *          description: 디폴트 태그에는 병합할 수 없습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  errorCode:
+ *                    type: integer
+ *                    example: 906
  *        '910':
- *          description: 유효하지 않은 양식의 태그 ID 입니다.
+ *          description: 유효하지 않은 태그 id입니다.
  *          content:
  *            application/json:
  *              schema:
@@ -187,20 +248,18 @@ router.patch('/tags', authValidate(roleSet.all) /* ,update */);
  *                  errorCode:
  *                    type: integer
  *                    example: 910
- *        '500':
- *          description: DB Error
+ *        '905':
+ *          description: DB 에러로 인한 업데이트 실패
  *          content:
  *            application/json:
  *              schema:
  *                type: object
- *                description: error decription
  *                properties:
  *                  errorCode:
  *                    type: number
- *                    description: 에러코드
- *                    example: 1
+ *                    example: 500
  */
-router.patch('/tags/merge', authValidate(roleSet.librarian) /* ,merge */);
+  .patch('/:bookInfoId/merge', authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
@@ -237,9 +296,15 @@ router
    *                schema:
    *                  type: object
    *                examples:
-   *                  유효하지 않은 content 길이 :
+   *                  유효하지 않은 content 형식 :
    *                    value:
-   *                      errorCode: 801
+   *                      errorCode: 900
+   *                  유효하지 않은 bookInfoId:
+   *                    value:
+   *                      errorCode: 907
+   *                  디폴트 태그의 내용이 중복됨:
+   *                    value:
+   *                      errorCode: 909
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -297,9 +362,15 @@ router
    *                schema:
    *                  type: object
    *                examples:
-   *                  유효하지 않은 content 길이 :
+   *                  유효하지 않은 content 형식 :
    *                    value:
-   *                      errorCode: 801
+   *                      errorCode: 900
+   *                  유효하지 않은 bookInfoId:
+   *                    value:
+   *                      errorCode: 907
+   *                  슈퍼 태그의 내용이 중복됨:
+   *                    value:
+   *                      errorCode: 908
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -346,7 +417,7 @@ router
    *                examples:
    *                 적절하지 않는 tagId 값:
    *                   value:
-   *                     errorCode: 800
+   *                     errorCode: 900
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -368,7 +439,7 @@ router
    *                      errorCode: 109
    *                  토큰 userId와 태그 userID 불일치 && 사서 권한 없음 :
    *                    value :
-   *                      errorCode: 801
+   *                      errorCode: 901
    *         '404':
    *            description: 존재하지 않는 tagsId.
    *            content:
@@ -378,9 +449,9 @@ router
    *                examples:
    *                  존재하지 않는 tagsId :
    *                    value:
-   *                      errorCode: 804
+   *                      errorCode: 903
    */
-  .delete('/:reviewsId', authValidate(roleSet.all) /* (deleteReviews) */);
+  .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -406,7 +477,7 @@ router
    *                examples:
    *                 적절하지 않는 tagId 값:
    *                   value:
-   *                     errorCode: 800
+   *                     errorCode: 900
    *         '401':
    *            description: 권한 없음.
    *            content:
@@ -428,7 +499,7 @@ router
    *                      errorCode: 109
    *                  토큰 userId와 태그 userID 불일치 && 사서 권한 없음 :
    *                    value :
-   *                      errorCode: 801
+   *                      errorCode: 901
    *         '404':
    *            description: 존재하지 않는 tagsId.
    *            content:
@@ -438,9 +509,9 @@ router
    *                examples:
    *                  존재하지 않는 tagsId :
    *                    value:
-   *                      errorCode: 804
+   *                      errorCode: 903
    */
-  .delete('/:reviewsId', authValidate(roleSet.librarian) /* (deleteReviews) */);
+  .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
@@ -474,9 +545,9 @@ router
    *            default:
    *            example: null
    *            enum: [null, public, private]
-   *        - name: title
+   *        - name: query
    *          in: query
-   *          description: 검색할 도서의 제목. 검색 결과는 도서 제목에 해당하는 태그들을 반환한다.
+   *          description: 태그가 달린 도서명 또는 태그의 내용으로 검색한다.
    *          schema:
    *            type: string
    *            example: 개발자의 코드
@@ -523,6 +594,10 @@ router
    *                          description: 슈퍼 태그의 내용
    *                          type: string
    *                          example: 1서클_추천_책
+   *                        visibility:
+   *                          description: 공개 여부. 공개는 public, 비공개는 private이다.
+   *                          type: string
+   *                          example: public
    *                  meta:
    *                    description: 모든 태그 수와 관련된 정보
    *                    type: object
@@ -554,7 +629,7 @@ router
    *          '500':
    *            description: db 에러
    */
-  .get('/' /* , authValidate(roleSet.librarian) */, searchSubDefaultTags);
+  .get('/', authValidate(roleSet.librarian), searchSubDefaultTags);
 
 router
   /**
@@ -611,7 +686,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub' /* , authValidate(roleSet.librarian) */, searchSubTags);
+  .get('/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**
@@ -652,19 +727,33 @@ router
    *                      count:
    *                        description: 슈퍼 태그에 속한 서브 태그 개수. 슈퍼 태그는 기본값이 1이며, 0이면 디폴트 태그를 의미한다.
    *                        type: integer
+   *                      login:
+   *                        description: 태그를 작성한 카뎃의 인트라 id. 슈퍼 태그는 기본값이 null이며, 디폴트 태그만 작성자 값이 있다.
+   *                        type: string
+   *                      type:
+   *                        description: 태그의 타입. 슈퍼 태그는 'super'이며, 디폴트 태그는 'default'이다.
+   *                        type: string
    *                    example:
    *                    - id: 0
    *                      content: 1서클_추천_책
    *                      count: 3
+   *                      login:
+   *                      type: super
    *                    - id: 42
    *                      content: 커리어
    *                      count: 1
+   *                      login:
+   *                      type: super
    *                    - id: 0
    *                      content: yena가_추천하는
    *                      count: 0
+   *                      login: yena
+   *                      type: default
    *                    - id: 42
    *                      content: 마법같은_파이썬
    *                      count: 0
+   *                      login: yena
+   *                      type: default
    *        '400':
    *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
    *        '401':
@@ -672,4 +761,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:bookInfoId' /* , authValidate(roleSet.librarian) */, searchSuperDefaultTags);
+  .get('/:bookInfoId', authValidate(roleSet.all), searchSuperDefaultTags);

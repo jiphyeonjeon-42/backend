@@ -1,4 +1,4 @@
-export interface Lending {
+export type Lending = {
   userId: number,
   bookInfoId: number,
   lendDate: Date,
@@ -11,7 +11,7 @@ export interface Lending {
   reservedNum: number,
 }
 
-export interface User {
+export type User = {
   id: number,
   email: string,
   nickname: string,
@@ -23,6 +23,6 @@ export interface User {
   reservations?: [],
   lendings?: Lending[],
 }
-export interface PrivateUser extends User {
+export type PrivateUser = User & {
   password: string,
 }

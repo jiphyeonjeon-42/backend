@@ -1,4 +1,4 @@
-export interface queriedReservationInfo {
+export type queriedReservationInfo = {
   reservationId: number,
   reservedBookInfoId: number,
   reservationDate: Date,
@@ -8,7 +8,7 @@ export interface queriedReservationInfo {
   image: string,
 }
 
-export interface reservationInfo {
+export type reservationInfo = {
   reservationId: number,
   bookInfoId: number,
   createdAt: Date,

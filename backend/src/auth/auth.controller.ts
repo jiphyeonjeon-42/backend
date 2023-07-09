@@ -1,20 +1,20 @@
-import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
-import config from '../config';
-import UsersService from '../users/users.service';
-import * as authService from './auth.service';
-import * as authJwt from './auth.jwt';
 import * as models from '../DTO/users.model';
-import { role } from './auth.type';
+import { oauth42ApiOption, oauthUrlOption } from '../config';
 import { updateSlackIdByUserId } from '../slack/slack.service';
+import UsersService from '../users/users.service';
+import * as errorCode from '../utils/error/errorCode';
 import ErrorResponse from '../utils/error/errorResponse';
 import { logger } from '../utils/logger';
-import * as errorCode from '../utils/error/errorCode';
+import * as authJwt from './auth.jwt';
+import * as authService from './auth.service';
+import { role } from './auth.type';
 
 export const getOAuth = (req: Request, res: Response) => {
-  const clientId = config.client.id;
-  const redirectURL = `${config.client.redirectURL}/api/auth/token`;
+  const clientId = oauth42ApiOption.id;
+  const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/token`;
   const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectURL,
   )}&response_type=code&`;
@@ -38,14 +38,14 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
       } catch (error: any) {
         const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
         if (errorNumber === 203) {
-          res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
+          res.status(status.BAD_REQUEST).send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`);
           return;
         }
-        res.status(status.SERVICE_UNAVAILABLE).send(`<script type="text/javascript">window.location="${config.client.clientURL}/register?errorCode=${errorCode.UNKNOWN_ERROR}"</script>`);
+        res.status(status.SERVICE_UNAVAILABLE).send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/register?errorCode=${errorCode.UNKNOWN_ERROR}"</script>`);
         return;
       }
     } else { await authJwt.saveJwt(req, res, user[0]); }
-    res.status(302).redirect(`${config.client.clientURL}/auth`);
+    res.status(302).redirect(`${oauthUrlOption.clientURL}/auth`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
     if (errorNumber === 101) {
@@ -126,9 +126,9 @@ export const logout = (req: Request, res: Response) => {
 };
 
 export const getIntraAuthentication = (req: Request, res: Response) => {
-  const clientId = config.client.id;
-  const redirectURL = `${config.client.redirectURL}/api/auth/intraAuthentication`;
-  // const redirectURL = `${config.client.redirectURL}/api/auth/token`;
+  const clientId = oauth42ApiOption.id;
+  const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/intraAuthentication`;
+  // const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/token`;
   const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectURL,
   )}&response_type=code`;
@@ -147,32 +147,32 @@ export const intraAuthentication = async (
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
       res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`);
+        .send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`);
       return;
       // return next(new ErrorResponse(errorCode.NO_USER, 410));
     }
     if (user.items[0].role !== role.user) {
       res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`);
+        .send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`);
       // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const intraList: models.User[] = await usersService.searchUserByIntraId(intraId);
     if (intraList.length !== 0) {
       res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.ANOTHER_ACCOUNT_AUTHENTICATED}"</script>`);
+        .send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ANOTHER_ACCOUNT_AUTHENTICATED}"</script>`);
       return;
       // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
     const affectedRow = await authService.updateAuthenticationUser(id, intraId, nickName);
     if (affectedRow === 0) {
       res.status(status.BAD_REQUEST)
-        .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.NON_AFFECTED}"</script>`);
+        .send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.NON_AFFECTED}"</script>`);
       // return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
     await updateSlackIdByUserId(user.items[0].id);
     await authJwt.saveJwt(req, res, user.items[0]);
     res.status(status.OK)
-      .send(`<script type="text/javascript">window.location="${config.client.clientURL}/mypage?errorCode=${errorCode.INTRA_AUTHENTICATE_SUCCESS}"</script>`);
+      .send(`<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.INTRA_AUTHENTICATE_SUCCESS}"</script>`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 100 && errorNumber < 200) {
