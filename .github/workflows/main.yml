@@ -25,20 +25,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup node.js
-        uses: actions/setup-node@master
-        with:
-          node-version: 18.x
-
       - name: setup pnpm
         run: |
           corepack enable
           corepack prepare pnpm@latest-8 --activate
           pnpm config set store-dir .pnpm-store
 
+      - name: setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: pnpm
+
       - name: install dependencies
-        run: |
-          cd backend && pnpm install
+        working-directory: backend
+        run: pnpm install
+
+      - name: build backend
+        working-directory: backend
+        run: pnpm build
 
       - name: create .env file
         run: |
@@ -58,10 +63,6 @@ jobs:
           NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
           NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
           NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}" > .env
-
-      - name: build file
-        run: |
-          cd backend && pnpm build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
