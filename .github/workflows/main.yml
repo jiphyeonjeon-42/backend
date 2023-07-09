@@ -24,6 +24,19 @@ jobs:
     # (1) 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: setup node.js
+      uses: actions/setup-node@master
+      with:
+        node-version: 18.x
+
+    - name: setup pnpm
+      uses: pnpm/action-setup@v2
+
+    - name: install dependencies
+      run: |
+        cd backend && pnpm install
+  
     - name: create .env file
       run: |
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
@@ -42,18 +55,6 @@ jobs:
           NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
           NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
           NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}" > .env
-
-    - name: setup node.js
-      uses: actions/setup-node@master
-      with:
-        node-version: 18.x
-
-    - name: setup pnpm
-      uses: pnpm/action-setup@v2
-
-    - name: install dependencies
-      run: |
-        cd backend && pnpm install
 
     - name: build file
       run: |
