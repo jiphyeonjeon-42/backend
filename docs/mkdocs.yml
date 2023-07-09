@@ -1,0 +1,8 @@
+site_name: 집현전 문서
+theme:
+  name: material
+  language: ko
+
+extra:
+  static_dirs:
+    - docs/image
