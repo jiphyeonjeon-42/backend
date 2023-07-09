@@ -11,21 +11,24 @@ export default class UsersService {
     this.usersRepository = new UsersRepository();
   }
 
-  /**
-   * 기존 사용자 배열에 대출과 연체 정보를 추가하여 반환합니다.
-   *
-   * @returns 사용자의 대출 정보를 포함한 사용자 정보 배열
-   */
-  async withLendingInfo(users: models.User[]): Promise<models.User[]> {
-    const usersIdList = users.map((user) => ({ userId: user.id }));
+  async setOverDueDay(items: models.User[]): Promise<models.User[]> {
+    const usersIdList = items.map((user: models.User) => ({ userId: user.id }));
     const lending = await this.usersRepository
       .getLending(usersIdList) as unknown as models.Lending[];
-
-    return users.map((user) => {
-      const lendings = lending.filter((lend) => lend.userId === user.id);
-      const overDueDay = lendings.reduce((acc, cur) => acc + cur.overDueDay, 0);
-      return { ...user, lendings, overDueDay };
-    });
+    if (items) {
+      return items.map((item: models.User) => {
+        const rtnObj: models.User = Object.assign(item);
+        rtnObj.lendings = lending.filter((lend) => lend.userId === item.id);
+        rtnObj.overDueDay = 0;
+        if (rtnObj.lendings.length) {
+          rtnObj.lendings.forEach((lend: models.Lending) => {
+            rtnObj.overDueDay += (+lend.overDueDay);
+          });
+        }
+        return rtnObj;
+      });
+    }
+    return items;
   }
 
   async userLendings(userId: number) {
@@ -43,7 +46,7 @@ export default class UsersService {
       { nickname: Like(`%${nicknameOrEmail}%`) },
       { email: Like(`%${nicknameOrEmail}`) },
     ], limit, page);
-    const setItems = await this.withLendingInfo(items);
+    const setItems = await this.setOverDueDay(items);
     const meta: types.Meta = {
       totalItems: count,
       itemCount: setItems.length,
@@ -56,7 +59,7 @@ export default class UsersService {
 
   async searchUserById(id: number) {
     let items = (await this.usersRepository.searchUserBy({ id }, 0, 0))[0];
-    items = await this.withLendingInfo(items);
+    items = await this.setOverDueDay(items);
     return { items };
   }
 
@@ -77,7 +80,7 @@ export default class UsersService {
 
   async searchAllUsers(limit: number, page: number) {
     const [items, count] = await this.usersRepository.searchUserBy(1, limit, page);
-    const setItems = await this.withLendingInfo(items);
+    const setItems = await this.setOverDueDay(items);
     const meta: types.Meta = {
       totalItems: count,
       itemCount: setItems.length,
