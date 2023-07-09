@@ -30,8 +30,7 @@ export default class UsersRepository extends Repository<User> {
     );
     this.lendingForSearchUserRepo = new Repository<VLendingForSearchUser>(
       VLendingForSearchUser,
-      jipDataSource.createEntityManager(),
-      jipDataSource.createQueryRunner(),
+      manager,
     );
     this.reservationsRepo = new Repository<Reservation>(
       Reservation,
