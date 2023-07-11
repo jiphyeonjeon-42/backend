@@ -15,6 +15,7 @@ export default class UsersService {
    * 기존 사용자 배열에 대출과 연체 정보를 추가하여 반환합니다.
    *
    * @returns 사용자의 대출 정보를 포함한 사용자 정보 배열
+   * @todo 대출 정보까지 함께 쿼리하는 searchUsersBy 메서드를 만들고 searchUserBy* 에서 사용하도록 수정
    */
   async withLendingInfo(users: models.User[]): Promise<models.User[]> {
     const usersIdList = users.map((user) => ({ userId: user.id }));
