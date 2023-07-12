@@ -22,10 +22,11 @@ export const reviewsControllerV2 = s.router(contract.reviews, {
       try {
         await reviewsService.getReviewsUserId(reviewsId);
       } catch {
-        return { status: 404, body: { code: 'NOT_FOUND_REVIEWS', message: '검색한 리뷰가 존재하지 않습니다.' } };
+        return { status: 404, body: { code: 'REVIEWS_NOT_FOUND', message: '검색한 리뷰가 존재하지 않습니다.' } };
       }
       await reviewsService.patchReviews(reviewsId, id);
       return { status: 200, body: '리뷰 공개 여부가 업데이트되었습니다.' };
     },
   },
+  put: async () => ({ status: 200, body: '리뷰가 수정되었습니다.' }),
 });

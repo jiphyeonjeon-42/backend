@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '../zodWithOpenapi';
 
 export const positiveInt = z.coerce.number().int().nonnegative();
 
@@ -38,6 +38,10 @@ export const getReviewsSchema = z.object({
 export const createReviewsSchema = z.object({
   bookInfoId: bookInfoIdSchema,
   content: contentSchema,
+});
+
+export const reviewsIdPathSchema = z.object({
+  reviewsId: reviewsIdSchema.openapi({ example: 1 }),
 });
 
 export const updateReviewsSchema = z.object({
