@@ -168,7 +168,7 @@ export const router = Router();
  *            application/json:
  *              schema:
  *                type: object
- *                description: 200, 201, 205 에러 가능
+ *                description: 200, 201, 205, 209 에러 가능
  *                properties:
  *                  errorCode:
  *                    type: number
