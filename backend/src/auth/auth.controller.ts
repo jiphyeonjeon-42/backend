@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import * as models from '../DTO/users.model';
 import { oauth42ApiOption, oauthUrlOption } from '../config';
 import { updateSlackIdByUserId } from '../slack/slack.service';
