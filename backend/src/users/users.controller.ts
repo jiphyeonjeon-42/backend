@@ -69,7 +69,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
   }
   const regex = /@student\.42seoul\.kr$/;
   if (regex.test(email)) {
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+    return next(new ErrorResponse(errorCode.STUDENT_42_SUBSCRIPTION_FORBIDDEN, status.BAD_REQUEST));
   }
   try {
     pwSchema
