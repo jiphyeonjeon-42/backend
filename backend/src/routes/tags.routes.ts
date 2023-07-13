@@ -761,4 +761,4 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:bookInfoId', authValidate(roleSet.all), searchSuperDefaultTags);
+  .get('/:bookInfoId', searchSuperDefaultTags);
