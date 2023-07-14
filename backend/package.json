@@ -1,5 +1,5 @@
 {
-  "name": "42-jiphyeonjeon-backend-3rd",
+  "name": "@jiphyeonjeon/backend",
   "version": "1.0.0",
   "description": "3rd of 42-jiphyeonjeon web service backend",
   "main": "./dist/server.js",
