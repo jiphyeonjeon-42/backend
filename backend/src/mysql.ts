@@ -1,7 +1,7 @@
 import { FieldPacket } from 'mysql2';
 import mysql from 'mysql2/promise';
 import { connectOption } from './config';
-import { logger } from './utils/logger';
+import { logger } from './v1/utils/logger';
 
 export const DBError = 'DB error';
 

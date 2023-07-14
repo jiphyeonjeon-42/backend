@@ -1,8 +1,8 @@
 import { createHttpTerminator } from 'http-terminator';
 import app from './app';
 import jipDataSource from './app-data-source';
-import { logger } from './utils/logger';
-import scheduler from './utils/scheduler';
+import { logger } from './v1/utils/logger';
+import scheduler from './v1/utils/scheduler';
 import { gracefulTerminationTimeout } from './config';
 
 const port = '3000';

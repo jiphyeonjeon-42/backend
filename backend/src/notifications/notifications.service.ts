@@ -1,5 +1,5 @@
 import { executeQuery, makeExecuteQuery, pool } from '../mysql';
-import { publishMessage } from '../slack/slack.service';
+import { publishMessage } from '../v1/slack/slack.service';
 
 const succeedReservation = async (reservation: {
   bookId: number,

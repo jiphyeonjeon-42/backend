@@ -3,8 +3,8 @@ import {
   NextFunction,
   Request, Response,
 } from 'express';
-import ErrorResponse from '../utils/error/errorResponse';
-import * as errorCode from '../utils/error/errorCode';
+import ErrorResponse from '../v1/utils/error/errorResponse';
+import * as errorCode from '../v1/utils/error/errorCode';
 
 const wrapAsyncController = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
   fn(req, res, next)
