@@ -15,7 +15,7 @@ dotenv.config();
 const runtimeMode = getRuntimeMode(process.env);
 
 // graceful shutdown시 서버 종료 대기 시간
-export const gracefulTerminationTimeout = runtimeMode === 'development' ? 0 : 30 * 1000;
+export const gracefulTerminationTimeout = runtimeMode === 'production' ? 30 * 1000 : 0;
 
 export const logLevelOption = getLogLevelOption(runtimeMode);
 export const connectMode = getModeOption(process.env);
