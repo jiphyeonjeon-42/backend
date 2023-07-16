@@ -4,14 +4,14 @@ import express from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import jipDataSource from './app-data-source';
-import { FtAuthentication, FtStrategy, JwtStrategy } from './auth/auth.strategy';
-import { connectMode } from './config';
-import router from './routes';
-import swaggerOptions from './swagger/swagger';
-import errorConverter from './utils/error/errorConverter';
-import errorHandler from './utils/error/errorHandler';
-import { logger, morganMiddleware } from './utils/logger';
+import { FtAuthentication, FtStrategy, JwtStrategy } from '~/v1/auth/auth.strategy';
+import swaggerOptions from '~/v1/swagger/swagger';
+import errorConverter from '~/v1/utils/error/errorConverter';
+import errorHandler from '~/v1/utils/error/errorHandler';
+import { logger, morganMiddleware } from '~/v1/utils/logger';
+import { connectMode } from '~/config';
+import jipDataSource from '~/app-data-source';
+import router from './v1/routes';
 
 const app: express.Application = express();
 
