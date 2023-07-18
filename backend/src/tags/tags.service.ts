@@ -37,9 +37,13 @@ export class TagsService {
       } else {
         defaultTagId = defaultTag.id;
       }
-      const subTagId = await this.subTagRepository.createDefaultTags(userId, bookInfoId, content, defaultTagId);
+      const subTagId = await this.subTagRepository.createDefaultTags(
+        userId,
+        bookInfoId,
+        content,
+        defaultTagId,
+      );
       const subTag = await this.subTagRepository.getSubTags({ id: subTagId });
-
       defaultTagsInsertion = {
         id: subTag[0].id,
         content: subTag[0].content,
@@ -54,7 +58,6 @@ export class TagsService {
     } finally {
       await this.queryRunner.release();
     }
-
     return defaultTagsInsertion;
   }
 
@@ -293,6 +296,7 @@ export class TagsService {
     const subDefaultTag: VTagsSubDefault[] = await this.subTagRepository.getSubTags({
       content,
       bookInfoId,
+      isDeleted: 0,
     });
     if (subDefaultTag.length === 0) {
       return false;
@@ -304,6 +308,7 @@ export class TagsService {
     const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({
       content,
       bookInfoId,
+      isDeleted: 0,
     });
     if (superTag.length === 0) {
       return false;
