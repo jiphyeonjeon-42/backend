@@ -1,7 +1,7 @@
 import {
   IsNull, MoreThan, QueryRunner, Repository, UpdateResult,
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import User from '~/entity/entities/User';
 import jipDataSource from '~/app-data-source';
 import Lending from '~/entity/entities/Lending';

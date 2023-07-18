@@ -1,8 +1,10 @@
 {
   "name": "@jiphyeonjeon-42/contracts",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4-alpha",
   "type": "commonjs",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "the jiphyeonjeon developers",
   "scripts": {
     "build": "npx tsc",
     "dev": "npx tsc -w"

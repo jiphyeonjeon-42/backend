@@ -1,5 +1,4 @@
-import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import Reservation from '~/entity/entities/Reservation';
 import UserReservation from '~/entity/entities/UserReservation';
 import { formatDate } from '~/v1/utils/dateFormat';
