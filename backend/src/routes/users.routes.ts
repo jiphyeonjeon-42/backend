@@ -363,3 +363,5 @@ router.get('/search', search)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
   .patch('/myupdate', authValidate(roleSet.all), myupdate)
   .get('/EasterEgg', getVersion);
+
+//  .delete('/delete/:id', authValidate(roleSet.librarian), deleteUser);
