@@ -192,3 +192,5 @@ export const getVersion = async (
   res.status(200).send({ version: 'gshim.v1' });
   return 0;
 };
+
+// TODO: user Delete API
