@@ -1,4 +1,4 @@
-import { z } from '~/zodWithOpenapi';
+import { z } from '../zodWithOpenapi';
 
 export const positiveInt = z.coerce.number().int().nonnegative();
 

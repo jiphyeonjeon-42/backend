@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { initContract } from '@ts-rest/core';
 import { bookInfoIdSchema, contentSchema, reviewsIdPathSchema } from './schema';
 
+export * from './schema';
+
 const notFoundResponseSchema = z.object({
   code: z.literal('REVIEWS_NOT_FOUND'),
   message: z.literal('검색한 리뷰가 존재하지 않습니다.'),
