@@ -12,7 +12,7 @@
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register --project ./tsconfig.prod.json src/server.ts",
     "build": "echo '번들러 사용중이지 않아 빌드시 tsconfig paths 적용이 불가합니다' && exit 1",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "dev": "nodemon --watch src --watch ../contracts/dist --exec ts-node src/server.ts",
     "prod": "pnpm start",
     "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
