@@ -955,3 +955,5 @@ router
  *                    example : { errorCode: 311 }
  */
   .patch('/update', authValidate(roleSet.librarian), updateBookInfo);
+
+  router.patch('/update/donator', updateBookDonator);

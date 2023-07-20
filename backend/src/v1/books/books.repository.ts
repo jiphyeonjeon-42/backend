@@ -10,7 +10,7 @@ import User from '~/entity/entities/User';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
 import {
-  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo, UpdateBookDonator,
 } from './books.type';
 
 class BooksRepository extends Repository<Book> {
@@ -153,6 +153,10 @@ class BooksRepository extends Repository<Book> {
 
   async updateBook(book: UpdateBook): Promise<void> {
     await this.books.update(book.id, book as Book);
+  }
+
+  async updateBookDonator(bookDonator: UpdateBookDonator): Promise<void> {
+    await this.books.update(bookDonator.id, bookDonator as Book);
   }
 
   async createBookInfo(
