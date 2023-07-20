@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
