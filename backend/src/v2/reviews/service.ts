@@ -2,7 +2,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { match } from 'ts-pattern';
 
-import { Repository } from 'typeorm';
+import { Repository, type InsertResult, type UpdateResult } from 'typeorm';
 import Reviews from '~/entity/entities/Reviews';
 
 export class ReviewNotFoundError extends Error {
@@ -29,8 +29,27 @@ export class BookInfoNotFoundError extends Error {
   }
 }
 
-// TODO: 객체 타입 추출
+type RepoDeps = { reviews: Repository<Reviews> }
 
+type MkCreateReviews = (deps: RepoDeps) => IReviewsService['createReviews']
+
+export const mkCreateReviews: MkCreateReviews = ({ reviews }) =>
+  async ({ bookInfoId, userId, content }) =>
+    match(await reviews.findOneBy({ id: bookInfoId }))
+      .with(null, () => new BookInfoNotFoundError(bookInfoId))
+      .otherwise(() => reviews.insert({ userId, updateUserId: userId, bookInfoId, content }));
+
+export type Args = { bookInfoId: number, reviewsId: number, userId: number, content: string }
+export type createArgs = { userId: number, bookInfoId: number, content: string }
+export type updateArgs = { reviewsId: number, userId: number, content: string }
+
+// TODO: 객체 타입 추출
+export type IReviewsService ={
+  createReviews: (args: Omit<Args, 'reviewsId'>) => Promise<BookInfoNotFoundError | InsertResult>
+  updateReviews: (args: Omit<Args, 'bookInfoId'>) => Promise<ReviewNotFoundError | UpdateResult>
+  deleteReviews: (args: Pick<Args, 'reviewsId'> & {deleteUserId: number} ) => Promise<void>
+  patchReviews: (args: Pick<Args, 'reviewsId' | 'userId'>) => Promise<ReviewNotFoundError | UpdateResult>
+}
 export default class ReviewsService {
   // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(private readonly repo : Repository<Reviews>) {}
@@ -46,9 +65,7 @@ export default class ReviewsService {
       }));
   }
 
-  async updateReviews(
-    { reviewsId, userId, content }:{ reviewsId: number, userId: number, content: string, },
-  ) {
+  async updateReviews({ reviewsId, userId, content }: updateArgs) {
     const review = await this.repo.findOneBy({ id: reviewsId });
     return match(review)
       .with(null, () => new ReviewNotFoundError(reviewsId))

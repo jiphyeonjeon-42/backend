@@ -13,28 +13,28 @@ import Reviews from '~/entity/entities/Reviews';
 
 import { P, match } from 'ts-pattern';
 
-import ReviewsService, { ReviewNotFoundError } from './service';
+import ReviewsService, { ReviewNotFoundError, IReviewsService, mkCreateReviews, BookInfoNotFoundError } from './service';
+import { ServerInferRoute } from '../inferRoute';
+import { getUser } from './implementation';
 
-const service = new ReviewsService(jipDataSource.getRepository(Reviews));
+type MkPostReviews = (args: { req: { body: string; user: Express.User; query: number } }) => Promise<{
+    status: 201;
+    body: "리뷰가 작성되었습니다.";
+} | {
+    status: 404;
+    body: {
+        code: "BOOK_INFO_NOT_FOUND";
+        message: "검색한 책이 존재하지 않습니다.";
+    };
+}>
 
-const s = initServer();
+export const mkPostReviews = ({ createReviews } : Pick<IReviewsService, 'createReviews'>): MkPostReviews =>
+  async ({ req: { user, body, query }}) => {
+    const { id: userId } = getUser.parse(user);
+    const result = await createReviews({ bookInfoId: query, userId, content: body });
 
-const getUser = z.object({ id: positiveInt });
+    return match(result)
+      .with(P.instanceOf(BookInfoNotFoundError), () => ({ status: 404, body: { code: 'BOOK_INFO_NOT_FOUND', message: '검색한 책이 존재하지 않습니다.' } }) as const)
+      .otherwise(() => ({ status: 201, body: '리뷰가 작성되었습니다.' }) as const);
+  };
 
-/** TODO: 컨트롤러를 클래스 또는 service를 인자로 받는 함수로 전환 */
-export const reviews = s.router(contract.reviews, {
-  post: async () => ({ status: 201, body: '리뷰가 작성되었습니다.' }),
-  put: async () => ({ status: 200, body: '리뷰가 수정되었습니다.' }),
-  patch: {
-    middleware: [authValidate(roleSet.librarian)],
-
-    handler: async ({ params: { reviewsId }, req: { user } }) => {
-      const { id: userId } = getUser.parse(user);
-
-      const result = await service.patchReviews({ reviewsId, userId });
-      return match(result)
-        .with(P.instanceOf(ReviewNotFoundError), () => ({ status: 404, body: { code: 'REVIEWS_NOT_FOUND', message: '검색한 리뷰가 존재하지 않습니다.' } }) as const)
-        .otherwise(() => ({ status: 200, body: '리뷰 공개 여부가 업데이트되었습니다.' }) as const);
-    },
-  },
-});
