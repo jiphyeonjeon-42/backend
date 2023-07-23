@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Test PR
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest-8 --activate
+          pnpm config set store-dir .pnpm-store
+
+      - name: install dependencies
+        working-directory: backend
+        run: pnpm install
+
+      - name: build backend
+        working-directory: backend
+        run: pnpm build
+
+      # TODO: 테스트 실행
