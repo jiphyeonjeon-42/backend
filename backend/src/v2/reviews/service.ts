@@ -5,6 +5,7 @@ import { match } from 'ts-pattern';
 import { Repository, type InsertResult, type UpdateResult } from 'typeorm';
 import Reviews from '~/entity/entities/Reviews';
 import { BookInfoNotFoundError } from '../shared';
+import BookInfo from '~/entity/entities/BookInfo';
 
 export class ReviewNotFoundError extends Error {
   constructor(reviewsId: number) {
@@ -26,13 +27,18 @@ export class ReviewForbiddenAccessError extends Error {
 
 type RepoDeps = { reviews: Repository<Reviews> };
 
-type MkCreateReviews = (deps: RepoDeps) => ReviewsService['createReviews'];
+type MkCreateReviews = (
+  deps: RepoDeps & { bookInfo: Repository<BookInfo> },
+) => ReviewsService['createReviews'];
 export const mkCreateReviews: MkCreateReviews =
-  ({ reviews }) =>
-  async ({ bookInfoId, userId, content }) =>
-    match(await reviews.findOneBy({ id: bookInfoId }))
+  ({ reviews, bookInfo }) =>
+  async ({ bookInfoId, userId, content }) => {
+    const result = await bookInfo.findOneBy({ id: bookInfoId });
+    console.log(result, bookInfoId);
+    return match(result)
       .with(null, () => new BookInfoNotFoundError(bookInfoId))
       .otherwise(() => reviews.insert({ userId, updateUserId: userId, bookInfoId, content }));
+  };
 
 type MkDeleteReviews = (deps: RepoDeps) => ReviewsService['deleteReviews'];
 export const mkDeleteReviews: MkDeleteReviews =
