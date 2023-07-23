@@ -69,7 +69,7 @@ const v2Specs = generateOpenApi(contract, {
     version: '0.0.2-alpha',
   },
 }, {
-  setOperationId: true,
+  setOperationId: false,
 });
 app.get('/docs.json', (_req, res) => res.json(v2Specs));
 app.use(
