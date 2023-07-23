@@ -17,3 +17,9 @@ export const bookInfoNotFound = {
     message: '검색한 책이 존재하지 않습니다.',
   },
 } as const;
+
+export class BookInfoNotFoundError extends Error {
+  constructor(bookInfoId: number) {
+    super(`Could not find bookInfoId: ${bookInfoId}`);
+  }
+}

@@ -4,6 +4,7 @@ import { match } from 'ts-pattern';
 
 import { Repository, type InsertResult, type UpdateResult } from 'typeorm';
 import Reviews from '~/entity/entities/Reviews';
+import { BookInfoNotFoundError } from '../shared';
 
 export class ReviewNotFoundError extends Error {
   constructor(reviewsId: number) {
@@ -23,16 +24,9 @@ export class ReviewForbiddenAccessError extends Error {
   }
 }
 
-export class BookInfoNotFoundError extends Error {
-  constructor(bookInfoId: number) {
-    super(`Could not find bookInfoId: ${bookInfoId}`);
-  }
-}
-
 type RepoDeps = { reviews: Repository<Reviews> };
 
 type MkCreateReviews = (deps: RepoDeps) => ReviewsService['createReviews'];
-
 export const mkCreateReviews: MkCreateReviews =
   ({ reviews }) =>
   async ({ bookInfoId, userId, content }) =>
@@ -40,80 +34,52 @@ export const mkCreateReviews: MkCreateReviews =
       .with(null, () => new BookInfoNotFoundError(bookInfoId))
       .otherwise(() => reviews.insert({ userId, updateUserId: userId, bookInfoId, content }));
 
-export type Args = { bookInfoId: number; reviewsId: number; userId: number; content: string };
-export type createArgs = { userId: number; bookInfoId: number; content: string };
-export type updateArgs = { reviewsId: number; userId: number; content: string };
+type MkDeleteReviews = (deps: RepoDeps) => ReviewsService['deleteReviews'];
+export const mkDeleteReviews: MkDeleteReviews =
+  ({ reviews }) =>
+  async ({ reviewsId, deleteUserId }) => {
+    reviews.update(reviewsId, { deleteUserId, isDeleted: true });
+  };
 
-// TODO: 객체 타입 추출
-export type ReviewsService = {
-  createReviews: (args: Omit<Args, 'reviewsId'>) => Promise<BookInfoNotFoundError | InsertResult>;
-  updateReviews: (args: Omit<Args, 'bookInfoId'>) => Promise<ReviewNotFoundError | UpdateResult>;
-  deleteReviews: (args: Pick<Args, 'reviewsId'> & { deleteUserId: number }) => Promise<void>;
-  patchReviews: (
-    args: Pick<Args, 'reviewsId' | 'userId'>,
-  ) => Promise<ReviewNotFoundError | UpdateResult>;
-};
+type MkUpdateReviews = (deps: RepoDeps) => ReviewsService['updateReviews'];
+export const mkUpdateReviews: MkUpdateReviews =
+  ({ reviews }) =>
+  async ({ reviewsId, userId, content }) => {
+    const review = await reviews.findOneBy({ id: reviewsId });
 
-/**
- * @deprecated {@link ReviewsService}를 사용해주세요.
- */
-export default class ReviewsServiceClass {
-  // eslint-disable-next-line no-empty-function, no-useless-constructor
-  constructor(private readonly repo: Repository<Reviews>) {}
-
-  async createReviews({
-    bookInfoId,
-    userId,
-    content,
-  }: {
-    userId: number;
-    bookInfoId: number;
-    content: string;
-  }) {
-    const bookInfo = await this.repo.findOneBy({ id: bookInfoId });
-    return match(bookInfo)
-      .with(null, () => new BookInfoNotFoundError(bookInfoId))
-      .otherwise(() =>
-        this.repo.insert({
-          userId,
-          updateUserId: userId,
-          bookInfoId,
-          content,
-        }),
-      );
-  }
-
-  async updateReviews({ reviewsId, userId, content }: updateArgs) {
-    const review = await this.repo.findOneBy({ id: reviewsId });
     return match(review)
       .with(null, () => new ReviewNotFoundError(reviewsId))
       .with({ disabled: true }, () => new ReviewDisabledError(reviewsId))
-      .with({ userId }, () => this.repo.update(reviewsId, { content, updateUserId: userId }))
+      .with({ userId }, () => reviews.update(reviewsId, { content, updateUserId: userId }))
       .otherwise(() => new ReviewForbiddenAccessError({ userId, reviewsId }));
-  }
+  };
 
-  /** 도서 리뷰를 soft delete합니다.
-   * TODO: {@link Repository.softDelete} 사용?
-   */
-  async deleteReviews(reviewId: number, deleteUserId: number) {
-    await this.repo.update(reviewId, { deleteUserId, isDeleted: true });
-  }
-
-  /** 리뷰 공개/비공개 여부를 전환합니다. */
-  async patchReviews({ reviewsId, userId }: { reviewsId: number; userId: number }) {
-    const review = await this.repo.findOne({
+type MkPatchReviews = (deps: RepoDeps) => ReviewsService['patchReviews'];
+export const mkPatchReviews: MkPatchReviews =
+  ({ reviews }) =>
+  async ({ reviewsId, userId }) => {
+    const review = await reviews.findOne({
       select: { disabled: true, disabledUserId: true },
       where: { id: reviewsId },
     });
-
-    /** TODO: {@link Repository.save} 사용? */
     return match(review)
       .with(null, () => new ReviewNotFoundError(reviewsId))
       .otherwise(async ({ disabled }) =>
-        this.repo.update(reviewsId, {
+        reviews.update(reviewsId, {
           disabled: !disabled,
           disabledUserId: disabled ? null : userId,
         }),
       );
-  }
-}
+  };
+
+export type Args = { bookInfoId: number; reviewsId: number; userId: number; content: string };
+export type createArgs = { userId: number; bookInfoId: number; content: string };
+export type updateArgs = { reviewsId: number; userId: number; content: string };
+export type patchArgs = Pick<Args, 'reviewsId' | 'userId'>;
+
+export type ReviewsService = {
+  createReviews: (args: Omit<Args, 'reviewsId'>) => Promise<BookInfoNotFoundError | InsertResult>;
+  updateReviews: (args: Omit<Args, 'bookInfoId'>) => Promise<ReviewNotFoundError | UpdateResult>;
+  deleteReviews: (args: Pick<Args, 'reviewsId'> & { deleteUserId: number }) => Promise<void>;
+  patchReviews: (args: patchArgs) => Promise<ReviewNotFoundError | UpdateResult>;
+};
