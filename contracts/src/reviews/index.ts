@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { initContract } from '@ts-rest/core';
-import { bookInfoIdSchema, contentSchema, reviewsIdPathSchema } from './schema';
+import { contentSchema, reviewsIdPathSchema } from './schema';
+import { bookInfoIdSchema } from '../shared';
 
 export * from './schema';
 
@@ -25,6 +26,10 @@ export const reviewsContract = c.router(
       body: contentSchema,
       responses: {
         201: z.literal('리뷰가 작성되었습니다.'),
+        404: z.object({
+          code: z.literal('BOOK_INFO_NOT_FOUND'),
+          message: z.literal('검색한 책이 존재하지 않습니다.'),
+        }),
       },
     },
     patch: {

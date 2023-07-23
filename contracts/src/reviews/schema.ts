@@ -1,12 +1,10 @@
 import { z } from '../zodWithOpenapi';
-
-export const positiveInt = z.coerce.number().int().nonnegative();
+import { bookInfoIdSchema, positiveInt } from '../shared';
 
 export const userSchema = z.object({
   id: positiveInt,
 });
 
-export const bookInfoIdSchema = positiveInt.describe('개별 도서 ID');
 export const reviewsIdSchema = positiveInt.describe('도서 리뷰 ID');
 
 export const contentSchema = z.object({
