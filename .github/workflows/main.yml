@@ -40,9 +40,10 @@ jobs:
         working-directory: backend
         run: pnpm install
 
-      - name: build backend
-        working-directory: backend
-        run: pnpm build
+      # TODO(@scarf005): #594
+      # - name: build backend
+      #   working-directory: backend
+      #   run: pnpm build
 
       - name: create .env file
         run: |
