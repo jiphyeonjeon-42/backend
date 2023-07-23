@@ -54,6 +54,17 @@ export const reviewsContract = c.router(
         404: notFoundResponseSchema,
       },
     },
+    delete: {
+      method: 'DELETE',
+      path: '/:reviewsId',
+      pathParams: reviewsIdPathSchema,
+      description: mutationDescription('삭제'),
+      body: null,
+      responses: {
+        200: z.literal('리뷰가 삭제되었습니다.'),
+        404: notFoundResponseSchema,
+      },
+    }
   },
   //  pathPrefix 를 통해 모든 경로에 공통적으로 /reviews 를 붙여줍니다.
   //  여러 api 마다 공통적으로 /reviews/~~~ 를 사용하니까 중복해서 선언하는 것을 방지하기 위함.

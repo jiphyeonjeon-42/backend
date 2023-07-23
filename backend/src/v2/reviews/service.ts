@@ -2,10 +2,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { match } from 'ts-pattern';
 
-import { Repository, type InsertResult, type UpdateResult } from 'typeorm';
+import type { Repository, InsertResult, UpdateResult } from 'typeorm';
 import Reviews from '~/entity/entities/Reviews';
-import { BookInfoNotFoundError } from '../shared';
 import BookInfo from '~/entity/entities/BookInfo';
+
+import { BookInfoNotFoundError } from '../shared';
 
 export class ReviewNotFoundError extends Error {
   constructor(reviewsId: number) {
