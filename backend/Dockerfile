@@ -7,7 +7,10 @@ RUN npm install --global pnpm
 COPY . .
 RUN pnpm install
 
-RUN pnpm install --global pm2
-RUN pm2-runtime --version || exit 1
+ENTRYPOINT [ "pnpm", "prod" ]
 
-ENTRYPOINT [ "sh", "start.sh"]
+# RUN pnpm install --global pm2
+# RUN pm2-runtime --version || exit 1
+
+# TODO(@scarf005): #594
+# ENTRYPOINT [ "sh", "start.sh"]
