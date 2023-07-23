@@ -18,7 +18,7 @@ export class ReviewDisabledError extends Error {
 }
 
 export class ReviewForbiddenAccessError extends Error {
-  constructor({ userId, reviewsId }: {userId: number, reviewsId: number}) {
+  constructor({ userId, reviewsId }: { userId: number; reviewsId: number }) {
     super(`user ${userId} does not have permission to access reviewsId: ${reviewsId}`);
   }
 }
@@ -29,40 +29,58 @@ export class BookInfoNotFoundError extends Error {
   }
 }
 
-type RepoDeps = { reviews: Repository<Reviews> }
+type RepoDeps = { reviews: Repository<Reviews> };
 
-type MkCreateReviews = (deps: RepoDeps) => IReviewsService['createReviews']
+type MkCreateReviews = (deps: RepoDeps) => ReviewsService['createReviews'];
 
-export const mkCreateReviews: MkCreateReviews = ({ reviews }) =>
+export const mkCreateReviews: MkCreateReviews =
+  ({ reviews }) =>
   async ({ bookInfoId, userId, content }) =>
     match(await reviews.findOneBy({ id: bookInfoId }))
       .with(null, () => new BookInfoNotFoundError(bookInfoId))
       .otherwise(() => reviews.insert({ userId, updateUserId: userId, bookInfoId, content }));
 
-export type Args = { bookInfoId: number, reviewsId: number, userId: number, content: string }
-export type createArgs = { userId: number, bookInfoId: number, content: string }
-export type updateArgs = { reviewsId: number, userId: number, content: string }
+export type Args = { bookInfoId: number; reviewsId: number; userId: number; content: string };
+export type createArgs = { userId: number; bookInfoId: number; content: string };
+export type updateArgs = { reviewsId: number; userId: number; content: string };
 
 // TODO: 객체 타입 추출
-export type IReviewsService ={
-  createReviews: (args: Omit<Args, 'reviewsId'>) => Promise<BookInfoNotFoundError | InsertResult>
-  updateReviews: (args: Omit<Args, 'bookInfoId'>) => Promise<ReviewNotFoundError | UpdateResult>
-  deleteReviews: (args: Pick<Args, 'reviewsId'> & {deleteUserId: number} ) => Promise<void>
-  patchReviews: (args: Pick<Args, 'reviewsId' | 'userId'>) => Promise<ReviewNotFoundError | UpdateResult>
-}
-export default class ReviewsService {
-  // eslint-disable-next-line no-empty-function, no-useless-constructor
-  constructor(private readonly repo : Repository<Reviews>) {}
+export type ReviewsService = {
+  createReviews: (args: Omit<Args, 'reviewsId'>) => Promise<BookInfoNotFoundError | InsertResult>;
+  updateReviews: (args: Omit<Args, 'bookInfoId'>) => Promise<ReviewNotFoundError | UpdateResult>;
+  deleteReviews: (args: Pick<Args, 'reviewsId'> & { deleteUserId: number }) => Promise<void>;
+  patchReviews: (
+    args: Pick<Args, 'reviewsId' | 'userId'>,
+  ) => Promise<ReviewNotFoundError | UpdateResult>;
+};
 
-  async createReviews(
-    { bookInfoId, userId, content }: {userId: number, bookInfoId: number, content: string},
-  ) {
+/**
+ * @deprecated {@link ReviewsService}를 사용해주세요.
+ */
+export default class ReviewsServiceClass {
+  // eslint-disable-next-line no-empty-function, no-useless-constructor
+  constructor(private readonly repo: Repository<Reviews>) {}
+
+  async createReviews({
+    bookInfoId,
+    userId,
+    content,
+  }: {
+    userId: number;
+    bookInfoId: number;
+    content: string;
+  }) {
     const bookInfo = await this.repo.findOneBy({ id: bookInfoId });
     return match(bookInfo)
       .with(null, () => new BookInfoNotFoundError(bookInfoId))
-      .otherwise(() => this.repo.insert({
-        userId, updateUserId: userId, bookInfoId, content,
-      }));
+      .otherwise(() =>
+        this.repo.insert({
+          userId,
+          updateUserId: userId,
+          bookInfoId,
+          content,
+        }),
+      );
   }
 
   async updateReviews({ reviewsId, userId, content }: updateArgs) {
@@ -82,7 +100,7 @@ export default class ReviewsService {
   }
 
   /** 리뷰 공개/비공개 여부를 전환합니다. */
-  async patchReviews({ reviewsId, userId }: { reviewsId: number, userId: number }) {
+  async patchReviews({ reviewsId, userId }: { reviewsId: number; userId: number }) {
     const review = await this.repo.findOne({
       select: { disabled: true, disabledUserId: true },
       where: { id: reviewsId },
@@ -95,6 +113,7 @@ export default class ReviewsService {
         this.repo.update(reviewsId, {
           disabled: !disabled,
           disabledUserId: disabled ? null : userId,
-        }));
+        }),
+      );
   }
 }
