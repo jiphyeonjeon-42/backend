@@ -10,10 +10,10 @@
     "node": ">=20.3.1 || >=18.16.1 <20.0.0"
   },
   "scripts": {
-    "start": "node dist/server.js",
-    "build": "npx tsc -p ./tsconfig.prod.json",
-    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" -r tsconfig-paths/register src/server.ts",
-    "prod": "npx tsc -p ./tsconfig.prod.json && npm start",
+    "start": "ts-node -r tsconfig-paths/register --project ./tsconfig.prod.json src/server.ts",
+    "build": "echo '번들러 사용중이지 않아 빌드시 tsconfig paths 적용이 불가합니다' && exit 1",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec ts-node -r tsconfig-paths/register src/server.ts",
+    "prod": "pnpm start",
     "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
   },
