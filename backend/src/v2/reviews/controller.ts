@@ -5,14 +5,25 @@ import { contract } from '@jiphyeonjeon-42/contracts';
 
 import { P, match } from 'ts-pattern';
 
-import { ReviewsService, ReviewNotFoundError } from './service';
-import { bookInfoNotFound, getUser, BookInfoNotFoundError, reviewNotFound } from '../shared';
+import {
+  ReviewsService,
+  ReviewNotFoundError,
+  ReviewForbiddenAccessError,
+  ReviewDisabledError,
+} from './service';
+import {
+  bookInfoNotFound,
+  getUser,
+  BookInfoNotFoundError,
+  reviewNotFound,
+  HandlerFor,
+} from '../shared';
+import { UpdateResult } from 'typeorm';
 
-type PostReviewsDeps = Pick<ReviewsService, 'createReviews'>;
-type PostReviewsHandler = AppRouteOptions<typeof contract.reviews.post>['handler'];
-type MkPostReviews = (deps: PostReviewsDeps) => PostReviewsHandler;
-export const mkPostReviews: MkPostReviews =
-  ({ createReviews }): PostReviewsHandler =>
+type PostDeps = Pick<ReviewsService, 'createReviews'>;
+type MkPost = (deps: PostDeps) => HandlerFor<typeof contract.reviews.post>;
+export const mkPostReviews: MkPost =
+  ({ createReviews }) =>
   async ({ query: { bookInfoId }, body: { content }, req: { user } }) => {
     const { id: userId } = getUser.parse(user);
     const result = await createReviews({ bookInfoId, userId, content });
@@ -22,11 +33,10 @@ export const mkPostReviews: MkPostReviews =
       .otherwise(() => ({ status: 201, body: '리뷰가 작성되었습니다.' } as const));
   };
 
-type PatchReviewsDeps = Pick<ReviewsService, 'patchReviews'>;
-type PatchReviewsHandler = AppRouteOptions<typeof contract.reviews.patch>['handler'];
-type MkPatchReviews = (deps: PatchReviewsDeps) => PatchReviewsHandler;
-export const mkPatchReviews: MkPatchReviews =
-  ({ patchReviews }): PatchReviewsHandler =>
+type PatchDeps = Pick<ReviewsService, 'patchReviews'>;
+type MkPatch = (deps: PatchDeps) => HandlerFor<typeof contract.reviews.patch>;
+export const mkPatchReviews: MkPatch =
+  ({ patchReviews }) =>
   async ({ params: { reviewsId }, req: { user } }) => {
     const { id: userId } = getUser.parse(user);
     const result = await patchReviews({ reviewsId, userId });
@@ -36,32 +46,37 @@ export const mkPatchReviews: MkPatchReviews =
       .otherwise(() => ({ status: 200, body: '리뷰 공개 여부가 업데이트되었습니다.' } as const));
   };
 
-type PutReviewsDeps = Pick<ReviewsService, 'updateReviews'>;
-type PutReviewsHandler = AppRouteOptions<typeof contract.reviews.put>['handler'];
-type MkPutReviews = (deps: PutReviewsDeps) => PutReviewsHandler;
-export const mkPutReviews: MkPutReviews =
+type PutDeps = Pick<ReviewsService, 'updateReviews'>;
+type MkPut = (deps: PutDeps) => HandlerFor<typeof contract.reviews.put>;
+export const mkPutReviews: MkPut =
   ({ updateReviews }) =>
   async ({ params: { reviewsId }, body: { content }, req: { user } }) => {
     const { id: userId } = getUser.parse(user);
     const result = await updateReviews({ reviewsId, userId, content });
 
     return match(result)
-      .with(P.instanceOf(ReviewNotFoundError), () => reviewNotFound)
-      .otherwise(() => ({ status: 200, body: '리뷰가 수정되었습니다.' } as const));
+      .with(
+        P.instanceOf(UpdateResult),
+        () => ({ status: 200, body: '리뷰가 수정되었습니다.' } as const),
+      )
+      .otherwise(() => reviewNotFound);
   };
 
-type DeleteReviewsDeps = Pick<ReviewsService, 'deleteReviews'>;
-type DeleteReviewsHandler = AppRouteOptions<typeof contract.reviews.delete>['handler'];
-type MkDeleteReviews = (deps: DeleteReviewsDeps) => DeleteReviewsHandler;
-export const mkDeleteReviews: MkDeleteReviews =
+type DeleteDeps = Pick<ReviewsService, 'deleteReviews'>;
+type MkDelete = (deps: DeleteDeps) => HandlerFor<typeof contract.reviews.delete>;
+export const mkDeleteReviews: MkDelete =
   ({ deleteReviews }) =>
   async ({ params: { reviewsId }, req: { user } }) => {
-    const { id: deleteUserId, role } = getUser.passthrough().parse(user);
+    const deleter = getUser.parse(user);
+    const result = await deleteReviews({ reviewsId, deleter });
 
-
-    const result = await deleteReviews({ reviewsId, deleteUserId });
-
-    return match(result)
-      .with(P.instanceOf(ReviewNotFoundError), () => reviewNotFound)
-      .otherwise(() => ({ status: 200, body: '리뷰가 삭제되었습니다.' } as const));
+    return (
+      match(result)
+        .with(
+          P.instanceOf(UpdateResult),
+          () => ({ status: 200, body: '리뷰가 삭제되었습니다.' } as const),
+        )
+        // TODO: 403
+        .otherwise(() => reviewNotFound)
+    );
   };
