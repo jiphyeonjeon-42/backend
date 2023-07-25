@@ -27,6 +27,9 @@ export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
 };
 
 // Initialize
+if (!token) {
+  logger.warn("Slackbot OAuth token is not set. Slackbot won't work.");
+}
 const web = new WebClient(token);
 const userMap = new Map();
 

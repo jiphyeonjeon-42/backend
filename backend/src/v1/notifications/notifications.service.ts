@@ -74,12 +74,13 @@ export const notifyReservation = async () => {
 };
 
 export const notifyReservationOverdue = async () => {
-  const reservations: {
-    slack: string,
-    title: string,
-    bookId: number,
-    bookInfoId: number,
-  }[] = await executeQuery(`
+  type Reservation = {
+    slack?: string
+    title: string
+    bookId?: number
+    bookInfoId: number
+  }
+  const reservations: Reservation[] = await executeQuery(`
     SELECT
       user.slack AS slack,
       book_info.title AS title,
@@ -95,9 +96,11 @@ export const notifyReservationOverdue = async () => {
       reservation.status = 3 AND
       DATEDIFF(CURDATE(), DATE(reservation.endAt)) = 1
   `);
-  reservations.forEach(async (reservation) => {
-    publishMessage(reservation.slack, `:jiphyeonjeon: 예약 만료 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`의 예약이 만료되었습니다.`);
-    const ranks: [{id: number, createdAt: Date}] = await executeQuery(`
+  reservations
+    .filter((v): v is Required<Reservation> => v.slack !== undefined && v.bookId !== undefined)
+    .forEach(async (reservation) => {
+      publishMessage(reservation.slack, `:jiphyeonjeon: 예약 만료 알림 :jiphyeonjeon:\n예약하신 도서 \`${reservation.title}\`의 예약이 만료되었습니다.`);
+      const ranks: [{id: number, createdAt: Date}] = await executeQuery(`
       SELECT
         id,
         createdAt
@@ -107,7 +110,7 @@ export const notifyReservationOverdue = async () => {
         bookInfoId = ? AND status = 0
       ORDER BY createdAt ASC
     `, [reservation.bookInfoId]);
-    await executeQuery(`
+      await executeQuery(`
       UPDATE reservation
       SET
         bookId = ?,
@@ -115,7 +118,7 @@ export const notifyReservationOverdue = async () => {
       WHERE
         id = ?
     `, [reservation.bookId, ranks[0].id]);
-  });
+    });
 };
 
 export const notifyReturningReminder = async () => {
