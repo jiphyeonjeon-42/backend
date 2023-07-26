@@ -73,7 +73,7 @@ class BooksRepository extends Repository<Book> {
     limit: number,
     sort: object,
   ): Promise<[VSearchBookByTag[], number]> {
-    const [bookList, count] = await this.vSearchBookByTag.findAndCount({
+    const bookList = await this.vSearchBookByTag.find({
       select: [
         'id',
         'title',
@@ -90,7 +90,11 @@ class BooksRepository extends Repository<Book> {
       skip: page * limit,
       order: sort,
     });
-    return [bookList, count];
+    const allBookList = await this.vSearchBookByTag.find({
+      select: ['id'],
+      where: condition,
+    });
+    return [bookList, allBookList.length];
   }
 
   async getTotalItems(condition: string): Promise<number> {
