@@ -1,35 +1,19 @@
 import { contract } from '@jiphyeonjeon-42/contracts';
 import { initServer } from '@ts-rest/express';
-import jipDataSource from '~/app-data-source';
-import BookInfo from '~/entity/entities/BookInfo';
-import Reviews from '~/entity/entities/Reviews';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
 
-import { Repository } from 'typeorm';
+import jipDataSource from '~/app-data-source';
+import BookInfo from '~/entity/entities/BookInfo';
+import Reviews from '~/entity/entities/Reviews';
 import {
   mkDeleteReviews,
   mkPatchReviews,
   mkPostReviews,
   mkPutReviews,
 } from './controller';
-import {
-  ReviewsService as ReviewService,
-  mkCreateReview,
-  mkRemoveReview,
-  mkToggleReviewVisibility,
-  mkUpdateReview,
-} from './service';
-
-const implReviewService = (repos: {
-  reviews: Repository<Reviews>;
-  bookInfo: Repository<BookInfo>;
-}) => ({
-  createReview: mkCreateReview(repos),
-  removeReview: mkRemoveReview(repos),
-  updateReview: mkUpdateReview(repos),
-  toggleReviewVisibility: mkToggleReviewVisibility(repos),
-});
+import { ReviewsService as ReviewService } from './service';
+import { implReviewService } from './service/impl';
 
 const implReviewController = (service: ReviewService) => ({
   post: mkPostReviews(service),
@@ -43,7 +27,7 @@ const service = implReviewService({
   bookInfo: jipDataSource.getRepository(BookInfo),
 });
 
-const handler = implReviewController(service);
+export const handler = implReviewController(service);
 
 const s = initServer();
 export const reviews = s.router(contract.reviews, {
