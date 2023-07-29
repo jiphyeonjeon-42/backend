@@ -7,9 +7,9 @@ import {
   bookInfoNotFound,
   getUser,
   reviewNotFound,
-} from '../shared';
-import { ReviewsService } from './service';
-import { ReviewNotFoundError } from './service/errors';
+} from '../../shared';
+import { ReviewsService } from '../service';
+import { ReviewNotFoundError } from '../service/errors';
 
 type PostDeps = Pick<ReviewsService, 'createReview'>;
 type MkPost = (services: PostDeps) => HandlerFor<typeof contract.reviews.post>;
@@ -21,11 +21,15 @@ export const mkPostReviews: MkPost =
 
     return match(result)
       .with(P.instanceOf(BookInfoNotFoundError), () => bookInfoNotFound)
-      .otherwise(() => ({ status: 201, body: '리뷰가 작성되었습니다.' } as const));
+      .otherwise(
+        () => ({ status: 201, body: '리뷰가 작성되었습니다.' } as const),
+      );
   };
 
 type PatchDeps = Pick<ReviewsService, 'toggleReviewVisibility'>;
-type MkPatch = (services: PatchDeps) => HandlerFor<typeof contract.reviews.patch>;
+type MkPatch = (
+  services: PatchDeps,
+) => HandlerFor<typeof contract.reviews.patch>;
 export const mkPatchReviews: MkPatch =
   ({ toggleReviewVisibility }) =>
   async ({ params: { reviewsId }, req: { user } }) => {
@@ -34,7 +38,13 @@ export const mkPatchReviews: MkPatch =
 
     return match(result)
       .with(P.instanceOf(ReviewNotFoundError), () => reviewNotFound)
-      .otherwise(() => ({ status: 200, body: '리뷰 공개 여부가 업데이트되었습니다.' } as const));
+      .otherwise(
+        () =>
+          ({
+            status: 200,
+            body: '리뷰 공개 여부가 업데이트되었습니다.',
+          } as const),
+      );
   };
 
 type PutDeps = Pick<ReviewsService, 'updateReview'>;
@@ -54,7 +64,9 @@ export const mkPutReviews: MkPut =
   };
 
 type DeleteDeps = Pick<ReviewsService, 'removeReview'>;
-type MkDelete = (services: DeleteDeps) => HandlerFor<typeof contract.reviews.delete>;
+type MkDelete = (
+  services: DeleteDeps,
+) => HandlerFor<typeof contract.reviews.delete>;
 export const mkDeleteReviews: MkDelete =
   ({ removeReview }) =>
   async ({ params: { reviewsId }, req: { user } }) => {
