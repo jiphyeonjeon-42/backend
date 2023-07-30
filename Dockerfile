@@ -7,7 +7,7 @@ RUN npm install --global pnpm
 RUN pnpm config set store-dir .pnpm-store
 RUN pnpm install --global node-pre-gyp
 
-WORKDIR /backend
+WORKDIR /app
 
 FROM pnpm-installed as workspace
 COPY ./pnpm-lock.yaml .
@@ -21,6 +21,7 @@ ADD . ./
 RUN pnpm -r install --frozen-lockfile --offline
 RUN pnpm -r run build
 
-# WORKDIR /backend
+WORKDIR /app/backend
+
 EXPOSE 3000
 ENTRYPOINT [ "pnpm", "prod" ]
