@@ -10,10 +10,10 @@
     "node": ">=20.3.1 || >=18.16.1 <20.0.0"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register --project ./tsconfig.prod.json src/server.ts",
+    "start": "npx vite-node src/server.ts",
     "build": "pnpm --filter='@jiphyeonjeon-42/contracts' build",
-    "dev": "nodemon --watch src --watch ../contracts/dist --exec ts-node src/server.ts",
-    "prod": "pnpm build && pnpm start",
+    "dev": "vite-node --watch src/server.ts",
+    "standalone": "npm run build && npm run start",
     "lint": "eslint --fix --ext .js,.ts src",
     "test": "jest"
   },
