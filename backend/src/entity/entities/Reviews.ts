@@ -6,14 +6,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './User';
-import BookInfo from './BookInfo';
+import { User } from './User';
+import { BookInfo } from './BookInfo';
 
  @Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
  @Index('FK_bookInfo2', ['bookInfoId'], {})
 @Entity('reviews')
 
-class Reviews {
+export class Reviews {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id: number;
 
@@ -66,6 +66,4 @@ class Reviews {
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
     bookInfo: BookInfo;
- }
-
-export default Reviews;
+}

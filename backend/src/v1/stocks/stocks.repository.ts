@@ -3,17 +3,16 @@ import {
   QueryRunner, Repository,
 } from 'typeorm';
 import { startOfDay, addDays } from 'date-fns';
-import book from '~/entity/entities/Book';
-import VStock from '~/entity/entities/VStock';
+import { Book, VStock } from '~/entity/entities';
 import jipDataSource from '~/app-data-source';
 
-class StocksRepository extends Repository<book> {
+class StocksRepository extends Repository<Book> {
   private readonly vStock: Repository<VStock>;
 
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    super(book, entityManager);
+    super(Book, entityManager);
 
     this.vStock = new Repository<VStock>(
       VStock,

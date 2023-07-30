@@ -3,8 +3,7 @@
 import { match } from 'ts-pattern';
 
 import type { Repository } from 'typeorm';
-import BookInfo from '~/entity/entities/BookInfo';
-import Reviews from '~/entity/entities/Reviews';
+import type { Reviews, BookInfo } from '~/entity/entities';
 
 import { BookInfoNotFoundError } from '~/v2/shared/errors';
 import type { ReviewsService } from '.';

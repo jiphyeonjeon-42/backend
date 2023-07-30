@@ -1,12 +1,11 @@
 import { Repository } from 'typeorm';
-import type BookInfo from '~/entity/entities/BookInfo';
-import type Reviews from '~/entity/entities/Reviews';
 import {
   mkCreateReview,
   mkRemoveReview,
   mkToggleReviewVisibility,
   mkUpdateReview,
 } from './service';
+import type { Reviews, BookInfo } from '~/entity/entities';
 
 export const implReviewService = (repos: {
   reviews: Repository<Reviews>;

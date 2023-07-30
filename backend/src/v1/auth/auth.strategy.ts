@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Strategy as FortyTwoStrategy } from 'passport-42';
+import FortyTwoStrategy from 'passport-42';
 import { ExtractJwt, Strategy as JWTStrategy, VerifiedCallback } from 'passport-jwt';
 import { jwtOption, oauth42ApiOption, oauthUrlOption } from '~/config';
 

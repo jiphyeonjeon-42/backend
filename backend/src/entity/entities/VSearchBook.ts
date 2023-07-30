@@ -1,7 +1,7 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
-import BookInfo from './BookInfo';
-import Book from './Book';
-import Category from './Category';
+import { BookInfo } from './BookInfo';
+import { Book } from './Book';
+import { Category } from './Category';
 
 @ViewEntity('v_search_book', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -75,5 +75,3 @@ export class VSearchBook {
   @ViewColumn()
     isLendable: boolean;
 }
-
-export default VSearchBook;

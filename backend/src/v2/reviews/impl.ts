@@ -4,10 +4,9 @@ import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
 
 import jipDataSource from '~/app-data-source';
-import BookInfo from '~/entity/entities/BookInfo';
-import Reviews from '~/entity/entities/Reviews';
 import { implReviewController } from './controller/impl';
 import { implReviewService } from './service/impl';
+import { BookInfo, Reviews } from '~/entity/entities';
 
 const service = implReviewService({
   reviews: jipDataSource.getRepository(Reviews),
