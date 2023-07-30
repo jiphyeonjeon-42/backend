@@ -1,0 +1,9 @@
+diff --git a/src/index.d.ts b/src/index.d.ts
+index 07d95e53eef6937cbb8adb9b1ce629829177e540..1780010c0b3b19605970fe7ad741ca5b9185d58d 100644
+--- a/src/index.d.ts
++++ b/src/index.d.ts
+@@ -1,3 +1,3 @@
+ export * from './lib/ts-rest-express';
+-export { TsRestRequest, TsRestRequestHandler } from './lib/types';
++export * from './lib/types';
+ export { RequestValidationError } from './lib/request-validation-error';

@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 
 files:
-  - source:  /
+  - source: /
     destination: /home/ec2-user/backend-express
     overwrite: true
 file_exists_behavior: OVERWRITE
