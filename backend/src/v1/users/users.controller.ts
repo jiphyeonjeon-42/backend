@@ -1,11 +1,10 @@
 import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
-import PasswordValidator from 'password-validator';
 import * as status from 'http-status';
-import { z } from 'zod';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { logger } from '~/v1/utils/logger';
+import PasswordValidator from 'password-validator';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
+import ErrorResponse from '~/v1/utils/error/errorResponse';
 import { User } from '../DTO/users.model';
 import UsersService from './users.service';
 import { searchSchema } from './users.types';

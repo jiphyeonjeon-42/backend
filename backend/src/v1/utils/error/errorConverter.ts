@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import * as Status from 'http-status';
-import ErrorResponse from './errorResponse';
-import { logger } from '../logger';
 import * as errorCode from './errorCode';
+import ErrorResponse from './errorResponse';
 
 export default function errorConverter(
   err: Error | ErrorResponse,

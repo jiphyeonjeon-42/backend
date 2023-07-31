@@ -1,4 +1,4 @@
-import { LogLevel, LogLevelOption } from './config.type';
+import type { LogLevel, LogLevelOption } from './config.type';
 import { RuntimeMode } from './runtimeOption';
 
 export const levels = {
