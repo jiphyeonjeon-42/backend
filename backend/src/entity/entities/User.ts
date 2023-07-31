@@ -5,19 +5,19 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import Book from './Book';
-import Lending from './Lending';
-import Likes from './Likes';
-import Reservation from './Reservation';
-import Reviews from './Reviews';
-import SubTag from './SubTag';
-import SuperTag from './SuperTag';
+import { Book } from './Book';
+import { Lending } from './Lending';
+import { Likes } from './Likes';
+import { Reservation } from './Reservation';
+import { Reviews } from './Reviews';
+import { SubTag } from './SubTag';
+import { SuperTag } from './SuperTag';
 
 @Index('email', ['email'], { unique: true })
 @Index('intraId', ['intraId'], { unique: true })
 @Index('slack', ['slack'], { unique: true })
 @Entity('user')
-class User {
+export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id: number;
 
@@ -89,5 +89,3 @@ class User {
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
     superTags: SuperTag[];
 }
-
-export default User;

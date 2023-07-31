@@ -1,15 +1,16 @@
+/* eslint-disable max-classes-per-file */
 import {
-  In, InsertResult, Like, QueryRunner, Repository,
+  In, QueryRunner, Repository,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
-import * as errorCode from '~/v1/utils/error/errorCode';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import SubTag from '~/entity/entities/SubTag';
-import User from '~/entity/entities/User';
-import SuperTag from '~/entity/entities/SuperTag';
-import VTagsSubDefault from '~/entity/entities/VTagsSubDefault';
-import BookInfo from '~/entity/entities/BookInfo';
 import jipDataSource from '~/app-data-source';
+import {
+  BookInfo,
+  SubTag,
+  SuperTag,
+  User,
+  VTagsSubDefault,
+} from '~/entity/entities';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 
 export class SubTagRepository extends Repository<SubTag> {

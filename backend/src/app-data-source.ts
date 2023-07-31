@@ -1,18 +1,22 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { connectOption } from '~/config';
+import { connectMode, connectOption } from '~/config';
+import * as entities from '~/entity/entities';
+import { logger } from './v1/utils/logger';
 
 export const option: DataSourceOptions = {
   type: 'mysql',
   port: 3306,
   ...connectOption,
-  entities: [
-    `${__dirname}/**/entities/*.{js,ts}`,
-  ],
+  entities: Object.values(entities),
   logging: true,
   //  synchronize: true,
   poolSize: 200,
 };
-console.log(__dirname);
+logger.info(__dirname);
 const jipDataSource = new DataSource(option);
+await jipDataSource.initialize().then(() => {
+  logger.info('typeORM INIT SUCCESS');
+  logger.info(connectMode);
+});
 
 export default jipDataSource;

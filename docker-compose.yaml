@@ -29,6 +29,7 @@ services:
     container_name: backend
     build:
       context: .
+    entrypoint: ["./node_modules/.bin/vite-node", "src/server.ts"]
     volumes:
       - ./backend/logs:/app/backend/logs
     ports:

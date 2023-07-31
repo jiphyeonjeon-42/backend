@@ -1,6 +1,6 @@
 import { QueryRunner, Repository } from 'typeorm';
-import Likes from '~/entity/entities/Likes';
 import jipDataSource from '~/app-data-source';
+import { Likes } from '~/entity/entities';
 
 class LikesRepository extends Repository<Likes> {
   constructor(transactionQueryRunner?: QueryRunner) {

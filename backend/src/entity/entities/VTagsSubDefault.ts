@@ -1,8 +1,8 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
-import BookInfo from './BookInfo';
-import SuperTag from './SuperTag';
-import SubTag from './SubTag';
-import User from './User';
+import { BookInfo } from './BookInfo';
+import { SuperTag } from './SuperTag';
+import { SubTag } from './SubTag';
+import { User } from './User';
 
 @ViewEntity('v_tags_sub_default', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -57,4 +57,4 @@ export class VTagsSubDefault {
     visibility: string;
 }
 
-export default VTagsSubDefault;
+

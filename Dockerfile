@@ -23,5 +23,3 @@ RUN pnpm -r run build
 
 WORKDIR /app/backend
 
-EXPOSE 3000
-ENTRYPOINT [ "pnpm", "prod" ]

@@ -1,6 +1,6 @@
 import { ViewEntity, ViewColumn, DataSource } from 'typeorm';
-import BookInfo from './BookInfo';
-import Reservation from './Reservation';
+import { BookInfo } from './BookInfo';
+import { Reservation } from './Reservation';
 
 @ViewEntity({
   expression: (Data: DataSource) => Data
@@ -12,8 +12,8 @@ import Reservation from './Reservation';
     .addSelect(
       `(SELECT COUNT(*)
        FROM reservation
-       WHERE (status = 0) 
-        AND (bookInfoId = reservedBookInfoId) 
+       WHERE (status = 0)
+        AND (bookInfoId = reservedBookInfoId)
         AND (createdAt <= reservationDate))`,
       'ranking',
     )
@@ -25,7 +25,7 @@ import Reservation from './Reservation';
     .leftJoin(BookInfo, 'bi', 'r.bookInfoId = bi.id')
     .where('r.status = 0'),
 })
-class UserReservation {
+export class UserReservation {
   @ViewColumn()
     reservationId: number;
 
@@ -53,5 +53,3 @@ class UserReservation {
   @ViewColumn()
     userId: number;
 }
-
-export default UserReservation;
