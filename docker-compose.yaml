@@ -27,16 +27,13 @@ services:
 
   backend:
     container_name: backend
-    #image : node:16
     build:
-      context: ./backend
+      context: .
+    entrypoint: ["./node_modules/.bin/vite-node", "src/server.ts"]
     volumes:
-      #- ./backend/src/:/src/
-      - ./backend/logs:/logs
-    #command: ${MODE}
+      - ./backend/logs:/app/backend/logs
     ports:
       - 3000:3000
-      #- 80:80
     env_file: .env
 volumes:
   db_data:

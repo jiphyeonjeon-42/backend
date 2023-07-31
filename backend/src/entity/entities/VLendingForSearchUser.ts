@@ -50,5 +50,3 @@ export class VLendingForSearchUser {
   @ViewColumn()
     reservedNum: number;
 }
-
-export default VLendingForSearchUser;

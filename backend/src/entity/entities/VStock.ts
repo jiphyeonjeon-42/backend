@@ -1,9 +1,9 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
-import BookInfo from './BookInfo';
-import Book from './Book';
-import Category from './Category';
-import Lending from './Lending';
-import Reservation from './Reservation';
+import { BookInfo } from './BookInfo';
+import { Book } from './Book';
+import { Category } from './Category';
+import { Lending } from './Lending';
+import { Reservation } from './Reservation';
 
 @ViewEntity('v_stock', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -74,4 +74,4 @@ export class VStock {
     updatedAt: Date;
 }
 
-export default VStock;
+

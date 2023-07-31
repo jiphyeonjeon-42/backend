@@ -51,6 +51,9 @@ jobs:
           MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
           MYSQL_USER=${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          BACKUP_USER=${{ secrets.BACKUP_USER}}
+          BACKUP_PASSWORD=${{ secrets.BACKUP_PASSWORD }}
+          ADMIN_SLACK_ID=${{ secrets.ADMIN_SLACK_ID }}
           DB_SCHEMA=${{ secrets.DB_SCHEMA }}
           MODE=${{ secrets.MODE }}
           NODE_ENV=${{ secrets.NODE_ENV }}

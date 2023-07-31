@@ -7,14 +7,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import SubTag from './SubTag';
-import User from './User';
-import BookInfo from './BookInfo';
+import { SubTag } from './SubTag';
+import { User } from './User';
+import { BookInfo } from './BookInfo';
 
 @Index('userId', ['userId'], {})
 @Index('bookInfoId', ['bookInfoId'], {})
 @Entity('super_tag', { schema: 'jip_dev' })
-export default class SuperTag {
+export class SuperTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id: number;
 

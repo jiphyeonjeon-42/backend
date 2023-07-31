@@ -1,15 +1,12 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
 import * as Status from 'http-status';
-import { VSearchBook } from '~/entity/entities/VSearchBook';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import Book from '~/entity/entities/Book';
-import BookInfo from '~/entity/entities/BookInfo';
-import Lending from '~/entity/entities/Lending';
-import Category from '~/entity/entities/Category';
-import User from '~/entity/entities/User';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
 import VSearchBookByTag from '~/entity/entities/VSearchBookByTag';
+import {
+  Book, BookInfo, User, Lending, Category, VSearchBook,
+} from '~/entity/entities';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
 } from './books.type';

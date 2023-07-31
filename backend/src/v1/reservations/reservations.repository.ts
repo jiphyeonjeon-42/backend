@@ -2,15 +2,18 @@ import {
   Brackets,
   IsNull, MoreThan, Not, QueryRunner, Repository,
 } from 'typeorm';
-import BookInfo from '~/entity/entities/BookInfo';
-import User from '~/entity/entities/User';
-import Lending from '~/entity/entities/Lending';
-import Book from '~/entity/entities/Book';
-import reservation from '~/entity/entities/Reservation';
+
+import {
+  BookInfo,
+  User,
+  Lending,
+  Book,
+  Reservation,
+} from '~/entity/entities';
 import jipDataSource from '~/app-data-source';
 import { Meta } from '../DTO/common.interface';
 
-class ReservationsRepository extends Repository<reservation> {
+class ReservationsRepository extends Repository<Reservation> {
   private readonly bookInfo: Repository<BookInfo>;
 
   private readonly book: Repository<Book>;
@@ -22,7 +25,7 @@ class ReservationsRepository extends Repository<reservation> {
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
-    super(reservation, entityManager);
+    super(Reservation, entityManager);
 
     this.bookInfo = new Repository<BookInfo>(
       BookInfo,
@@ -132,12 +135,13 @@ class ReservationsRepository extends Repository<reservation> {
   async createReservation(userId: number, bookInfoId:number): Promise<void> {
     await this.createQueryBuilder()
       .insert()
-      .into(reservation)
+      .into(Reservation)
       .values([{ userId, bookInfoId }])
       .execute();
   }
 
-  async searchReservations(query: string, filter: string, page: number, limit: number): Promise<{ meta: Meta; items: reservation[] }> {
+  async searchReservations(query: string, filter: string, page: number, limit: number):
+    Promise<{ meta: Meta; items: Reservation[] }> {
     const searchAll = this
       .createQueryBuilder('r')
       .select('r.id', 'reservationsId')
@@ -175,7 +179,7 @@ class ReservationsRepository extends Repository<reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
-    const items = await searchAll.offset(limit * page).limit(limit).getRawMany<reservation>();
+    const items = await searchAll.offset(limit * page).limit(limit).getRawMany<Reservation>();
     const totalItems = await searchAll.getCount();
     const meta : Meta = {
       totalItems,

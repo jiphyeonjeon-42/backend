@@ -1,8 +1,6 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
-import Reviews from '~/entity/entities/Reviews';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import BookInfo from '~/entity/entities/BookInfo';
-import User from '~/entity/entities/User';
+import { Reviews, BookInfo, User } from '~/entity/entities';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
 

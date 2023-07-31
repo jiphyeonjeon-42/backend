@@ -1,13 +1,12 @@
 /* eslint-disable prefer-regex-literals */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
+import jipDataSource from '~/app-data-source';
 import { nationalIsbnApiKey, naverBookApiOption } from '~/config';
+import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import { logger } from '~/v1/utils/logger';
 import { StringRows } from '~/v1/utils/types';
-import jipDataSource from '~/app-data-source';
-import { categoryWithBookCount } from '~/v1/DTO/common.interface';
 import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
 import * as models from './books.model';
 import BooksRepository from './books.repository';

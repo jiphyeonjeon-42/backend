@@ -53,5 +53,3 @@ export class VLending {
   @ViewColumn()
     dueDate: Date;
 }
-
-export default VLending;
