@@ -7,11 +7,9 @@ import {
   transports,
 } from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
-import { logLevelOption } from '~/config';
-import {
-  colors,
-  levels,
-} from '~/config/logOption';
+import { logFormatOption, logLevelOption } from '~/config';
+
+const { colors, levels } = logFormatOption;
 
 const {
   combine, timestamp, printf, colorize, errors,

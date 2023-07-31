@@ -9,6 +9,8 @@ import { getOauth42ApiOption, getOauthUrlOption } from './oauthOption';
 import { getRuntimeMode } from './runtimeOption';
 import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 
+export * as logFormatOption from './logOption';
+
 // .env 파일을 읽어서 process.env에 추가
 dotenv.config();
 
