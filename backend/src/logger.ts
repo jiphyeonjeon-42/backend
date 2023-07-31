@@ -19,7 +19,7 @@ const {
 
 addColors(colors);
 
-const logDir = '../../logs';
+const logDir = '../logs';
 const logTimestampFormat = 'YYYY-MM-DD HH:mm:ss:ms';
 const datePattern = 'YYYY-MM-DD';
 

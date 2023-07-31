@@ -2,7 +2,7 @@
 import { QueryRunner } from 'typeorm';
 import jipDataSource from '~/app-data-source';
 import { connectMode } from '~/config';
-import { logger } from '~/v1/utils/logger';
+import { logger } from '~/logger';
 import UsersService from './users.service';
 
 const usersService = new UsersService();
