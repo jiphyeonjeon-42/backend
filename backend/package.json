@@ -15,6 +15,7 @@
     "dev": "nodemon --watch src --watch ../contracts/dist --exec ts-node src/server.ts",
     "prod": "pnpm build && pnpm start",
     "lint": "eslint --fix --ext .js,.ts src",
+    "check": "tsc --project ./tsconfig.prod.json --noEmit",
     "test": "jest"
   },
   "devDependencies": {
