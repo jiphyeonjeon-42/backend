@@ -8,13 +8,13 @@ import { logger } from '~/v1/utils/logger';
 import { StringRows } from '~/v1/utils/types';
 import jipDataSource from '~/app-data-source';
 import { categoryWithBookCount } from '~/v1/DTO/common.interface';
+import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
   categoryIds,
 } from './books.type';
-import VSearchBookByTag from "~/entity/entities/VSearchBookByTag";
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -298,7 +298,6 @@ export const searchInfoByTag = async (
       categoryList[index].bookCount += 1;
     }
   });
-  console.log(bookList);
   const meta = {
     totalItems: count,
     itemCount: bookList.length,
