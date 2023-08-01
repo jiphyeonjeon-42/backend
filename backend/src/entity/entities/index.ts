@@ -15,4 +15,5 @@ export * from './VLendingForSearchUser.ts';
 export * from './VSearchBook.ts';
 export * from './VStock.ts';
 export * from './VTagsSubDefault.ts';
+export * from './VTagsSuperDefault.ts';
 export * from './VUserLending.ts';
