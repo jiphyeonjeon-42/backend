@@ -8,5 +8,5 @@ import { histories } from './histories/impl';
 const s = initServer();
 export default s.router(contract, {
   reviews,
-  histories
+  histories,
 });
