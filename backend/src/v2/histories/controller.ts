@@ -6,22 +6,49 @@ import {
   unauthorized,
 } from '../shared';
 import { HistoriesService } from './service';
-import { getHistoriesSearchCondition, getHistoriesUserInfo } from './type';
 
-// mkGetHistories
-type GetDeps = Pick<HistoriesService, 'searchHistories'>;
-type MkGet = (services: GetDeps) => HandlerFor<typeof contract.histories.get>;
-export const mkGetHistories: MkGet = ({ searchHistories }) =>
+// mkGetMyHistories
+type GetMyDeps = Pick<HistoriesService, 'searchMyHistories'>;
+type MkGetMy = (services: GetMyDeps) => HandlerFor<typeof contract.histories.getMyHistories>;
+export const mkGetMyHistories: MkGetMy = ({ searchMyHistories }) =>
   async ({
     query: {
-      query, who, page, limit, type,
-    }, req: user,
+      query, page, limit, type,
+    },
   }) => {
-    const userInfo = getHistoriesUserInfo.safeParse(user);
-    const parsedQuery = getHistoriesSearchCondition.safeParse(query);
-    const result = await searchHistories(parsedQuery, userInfo);
+    contract.histories.getMyHistories.query.safeParse({
+      query, page, limit, type,
+    });
+    const result = await searchMyHistories({
+      query, page, limit, type,
+    });
 
     return match(result)
       .with(P.instanceOf(UnauthorizedError), () => unauthorized)
-      .otherwise(() => ({ status: 200, body: '대출 기록이 성공적으로 조회되었습니다.' } as const));
+      .otherwise(() => ({
+        status: 200,
+        body: contract.histories.getMyHistories.responses[200].value,
+      } as const));
+  };
+
+// mkGetAllHistories
+type GetAllDeps = Pick<HistoriesService, 'searchAllHistories'>;
+type MkGetAll = (services: GetAllDeps) => HandlerFor<typeof contract.histories.getAllHistories>;
+export const mkGetAllHistories: MkGetAll = ({ searchAllHistories }) =>
+  async ({
+    query: {
+      query, page, limit, type,
+    },
+  }) => {
+    const parsedQuery = contract.histories.getMyHistories.query.parse({
+      query, page, limit, type,
+    });
+    const result = await searchAllHistories(parsedQuery);
+
+    return match(result)
+      .with(P.instanceOf(UnauthorizedError), () => unauthorized)
+      .otherwise(() => ({
+        status: 200,
+        body: contract.histories.getAllHistories.responses[200].value,
+      } as const));
   };
