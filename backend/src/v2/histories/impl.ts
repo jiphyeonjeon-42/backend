@@ -9,32 +9,38 @@ import authValidate from '~/v1/auth/auth.validate';
 import { Repository } from 'typeorm';
 import VHistories from '~/entity/entities/VHistories';
 
-import { mkGetHistories } from './controller';
+import { mkGetMyHistories, mkGetAllHistories } from './controller';
 import {
   HistoriesService,
-  MkSearchHistories,
+  mkSearchHistories,
 } from './service';
 
 const implHistoriesService = (repos: {
-  histories: Repository<VHistories>;
+  historiesRepo: Repository<VHistories>;
 }) => ({
-  searchHistories: MkSearchHistories(repos),
+  searchMyHistories: mkSearchHistories(repos),
+  searchAllHistories: mkSearchHistories(repos),
 });
 
 const implHistoriesController = (service: HistoriesService) => ({
-  get: mkGetHistories(service),
+  getMyHistories: mkGetMyHistories(service),
+  getAllHistories: mkGetAllHistories(service),
 });
 
 const service = implHistoriesService({
-  histories: jipDataSource.getRepository(VHistories),
+  historiesRepo: jipDataSource.getRepository(VHistories),
 });
 
 const handler = implHistoriesController(service);
 
 const s = initServer();
 export const histories = s.router(contract.histories, {
-  get: {
+  getMyHistories: {
     middleware: [authValidate(roleSet.all)],
-    handler: handler.get,
+    handler: handler.getMyHistories,
+  },
+  getAllHistories: {
+    middleware: [authValidate(roleSet.librarian)],
+    handler: handler.getAllHistories,
   },
 });
