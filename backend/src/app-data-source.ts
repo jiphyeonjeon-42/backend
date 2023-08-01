@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { connectMode, connectOption } from '~/config';
 import * as entities from '~/entity/entities';
-import { logger } from './v1/utils/logger';
+import { logger } from './logger';
 
 export const option: DataSourceOptions = {
   type: 'mysql',
