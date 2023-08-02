@@ -65,11 +65,13 @@ const v2Specs = generateOpenApi(
     setOperationId: false,
   },
 );
-app.get('/docs.json', (_req, res) => res.json(v2Specs));
+
+const v2JsonPath = '/swagger-v2/openapi.json';
+app.get(v2JsonPath, (_req, res) => res.json(v2Specs));
 app.use(
-  '/docs',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/docs.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/docs.json' }),
+  '/swagger-v2',
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v2JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v2JsonPath }),
 );
 
 // dev route
