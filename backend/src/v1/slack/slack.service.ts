@@ -1,7 +1,7 @@
 import { WebClient } from '@slack/web-api';
 import { ResultSetHeader } from 'mysql2';
-import { logger } from '~/v1/utils/logger';
 import { botOAuthToken as token } from '~/config';
+import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import UsersService from '~/v1/users/users.service';
 import * as models from '../DTO/users.model';

@@ -2,10 +2,10 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
-import { logger } from '~/v1/utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';

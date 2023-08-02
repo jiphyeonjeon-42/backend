@@ -2,9 +2,9 @@ import {
   NextFunction, Request, Response,
 } from 'express';
 import * as status from 'http-status';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { logger } from '~/v1/utils/logger';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
+import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as historiesService from './histories.service';
 
 // eslint-disable-next-line import/prefer-default-export

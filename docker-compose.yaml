@@ -27,13 +27,10 @@ services:
 
   backend:
     container_name: backend
-    #image : node:16
     build:
       context: .
     volumes:
-      #- ./backend/src/:/src/
-      - ./backend/logs:/logs
-    #command: ${MODE}
+      - ./backend/logs:/app/backend/logs
     ports:
       - 3000:3000
     env_file: .env

@@ -6,11 +6,11 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import jipDataSource from '~/app-data-source';
 import { connectMode } from '~/config';
+import { logger, morganMiddleware } from '~/logger';
 import { FtAuthentication, FtStrategy, JwtStrategy } from '~/v1/auth/auth.strategy';
 import swaggerOptions from '~/v1/swagger/swagger';
 import errorConverter from '~/v1/utils/error/errorConverter';
 import errorHandler from '~/v1/utils/error/errorHandler';
-import { logger, morganMiddleware } from '~/v1/utils/logger';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { contract } from '@jiphyeonjeon-42/contracts';
