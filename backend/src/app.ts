@@ -45,11 +45,12 @@ passport.use('jwt', JwtStrategy);
 
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
-app.get('/swagger.json', (_req, res) => res.json(specs));
+const v1JsonPath = '/swagger/openapi.json';
+app.get(v1JsonPath, (_req, res) => res.json(specs));
 app.use(
   '/swagger',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/swagger.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/swagger.json' }),
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v1JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v1JsonPath }),
 );
 
 const v2Specs = generateOpenApi(
