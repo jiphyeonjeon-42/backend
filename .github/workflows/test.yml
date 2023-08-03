@@ -3,6 +3,10 @@ name: Test
 on:
   pull_request:
 
+defaults:
+  run:
+      shell: bash
+
 jobs:
   test:
     name: Test PR
@@ -10,6 +14,8 @@ jobs:
     environment: development
 
     steps:
+      - uses: reviewdog/action-setup@v1
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -40,12 +46,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm --filter='@jiphyeonjeon-42/contracts' build
 
-      - if: always()
-        name: check types (backend)
-        working-directory: backend
-        run: pnpm check
-
-      - if: always()
-        name: check types (contracts)
-        working-directory: contracts
-        run: pnpm check
+      - name: check types
+        if: always()
+        run: |
+          pnpm -r --no-bail --parallel run check | sed -r 's|(.*)( check: )(.*)|\1/\3|'
