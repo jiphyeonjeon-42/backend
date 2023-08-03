@@ -40,5 +40,12 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm --filter='@jiphyeonjeon-42/contracts' build
 
-      - name: check types
-        run: pnpm -r --no-bail check
+      - if: always()
+        name: check types (backend)
+        working-directory: backend
+        run: pnpm check
+
+      - if: always()
+        name: check types (contracts)
+        working-directory: contracts
+        run: pnpm check
