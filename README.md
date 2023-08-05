@@ -25,17 +25,20 @@
 
 - [chanheki](https://github.com/chanhihi)
 - [chanykim](https://github.com/naranghae)
-- [danpark](https://github.com/honeyl3ee)
 - [gilee](https://github.com/weg901127)
 - [gshim](https://github.com/OverRaddit)
-- [jang-cho](https://github.com/cjho0316)
-- [jihwjeon](https://github.com/JeongJiHwan)
-- [jimin](https://github.com/jhMin95)
 - [jolim](https://github.com/evelon)
-- [sechung](https://github.com/middlefitting)
 - [seongyle](https://github.com/YeonSeong-Lee)
 - [tkim](https://github.com/kth2624)
 - [wocho](https://github.com/greenaloud)
+
+## 현재 개발팀
+
+- [danpark](https://github.com/honeyl3ee)
+- [jang-cho](https://github.com/cjho0316)
+- [jihwjeon](https://github.com/JeongJiHwan)
+- [jimin](https://github.com/jhMin95)
+- [sechung](https://github.com/middlefitting)
 - [yena](https://github.com/nyj001012)
 - [yeonhkim](https://github.com/Yonaim)
 - [youkim](https://github.com/scarf005)
