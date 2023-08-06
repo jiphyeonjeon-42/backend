@@ -14,6 +14,7 @@ import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
   categoryIds,
 } from './books.type';
+import { categoryWithBookCount } from '../DTO/common.interface';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
