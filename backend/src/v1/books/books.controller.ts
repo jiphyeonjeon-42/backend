@@ -9,6 +9,7 @@ import isNullish from '~/v1/utils/isNullish';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';
+import * as parseCheck from '~/v1/utils/parseCheck';
 
 const likesService = new LikesService();
 
