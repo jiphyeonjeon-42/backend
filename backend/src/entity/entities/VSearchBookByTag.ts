@@ -1,9 +1,8 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
-import Category from '~/entity/entities/Category';
-import Book from '~/entity/entities/Book';
-import BookInfo from './BookInfo';
-import SuperTag from './SuperTag';
-import SubTag from './SubTag';
+import { BookInfo } from './BookInfo';
+import { Category } from './Category';
+import { SubTag } from './SubTag';
+import { SuperTag } from './SuperTag';
 
 @ViewEntity('v_search_book_by_tag', {
   expression: (Data: DataSource) => Data.createQueryBuilder()

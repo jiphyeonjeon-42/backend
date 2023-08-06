@@ -3,7 +3,7 @@ import * as Status from 'http-status';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
-import VSearchBookByTag from '~/entity/entities/VSearchBookByTag';
+import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
 import {
   Book, BookInfo, User, Lending, Category, VSearchBook,
 } from '~/entity/entities';
