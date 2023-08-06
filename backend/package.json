@@ -15,6 +15,7 @@
     "dev": "vite-node --watch src/server.ts",
     "standalone": "npm run build && npm run start",
     "lint": "eslint --fix --ext .js,.ts src",
+    "check": "tsc --project ./tsconfig.prod.json --noEmit",
     "test": "jest"
   },
   "devDependencies": {

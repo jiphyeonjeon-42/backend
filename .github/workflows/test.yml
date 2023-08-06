@@ -13,24 +13,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup node.js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-      - name: setup pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest-8 --activate
-          pnpm config set store-dir .pnpm-store
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
 
       - name: install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter='@jiphyeonjeon-42/contracts' build
+
+      - if: always()
+        name: check types (backend)
         working-directory: backend
-        run: pnpm install
+        run: pnpm check
 
-      # TODO(@scarf005): #594
-      # - name: build backend
-      #   working-directory: backend
-      #   run: pnpm build
-
-      # TODO: 테스트 실행
+      - if: always()
+        name: check types (contracts)
+        working-directory: contracts
+        run: pnpm check

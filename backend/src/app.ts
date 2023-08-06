@@ -45,11 +45,12 @@ passport.use('jwt', JwtStrategy);
 
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
-app.get('/swagger.json', (_req, res) => res.json(specs));
+const v1JsonPath = '/swagger/openapi.json';
+app.get(v1JsonPath, (_req, res) => res.json(specs));
 app.use(
   '/swagger',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/swagger.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/swagger.json' }),
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v1JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v1JsonPath }),
 );
 
 const v2Specs = generateOpenApi(
@@ -64,11 +65,13 @@ const v2Specs = generateOpenApi(
     setOperationId: false,
   },
 );
-app.get('/docs.json', (_req, res) => res.json(v2Specs));
+
+const v2JsonPath = '/swagger-v2/openapi.json';
+app.get(v2JsonPath, (_req, res) => res.json(v2Specs));
 app.use(
-  '/docs',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/docs.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/docs.json' }),
+  '/swagger-v2',
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v2JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v2JsonPath }),
 );
 
 // dev route

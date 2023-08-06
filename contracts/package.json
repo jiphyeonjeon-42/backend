@@ -6,8 +6,9 @@
   "types": "dist/index.d.ts",
   "author": "the jiphyeonjeon developers",
   "scripts": {
-    "build": "npx tsc",
-    "dev": "npx tsc -w"
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@anatine/zod-openapi": "^2.0.1",
