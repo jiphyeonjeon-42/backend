@@ -28,3 +28,11 @@ export const bookInfoNotFoundSchema =
 export const unauthorizedSchema = mkErrorMessageSchema('UNAUTHORIZED').describe(
   '권한이 없습니다.',
 );
+
+export const metaSchema = z.object({
+  totalItems: z.number().nonnegative(),
+  itemCount: z.number().nonnegative(),
+  itemsPerPage: z.number().nonnegative(),
+  totalPages: z.number().nonnegative(),
+  currentPage: z.number().nonnegative(),
+});
