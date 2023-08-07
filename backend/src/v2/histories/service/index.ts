@@ -14,7 +14,7 @@ export type HistoriesService = {
     ) => Promise<UnauthorizedError | [VHistories[], Meta]>;
   searchAllHistories: (
     args: Args,
-    ) => Promise<UnauthorizedError | [VHistories[], Meta]>;
+    ) => Promise<{ items: VHistories[], meta: Meta }>;
   }
 
 export * from './service';

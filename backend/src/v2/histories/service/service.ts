@@ -27,7 +27,7 @@ type whereCondition = {
 
 export const mkSearchHistories: MkSearchHistories = ({ historiesRepo }) => async ({
   query, type, page, limit,
-}) => {
+}): Promise<{ items: VHistories[], meta: Meta }> => {
   let filterQuery: whereCondition = {
     login: Like('%%'),
     title: Like('%%'),
