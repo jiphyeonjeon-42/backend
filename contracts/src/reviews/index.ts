@@ -15,6 +15,11 @@ const c = initContract();
 
 export const reviewsContract = c.router(
   {
+    // get: {
+    //   method: 'GET',
+    //   path: '/',
+    //   query:
+    // },
     post: {
       method: 'POST',
       path: '/',

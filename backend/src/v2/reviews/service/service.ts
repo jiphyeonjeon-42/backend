@@ -3,8 +3,9 @@
 import { match } from 'ts-pattern';
 
 import type { Repository } from 'typeorm';
-import type { Reviews, BookInfo } from '~/entity/entities';
+import type { BookInfo, Reviews } from '~/entity/entities';
 
+import { db } from '~/v2/database';
 import { BookInfoNotFoundError } from '~/v2/shared/errors';
 import type { ReviewsService } from '.';
 import { ReviewDisabledError, ReviewForbiddenAccessError, ReviewNotFoundError } from './errors';
@@ -56,17 +57,31 @@ export const mkUpdateReview: MkUpdateReview =
       .otherwise(() => new ReviewForbiddenAccessError({ userId, reviewsId }));
   };
 
+export const findReviewsById = (id: number) =>
+  db
+    .selectFrom('reviews')
+    .where('id', '=', id)
+    .select(['disabled', 'disabledUserId'])
+    .executeTakeFirst()
+
+// export const toggleReviewVisibility = (id: number) =>
+//   db
+//     .updateTable('reviews')
+//     .where('id', '=', id)
+//     .set((eb) => ({
+//       disabled: eb.not('disabled'),
+//       deleteUserId: eb.fn('if', [])
+//       // disabledUserId: eb.raw('IF(disabled, NULL, disabledUserId)'),
+//     }))
+
 type MkToggleReviewVisibility = (repos: Repos) => ReviewsService['toggleReviewVisibility'];
 export const mkToggleReviewVisibility: MkToggleReviewVisibility =
   ({ reviews }) =>
   async ({ reviewsId, userId }) => {
-    type Queried = Pick<Reviews, 'disabled' | 'disabledUserId'> | null;
-    const review: Queried = await reviews.findOne({
-      select: { disabled: true, disabledUserId: true },
-      where: { id: reviewsId },
-    });
+    const review = await findReviewsById(reviewsId)
+
     return match(review)
-      .with(null, () => new ReviewNotFoundError(reviewsId))
+      .with(undefined, () => new ReviewNotFoundError(reviewsId))
       .otherwise(async ({ disabled }) =>
         reviews.update(reviewsId, {
           disabled: !disabled,

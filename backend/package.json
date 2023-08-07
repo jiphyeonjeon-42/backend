@@ -16,7 +16,8 @@
     "standalone": "npm run build && npm run start",
     "lint": "eslint --fix --ext .js,.ts src",
     "check": "tsc --project ./tsconfig.prod.json --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "schema": ". ./.env; kysely-codegen --dialect=mysql --url=mysql://${RDS_USERNAME}:${RDS_PASSWORD}@${RDS_HOSTNAME}/${RDS_DB_NAME} --out-file src/v2/types.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
