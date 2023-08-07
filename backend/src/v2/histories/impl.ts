@@ -3,27 +3,9 @@ import { initServer } from '@ts-rest/express';
 import jipDataSource from '~/app-data-source';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
-
-import { Repository } from 'typeorm';
 import { VHistories } from '~/entity/entities/VHistories';
-
-import { mkGetMyHistories, mkGetAllHistories } from './controller';
-import {
-  HistoriesService,
-  mkSearchHistories,
-} from './service';
-
-const implHistoriesService = (repos: {
-  historiesRepo: Repository<VHistories>;
-}) => ({
-  searchMyHistories: mkSearchHistories(repos),
-  searchAllHistories: mkSearchHistories(repos),
-});
-
-const implHistoriesController = (service: HistoriesService) => ({
-  getMyHistories: mkGetMyHistories(service),
-  getAllHistories: mkGetAllHistories(service),
-});
+import { implHistoriesService } from '~/v2/histories/service/impl';
+import { implHistoriesController } from '~/v2/histories/controller/impl';
 
 const service = implHistoriesService({
   historiesRepo: jipDataSource.getRepository(VHistories),

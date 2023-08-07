@@ -3,10 +3,9 @@ import { P, match } from 'ts-pattern';
 import {
   UnauthorizedError,
   HandlerFor,
-  unauthorized, Meta,
-} from '../shared';
-import { HistoriesService } from './service';
-import { VHistories } from "~/entity/entities";
+  unauthorized,
+} from '../../shared';
+import { HistoriesService } from '../service';
 
 // mkGetMyHistories
 type GetMyDeps = Pick<HistoriesService, 'searchMyHistories'>;
@@ -28,8 +27,6 @@ export const mkGetMyHistories: MkGetMy = ({ searchMyHistories }) =>
       .with(P.instanceOf(UnauthorizedError), () => unauthorized)
       .otherwise(() => ({
         status: 200,
-
-
         body: result,
       } as const));
   };
