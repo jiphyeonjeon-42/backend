@@ -2,10 +2,8 @@
 import { match } from 'ts-pattern';
 
 import { FindOperator, Like, type Repository } from 'typeorm';
-import VHistories from '~/entity/entities/VHistories';
+import { VHistories } from '~/entity/entities/VHistories';
 
-import { UnauthorizedError } from '~/v2/shared/errors';
-import User from '~/entity/entities/User';
 import { Meta } from '~/v2/shared';
 import type { HistoriesService } from '.';
 
@@ -20,29 +18,37 @@ type MkSearchHistories = (
 type whereCondition = {
   login: FindOperator<string>,
   title: FindOperator<string>,
-} | [{
-  login: FindOperator<string>,
-  title: FindOperator<string>,
-}];
+  callSign: FindOperator<string>,
+} | [
+  { login: FindOperator<string> },
+  { title: FindOperator<string> },
+  { callSign: FindOperator<string> },
+];
 
-export const mkSearchHistories: MkSearchHistories = (histories) => async ({
+export const mkSearchHistories: MkSearchHistories = ({ historiesRepo }) => async ({
   query, type, page, limit,
 }) => {
   let filterQuery: whereCondition = {
     login: Like('%%'),
     title: Like('%%'),
+    callSign: Like('%%'),
   };
-  if (type === 'user') {
-    filterQuery.login = Like(`%${query}%`);
-  } else if (type === 'title') {
-    filterQuery.title = Like(`%${query}%`);
-  } else {
-    filterQuery = [{
-      login: Like(`%${query}%`),
-      title: Like(`%${query}%`),
-    }];
+  if (query !== undefined) {
+    if (type === 'user') {
+      filterQuery.login = Like(`%${query}%`);
+    } else if (type === 'title') {
+      filterQuery.title = Like(`%${query}%`);
+    } else if (type === 'callsign') {
+      filterQuery.callSign = Like(`%${query}%`);
+    } else {
+      filterQuery = [
+        { login: Like(`%${query}%`) },
+        { title: Like(`%${query}%`) },
+        { callSign: Like(`%${query}%`) },
+      ];
+    }
   }
-  const [items, count] = await histories.historiesRepo.findAndCount({
+  const [items, count] = await historiesRepo.findAndCount({
     where: filterQuery,
     take: limit,
     skip: limit * page,
@@ -54,5 +60,9 @@ export const mkSearchHistories: MkSearchHistories = (histories) => async ({
     totalPages: Math.ceil(count / limit),
     currentPage: page + 1,
   };
-  return [items, meta];
+  const returnObject = {
+    items,
+    meta,
+  };
+  return returnObject;
 };
