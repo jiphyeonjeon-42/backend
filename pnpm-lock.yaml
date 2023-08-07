@@ -77,6 +77,9 @@ importers:
       jsonwebtoken:
         specifier: ^8.5.1
         version: 8.5.1
+      kysely:
+        specifier: ^0.26.1
+        version: 0.26.1
       morgan:
         specifier: ^1.10.0
         version: 1.10.0
@@ -121,7 +124,7 @@ importers:
         version: 4.4.7(@types/node@18.16.1)
       vite-node:
         specifier: https://github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz
-        version: 0.33.0(@types/node@18.16.1)
+        version: '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz(@types/node@18.16.1)'
       vite-tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0(typescript@5.1.6)(vite@4.4.7)
@@ -195,6 +198,9 @@ importers:
       jest-mock-extended:
         specifier: ^3.0.4
         version: 3.0.4(jest@29.5.0)(typescript@5.1.6)
+      kysely-paginate:
+        specifier: ^0.2.0
+        version: 0.2.0(kysely@0.26.1)
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
@@ -4718,6 +4724,19 @@ packages:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
     dev: false
 
+  /kysely-paginate@0.2.0(kysely@0.26.1):
+    resolution: {integrity: sha512-LsnhnfmXJH+bjFVGy67dXkg21QYBFffLFI+R1FDr/wSyq3yMXGKaxwlbl9r7kXe1QZPXLSIB3oT+nmC1waDTqg==}
+    engines: {node: '>= 16.14.0'}
+    peerDependencies:
+      kysely: ^0.24.2
+    dependencies:
+      kysely: 0.26.1
+    dev: true
+
+  /kysely@0.26.1:
+    resolution: {integrity: sha512-FVRomkdZofBu3O8SiwAOXrwbhPZZr8mBN5ZeUWyprH29jzvy6Inzqbd0IMmGxpd4rcOCL9HyyBNWBa8FBqDAdg==}
+    engines: {node: '>=14.0.0'}
+
   /leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
@@ -6950,28 +6969,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /vite-node@0.33.0(@types/node@18.16.1):
-    resolution: {integrity: sha512-19FpHYbwWWxDr73ruNahC+vtEdza52kA90Qb3La98yZ0xULqV8A5JLNPUff0f5zID4984tW7l3DH2przTJUZSw==}
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.4
-      mlly: 1.4.0
-      pathe: 1.1.1
-      picocolors: 1.0.0
-      vite: 4.4.7(@types/node@18.16.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: false
-
   /vite-tsconfig-paths@4.2.0(typescript@5.1.6)(vite@4.4.7):
     resolution: {integrity: sha512-jGpus0eUy5qbbMVGiTxCL1iB9ZGN6Bd37VGLJU39kTDD6ZfULTTb1bcc5IeTWqWJKiWV5YihCaibeASPiGi8kw==}
     peerDependencies:
@@ -7291,3 +7288,28 @@ packages:
 
   /zod@3.21.4:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+
+  '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz(@types/node@18.16.1)':
+    resolution: {tarball: https://github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz}
+    id: '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz'
+    name: vite-node
+    version: 0.33.0
+    engines: {node: '>=v14.18.0'}
+    hasBin: true
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.4
+      mlly: 1.4.0
+      pathe: 1.1.1
+      picocolors: 1.0.0
+      vite: 4.4.7(@types/node@18.16.1)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: false

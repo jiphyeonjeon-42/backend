@@ -11,22 +11,31 @@ type Args = {
 };
 
 export type ReviewsService = {
+  searchReviews: (
+    args: {
+      query: string,
+      page: number,
+      perPage: number,
+      visibility: 'public' | 'private' | 'all',
+      sort: 'asc' | 'desc',
+    }
+  ) => Promise<unknown>,
   createReview: (
     args: Pick<Args, 'bookInfoId' | 'userId' | 'content'>,
-  ) => Promise<BookInfoNotFoundError | InsertResult>;
+  ) => Promise<BookInfoNotFoundError | unknown>;
   updateReview: (
     args: Pick<Args, 'reviewsId' | 'userId' | 'content'>,
   ) => Promise<
-    ReviewForbiddenAccessError | ReviewNotFoundError | ReviewDisabledError | UpdateResult
+    ReviewForbiddenAccessError | ReviewNotFoundError | ReviewDisabledError | unknown
   >;
   removeReview: (
     args: Pick<Args, 'reviewsId' | 'deleter'>,
   ) => Promise<
-    ReviewForbiddenAccessError | ReviewNotFoundError | ReviewDisabledError | UpdateResult
+    ReviewForbiddenAccessError | ReviewNotFoundError | ReviewDisabledError | unknown
   >;
   toggleReviewVisibility: (
     args: Pick<Args, 'reviewsId' | 'userId'>,
-  ) => Promise<ReviewNotFoundError | UpdateResult>;
+  ) => Promise<ReviewNotFoundError | unknown>;
 };
 
 export * from './service';

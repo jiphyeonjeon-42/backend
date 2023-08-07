@@ -1,4 +1,4 @@
-import type { ColumnType } from "kysely";
+import type { ColumnType, SqlBool } from "kysely";
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
@@ -50,7 +50,7 @@ export interface Likes {
   id: Generated<number>;
   userId: number;
   bookInfoId: number;
-  isDeleted: Generated<number>;
+  isDeleted: SqlBool;
 }
 
 export interface Reservation {
@@ -71,10 +71,10 @@ export interface Reviews {
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
   updateUserId: number;
-  isDeleted: Generated<number>;
+  isDeleted: SqlBool;
   deleteUserId: Generated<number | null>;
   content: string;
-  disabled: Generated<number>;
+  disabled: SqlBool;
   disabledUserId: Generated<number | null>;
 }
 
@@ -84,7 +84,7 @@ export interface SubTag {
   superTagId: number;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
-  isDeleted: Generated<number>;
+  isDeleted: SqlBool;
   updateUserId: number;
   content: string;
   isPublic: Generated<number>;
@@ -96,7 +96,7 @@ export interface SuperTag {
   bookInfoId: number;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
-  isDeleted: Generated<number>;
+  isDeleted: SqlBool;
   updateUserId: number;
   content: string;
 }
@@ -238,8 +238,8 @@ export interface VTagsSubDefault {
   content: string;
   superTagId: Generated<number>;
   superContent: string;
-  isPublic: Generated<number>;
-  isDeleted: Generated<number>;
+  isPublic: SqlBool;
+  isDeleted: SqlBool;
   visibility: Generated<string>;
 }
 

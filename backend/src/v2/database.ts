@@ -3,13 +3,22 @@ import { createPool } from 'mysql2';
 import { connectOption } from '~/config/index.ts';
 import type { DB } from './types.ts';
 
+const { username: user, ...rest } = connectOption
+
 const dialect = new MysqlDialect({
   pool: createPool({
     port: 3306,
-    ...connectOption,
-    user: connectOption.username,
+    ...rest,
+    user,
     connectionLimit: 10,
   })
 })
 
-export const db = new Kysely<DB>({ dialect })
+export const db = new Kysely<DB>({
+  dialect,
+  log: (event) => {
+    console.log(event.query.sql, event.query.parameters)
+  }
+})
+
+export type KyDB = typeof db
