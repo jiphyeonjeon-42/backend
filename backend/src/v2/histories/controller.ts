@@ -28,7 +28,9 @@ export const mkGetMyHistories: MkGetMy = ({ searchMyHistories }) =>
       .with(P.instanceOf(UnauthorizedError), () => unauthorized)
       .otherwise(() => ({
         status: 200,
-        body: contract.histories.getMyHistories.responses[200],
+
+
+        body: result,
       } as const));
   };
 
