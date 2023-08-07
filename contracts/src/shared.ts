@@ -30,9 +30,9 @@ export const unauthorizedSchema = mkErrorMessageSchema('UNAUTHORIZED').describe(
 );
 
 export const metaSchema = z.object({
-  totalItems: z.number().nonnegative(),
-  itemCount: z.number().nonnegative(),
-  itemsPerPage: z.number().nonnegative(),
-  totalPages: z.number().nonnegative(),
-  currentPage: z.number().nonnegative(),
+  totalItems: positiveInt,
+  itemCount: positiveInt,
+  itemsPerPage: positiveInt,
+  totalPages: positiveInt,
+  currentPage: positiveInt,
 });
