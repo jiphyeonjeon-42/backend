@@ -11,10 +11,10 @@ type Args = {
 export type HistoriesService = {
   searchMyHistories: (
     args: Args,
-    ) => Promise<UnauthorizedError | [VHistories[], Meta]>;
+    ) => Promise<UnauthorizedError | { items: VHistories[], meta: Meta }>;
   searchAllHistories: (
     args: Args,
-    ) => Promise<{ items: VHistories[], meta: Meta }>;
+    ) => Promise<UnauthorizedError | { items: VHistories[], meta: Meta }>;
   }
 
 export * from './service';
