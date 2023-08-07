@@ -1,21 +1,11 @@
 {
 	"tasks": {
-		// 개발 서버
-		"dev": "deno run -A --watch main.ts",
-        "test": "deno test -A example",
-
-		// 스키마 추가
-		"schema": "deno run -A gen_schema.ts",
-
-		// 패키지 관리
-		"esm:add": "deno run -A https://esm.sh/v130 add",
-		"esm:update": "deno run -A https://esm.sh/v130 update",
-		"esm:remove": "deno run -A https://esm.sh/v130 remove"
+		"dev": "deno task --cwd contracts"
 	},
 	"importMap": "./import_map.json",
 	"fmt": {
 		"semiColons": false,
-        "indentWidth": 2,
+		"indentWidth": 2,
 		"useTabs": true,
 		"proseWrap": "never"
 	}

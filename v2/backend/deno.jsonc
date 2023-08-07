@@ -1,0 +1,10 @@
+{
+	"tasks": {
+		// 개발 서버
+		"dev": "deno run -A --watch main.ts",
+		"test": "deno test -A example",
+
+		// 스키마 추가
+		"schema": "deno run -A gen_schema.ts"
+	}
+}

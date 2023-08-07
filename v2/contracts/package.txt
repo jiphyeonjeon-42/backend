@@ -1,0 +1,24 @@
+{
+  "name": "@jiphyeonjeon-42/contracts",
+  "version": "0.0.4-alpha",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "the jiphyeonjeon developers",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anatine/zod-openapi": "^2.0.1",
+    "openapi3-ts": "^4.1.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/parser": "^6.1.0",
+    "eslint": "^8.45.0",
+    "@apidevtools/swagger-cli": "^4.0.4",
+    "openapi-endpoint-trimmer": "^2.0.0"
+  }
+}

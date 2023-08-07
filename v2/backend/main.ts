@@ -1,7 +1,8 @@
-import { cors, jwt, logger } from "hono/middleware.ts"
-import { Hono, HTTPException } from "hono/mod.ts"
-import { createHonoEndpoints, initServer } from "ts-rest-hono"
-import { db } from "~/db.ts"
+// import { cors, jwt, logger } from "hono/middleware.ts"
+// import { Hono, HTTPException } from "hono/mod.ts"
+// import { createHonoEndpoints, initServer } from "ts-rest-hono"
+import { db } from "./db.ts"
+import { Hono, logger } from "./deps/hono.ts"
 import { JWT_KEY, JWT_SECRET } from "./JWT_SECRET.ts"
 import { roleSchema } from "./roleSchema.ts"
 

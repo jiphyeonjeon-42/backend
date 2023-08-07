@@ -4,7 +4,7 @@
   "npm": {
     "specifiers": {
       "@anatine/zod-openapi": "@anatine/zod-openapi@2.1.0_openapi3-ts@4.1.2_zod@3.21.4",
-      "@ts-rest/core": "@ts-rest/core@3.27.0",
+      "@ts-rest/core": "@ts-rest/core@3.27.0_zod@3.21.4",
       "zod": "zod@3.21.4"
     },
     "packages": {
@@ -16,9 +16,11 @@
           "zod": "zod@3.21.4"
         }
       },
-      "@ts-rest/core@3.27.0": {
+      "@ts-rest/core@3.27.0_zod@3.21.4": {
         "integrity": "sha512-Wy0Agj5pV9KN5Fch2thezTlGEEfGwUqrZW1h5oJUw6cKakhnvndYCjSPgt0/X7OycZfWIX0OAufrBAQ9FuYj3A==",
-        "dependencies": {}
+        "dependencies": {
+          "zod": "zod@3.21.4"
+        }
       },
       "openapi3-ts@4.1.2": {
         "integrity": "sha512-B7gOkwsYMZO7BZXwJzXCuVagym2xhqsrilVvV0dnq2Di4+iLUXKVX9gOK23ZqaAHZOwABXN0QTdW8QnkUTX6DA==",
