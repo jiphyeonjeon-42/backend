@@ -1,7 +1,7 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
-  historiesGetQuerySchema,
+  historiesGetQuerySchema, historiesGetResponseSchema,
 } from './schema';
 import { unauthorizedSchema } from '../shared';
 
@@ -18,7 +18,7 @@ export const historiesContract = c.router(
       description: '마이페이지에서 본인의 대출 기록을 가져온다.',
       query: historiesGetQuerySchema,
       responses: {
-        200: z.literal('대출 기록이 성공적으로 조회되었습니다.'),
+        200: historiesGetResponseSchema,
         401: unauthorizedSchema,
       },
     },
@@ -28,7 +28,7 @@ export const historiesContract = c.router(
       description: '사서가 전체 대출 기록을 가져온다.',
       query: historiesGetQuerySchema,
       responses: {
-        200: z.literal('대출 기록이 성공적으로 조회되었습니다.'),
+        200: historiesGetResponseSchema,
         401: unauthorizedSchema,
       },
     },
