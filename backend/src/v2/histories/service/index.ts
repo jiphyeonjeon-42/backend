@@ -1,4 +1,4 @@
-import VHistories from '~/entity/entities/VHistories';
+import { VHistories } from '~/entity/entities/VHistories';
 import { Meta, UnauthorizedError } from '~/v2/shared';
 
 type Args = {

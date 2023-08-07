@@ -1,13 +1,11 @@
 import { contract } from '@jiphyeonjeon-42/contracts';
 import { initServer } from '@ts-rest/express';
 import jipDataSource from '~/app-data-source';
-import BookInfo from '~/entity/entities/BookInfo';
-// import Histories from '~/entity/entities/Histories';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
 
 import { Repository } from 'typeorm';
-import VHistories from '~/entity/entities/VHistories';
+import { VHistories } from '~/entity/entities/VHistories';
 
 import { mkGetMyHistories, mkGetAllHistories } from './controller';
 import {
