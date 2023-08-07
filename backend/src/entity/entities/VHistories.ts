@@ -28,7 +28,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 })
 export class VHistories {
   @ViewColumn()
-    id: string;
+    id: number;
 
   @ViewColumn()
     lendingCondition: string;
