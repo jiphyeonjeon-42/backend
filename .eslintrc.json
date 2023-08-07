@@ -12,7 +12,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": ["**/dist/*.js", "**/dist/*.d.ts"],
+  "ignorePatterns": ["**/dist/*.js", "**/dist/*.d.ts", "v2/**/*"],
   "rules": {
     "import/extensions": "off",
     "import/prefer-default-export": "off",

@@ -1,0 +1,16 @@
+{
+  "imports": {
+    "~/": "./",
+    "std/": "https://deno.land/std@0.197.0/",
+    "hono/": "https://deno.land/x/hono@v3.3.4/",
+    "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
+    "@hono/zod-validator": "https://esm.sh/v130/*@hono/zod-validator@0.1.4",
+    "kysely": "https://esm.sh/v130/kysely@0.26.1",
+    "kysely/": "https://esm.sh/v130/kysely@0.26.1/",
+    "ts-pattern": "https://esm.sh/v130/ts-pattern@5.0.5",
+    "ts-rest-hono": "npm:/ts-rest-hono",
+    "mysql2": "npm:/mysql2@3.6.0",
+    "mysql2/": "npm:/mysql2@3.6.0/"
+  },
+  "scopes": {}
+}
