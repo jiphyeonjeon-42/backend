@@ -47,7 +47,7 @@
     "typeorm-model-generator": "^0.4.6"
   },
   "dependencies": {
-    "@jiphyeonjeon-42/contracts": "workspace:*",
+    "@jiphyeonjeon-42/contracts": "link:../v2/contracts/npm",
     "@slack/web-api": "^6.7.1",
     "@ts-rest/express": "^3.26.4",
     "@ts-rest/open-api": "^3.26.4",

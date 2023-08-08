@@ -1,13 +1,17 @@
 {
-  "tasks": {
-    // 개발 서버
-    "dev": "deno run -A --watch src/mod.ts",
-    "test": "deno test -A example"
-  },
-  "fmt": {
-    "semiColons": false,
-    "indentWidth": 2,
-    "useTabs": true,
-    "proseWrap": "never"
-  }
+	"exclude": ["npm"],
+	"tasks": {
+		// 개발 서버
+		"dev": "deno run -A --watch src/mod.ts",
+		"test": "deno test -A example",
+
+		"dnt": "deno run -A build_npm.ts"
+	},
+	"fmt": {
+		"semiColons": false,
+		"indentWidth": 2,
+		"useTabs": true,
+		"proseWrap": "never"
+	},
+	"lock": "../deno.lock"
 }

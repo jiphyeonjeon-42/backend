@@ -33,8 +33,8 @@ importers:
   backend:
     dependencies:
       '@jiphyeonjeon-42/contracts':
-        specifier: workspace:*
-        version: link:../contracts
+        specifier: link:../v2/contracts/npm
+        version: link:../v2/contracts/npm
       '@slack/web-api':
         specifier: ^6.7.1
         version: 6.7.1

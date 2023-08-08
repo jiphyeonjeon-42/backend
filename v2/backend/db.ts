@@ -2,7 +2,7 @@ import { Kysely, MysqlDialect } from "kysely"
 import { createPool } from "mysql2"
 import * as dotenv from "std/dotenv/mod.ts"
 import { z } from "zod"
-import type { DB } from "./generated/schema.ts"
+import type { DB } from "../generated/schema.ts"
 
 export const connectOptionSchema = z.object({
 	RDS_DB_NAME: z.string().min(1),

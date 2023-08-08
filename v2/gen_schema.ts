@@ -1,7 +1,7 @@
 import { Project } from "https://deno.land/x/ts_morph@19.0.0/mod.ts"
 import { DialectManager, Generator, Logger } from "npm:kysely-codegen"
 import { load } from "std/dotenv/mod.ts"
-import { connectOptionSchema } from "~/db.ts"
+import { connectOptionSchema } from "./backend/db.ts"
 
 const connectionStringSchema = connectOptionSchema.transform((v) =>
 	`mysql://${v.user}:${v.password}@${v.host}/${v.database}`

@@ -1,5 +1,4 @@
-import { initContract } from "@ts-rest/core"
-import { z } from "../deps.ts"
+import { initContract, z } from "../deps.ts"
 import {
 	bookInfoIdSchema,
 	bookInfoNotFoundSchema,

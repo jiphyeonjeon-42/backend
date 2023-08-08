@@ -1,6 +1,12 @@
 {
+	"exclude": ["contracts/npm"],
 	"tasks": {
-		"dev": "deno task --cwd contracts"
+        "backend": "deno task --cwd backend",
+		"contracts": "deno task --cwd contracts",
+
+		"esm:add": "deno run -A https://esm.sh/v130 add",
+		"esm:update": "deno run -A https://esm.sh/v130 update",
+		"esm:remove": "deno run -A https://esm.sh/v130 remove"
 	},
 	"importMap": "./import_map.json",
 	"fmt": {
@@ -8,5 +14,9 @@
 		"indentWidth": 2,
 		"useTabs": true,
 		"proseWrap": "never"
+	},
+	"compilerOptions": {
+		"noErrorTruncation": true,
+		"exactOptionalPropertyTypes": true
 	}
 }
