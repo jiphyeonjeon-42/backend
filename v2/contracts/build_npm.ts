@@ -11,9 +11,9 @@ await build({
 	shims: {
 		// see JS docs for overview and more options
 	},
-    importMap: "../import_map.json",
-    // packageManager: "pnpm",
-    scriptModule: false,
+	importMap: "../import_map.json",
+	// packageManager: "pnpm",
+	scriptModule: false,
 	package: {
 		name: "@jiphyeonjeon-42/contracts",
 		version: "0.1.0-alpha",

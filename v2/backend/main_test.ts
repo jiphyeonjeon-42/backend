@@ -11,5 +11,5 @@ Deno.test("delete review", async () => {
 	const res = await app.request("http://localhost/reviews/123", {
 		method: "DELETE",
 	})
-    assertEquals(res.status, 200)
+	assertEquals(res.status, 200)
 })

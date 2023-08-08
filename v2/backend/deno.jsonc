@@ -1,13 +1,13 @@
 {
-  "tasks": {
-    // 개발 서버
-    "dev": "deno run -A --watch main.ts",
-    "test": "deno test -A",
+	"tasks": {
+		// 개발 서버
+		"dev": "deno run -A --watch main.ts",
+		"test": "deno test -A",
 
-    // 스키마 추가
-    "schema": "deno run -A gen_schema.ts"
-  },
-  "importMap": "../import_map.json",
-  "lock": "../deno.lock",
-  "nodeModulesDir": false
+		// 스키마 추가
+		"schema": "deno run -A gen_schema.ts"
+	},
+	"importMap": "../import_map.json",
+	"lock": "../deno.lock",
+	"nodeModulesDir": false
 }

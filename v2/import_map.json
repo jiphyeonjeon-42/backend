@@ -1,15 +1,22 @@
 {
-  "imports": {
-    "std/": "https://deno.land/std@0.197.0/",
-    "hono/": "https://deno.land/x/hono@v3.4.0/",
-    "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
-    "@hono/zod-validator": "https://esm.sh/v130/*@hono/zod-validator@0.1.4",
-    "kysely": "https://esm.sh/v130/kysely@0.26.1",
-    "kysely/": "https://esm.sh/v130/kysely@0.26.1/",
-    "ts-pattern": "https://esm.sh/v130/ts-pattern@5.0.5",
-    "ts-rest-hono": "https://raw.githubusercontent.com/scarf005/ts-rest-hono/6398ff52d22a602a7a0beaba65b1db6839111ff7/deno_dist/mod.ts",
-    "mysql2": "npm:/mysql2@3.6.0",
-    "mysql2/": "npm:/mysql2@3.6.0/"
-  },
-  "scopes": {}
+	"imports": {
+		"std/": "https://deno.land/std@0.197.0/",
+		"hono/": "https://deno.land/x/hono@v3.4.0/",
+		"zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
+		"@hono/zod-validator": "https://esm.sh/v130/*@hono/zod-validator@0.1.4",
+		"@ts-rest/open-api": "https://esm.sh/v130/*@ts-rest/open-api@3.27.0",
+		"kysely": "https://esm.sh/v130/kysely@0.26.1",
+		"kysely/": "https://esm.sh/v130/kysely@0.26.1/",
+		"ts-pattern": "https://esm.sh/v130/ts-pattern@5.0.5",
+		"ts-rest-hono": "https://raw.githubusercontent.com/scarf005/ts-rest-hono/6398ff52d22a602a7a0beaba65b1db6839111ff7/deno_dist/mod.ts",
+		"mysql2": "npm:/mysql2@3.6.0",
+		"mysql2/": "npm:/mysql2@3.6.0/"
+	},
+	"scopes": {
+		"https://esm.sh/v130/": {
+			"@anatine/zod-openapi": "https://esm.sh/v130/@anatine/zod-openapi@1.14.2",
+			"lodash.clonedeep": "https://esm.sh/v130/lodash.clonedeep@4.5.0",
+			"openapi3-ts": "https://esm.sh/v130/openapi3-ts@2.0.2"
+		}
+	}
 }

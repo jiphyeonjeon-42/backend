@@ -1,7 +1,8 @@
 {
 	"exclude": ["contracts/npm"],
 	"tasks": {
-        "backend": "deno task --cwd backend",
+		"dev": "deno task backend dev & deno task contracts dev",
+		"backend": "deno task --cwd backend",
 		"contracts": "deno task --cwd contracts",
 
 		"esm:add": "deno run -A https://esm.sh/v130 add",
