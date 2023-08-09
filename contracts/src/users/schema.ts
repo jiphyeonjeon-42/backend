@@ -68,3 +68,10 @@ export const updateUserSchema = z.object({
   role: positiveInt.optional().describe('유저 권한').openapi({ example: 2 }),
   penaltyEndDate: z.coerce.string().optional().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
 });
+
+export const updatePrivateInfoSchema = z.object({
+  email: z.string().email().optional().describe('이메일').openapi({ example: 'yena@student.42seoul.kr' }),
+  password: z.string().optional().describe('패스워드').openapi({ example: 'KingGodMajesty42' }),
+});
+
+export const updateUserResponseSchema = z.literal('유저 정보 변경 성공!');
