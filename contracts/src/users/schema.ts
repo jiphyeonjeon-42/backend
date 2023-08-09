@@ -58,7 +58,7 @@ export const createUserSchema = z.object({
 export const createUserResponseSchema = z.literal('유저 생성 성공!');
 
 export const userIdSchema = z.object({
-  userId: positiveInt.describe('유저 id 값').openapi({ example: 1 }),
+  id: positiveInt.describe('유저 id 값').openapi({ example: 1 }),
 });
 
 export const updateUserSchema = z.object({
