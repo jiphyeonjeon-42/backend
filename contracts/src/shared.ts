@@ -28,6 +28,8 @@ export const serverErrorSchema = mkErrorMessageSchema('SERVER_ERROR').describe('
 
 export const badRequestSchema = mkErrorMessageSchema('BAD_REQUEST').describe('잘못된 요청입니다.');
 
+export const forbiddenSchema = mkErrorMessageSchema('FORBIDDEN').describe('권한이 없습니다.');
+
 export const metaSchema = z.object({
   totalItems: positiveInt.describe('전체 검색 결과 수 ').openapi({ example: 1 }),
   itemCount: positiveInt.describe('현재 페이지의 검색 결과 수').openapi({ example: 3 }),
