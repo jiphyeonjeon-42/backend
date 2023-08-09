@@ -24,3 +24,14 @@ export const mkErrorMessageSchema = <const T extends string>(code: T) =>
 
 export const bookInfoNotFoundSchema =
   mkErrorMessageSchema('BOOK_INFO_NOT_FOUND').describe('해당 도서 연관 정보가 존재하지 않습니다');
+
+export const bookNotFoundSchema =
+  mkErrorMessageSchema('BOOK_NOT_FOUND').describe('해당 도서가 존재하지 않습니다');
+
+export const metaSchema = z.object({
+  totalItems: positiveInt,
+  itemCount: positiveInt,
+  itemsPerPage: positiveInt,
+  totalPages: positiveInt,
+  currentPage: positiveInt,
+});
