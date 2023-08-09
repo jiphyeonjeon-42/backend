@@ -1,10 +1,12 @@
 import { initContract } from '@ts-rest/core';
-import { badRequestSchema, positiveInt, serverErrorSchema } from '../shared';
+import { badRequestSchema, serverErrorSchema } from '../shared';
 import {
   searchUserSchema,
   searchUserResponseSchema,
   createUserSchema,
   createUserResponseSchema,
+  userIdSchema,
+  updateUserSchema,
 } from './schema';
 
 export * from './schema';
@@ -42,7 +44,7 @@ export const usersContract = c.router(
       pathParams: userIdSchema,
       body: updateUserSchema,
       responses: {
-        200: updateUserResponseSchema,
+        200: updateUserSchema,
         400: badRequestSchema,
         500: serverErrorSchema,
       },
