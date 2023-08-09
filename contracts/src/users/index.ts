@@ -39,7 +39,7 @@ export const usersContract = c.router(
     },
     patch: {
       method: 'PATCH',
-      path: 'update/:id',
+      path: '/update/:id',
       description: '유저 정보를 변경한다.',
       pathParams: userIdSchema,
       body: updateUserSchema,
