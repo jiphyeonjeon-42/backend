@@ -1,5 +1,6 @@
 import { initContract } from '@ts-rest/core';
 import { reviewsContract } from './reviews';
+import { usersContract } from './users';
 import { likesContract } from './likes';
 
 export * from './reviews';
@@ -12,6 +13,7 @@ export const contract = c.router(
   {
     // likes: likesContract,
     reviews: reviewsContract,
+    users: usersContract,
   },
   {
     pathPrefix: '/api/v2',
