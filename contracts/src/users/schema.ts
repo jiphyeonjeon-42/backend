@@ -32,21 +32,21 @@ const lendingSchema = z.object({
   reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
 }).optional();
 
+const searchUserResponseItemSchema = z.object({
+  id: positiveInt.describe('유저 번호').openapi({ example: 1 }),
+  email: z.string().email().describe('이메일').openapi({ example: 'kyungsle@gmail.com' }),
+  nickname: z.string().describe('닉네임').openapi({ example: 'kyungsle' }),
+  intraId: positiveInt.describe('인트라 고유 번호').openapi({ example: '10068' }),
+  slack: z.string().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
+  penaltyEndDate: z.coerce.string().optional().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
+  overDueDay: z.coerce.string().default('0').describe('현재 연체된 날 수').openapi({ example: '0' }),
+  role: positiveInt.describe('유저 권한').openapi({ example: 2 }),
+  reservations: z.array(reservationSchema).describe('해당 유저의 예약 정보'),
+  lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
+});
+
 export const searchUserResponseSchema = z.object({
-  items: z.array(
-    z.object({
-      id: positiveInt.describe('유저 번호').openapi({ example: 1 }),
-      email: z.string().email().describe('이메일').openapi({ example: 'kyungsle@gmail.com' }),
-      nickname: z.string().describe('닉네임').openapi({ example: 'kyungsle' }),
-      intraId: positiveInt.describe('인트라 고유 번호').openapi({ example: '10068' }),
-      slack: z.string().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
-      penaltyEndDate: z.coerce.string().nullable().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
-      overDueDay: z.coerce.string().default('0').describe('현재 연체된 날 수').openapi({ example: '0' }),
-      role: positiveInt.describe('유저 권한').openapi({ example: 2 }),
-      reservations: z.array(reservationSchema).describe('해당 유저의 예약 정보'),
-      lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
-    }),
-  ),
+  items: z.array(searchUserResponseItemSchema).describe('검색된 유저 정보'),
   meta: metaSchema.describe('페이지네이션에 필요한 정보'),
 });
 
@@ -56,3 +56,15 @@ export const createUserSchema = z.object({
 });
 
 export const createUserResponseSchema = z.literal('유저 생성 성공!');
+
+export const userIdSchema = z.object({
+  userId: positiveInt.describe('유저 id 값').openapi({ example: 1 }),
+});
+
+export const updateUserSchema = z.object({
+  nickname: z.string().optional().describe('닉네임').openapi({ example: 'kyungsle' }),
+  intraId: positiveInt.optional().describe('인트라 고유 번호').openapi({ example: '10068' }),
+  slack: z.string().optional().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
+  role: positiveInt.optional().describe('유저 권한').openapi({ example: 2 }),
+  penaltyEndDate: z.coerce.string().optional().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
+});
