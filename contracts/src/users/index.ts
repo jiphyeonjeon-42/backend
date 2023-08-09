@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { badRequestSchema, serverErrorSchema } from '../shared';
+import { badRequestSchema, serverErrorSchema, forbiddenSchema } from '../shared';
 import {
   searchUserSchema,
   searchUserResponseSchema,
@@ -7,6 +7,8 @@ import {
   createUserResponseSchema,
   userIdSchema,
   updateUserSchema,
+  updatePrivateInfoSchema,
+  updateUserResponseSchema,
 } from './schema';
 
 export * from './schema';
@@ -46,6 +48,18 @@ export const usersContract = c.router(
       responses: {
         200: updateUserSchema,
         400: badRequestSchema,
+        500: serverErrorSchema,
+      },
+    },
+    updatePrivateInfo: {
+      method: 'PATCH',
+      path: '/myupdate',
+      description: '유저의 정보를 변경한다.',
+      body: updatePrivateInfoSchema,
+      responses: {
+        200: updateUserResponseSchema,
+        400: badRequestSchema,
+        403: forbiddenSchema,
         500: serverErrorSchema,
       },
     },
