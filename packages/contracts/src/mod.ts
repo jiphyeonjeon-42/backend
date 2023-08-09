@@ -1,4 +1,6 @@
-import { initContract, z } from "./deps.ts"
+/// <reference types="npm:@types/node@18.16.1" />
+
+import { initContract } from "./deps.ts"
 import { reviewsContract } from "./reviews/mod.ts"
 export * from "./reviews/mod.ts"
 export * from "./shared.ts"
@@ -10,9 +12,10 @@ export const contract = c.router(
 	{
 		// likes: likesContract,
 		reviews: reviewsContract,
-	},
+	} as const,
 	{
 		pathPrefix: "/api/v2",
 		strictStatusCodes: true,
 	},
 )
+

@@ -18,58 +18,67 @@ export const reviewsContract = c.router(
 			method: "GET",
 			path: "/",
 			description: "전체 책 리뷰를 조회합니다.",
+			query: z.object({
+				query: z.string().min(2),
+				visibility: z.enum(["all", "visible", "hidden"]),
+				page: z.number().int().nonnegative(),
+				perPage: z.number().int().positive(),
+				sort: z.enum(["asc", "desc"]).catch("asc"),
+			}),
 			responses: {
 				200: z.object({
-					items: z.array(z.string()),
+					rows: z.array(z.any()),
+					hasNextPage: z.boolean().optional(),
+					hasPrevPage: z.boolean().optional(),
 				}),
 			},
 		},
-		// post: {
-		// 	method: "POST",
-		// 	path: "/",
-		// 	query: z.object({
-		// 		bookInfoId: bookInfoIdSchema.openapi({ description: "도서 ID" }),
-		// 	}),
-		// 	description: "책 리뷰를 작성합니다.",
-		// 	body: contentSchema,
-		// 	responses: {
-		// 		201: z.literal("리뷰가 작성되었습니다."),
-		// 		404: bookInfoNotFoundSchema,
-		// 	},
-		// },
-		patch: {
-			method: "PATCH",
-			path: "/:reviewsId",
-			pathParams: reviewIdPathSchema,
-			description: "책 리뷰의 비활성화 여부를 토글 방식으로 변환합니다.",
-			body: null,
-			responses: {
-				200: z.literal("리뷰 공개 여부가 업데이트되었습니다."),
-				404: reviewNotFoundSchema,
-			},
-		},
-		put: {
-			method: "PUT",
-			path: "/:reviewsId",
-			pathParams: reviewIdPathSchema,
-			description: mutationDescription("수정"),
+		post: {
+			method: "POST",
+			path: "/",
+			query: z.object({
+				bookInfoId: bookInfoIdSchema.openapi({ description: "도서 ID" }),
+			}).describe("asfdsdf"),
+			description: "책 리뷰를 작성합니다.",
 			body: contentSchema,
 			responses: {
-				200: z.literal("리뷰가 수정되었습니다."),
-				404: reviewNotFoundSchema,
+				201: z.literal("리뷰가 작성되었습니다."),
+				404: bookInfoNotFoundSchema,
 			},
 		},
-		delete: {
-			method: "DELETE",
-			path: "/:reviewsId",
-			pathParams: reviewIdPathSchema,
-			description: mutationDescription("삭제"),
-			body: null,
-			responses: {
-				200: z.literal("리뷰가 삭제되었습니다."),
-				404: reviewNotFoundSchema,
-			},
-		},
+		// patch: {
+		// 	method: "PATCH",
+		// 	path: "/:reviewsId",
+		// 	pathParams: reviewIdPathSchema,
+		// 	description: "책 리뷰의 비활성화 여부를 토글 방식으로 변환합니다.",
+		// 	body: null,
+		// 	responses: {
+		// 		200: z.literal("리뷰 공개 여부가 업데이트되었습니다."),
+		// 		404: reviewNotFoundSchema,
+		// 	},
+		// },
+		// put: {
+		// 	method: "PUT",
+		// 	path: "/:reviewsId",
+		// 	pathParams: reviewIdPathSchema,
+		// 	description: mutationDescription("수정"),
+		// 	body: contentSchema,
+		// 	responses: {
+		// 		200: z.literal("리뷰가 수정되었습니다."),
+		// 		404: reviewNotFoundSchema,
+		// 	},
+		// },
+		// delete: {
+		// 	method: "DELETE",
+		// 	path: "/:reviewsId",
+		// 	pathParams: reviewIdPathSchema,
+		// 	description: mutationDescription("삭제"),
+		// 	body: null,
+		// 	responses: {
+		// 		200: z.literal("리뷰가 삭제되었습니다."),
+		// 		404: reviewNotFoundSchema,
+		// 	},
+		// },
 	},
 	//  pathPrefix 를 통해 모든 경로에 공통적으로 /reviews 를 붙여줍니다.
 	//  여러 api 마다 공통적으로 /reviews/~~~ 를 사용하니까 중복해서 선언하는 것을 방지하기 위함.

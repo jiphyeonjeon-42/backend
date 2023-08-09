@@ -1,5 +1,5 @@
 import { db } from "./mod.ts"
-import { roleSchema } from "./roleSchema.ts"
+import { roleSchema } from "./shared.ts"
 
 export type ParsedUser = NonNullable<Awaited<ReturnType<typeof getUserById>>>
 export const getUserById = async (id: number) => {

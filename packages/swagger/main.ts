@@ -1,5 +1,6 @@
 /// <reference lib="deno.ns" />
 import { Hono } from "hono/mod.ts"
+import { html } from "hono/middleware/html/index.ts"
 import { generateOpenApi } from "npm:@ts-rest/open-api"
 import type { InfoObject } from "npm:openapi3-ts@2.0.2"
 import { contract } from "../contracts/src/mod.ts"
@@ -13,28 +14,27 @@ export const specs = generateOpenApi(contract, { info }, {
 	setOperationId: false,
 })
 
-export const swaggerUrl = "/swagger-v2/openapi.json"
+export const swaggerUrl = "/swagger-v2"
+export const swaggerJsonUrl = `${swaggerUrl}/openapi.json`
 
 const id = "swagger-ui"
-
-type ServeOpenApi = {
+type SwaggerOption = {
 	path: string | URL
 	info: InfoObject
 	version?: string
 }
-
-export const swaggerUiByUrl =
-	({ info, path, version = "4.18.2" }: ServeOpenApi) => () =>
-		new Response(
-			/*html*/ `
+export const swaggerUiByUrl = (
+	{ info: { title, description }, path, version = "4.18.2" }: SwaggerOption,
+) =>
+	html`
         <!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>${info.title}</title>
-                <meta name="description" content="${info.description}" />
-                <meta name="og:description" content="${info.description}" />
+                <title>${title}</title>
+                <meta name="description" content="${description}" />
+                <meta name="og:description" content="${description}" />
                 <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@${version}/swagger-ui.css" />
             </head>
             <body>
@@ -47,16 +47,17 @@ export const swaggerUiByUrl =
                 </script>
             </body>
         </html>
-        `,
-			{ headers: { "content-type": "text/html charset=utf8" } },
-		)
+        `
 
 if (import.meta.main) {
 	const { logger } = await import("hono/middleware.ts")
 	const app = new Hono()
 		.use("*", logger())
-		.get(swaggerUrl, (c) => c.json(specs))
-		.get("/swagger-v2", swaggerUiByUrl({ info, path: swaggerUrl }))
+		.get(swaggerJsonUrl, (c) => c.json(specs))
+		.get(
+			swaggerUrl,
+			(c) => c.html(swaggerUiByUrl({ info, path: swaggerJsonUrl })),
+		)
 
 	Deno.serve({ port: 8000 }, app.fetch)
 }

@@ -25,9 +25,9 @@ export type BookInfo = {
 	updatedAt: Generated<Date>
 	categoryId: number
 }
-export type Category = { id: number; name: string }
+export type Category = { id: Generated<number>; name: string }
 export type Lending = {
-	id: number
+	id: Generated<number>
 	lendingLibrarianId: number
 	lendingCondition: string
 	returningLibrarianId: Generated<number | null>
@@ -39,13 +39,13 @@ export type Lending = {
 	userId: number
 }
 export type Likes = {
-	id: number
+	id: Generated<number>
 	userId: number
 	bookInfoId: number
 	isDeleted: SqlBool
 }
 export type Reservation = {
-	id: number
+	id: Generated<number>
 	endAt: Generated<Date | null>
 	createdAt: Generated<Date>
 	updatedAt: Generated<Date>
@@ -55,41 +55,41 @@ export type Reservation = {
 	userId: number
 }
 export type Reviews = {
-	id: number
+	id: Generated<number>
 	userId: number
 	bookInfoId: number
 	createdAt: Generated<Date>
 	updatedAt: Generated<Date>
 	updateUserId: number
-	isDeleted: Generated<number>
+	isDeleted: SqlBool
 	deleteUserId: Generated<number | null>
 	content: string
-	disabled: Generated<number>
+	disabled: SqlBool
 	disabledUserId: Generated<number | null>
 }
 export type SubTag = {
-	id: number
+	id: Generated<number>
 	userId: number
 	superTagId: number
 	createdAt: Generated<Date>
 	updatedAt: Generated<Date>
-	isDeleted: Generated<number>
+	isDeleted: SqlBool
 	updateUserId: number
 	content: string
 	isPublic: Generated<number>
 }
 export type SuperTag = {
-	id: number
+	id: Generated<number>
 	userId: number
 	bookInfoId: number
 	createdAt: Generated<Date>
 	updatedAt: Generated<Date>
-	isDeleted: Generated<number>
+	isDeleted: SqlBool
 	updateUserId: number
 	content: string
 }
 export type User = {
-	id: number
+	id: Generated<number>
 	email: string
 	password: string
 	nickname: Generated<string | null>
@@ -113,14 +113,14 @@ export type UserReservation = {
 }
 export type DB = {
 	book: Book
-	bookInfo: BookInfo
+	book_info: BookInfo
 	category: Category
 	lending: Lending
 	likes: Likes
 	reservation: Reservation
 	reviews: Reviews
-	subTag: SubTag
-	superTag: SuperTag
+	sub_tag: SubTag
+	super_tag: SuperTag
 	user: User
-	userReservation: UserReservation
+	user_reservation: UserReservation
 }

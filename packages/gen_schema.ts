@@ -1,7 +1,11 @@
-import { Project } from "https://deno.land/x/ts_morph@19.0.0/mod.ts"
+import {
+	InterfaceDeclaration,
+	Project,
+	SourceFile,
+} from "https://deno.land/x/ts_morph@19.0.0/mod.ts"
 import { DialectManager, Generator, Logger } from "npm:kysely-codegen"
 import { load } from "std/dotenv/mod.ts"
-import { connectOptionSchema } from "./backend/db.ts"
+import { connectOptionSchema } from "./backend/db/connectOption.ts"
 
 const connectionStringSchema = connectOptionSchema.transform((v) =>
 	`mysql://${v.user}:${v.password}@${v.host}/${v.database}`
@@ -14,7 +18,7 @@ const generate = async () => {
 	const dialect = new DialectManager().getDialect("mysql")
 	const db = await dialect.introspector.connect({ connectionString, dialect })
 	const output = await new Generator().generate({
-		camelCase: true,
+		camelCase: false,
 		logger: new Logger(),
 		excludePattern: "(v_*|typeorm_metadata)",
 		dialect,
@@ -24,15 +28,16 @@ const generate = async () => {
 	return output
 }
 
-if (import.meta.main) {
-	const output = await generate()
-	const project = new Project()
-	const sourceFile = project.createSourceFile(outFile, output, {
-		overwrite: true,
-	})
+const sqlBool = "SqlBool"
 
-	// convert all interface to type
-	sourceFile.getInterfaces().forEach((i) => {
+const toSqlBoolFor = (properties: string[]) => (i: InterfaceDeclaration) => {
+	i.getProperties()
+		.filter((p) => properties.includes(p.getName()))
+		.forEach((p) => p.setType(sqlBool))
+}
+
+const interfaceToType =
+	(sourceFile: SourceFile) => (i: InterfaceDeclaration) => {
 		const isExported = i.isExported()
 		const name = i.getName()
 		const types = i.getProperties()
@@ -40,12 +45,28 @@ if (import.meta.main) {
 			.join("\n")
 
 		i.remove()
-		sourceFile.addTypeAlias({
-			isExported,
-			name,
-			type: `{${types}}`,
-		})
+		sourceFile.addTypeAlias({ isExported, name, type: `{${types}}` })
+	}
+
+if (import.meta.main) {
+	const output = await generate()
+	const project = new Project()
+	const sourceFile = project.createSourceFile(
+		outFile,
+		output,
+		{ overwrite: true },
+	)
+
+	sourceFile.getImportDeclaration("kysely")
+		?.addNamedImport(sqlBool)
+
+	const toSqlBool = toSqlBoolFor(["isDeleted", "disabled"])
+	const toType = interfaceToType(sourceFile)
+	sourceFile.getInterfaces().forEach((i) => {
+		toSqlBool(i)
+		toType(i)
 	})
+
 	await project.save()
 	await new Deno.Command("deno", { args: ["fmt", outFile] }).output()
 }

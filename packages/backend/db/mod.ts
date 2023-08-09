@@ -8,7 +8,11 @@ const connectOption = connectOptionSchema
 	.parse(await dotenv.load({ export: true }))
 
 const dialect = new MysqlDialect({
-	pool: createPool({ port: 3306, connectionLimit: 10, ...connectOption }),
+	pool: createPool({
+		port: 3306,
+		connectionLimit: 10,
+		...connectOption,
+	}),
 })
 
 export const db = new Kysely<DB>({
