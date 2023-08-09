@@ -1,4 +1,4 @@
-import { mkErrorMessageSchema, positiveInt } from '../shared';
+import { metaSchema, mkErrorMessageSchema, positiveInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const searchUserSchema = z.object({
@@ -47,4 +47,5 @@ export const searchUserResponseSchema = z.object({
       lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
     }),
   ),
+  meta: metaSchema.describe('페이지네이션에 필요한 정보'),
 });

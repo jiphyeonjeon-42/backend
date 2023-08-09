@@ -27,3 +27,11 @@ export const bookInfoNotFoundSchema = mkErrorMessageSchema('BOOK_INFO_NOT_FOUND'
 export const serverErrorSchema = mkErrorMessageSchema('SERVER_ERROR').describe('서버에서 오류가 발생했습니다.');
 
 export const badRequestSchema = mkErrorMessageSchema('BAD_REQUEST').describe('잘못된 요청입니다.');
+
+export const metaSchema = z.object({
+  totalItems: positiveInt.describe('전체 검색 결과 수 ').openapi({ example: 1 }),
+  itemCount: positiveInt.describe('현재 페이지의 검색 결과 수').openapi({ example: 3 }),
+  itemsPerPage: positiveInt.describe('한 페이지당 검색 결과 수').openapi({ example: 10 }),
+  totalPages: positiveInt.describe('전체 결과 페이지 수').openapi({ example: 5 }),
+  currentPage: positiveInt.describe('현재 페이지').openapi({ example: 1 }),
+});
