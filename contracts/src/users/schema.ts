@@ -49,3 +49,10 @@ export const searchUserResponseSchema = z.object({
   ),
   meta: metaSchema.describe('페이지네이션에 필요한 정보'),
 });
+
+export const createUserSchema = z.object({
+  email: z.string().email().describe('이메일').openapi({ example: 'yena@student.42seoul.kr' }),
+  password: z.string().describe('패스워드').openapi({ example: 'KingGodMajesty42' }),
+});
+
+export const createUserResponseSchema = z.literal('유저 생성 성공!');
