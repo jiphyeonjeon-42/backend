@@ -22,11 +22,8 @@ type ErrorMessage = { code: string; description: string };
 export const mkErrorMessageSchema = <const T extends string>(code: T) =>
   z.object({ code: z.literal(code) as z.ZodLiteral<T> });
 
-export const bookInfoNotFoundSchema =
-  mkErrorMessageSchema('BOOK_INFO_NOT_FOUND').describe('해당 도서 연관 정보가 존재하지 않습니다');
+export const bookInfoNotFoundSchema = mkErrorMessageSchema('BOOK_INFO_NOT_FOUND').describe('해당 도서 연관 정보가 존재하지 않습니다');
 
-export const serverErrorSchema =
-  mkErrorMessageSchema('SERVER_ERROR').describe('서버에서 오류가 발생했습니다.');
+export const serverErrorSchema = mkErrorMessageSchema('SERVER_ERROR').describe('서버에서 오류가 발생했습니다.');
 
-export const badRequestSchema =
-  mkErrorMessageSchema('BAD_REQUEST').describe('잘못된 요청입니다.');
+export const badRequestSchema = mkErrorMessageSchema('BAD_REQUEST').describe('잘못된 요청입니다.');
