@@ -17,7 +17,7 @@ const reservationSchema = z.object({
   author: z.string().describe('예약된 도서 저자').openapi({ example: '이고잉' }),
   image: z.string().describe('예약된 도서 이미지').openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/383/x9791158392383.jpg' }),
   userId: positiveInt.describe('예약한 유저 번호').openapi({ example: 1547 }),
-});
+}).optional();
 
 const lendingSchema = z.object({
   userId: positiveInt.describe('대출한 유저 번호').openapi({ example: 1547 }),
@@ -30,7 +30,7 @@ const lendingSchema = z.object({
   duedate: z.coerce.string().describe('반납 예정 날짜').openapi({ example: '2023-08-22T20:20:55.000Z' }),
   overDueDay: positiveInt.describe('연체된 날 수').openapi({ example: 0 }),
   reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
-});
+}).optional();
 
 export const searchUserResponseSchema = z.object({
   items: z.array(
