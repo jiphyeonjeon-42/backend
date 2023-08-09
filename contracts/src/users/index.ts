@@ -15,7 +15,7 @@ const c = initContract();
 
 export const usersContract = c.router(
   {
-    get: {
+    searchUser: {
       method: 'GET',
       path: '/search',
       description: '유저 정보를 검색해 온다. query가 null이면 모든 유저를 검색한다.',
@@ -26,7 +26,7 @@ export const usersContract = c.router(
         500: serverErrorSchema,
       },
     },
-    post: {
+    createUser: {
       method: 'POST',
       path: '/create',
       description: '유저를 생성한다.',
@@ -37,7 +37,7 @@ export const usersContract = c.router(
         500: serverErrorSchema,
       },
     },
-    patch: {
+    updateUser: {
       method: 'PATCH',
       path: '/update/:id',
       description: '유저 정보를 변경한다.',
