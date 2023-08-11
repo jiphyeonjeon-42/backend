@@ -1,0 +1,39 @@
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:dev
+    build:
+      context: nginx.dev
+      dockerfile: nginx.dockerfile
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d.dev:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+
+  backend:
+    container_name: backend
+    image: backend:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    entrypoint: ["./node_modules/.bin/vite-node", "src/server.ts"]
+    env_file: .env.rds
+    environment:
+      - MODE=RDS
+      - RDS_DB_NAME
+      - RDS_USERNAME
+      - RDS_PASSWORD
+      - RDS_HOSTNAME
+      - BOT_USER_OAUTH_ACCESS_TOKEN
+      - JWT_SECRET
+      - CLIENT_ID
+      - CLIENT_SECRET
+      - NAVER_BOOK_SEARCH_CLIENT_ID
+      - NAVER_BOOK_SEARCH_SECRET
+      - NATION_LIBRARY_KEY
+      - REDIRECT_URL
+      - CLIENT_URL

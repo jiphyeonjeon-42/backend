@@ -10,16 +10,15 @@ RUN pnpm install --global node-pre-gyp
 WORKDIR /app
 
 FROM pnpm-installed as workspace
-COPY ./pnpm-lock.yaml .
-COPY patches patches
+ADD . ./
 
 RUN pnpm fetch
 
 FROM workspace as prod
-ADD . ./
 
 RUN pnpm -r install --frozen-lockfile --offline
 RUN pnpm -r run build
 
 WORKDIR /app/backend
 
+ENTRYPOINT ["./node_modules/.bin/vite-node", "src/server.ts"]
