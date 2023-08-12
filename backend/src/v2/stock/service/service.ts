@@ -1,6 +1,6 @@
 import { match } from 'ts-pattern';
 
-import { VStock } from '~/entity/entities';
+import { VStock, Book } from '~/entity/entities';
 import { type Repository, LessThan } from 'typeorm';
 
 import { startOfDay, addDays } from 'date-fns';
@@ -41,12 +41,14 @@ export const mkSearchStock: MkSearchStock = ({ stockRepo }) =>
     return returnObject;
   };
 
-type MkUpdateStock = (repos: Repos) => StockService['updateStock'];
-export const mkUpdateStock: MkUpdateStock = ({ stockRepo }) =>
+type MkUpdateStock = (
+  repos: Repos & { bookRepo: Repository<Book> })
+  => StockService['updateStock'];
+export const mkUpdateStock: MkUpdateStock = ({ stockRepo, bookRepo }) =>
   async ({ id }) => {
     const stock = await stockRepo.findOneBy({ bookId: id });
 
     return match(stock)
       .with(null, () => new BookNotFoundError(id))
-      .otherwise(() => stockRepo.update({ bookId: id }, { updatedAt: new Date() }));
+      .otherwise(() => bookRepo.update({ id }, { updatedAt: new Date() }));
   };
