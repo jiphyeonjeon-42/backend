@@ -1,5 +1,10 @@
 import { initContract } from '@ts-rest/core';
-import { stockGetQuerySchema, stockGetResponseSchema, stockPatchBodySchema, stockPatchResponseSchema } from './schema';
+import {
+	stockGetQuerySchema,
+	stockGetResponseSchema,
+	stockPatchBodySchema,
+	stockPatchResponseSchema
+} from './schema';
 import { bookNotFoundSchema } from '../shared';
 
 const c = initContract();
@@ -23,9 +28,9 @@ export const stockContract = c.router(
 			body: stockPatchBodySchema,
 			responses: {
 				200: stockPatchResponseSchema,
-				307: bookNotFoundSchema,
+				404: bookNotFoundSchema,
 			},
 		},
 	},
 	{ pathPrefix: '/stock'},
-)
+);

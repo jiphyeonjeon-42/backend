@@ -18,7 +18,7 @@ import { Reservation } from './Reservation';
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
     .addSelect('book.donator', 'donator')
-    .addSelect("date_format(book.updatedAt, '%Y-%m-%d-%T')", 'updatedAt')
+    .addSelect("date_format(book.updatedAt, '%Y-%m-%d %T')", 'updatedAt')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
     .from(Book, 'book')
@@ -62,7 +62,7 @@ export class VStock {
     status: number;
 
   @ViewColumn()
-    categoryId: string;
+    categoryId: number;
 
   @ViewColumn()
     callSign: string;
