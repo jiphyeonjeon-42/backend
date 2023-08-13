@@ -8,6 +8,8 @@ export const historiesGetQuerySchema = z.object({
   limit: z.number().int().nonnegative().default(10),
 });
 
+const dateLike = z.union([z.date(), z.string()]).transform(String)
+
 export const historiesGetResponseSchema = z.object({
   items: z.array(
     z.object({
@@ -20,10 +22,10 @@ export const historiesGetResponseSchema = z.object({
       title: z.string(),
       bookInfoId: positiveInt,
       image: z.string(),
-      createdAt: z.string(),
-      returnedAt: z.string(),
-      updatedAt: z.date(),
-      dueDate: z.string(),
+      createdAt: dateLike,
+      returnedAt: dateLike,
+      updatedAt: dateLike,
+      dueDate: dateLike,
       lendingLibrarianNickName: z.string(),
       returningLibrarianNickname: z.string(),
     }),
