@@ -1,4 +1,4 @@
-import { bookInfoNotFoundSchema, reviewNotFoundSchema, unauthorizedSchema } from '@jiphyeonjeon-42/contracts';
+import { bookInfoNotFoundSchema, reviewNotFoundSchema, unauthorizedSchema, bookNotFoundSchema } from '@jiphyeonjeon-42/contracts';
 import { z } from 'zod';
 
 export const reviewNotFound = {
@@ -23,4 +23,12 @@ export const unauthorized = {
     code: 'UNAUTHORIZED',
     description: '권한이 없습니다.',
   } as z.infer<typeof unauthorizedSchema>,
+} as const;
+
+export const bookNotFound = {
+  status: 404,
+  body: {
+    code: 'BOOK_NOT_FOUND',
+    description: '검색한 책이 존재하지 않습니다.',
+  } as z.infer<typeof bookNotFoundSchema>,
 } as const;

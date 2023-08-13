@@ -16,3 +16,8 @@ export type createQuery = {
   email: string,
   password: string,
 }
+
+export type categoryWithBookCount = {
+  name: string,
+  bookCount: number,
+}
