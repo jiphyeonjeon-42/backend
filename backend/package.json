@@ -12,7 +12,7 @@
   "scripts": {
     "start": "npx vite-node src/server.ts",
     "build": "pnpm --filter='@jiphyeonjeon-42/contracts' build",
-    "dev": "nodemon --exec vite-node src/server.ts",
+    "dev": "nodemon --watch src --watch ../contracts/dist --exec vite-node src/server.ts",
     "standalone": "npm run build && npm run start",
     "lint": "eslint --fix --ext .js,.ts src",
     "check": "tsc --project ./tsconfig.prod.json --noEmit",

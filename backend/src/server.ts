@@ -1,5 +1,3 @@
-/// <reference types="vite/client" />
-
 import { createHttpTerminator } from 'http-terminator';
 import jipDataSource from '~/app-data-source';
 import { gracefulTerminationTimeout } from '~/config';
@@ -43,8 +41,3 @@ const attemptGracefulShutdown = async (signal: string) => {
 
 const signals = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 signals.forEach((signal) => process.on(signal, () => attemptGracefulShutdown(signal)));
-
-if (import.meta.hot) {
-  import.meta.hot.on('vite:beforeFullReload', releaseResources);
-  import.meta.hot.dispose(releaseResources);
-}
