@@ -18,7 +18,7 @@ export const contract = c.router(
     histories: historiesContract,
 
     stock: stockContract,
-    users: usersContract,
+//     users: usersContract, TODO: 유저 라우터 작성
   },
   {
     pathPrefix: '/api/v2',
