@@ -1,5 +1,6 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
 
+// TODO: 대출자 id로 검색 가능하게
 @ViewEntity({
   expression: (Data: DataSource) => Data
     .createQueryBuilder()
