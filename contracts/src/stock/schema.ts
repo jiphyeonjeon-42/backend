@@ -30,7 +30,7 @@ export const stockGetResponseSchema = z.object({
 			categoryId: positiveInt,
 			callSign: z.string(),
 			category: z.string(),
-			updatedAt: z.string().pipe(z.coerce.date()),
+			updatedAt: z.string(),
 		}),
 	),
 	meta: metaSchema,
