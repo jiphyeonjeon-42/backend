@@ -1,4 +1,5 @@
 # 에러 코드 (Error code)
+
 ## Common Error Code (0번대)
 |Error Code|Constant Name|Description|
 |:----------:|:-------------|:-----------|

@@ -7,12 +7,14 @@ import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
+import { VSearchBookByTag } from '~/entity/entities';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
   categoryIds,
 } from './books.type';
+import { categoryWithBookCount } from '../DTO/common.interface';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -248,6 +250,59 @@ export const searchInfo = async (
     itemCount: bookList.length,
     itemsPerPage: limit,
     totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, categories: categoryList, meta };
+};
+
+export const searchInfoByTag = async (
+  query: string,
+  page: number,
+  limit: number,
+  sort: string,
+  category: string,
+) => {
+  const booksRepository = new BooksRepository();
+  let sortQuery = {};
+  switch (sort) {
+    case 'title':
+      sortQuery = { title: 'ASC' };
+      break;
+    case 'popular':
+      sortQuery = { lendingCnt: 'DESC' };
+      break;
+    default:
+      sortQuery = { createdAt: 'DESC' };
+  }
+  const whereQuery: Array<object> = [
+    { superTagContent: query },
+    { subTagContent: query },
+  ];
+  if (category) {
+    whereQuery.push({ category });
+  }
+  const [rawBookList, count] = await booksRepository.getBookListByTag(
+    whereQuery,
+    page,
+    limit,
+    sortQuery,
+  );
+  const bookList: Array<VSearchBookByTag> = new Array<VSearchBookByTag>();
+  const categoryList: Array<categoryWithBookCount> = new Array<categoryWithBookCount>();
+  rawBookList.forEach((book) => {
+    bookList.push({ ...book, lendingCnt: Number(book.lendingCnt) });
+    const index = categoryList.findIndex((item) => item.name === book.category);
+    if (index === -1) {
+      categoryList.push({ name: book.category, bookCount: 1 });
+    } else {
+      categoryList[index].bookCount += 1;
+    }
+  });
+  const meta = {
+    totalItems: count,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(bookList.length / limit),
     currentPage: page + 1,
   };
   return { items: bookList, categories: categoryList, meta };

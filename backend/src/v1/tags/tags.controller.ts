@@ -238,3 +238,14 @@ export const updateSubTags = async (
   }
   return res.status(status.OK).send({ id: subTagId });
 };
+
+export const searchMainTags = async (
+  req: Request,
+  res: Response,
+) => {
+  const limit: number = req.query.limit === undefined || null ? 100 : Number(req.query.limit);
+  const tagsService = new TagsService();
+  const mainTags = await tagsService.searchMainTags(limit);
+  await tagsService.releaseConnection();
+  return res.status(status.OK).json(mainTags);
+};
