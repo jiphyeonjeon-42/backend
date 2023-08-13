@@ -19,7 +19,7 @@
 ![erd_backend](https://user-images.githubusercontent.com/50291995/198007446-0259fd24-1b8a-4d40-a2b8-cb8cce2bddc2.png)
 
 # 💡 기능 관련 건의
-[집현전 웹사이트 건의사항 시트](https://docs.google.com/spreadsheets/d/1wNGnXz1mjszAs7Bmg5P0xM-GS88c897DXoseFhpXwdg/edit#gid=0)를 이용해주세요! 
+[Discussions](https://github.com/orgs/jiphyeonjeon-42/discussions/categories/ideas)를 이용해주세요! 
 
 # 👥 Developers
 
