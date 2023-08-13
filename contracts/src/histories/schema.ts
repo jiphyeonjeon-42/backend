@@ -1,4 +1,4 @@
-import { metaSchema, positiveInt } from '../shared';
+import { dateLike, metaSchema, positiveInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const historiesGetQuerySchema = z.object({
@@ -7,8 +7,6 @@ export const historiesGetQuerySchema = z.object({
   page: z.number().int().nonnegative().default(0),
   limit: z.number().int().nonnegative().default(10),
 });
-
-const dateLike = z.union([z.date(), z.string()]).transform(String)
 
 export const historiesGetResponseSchema = z.object({
   items: z.array(

@@ -2,6 +2,8 @@ import { z } from './zodWithOpenapi';
 
 export const positiveInt = z.coerce.number().int().nonnegative();
 
+export const dateLike = z.union([z.date(), z.string()]).transform(String)
+
 export const bookInfoIdSchema = positiveInt.describe('개별 도서 ID');
 
 type ErrorMessage = { code: string; description: string };
