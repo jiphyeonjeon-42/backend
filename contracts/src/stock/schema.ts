@@ -1,4 +1,4 @@
-import { metaSchema, positiveInt } from '../shared';
+import { dateLike, metaSchema, positiveInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const bookIdSchema = positiveInt.describe('업데이트 할 도서 ID');
@@ -23,14 +23,14 @@ export const stockGetResponseSchema = z.object({
 			author: z.string(),
 			donator: z.string(),
 			publisher: z.string(),
-			publishedAt: z.string(),
+			publishedAt: dateLike,
 			isbn: z.string(),
 			image: z.string(),
 			status: positiveInt,
 			categoryId: positiveInt,
 			callSign: z.string(),
 			category: z.string(),
-			updatedAt: z.string(),
+			updatedAt: dateLike,
 		}),
 	),
 	meta: metaSchema,

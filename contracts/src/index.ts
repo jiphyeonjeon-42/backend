@@ -1,5 +1,6 @@
 import { initContract } from '@ts-rest/core';
 import { reviewsContract } from './reviews';
+import { historiesContract } from './histories';
 import { usersContract } from './users';
 import { likesContract } from './likes';
 import { stockContract } from './stock';
@@ -14,8 +15,11 @@ export const contract = c.router(
   {
     // likes: likesContract,
     reviews: reviewsContract,
+    histories: historiesContract,
+
     stock: stockContract,
-    users: usersContract,
+    // TODO(@scarf005): 유저 서비스 작성
+//     users: usersContract,
   },
   {
     pathPrefix: '/api/v2',

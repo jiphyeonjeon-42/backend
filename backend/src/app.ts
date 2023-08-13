@@ -81,6 +81,7 @@ app.use('/api', router);
 createExpressEndpoints(contract, routerV2, app, {
   logInitialization: true,
   responseValidation: true,
+  jsonQuery: true,
 });
 
 // 에러 핸들러

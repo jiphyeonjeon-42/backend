@@ -6,6 +6,14 @@ export class BookInfoNotFoundError extends Error {
   }
 }
 
+export class UnauthorizedError extends Error {
+  declare readonly _tag: 'UnauthorizedError';
+
+  constructor() {
+    super('권한이 없습니다');
+  }
+}
+
 export class BookNotFoundError extends Error {
   declare readonly _tag: 'BookNotFoundError';
 

@@ -2,6 +2,8 @@ import { z } from './zodWithOpenapi';
 
 export const positiveInt = z.coerce.number().int().nonnegative();
 
+export const dateLike = z.union([z.date(), z.string()]).transform(String)
+
 export const bookInfoIdSchema = positiveInt.describe('개별 도서 ID');
 
 type ErrorMessage = { code: string; description: string };
@@ -21,6 +23,10 @@ type ErrorMessage = { code: string; description: string };
  */
 export const mkErrorMessageSchema = <const T extends string>(code: T) =>
   z.object({ code: z.literal(code) as z.ZodLiteral<T> });
+
+export const unauthorizedSchema = mkErrorMessageSchema('UNAUTHORIZED').describe(
+  '권한이 없습니다.',
+);
 
 export const bookNotFoundSchema =
   mkErrorMessageSchema('BOOK_NOT_FOUND').describe('해당 도서가 존재하지 않습니다');
