@@ -8,7 +8,7 @@ import {
   Book, BookInfo, User, Lending, Category, VSearchBook,
 } from '~/entity/entities';
 import {
-  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo, UpdateBookDonator,
 } from './books.type';
 import { number } from "zod";
 
@@ -185,6 +185,10 @@ class BooksRepository extends Repository<Book> {
 
   async updateBook(book: UpdateBook): Promise<void> {
     await this.books.update(book.id, book as Book);
+  }
+
+  async updateBookDonator(bookDonator: UpdateBookDonator): Promise<void> {
+    await this.books.update(bookDonator.id, bookDonator as Book);
   }
 
   async createBookInfo(

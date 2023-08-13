@@ -12,7 +12,7 @@ import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
-  categoryIds,
+  categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
 
@@ -421,3 +421,8 @@ export const updateBook = async (book: UpdateBook) => {
   const booksRepository = new BooksRepository();
   await booksRepository.updateBook(book);
 };
+
+export const updateBookDonator = async (bookDonator: UpdateBookDonator) => {
+  const booksRepository = new BooksRepository();
+  await booksRepository.updateBookDonator(bookDonator);
+}

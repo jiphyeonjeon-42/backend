@@ -12,6 +12,7 @@ import {
   deleteLike,
   getLikeInfo,
   updateBookInfo,
+  updateBookDonator,
 } from '~/v1/books/books.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import authValidateDefaultNullUser from '~/v1/auth/auth.validateDefaultNullUser';
@@ -1099,4 +1100,6 @@ router
  *                    type: json
  *                    example : { errorCode: 311 }
  */
-  .patch('/update', authValidate(roleSet.librarian), updateBookInfo);
+  .patch('/update', authValidate(roleSet.librarian), updateBookInfo)
+  .patch('/donator', authValidate(roleSet.librarian), updateBookDonator);
+

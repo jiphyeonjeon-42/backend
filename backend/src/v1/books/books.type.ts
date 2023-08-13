@@ -53,6 +53,12 @@ export type UpdateBook = {
   status: number;
 }
 
+export type UpdateBookDonator = {
+    id: number;
+    donator: string;
+    donatorId: number;
+}
+
 export enum categoryIds{
     'K' = 1,
     'C',
