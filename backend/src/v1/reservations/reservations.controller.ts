@@ -2,10 +2,10 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { logger } from '~/v1/utils/logger';
-import * as errorCode from '~/v1/utils/error/errorCode';
+import { logger } from '~/logger';
 import * as userUtils from '~/v1/users/users.utils';
+import * as errorCode from '~/v1/utils/error/errorCode';
+import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as reservationsService from './reservations.service';
 
 export const create: RequestHandler = async (

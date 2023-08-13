@@ -2,9 +2,9 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { logger } from '~/v1/utils/logger';
 import * as lendingsService from './lendings.service';
 
 export const create: RequestHandler = async (

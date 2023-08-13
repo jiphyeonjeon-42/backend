@@ -1,0 +1,25 @@
+name: 우산 이슈 추가 ☂️
+description: 2~5일가량 소요되는 작업을 관리합니다.
+title: "☂️ "
+
+labels: [":open_umbrella: umbrella"]
+body:
+  - type: textarea
+    id: tasklist
+    attributes:
+      label: 이슈 및 할 일 추가
+      description: |
+        1. [tasklist](https://docs.github.com/ko/issues/managing-your-tasks-with-tasklists/creating-a-tasklist)를 활용해 1~3시간 단위로 작업을 세분화합니다.
+        2. 각 체크박스를 이슈로 전환하고, 시작 및 마감 날짜를 설정합니다.
+        3. [프로젝트 로드맵](https://github.com/orgs/jiphyeonjeon-42/projects/8?query=is%3Aopen+sort%3Aupdated-desc)에서 전체 진행 과정을 확인합니다.
+
+        집현전 [공식 개발 가이드](https://jiphyeonjeon-42.github.io/backend/umbrella)에서 구체적인 활용법을 확인할 수 있습니다.
+
+      value: |
+        ```[tasklist]
+        ### 할 일
+        - [ ] 작업 1
+        - [ ] 작업 2
+        ```
+    validations:
+      required: true

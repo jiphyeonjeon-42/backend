@@ -6,13 +6,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './User';
-import SuperTag from './SuperTag';
+import { User } from './User';
+import { SuperTag } from './SuperTag';
 
 @Index('userId', ['userId'], {})
 @Index('superTagId', ['superTagId'], {})
 @Entity('sub_tag', { schema: 'jip_dev' })
-export default class SubTag {
+export class SubTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id: number;
 

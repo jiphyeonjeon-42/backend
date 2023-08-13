@@ -1,4 +1,4 @@
-site_name: 집현전 문서
+site_name: 집현전 개발 가이드
 theme:
   name: material
   language: ko
@@ -6,3 +6,10 @@ theme:
 extra:
   static_dirs:
     - docs/image
+
+markdown_extensions:
+  - footnotes
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid

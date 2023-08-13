@@ -42,4 +42,4 @@ export class VUserLending {
     overDueDay: number;
 }
 
-export default VUserLending;
+

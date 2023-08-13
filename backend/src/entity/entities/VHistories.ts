@@ -26,7 +26,7 @@ import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
     .innerJoin('book', 'b', 'l.bookId = b.id')
     .leftJoin('book_info', 'bi', 'b.infoId = bi.id'),
 })
-export default class VHistories {
+export class VHistories {
   @ViewColumn()
     id: string;
 

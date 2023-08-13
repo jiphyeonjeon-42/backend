@@ -10,6 +10,7 @@ import {
   searchSuperDefaultTags,
   deleteSubTags,
   deleteSuperTags,
+  searchMainTags,
 } from '~/v1/tags/tags.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
@@ -634,11 +635,79 @@ router
 router
   /**
    * @openapi
+   * /api/tags/main:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 메인 페이지에서 사용할 태그 목록을 가져온다.
+   *      description: 슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 랜덤한 순서로 가져온다.
+   *                   이는 메인 페이지에서 사용된다.
+   *      parameters:
+   *        - in: query
+   *          name: limit
+   *          description: 가져올 태그 개수
+   *          schema:
+   *            type: integer
+   *            example: 1
+   *            default: 100
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그, 디폴트 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 슈퍼 태그, 디폴트 태그 목록
+   *                    type: object
+   *                    properties:
+   *                      createdAt:
+   *                        description: 태그 생성일
+   *                        type: string
+   *                      content:
+   *                        description: 태그 내용
+   *                        type: string
+   *                      count:
+   *                        description: 슈퍼 태그에 속한 서브 태그 개수.
+   *                        type: integer
+   *                      type:
+   *                        description: 태그의 타입. 슈퍼 태그는 'super'이며, 디폴트 태그는 'default'이다.
+   *                        type: string
+   *                    example:
+   *                    - createdAt: 2023-04-12
+   *                      content: 1서클_추천_책
+   *                      count: 0
+   *                      type: default
+   *                    - createdAt: 2023-04-12
+   *                      content: chanheki_추천_책
+   *                      count: 3
+   *                      type: super
+   *                    - createdAt: 2023-04-13
+   *                      content: yena가_추천하는
+   *                      count: 0
+   *                      type: default
+   *                    - createdAt: 2023-04-13
+   *                      content: Python
+   *                      count: 1
+   *                      type: super
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/main', searchMainTags);
+
+router
+  /**
+   * @openapi
    * /api/tags/{superTagId}/sub:
    *    get:
    *      tags:
    *      - tags
-   *      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다.
+   *      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 이는 일반 사용자를 위해 사용된다.
    *      description: superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의
    *                   서브 태그를 가져올 때 사용한다.
    *      parameters:
@@ -686,7 +755,64 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
+  .get('/:superTagId/sub', authValidate(roleSet.all), searchSubTags);
+
+router
+  /**
+   * @openapi
+   * /api/tags/manage/{superTagId}/sub:
+   *    get:
+   *      tags:
+   *      - tags
+   *      summary: 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 이는 태그 관리를 위해 사용된다.
+   *      description: superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의
+   *                   서브 태그를 가져올 때 사용한다.
+   *      parameters:
+   *        - in: path
+   *          name: superTagId
+   *          description: 서브 태그를 조회할 슈퍼 태그의 id
+   *          required: true
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그에 속한 서브 태그들을 반환한다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  items:
+   *                    description: 슈퍼 태그에 속한 서브 태그 목록
+   *                    type: array
+   *                    items:
+   *                      type: object
+   *                      properties:
+   *                        id:
+   *                          description: 서브 태그 고유 id
+   *                          type: integer
+   *                        content:
+   *                          description: 서브 태그의 내용
+   *                          type: string
+   *                        login:
+   *                          description: 서브 태그를 작성한 카뎃의 인트라 id
+   *                          type: string
+   *                    example:
+   *                    - id: 0
+   *                      content: 도커_쿠버네티스
+   *                      login: yena
+   *                    - id: 42
+   *                      content: 도커
+   *                      login: yena
+   *                    - id: 50
+   *                      content: 도커
+   *                      login: jang-cho
+   *        '400':
+   *          description: 잘못된 요청. 잘못 입력된 json key, 유효하지 않은 value 등
+   *        '401':
+   *          description: 태그 기록을 조회할 권한이 없는 사용자
+   *        '500':
+   *          description: db 에러
+   */
+  .get('/manage/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**

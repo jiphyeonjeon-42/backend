@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import * as status from 'http-status';
 import { verify } from 'jsonwebtoken';
+import { jwtOption } from '~/config';
+import { logger } from '~/logger';
+import UsersService from '~/v1/users/users.service';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { logger } from '~/v1/utils/logger';
-import { jwtOption } from '~/config';
-import UsersService from '~/v1/users/users.service';
 import { User } from '../DTO/users.model';
 import { role } from './auth.type';
 

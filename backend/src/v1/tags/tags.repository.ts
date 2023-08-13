@@ -1,15 +1,10 @@
-import {
-  In, InsertResult, Like, QueryRunner, Repository,
-} from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import * as errorCode from '~/v1/utils/error/errorCode';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import SubTag from '~/entity/entities/SubTag';
-import User from '~/entity/entities/User';
-import SuperTag from '~/entity/entities/SuperTag';
-import VTagsSubDefault from '~/entity/entities/VTagsSubDefault';
-import BookInfo from '~/entity/entities/BookInfo';
+/* eslint-disable max-classes-per-file */
+import { In, QueryRunner, Repository } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import jipDataSource from '~/app-data-source';
+import {
+  BookInfo, SubTag, SuperTag, User, VTagsSubDefault, VTagsSuperDefault,
+} from '~/entity/entities';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 
 export class SubTagRepository extends Repository<SubTag> {
@@ -94,6 +89,8 @@ export class SuperTagRepository extends Repository<SuperTag> {
 
   private readonly bookInfoRepo: Repository<BookInfo>;
 
+  private readonly vSuperDefaultRepo: Repository<VTagsSuperDefault>;
+
   private readonly entityManager;
 
   constructor(transactionQueryRunner?: QueryRunner) {
@@ -111,6 +108,10 @@ export class SuperTagRepository extends Repository<SuperTag> {
     );
     this.bookInfoRepo = new Repository<BookInfo>(
       BookInfo,
+      this.entityManager,
+    );
+    this.vSuperDefaultRepo = new Repository<VTagsSuperDefault>(
+      VTagsSuperDefault,
       this.entityManager,
     );
   }
@@ -223,5 +224,11 @@ export class SuperTagRepository extends Repository<SuperTag> {
       where: { id: bookInfoId },
     });
     return count;
+  }
+
+  async getMainTags(limit: number): Promise<VTagsSuperDefault[]> {
+    return this.vSuperDefaultRepo.find({
+      take: limit,
+    });
   }
 }

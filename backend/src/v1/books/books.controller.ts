@@ -3,16 +3,17 @@ import {
   NextFunction, Request, RequestHandler, Response,
 } from 'express';
 import * as status from 'http-status';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
-import { logger } from '~/v1/utils/logger';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';
 import { searchSchema } from '../users/users.types';
 import { User } from '../DTO/users.model';
 import UsersService from '../users/users.service';
+import * as parseCheck from '~/v1/utils/parseCheck';
 
 const likesService = new LikesService();
 const usersService = new UsersService();
@@ -129,6 +130,27 @@ export const searchBookInfo = async (
     next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
+};
+
+export const searchBookInfoByTag = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<Response | void> => {
+  const rawData = req.query;
+  const query = parseCheck.stringQueryParse(rawData.query);
+  const sort = parseCheck.stringQueryParse(rawData.sort);
+  const page = parseCheck.pageParse(Number(rawData.page));
+  const limit = parseCheck.limitParse(Number(rawData.limit));
+  const category = parseCheck.stringQueryParse(rawData.category);
+
+  try {
+    return res.status(status.OK).json(
+      await BooksService.searchInfoByTag(query, page, limit, sort, category),
+    );
+  } catch (error: any) {
+    return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
 };
 
 export const getBookById: RequestHandler = async (

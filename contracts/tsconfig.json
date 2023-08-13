@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "buildOptions": {
+    "incremental": true
+  },
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true
+  }
+}

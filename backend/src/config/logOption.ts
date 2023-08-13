@@ -1,4 +1,4 @@
-import { LogLevel, LogLevelOption } from './config.type';
+import type { LogLevel, LogLevelOption } from './config.type';
 import { RuntimeMode } from './runtimeOption';
 
 export const levels = {
@@ -18,7 +18,7 @@ export const colors: Record<LogLevel, string> = {
 } as const;
 
 export const getLogLevelOption = (mode: RuntimeMode): LogLevelOption => {
-  const logLevel = (mode === 'development' ? 'debug' : 'http');
+  const logLevel = (mode === 'production' ? 'http' : 'debug');
   const consoleLogLevel = (mode === 'production' ? 'error' : 'debug');
 
   return { logLevel, consoleLogLevel } as const;

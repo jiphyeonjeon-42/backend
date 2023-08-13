@@ -1,14 +1,11 @@
 import {
   IsNull, MoreThan, QueryRunner, Repository, UpdateResult,
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import User from '~/entity/entities/User';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import jipDataSource from '~/app-data-source';
-import Lending from '~/entity/entities/Lending';
-import VUserLending from '~/entity/entities/VUserLending';
-import Book from '~/entity/entities/Book';
-import Reservation from '~/entity/entities/Reservation';
-import VLending from '~/entity/entities/VLending';
+import {
+  VUserLending, Reservation, VLending, Lending, User, Book,
+} from '~/entity/entities';
 import { formatDate } from '~/v1/utils/dateFormat';
 
 class LendingRepository extends Repository<Lending> {

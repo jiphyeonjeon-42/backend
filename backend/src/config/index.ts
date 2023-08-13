@@ -9,13 +9,15 @@ import { getOauth42ApiOption, getOauthUrlOption } from './oauthOption';
 import { getRuntimeMode } from './runtimeOption';
 import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 
+export * as logFormatOption from './logOption';
+
 // .env 파일을 읽어서 process.env에 추가
 dotenv.config();
 
 const runtimeMode = getRuntimeMode(process.env);
 
 // graceful shutdown시 서버 종료 대기 시간
-export const gracefulTerminationTimeout = runtimeMode === 'development' ? 0 : 30 * 1000;
+export const gracefulTerminationTimeout = runtimeMode === 'production' ? 30 * 1000 : 0;
 
 export const logLevelOption = getLogLevelOption(runtimeMode);
 export const connectMode = getModeOption(process.env);
