@@ -1,6 +1,12 @@
 import { dateLike, metaSchema, positiveInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
+export const historiesGetMyQuerySchema = z.object({
+  query: z.string().optional(),
+  page: z.number().int().nonnegative().default(0),
+  limit: z.number().int().nonnegative().default(10),
+});
+
 export const historiesGetQuerySchema = z.object({
   query: z.string().optional(),
   type: z.enum(['user', 'title', 'callsign']).optional(),

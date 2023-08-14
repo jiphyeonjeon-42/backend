@@ -32,7 +32,7 @@ const authValidate = (roles: role[]) => async (
     if (!roles.includes(user.items[0].role)) {
       throw new ErrorResponse(errorCode.NO_AUTHORIZATION, 403);
     }
-    req.user = { intraProfile: req.user, id, role: user.items[0].role };
+    req.user = { intraProfile: req.user, id, role: user.items[0].role, nickname: user.items[0].nickname };
     next();
   } catch (error: any) {
     switch (error.message) {

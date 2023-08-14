@@ -2,9 +2,9 @@
 import { contract } from '@jiphyeonjeon-42/contracts';
 import { initServer } from '@ts-rest/express';
 
-import { reviews } from './reviews/impl';
-import { histories } from './histories/impl';
-import { stock } from './stock/impl';
+import { reviews } from './reviews/mod.ts';
+import { histories } from './histories/mod.ts';
+import { stock } from './stock/mod.ts';
 
 const s = initServer();
 export default s.router(contract, {
