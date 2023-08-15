@@ -14,6 +14,7 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
+import { VSearchBookByTag } from '~/entity/entities';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
