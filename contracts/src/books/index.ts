@@ -24,7 +24,7 @@ import {
 	searchBookInfoByIdQuerySchema,
 	searchBookInfoByIdResponseSchema
 } from "./schema";
-import { bookInfoNotFoundSchema, bookNotFoundSchema } from "../shared";
+import { badRequestSchema, bookInfoNotFoundSchema, bookNotFoundSchema, serverErrorSchema } from "../shared";
 
 const c = initContract();
 
@@ -37,7 +37,8 @@ export const booksContract = c.router(
 			query: searchAllBookInfosQuerySchema,
 			responses: {
 				200: searchBookInfosResponseSchema,
-				// 400: ,
+				400: badRequestSchema,
+				500: serverErrorSchema,
 			},
 		},
 		searchBookInfosByTag: {
@@ -47,7 +48,8 @@ export const booksContract = c.router(
 			query: searchBookInfosByTagQuerySchema,
 			responses: {
 				200: searchBookInfosResponseSchema,
-				// 400: ,
+				400: badRequestSchema,
+				500: serverErrorSchema,
 			},
 		},
 		searchBookInfosSorted: {
@@ -57,7 +59,8 @@ export const booksContract = c.router(
 			query: searchBookInfosSortedQuerySchema,
 			responses: {
 				200: searchBookInfosSortedResponseSchema,
-				// 400: ,
+				400: badRequestSchema,
+				500: serverErrorSchema,
 			},
 		},
 		searchBookInfoById: {
@@ -68,6 +71,7 @@ export const booksContract = c.router(
 			responses: {
 				200: searchBookInfoByIdResponseSchema,
 				404: bookInfoNotFoundSchema,
+				500: serverErrorSchema
 			}
 		},
 		searchAllBooks: {
@@ -77,7 +81,8 @@ export const booksContract = c.router(
 			query: searchAllBooksQuerySchema,
 			responses: {
 				200: searchAllBooksResponseSchema,
-				// 400: ,
+				400: badRequestSchema,
+				500: serverErrorSchema,
 			},
 		},
 		searchBookInfoForCreate: {
@@ -89,6 +94,7 @@ export const booksContract = c.router(
 				200: searchBookInfoCreateResponseSchema,
 				303: isbnNotFoundSchema,
 				310: naverBookNotFoundSchema,
+				500: serverErrorSchema,
 			}
 		},
 		searchBookById: {
@@ -98,6 +104,7 @@ export const booksContract = c.router(
 			responses: {
 				200: searchBookByIdResponseSchema,
 				404: bookNotFoundSchema,
+				500: serverErrorSchema,
 			}
 		},
 		createBook: {
@@ -110,6 +117,7 @@ export const booksContract = c.router(
 				308: insertionFailureSchema,
 				309: categoryNotFoundSchema,
 				311: formatErrorSchema,
+				500: serverErrorSchema,
 			},
 		},
 		updateBook: {
@@ -122,6 +130,7 @@ export const booksContract = c.router(
 				312: unknownPatchErrorSchema,
 				313: nonDataErrorSchema,
 				311: formatErrorSchema,
+				500: serverErrorSchema,
 			},
 		},
 	},
