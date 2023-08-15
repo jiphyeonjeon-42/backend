@@ -12,6 +12,8 @@ import type { CookieOptions } from 'express';
 
 export * as logFormatOption from './logOption';
 
+export * as logFormatOption from './logOption';
+
 // .env 파일을 읽어서 process.env에 추가
 dotenv.config();
 

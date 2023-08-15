@@ -7,7 +7,6 @@ import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
-import { VSearchBookByTag } from '~/entity/entities';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
