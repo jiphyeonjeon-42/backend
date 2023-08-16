@@ -3,10 +3,10 @@ import { levels } from './logOption';
 /** JWT 발급 옵션 */
 export type JwtOption = {
   /** JWT 발급자 */
-  issuer: string | 'localhost'
+  issuer: string | 'localhost';
 
   /** JWT 도메인 */
-  domain: string | 'localhost'
+  domain: string | 'localhost' | undefined;
 
   /** Cookie Secure 사용 여부 */
   secure: boolean;

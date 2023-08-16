@@ -44,8 +44,10 @@ services:
     restart: on-failure
     entrypoint: ["./node_modules/.bin/vite-node", "src/server.ts"]
     volumes:
+      - ./backend/src:/app/backend/src
+
       - ./logs/backend:/app/backend/logs
-    env_file: .env.rds
+    env_file: .env.https
     environment:
-      - MODE=RDS
+      - MODE=https
       - TZ=Asia/Seoul
