@@ -13,13 +13,15 @@ FROM pnpm-installed as workspace
 COPY ./pnpm-lock.yaml .
 COPY patches patches
 
-RUN pnpm fetch
+RUN pnpm fetch --prod
 
 FROM workspace as prod
 ADD . ./
 
-RUN pnpm -r install --frozen-lockfile --offline
+RUN pnpm -r install --frozen-lockfile --offline --prod
 RUN pnpm -r run build
+
+RUN rm -rf /app/.pnpm-store
 
 WORKDIR /app/backend
 
