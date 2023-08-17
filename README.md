@@ -37,6 +37,7 @@
 - [danpark](https://github.com/honeyl3ee)
 - [jang-cho](https://github.com/cjho0316)
 - [jihwjeon](https://github.com/JeongJiHwan)
+- [jim](https://github.com/Jake1152)
 - [jimin](https://github.com/jhMin95)
 - [sechung](https://github.com/middlefitting)
 - [yena](https://github.com/nyj001012)
