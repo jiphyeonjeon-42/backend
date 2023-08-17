@@ -112,6 +112,9 @@ dist
 # OS
 .DS_Store
 
+# Markdown directory
+/md_dir
+
 ################################################################################
 00_init.sql
 database/data/
