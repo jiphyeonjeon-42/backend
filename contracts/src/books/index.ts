@@ -12,7 +12,7 @@ import {
 	insertionFailureSchema,
 	isbnNotFoundSchema,
 	naverBookNotFoundSchema,
-	updatebookBodySchema,
+	updateBookBodySchema,
 	updateBookResponseSchema,
 	unknownPatchErrorSchema,
 	nonDataErrorSchema,
@@ -22,7 +22,9 @@ import {
 	searchBookInfosSortedQuerySchema,
 	searchBookInfosSortedResponseSchema,
 	searchBookInfoByIdQuerySchema,
-	searchBookInfoByIdResponseSchema
+	searchBookInfoByIdResponseSchema,
+	updateDonatorBodySchema,
+	updateDonatorResponseSchema
 } from "./schema";
 import { badRequestSchema, bookInfoNotFoundSchema, bookNotFoundSchema, serverErrorSchema } from "../shared";
 
@@ -124,12 +126,22 @@ export const booksContract = c.router(
 			method: 'PATCH',
 			path: '/update',
 			description: '책 정보를 수정합니다. book_info table or book table',
-			body: updatebookBodySchema,
+			body: updateBookBodySchema,
 			responses: {
 				204: updateBookResponseSchema,
 				312: unknownPatchErrorSchema,
 				313: nonDataErrorSchema,
 				311: formatErrorSchema,
+				500: serverErrorSchema,
+			},
+		},
+		updateDonator: {
+			method: 'PATCH',
+			path: '/donator',
+			description: '기부자 정보를 수정합니다.',
+			body: updateDonatorBodySchema,
+			responses: {
+				204: updateDonatorResponseSchema,
 				500: serverErrorSchema,
 			},
 		},

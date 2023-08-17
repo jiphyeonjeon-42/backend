@@ -47,7 +47,7 @@ export const createBookBodySchema = z.object({
 	donator: z.string(),
 });
 
-export const updatebookBodySchema = z.object({
+export const updateBookBodySchema = z.object({
 	bookInfoId: positiveInt,
 	categoryId: positiveInt,
 	title: z.string(),
@@ -58,6 +58,11 @@ export const updatebookBodySchema = z.object({
 	bookId: positiveInt,
 	callSign: z.string(),
 	status: positiveInt.gte(0).lte(2),
+});
+
+export const updateDonatorBodySchema = z.object({
+	bookId: positiveInt,
+	nickname: z.string(),
 });
 
 export const bookInfoSchema = z.object({
@@ -160,7 +165,9 @@ export const searchBookByIdResponseSchema = z.object({
 	isLendable: positiveInt.openapi({ example: 1 }),
 });
 
-export const updateBookResponseSchema = z.literal('책 정보 수정이 완료되었습니다.');
+export const updateBookResponseSchema = z.literal('책 정보가 수정되었습니다.');
+
+export const updateDonatorResponseSchema = z.literal('기부자 정보가 수정되었습니다.');
 
 export const createBookResponseSchema = z.object({
 	callSign: z.string().openapi({ example: 'K23.17.v1.c1' }),
