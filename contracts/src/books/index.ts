@@ -142,6 +142,7 @@ export const booksContract = c.router(
 			body: updateDonatorBodySchema,
 			responses: {
 				204: updateDonatorResponseSchema,
+				404: bookNotFoundSchema,
 				500: serverErrorSchema,
 			},
 		},
