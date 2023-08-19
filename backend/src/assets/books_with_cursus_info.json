@@ -1,0 +1,206 @@
+{
+	"book_info": [
+		{
+			"id": 6,
+			"associated": [
+				{
+					"circle": 0,
+					"subject": "Libft"
+				}
+			]
+		},
+		{
+			"id": 220,
+			"associated": [
+				{
+					"circle": 2,
+					"subject": "push_swap"
+				}
+			]
+		},
+		{
+			"id": 945,
+			"associated": [
+				{
+					"circle": 2,
+					"subject": "push_swap"
+				}
+			]
+		},
+		{
+			"id": 383,
+			"associated": [
+				{
+					"circle": 2,
+					"subject": "minitalk"
+				},
+				{
+					"circle": 5,
+					"subject": "webserv"
+				}
+			]
+		},
+		{
+			"id": 503,
+			"associated": [
+				{
+					"circle": 2,
+					"subject": "minitalk"
+				},
+				{
+					"circle": 5,
+					"subject": "webserv"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"associated": [
+				{
+					"circle": 2,
+					"subject": "minitalk"
+				}
+			]
+		},
+		{
+			"id": 789,
+			"associated": [
+				{
+					"circle": 4,
+					"subject": "minirt"
+				}
+			]
+		},
+		{
+			"id": 672,
+			"associated": [
+				{
+					"circle": 4,
+					"subject": "minirt"
+				}
+			]
+		},
+		{
+			"id": 721,
+			"associated": [
+				{
+					"circle": 4,
+					"subject": "CPP Module 00"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 01"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 02"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 03"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 04"
+				}
+			]
+		},
+		{
+			"id": 910,
+			"associated": [
+				{
+					"circle": 4,
+					"subject": "CPP Module 00"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 01"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 02"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 03"
+				},
+				{
+					"circle": 4,
+					"subject": "CPP Module 04"
+				}
+			]
+		},
+		{
+			"id": 536,
+			"associated": [
+				{
+					"circle": 4,
+					"subject": "NetPractice"
+				}
+			]
+		},
+		{
+			"id": 919,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "CPP Module 09"
+				}
+			]
+		},
+		{
+			"id": 899,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "CPP Module 09"
+				}
+			]
+		},
+		{
+			"id": 936,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "CPP Module 09"
+				}
+			]
+		},
+		{
+			"id": 1013,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "Inception"
+				}
+			]
+		},
+		{
+			"id": 896,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "Inception"
+				}
+			]
+		},
+		{
+			"id": 314,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "webserv"
+				}
+			]
+		},
+		{
+			"id": 198,
+			"associated": [
+				{
+					"circle": 5,
+					"subject": "webserv"
+				}
+			]
+		}
+	]
+}
