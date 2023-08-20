@@ -1,20 +1,15 @@
 import { metaSchema, positiveInt, mkErrorMessageSchema } from "../shared";
 import { z } from "../zodWithOpenapi";
 
-export const searchAllBookInfosQuerySchema = z.object({
+const commonQuerySchema = z.object({
 	query: z.string().optional(),
-	sort: z.string(),
 	page: positiveInt.default(0),
 	limit: positiveInt.default(10),
-	category: z.string(),
 });
 
-export const searchBookInfosByTagQuerySchema = z.object({
-	query: z.string(),
+export const searchBookInfosQuerySchema = commonQuerySchema.extend({
 	sort: z.string(),
-	page: positiveInt.default(0),
-	limit: positiveInt.default(10),
-	category: z.string()
+	category: z.string(),
 });
 
 export const searchBookInfosSortedQuerySchema = z.object({
@@ -26,11 +21,7 @@ export const searchBookInfoByIdQuerySchema = z.object({
 	id: positiveInt,
 });
 
-export const searchAllBooksQuerySchema = z.object({
-	query: z.string().optional(),
-	page: positiveInt.default(0),
-	limit: positiveInt.default(10),
-});
+export const searchAllBooksQuerySchema = commonQuerySchema;
 
 export const searchBookInfoCreateQuerySchema = z.object({
 	isbnQuery: z.string(),

@@ -16,9 +16,8 @@ import {
 	updateBookResponseSchema,
 	unknownPatchErrorSchema,
 	nonDataErrorSchema,
-	searchAllBookInfosQuerySchema,
+	searchBookInfosQuerySchema,
 	searchBookInfosResponseSchema,
-	searchBookInfosByTagQuerySchema,
 	searchBookInfosSortedQuerySchema,
 	searchBookInfosSortedResponseSchema,
 	searchBookInfoByIdQuerySchema,
@@ -36,7 +35,7 @@ export const booksContract = c.router(
 			method: 'GET',
 			path: '/info/search',
 			description: '책 정보(book_info)를 검색하여 가져온다.',
-			query: searchAllBookInfosQuerySchema,
+			query: searchBookInfosQuerySchema,
 			responses: {
 				200: searchBookInfosResponseSchema,
 				400: badRequestSchema,
@@ -47,7 +46,7 @@ export const booksContract = c.router(
 			method: 'GET',
 			path: '/info/tag',
 			description: '똑같은 내용의 태그가 달린 책의 정보를 검색하여 가져온다.',
-			query: searchBookInfosByTagQuerySchema,
+			query: searchBookInfosQuerySchema,
 			responses: {
 				200: searchBookInfosResponseSchema,
 				400: badRequestSchema,
