@@ -2,7 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
 import { randomUUID } from 'node:crypto';
-import { oauth42ApiOption, oauthUrlOption } from '~/config';
+import { cookieOptions, oauth42ApiOption, oauthUrlOption } from '~/config';
 import { logger } from '~/logger';
 import UsersService from '~/v1/users/users.service';
 import * as errorCode from '~/v1/utils/error/errorCode';
@@ -121,9 +121,15 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
+/**
+ * @remarks
+ *
+ * 쿠키를 설정했을때와 같은 옵션으로 쿠키를 삭제해야 합니다.
+ *
+ * @see {@link authJwt.saveJwt}
+ */
 export const logout = (req: Request, res: Response) => {
-  res.cookie('access_token', null, { maxAge: 0, httpOnly: true });
-  res.status(204).send();
+  res.clearCookie('access_token', cookieOptions).status(204).send();
 };
 
 export const getIntraAuthentication = (req: Request, res: Response) => {

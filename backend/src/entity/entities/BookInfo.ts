@@ -1,16 +1,16 @@
 import {
   Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
-import Book from './Book';
-import Category from './Category';
-import Likes from './Likes';
-import Reservation from './Reservation';
-import Reviews from './Reviews';
-import SuperTag from './SuperTag';
+import { Book } from './Book';
+import { Category } from './Category';
+import { Likes } from './Likes';
+import { Reservation } from './Reservation';
+import { Reviews } from './Reviews';
+import { SuperTag } from './SuperTag';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')
-class BookInfo {
+export class BookInfo {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id?: number;
 
@@ -69,5 +69,3 @@ class BookInfo {
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
     superTags?: SuperTag[];
 }
-
-export default BookInfo;

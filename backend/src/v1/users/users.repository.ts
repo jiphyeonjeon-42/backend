@@ -1,11 +1,10 @@
-import { QueryRunner, Repository } from 'typeorm';
-import Reservation from '~/entity/entities/Reservation';
-import UserReservation from '~/entity/entities/UserReservation';
+import { QueryRunner } from 'typeorm/query-runner/QueryRunner.js';
+import { Repository } from 'typeorm';
 import { formatDate } from '~/v1/utils/dateFormat';
-import VUserLending from '~/entity/entities/VUserLending';
-import VLendingForSearchUser from '~/entity/entities/VLendingForSearchUser';
-import User from '~/entity/entities/User';
 import jipDataSource from '~/app-data-source';
+import {
+  VUserLending, VLendingForSearchUser, Reservation, UserReservation, User,
+} from '~/entity/entities';
 import * as models from '../DTO/users.model';
 
 export default class UsersRepository extends Repository<User> {

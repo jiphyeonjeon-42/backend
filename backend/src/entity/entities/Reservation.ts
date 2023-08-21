@@ -6,13 +6,13 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import User from './User';
-import BookInfo from './BookInfo';
-import Book from './Book';
+import { User } from './User';
+import { BookInfo } from './BookInfo';
+import { Book } from './Book';
 
  @Index('FK_bookInfo', ['bookInfoId'], {})
 @Entity('reservation')
-class Reservation {
+export class Reservation {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id: number;
 
@@ -63,6 +63,4 @@ class Reservation {
 
   @Column('int', { name: 'bookId', nullable: true })
     bookId: number | null;
- }
-
-export default Reservation;
+}

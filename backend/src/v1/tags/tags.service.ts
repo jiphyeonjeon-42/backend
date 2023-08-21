@@ -1,11 +1,8 @@
-import { In, Like, QueryRunner } from 'typeorm';
-import { ErrorCode } from '@slack/web-api';
+import { Like, QueryRunner } from 'typeorm';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
-import { DBError } from '~/mysql';
-import SuperTag from '~/entity/entities/SuperTag';
-import VTagsSubDefault from '~/entity/entities/VTagsSubDefault';
+import { SuperTag, VTagsSubDefault } from '~/entity/entities';
 import jipDataSource from '~/app-data-source';
+import { VTagsSuperDefault } from '~/entity/entities/VTagsSuperDefault';
 import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import { superDefaultTag } from '../DTO/tags.model';
 
@@ -314,6 +311,10 @@ export class TagsService {
       return false;
     }
     return true;
+  }
+
+  async searchMainTags(limit: number): Promise<VTagsSuperDefault[]> {
+    return this.superTagRepository.getMainTags(limit);
   }
 }
 

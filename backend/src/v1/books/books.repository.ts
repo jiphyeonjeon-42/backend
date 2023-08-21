@@ -1,17 +1,16 @@
 import { Like, QueryRunner, Repository } from 'typeorm';
 import * as Status from 'http-status';
-import { VSearchBook } from '~/entity/entities/VSearchBook';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import Book from '~/entity/entities/Book';
-import BookInfo from '~/entity/entities/BookInfo';
-import Lending from '~/entity/entities/Lending';
-import Category from '~/entity/entities/Category';
-import User from '~/entity/entities/User';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
+import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
 import {
-  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
+  Book, BookInfo, User, Lending, Category, VSearchBook,
+} from '~/entity/entities';
+import {
+  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo, UpdateBookDonator,
 } from './books.type';
+import { number } from "zod";
 
 class BooksRepository extends Repository<Book> {
   private readonly searchBook: Repository<VSearchBook>;
@@ -22,6 +21,8 @@ class BooksRepository extends Repository<Book> {
 
   private readonly users: Repository<User>;
 
+  private readonly vSearchBookByTag: Repository<VSearchBookByTag>;
+
   constructor(transactionQueryRunner?: QueryRunner) {
     const queryRunner = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
@@ -30,6 +31,7 @@ class BooksRepository extends Repository<Book> {
     this.books = new Repository<Book>(Book, entityManager);
     this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
     this.users = new Repository<User>(User, entityManager);
+    this.vSearchBookByTag = new Repository<VSearchBookByTag>(VSearchBookByTag, entityManager);
   }
 
   async isExistBook(isbn: string | undefined): Promise<number> {
@@ -60,6 +62,36 @@ class BooksRepository extends Repository<Book> {
       skip: page * limit,
     });
     return searchBook;
+  }
+
+  async getBookListByTag(
+    condition: object,
+    page: number,
+    limit: number,
+    sort: object,
+  ): Promise<[VSearchBookByTag[], number]> {
+    const bookList = await this.vSearchBookByTag.find({
+      select: [
+        'id',
+        'title',
+        'isbn',
+        'image',
+        'publishedAt',
+        'createdAt',
+        'updatedAt',
+        'category',
+        'lendingCnt',
+      ],
+      where: condition,
+      take: limit,
+      skip: page * limit,
+      order: sort,
+    });
+    const allBookList = await this.vSearchBookByTag.find({
+      select: ['id'],
+      where: condition,
+    });
+    return [bookList, allBookList.length];
   }
 
   async getTotalItems(condition: string): Promise<number> {
@@ -153,6 +185,10 @@ class BooksRepository extends Repository<Book> {
 
   async updateBook(book: UpdateBook): Promise<void> {
     await this.books.update(book.id, book as Book);
+  }
+
+  async updateBookDonator(bookDonator: UpdateBookDonator): Promise<void> {
+    await this.books.update(bookDonator.id, bookDonator as Book);
   }
 
   async createBookInfo(

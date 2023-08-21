@@ -1,9 +1,9 @@
 import { DataSource, ViewColumn, ViewEntity } from 'typeorm';
-import BookInfo from './BookInfo';
-import Book from './Book';
-import Category from './Category';
-import Lending from './Lending';
-import Reservation from './Reservation';
+import { BookInfo } from './BookInfo';
+import { Book } from './Book';
+import { Category } from './Category';
+import { Lending } from './Lending';
+import { Reservation } from './Reservation';
 
 @ViewEntity('v_stock', {
   expression: (Data: DataSource) => Data.createQueryBuilder()
@@ -18,7 +18,7 @@ import Reservation from './Reservation';
     .addSelect('book.id', 'bookId')
     .addSelect('book.status', 'status')
     .addSelect('book.donator', 'donator')
-    .addSelect("date_format(book.updatedAt, '%Y-%m-%d-%T')", 'updatedAt')
+    .addSelect("date_format(book.updatedAt, '%Y-%m-%d %T')", 'updatedAt')
     .addSelect('book_info.categoryId', 'categoryId')
     .addSelect('category.name', 'category')
     .from(Book, 'book')
@@ -62,7 +62,7 @@ export class VStock {
     status: number;
 
   @ViewColumn()
-    categoryId: string;
+    categoryId: number;
 
   @ViewColumn()
     callSign: string;
@@ -74,4 +74,4 @@ export class VStock {
     updatedAt: Date;
 }
 
-export default VStock;
+

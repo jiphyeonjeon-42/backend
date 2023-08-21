@@ -4,9 +4,6 @@ import express from 'express';
 import passport from 'passport';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import jipDataSource from '~/app-data-source';
-import { connectMode } from '~/config';
-import { logger, morganMiddleware } from '~/logger';
 import { FtAuthentication, FtStrategy, JwtStrategy } from '~/v1/auth/auth.strategy';
 import swaggerOptions from '~/v1/swagger/swagger';
 import errorConverter from '~/v1/utils/error/errorConverter';
@@ -21,6 +18,7 @@ import { createExpressEndpoints } from '@ts-rest/express';
 
 import router from '~/v1/routes';
 import routerV2 from '~/v2/routes';
+import { morganMiddleware } from './logger';
 
 const app: express.Application = express();
 
@@ -38,30 +36,21 @@ app.use(
       'http://42jip.com',
     ],
     credentials: true,
-  })
+  }),
 );
 
 passport.use('42', FtStrategy);
 passport.use('42Auth', FtAuthentication);
 passport.use('jwt', JwtStrategy);
 
-jipDataSource
-  .initialize()
-  .then(() => {
-    logger.info('typeORM INIT SUCCESS');
-    logger.info(connectMode);
-  })
-  .catch((e) => {
-    logger.error(`typeORM INIT FAILED : ${e.message}`);
-  });
-
 // Swagger 연결
 const specs = swaggerJsdoc(swaggerOptions);
-app.get('/swagger.json', (_req, res) => res.json(specs));
+const v1JsonPath = '/swagger/openapi.json';
+app.get(v1JsonPath, (_req, res) => res.json(specs));
 app.use(
   '/swagger',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/swagger.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/swagger.json' })
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v1JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v1JsonPath }),
 );
 
 const v2Specs = generateOpenApi(
@@ -74,13 +63,15 @@ const v2Specs = generateOpenApi(
   },
   {
     setOperationId: false,
-  }
+  },
 );
-app.get('/docs.json', (_req, res) => res.json(v2Specs));
+
+const v2JsonPath = '/swagger-v2/openapi.json';
+app.get(v2JsonPath, (_req, res) => res.json(v2Specs));
 app.use(
-  '/docs',
-  swaggerUi.serveFiles(undefined, { swaggerUrl: '/docs.json' }),
-  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: '/docs.json' })
+  '/swagger-v2',
+  swaggerUi.serveFiles(undefined, { swaggerUrl: v2JsonPath }),
+  swaggerUi.setup(undefined, { explorer: true, swaggerUrl: v2JsonPath }),
 );
 
 // dev route
@@ -90,6 +81,7 @@ app.use('/api', router);
 createExpressEndpoints(contract, routerV2, app, {
   logInitialization: true,
   responseValidation: true,
+  jsonQuery: true,
 });
 
 // 에러 핸들러

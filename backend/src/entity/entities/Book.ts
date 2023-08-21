@@ -1,15 +1,15 @@
 import {
   Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
-import BookInfo from './BookInfo';
-import User from './User';
-import Lending from './Lending';
-import Reservation from './Reservation';
+import { BookInfo } from './BookInfo';
+import { User } from './User';
+import { Lending } from './Lending';
+import { Reservation } from './Reservation';
 
 @Index('FK_donator_id_from_user', ['donatorId'], {})
 @Entity('book')
 
-class Book {
+export class Book {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
     id?: number;
 
@@ -28,7 +28,7 @@ class Book {
   })
     createdAt?: Date;
 
-  @Column()
+  @Column('int')
     infoId: number;
 
   @Column('datetime', {
@@ -60,5 +60,3 @@ class Book {
   @OneToMany(() => Reservation, (reservation) => reservation.book)
     reservations?: Reservation[];
 }
-
-export default Book;

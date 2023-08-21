@@ -19,17 +19,26 @@
 ![erd_backend](https://user-images.githubusercontent.com/50291995/198007446-0259fd24-1b8a-4d40-a2b8-cb8cce2bddc2.png)
 
 # 💡 기능 관련 건의
-[집현전 웹사이트 건의사항 시트](https://docs.google.com/spreadsheets/d/1wNGnXz1mjszAs7Bmg5P0xM-GS88c897DXoseFhpXwdg/edit#gid=0)를 이용해주세요! 
+[Discussions](https://github.com/orgs/jiphyeonjeon-42/discussions/categories/ideas)를 이용해주세요! 
 
 # 👥 Developers
-- [jolim](https://github.com/evelon)
-- [chanykim](https://github.com/naranghae)
-- [tkim](https://github.com/kth2624)
-- [jimin](https://github.com/jhMin95)
-- [wocho](https://github.com/greenaloud)
-- [seongyle](https://github.com/YeonSeong-Lee)
-- [gilee](https://github.com/weg901127)
-- [sechung](https://github.com/middlefitting)
-- [gshim](https://github.com/OverRaddit)
+
 - [chanheki](https://github.com/chanhihi)
+- [chanykim](https://github.com/naranghae)
+- [gilee](https://github.com/weg901127)
+- [gshim](https://github.com/OverRaddit)
+- [jolim](https://github.com/evelon)
+- [seongyle](https://github.com/YeonSeong-Lee)
+- [tkim](https://github.com/kth2624)
+- [wocho](https://github.com/greenaloud)
+
+## 현재 개발팀
+
+- [danpark](https://github.com/honeyl3ee)
+- [jang-cho](https://github.com/cjho0316)
+- [jihwjeon](https://github.com/JeongJiHwan)
+- [jimin](https://github.com/jhMin95)
+- [sechung](https://github.com/middlefitting)
 - [yena](https://github.com/nyj001012)
+- [yeonhkim](https://github.com/Yonaim)
+- [youkim](https://github.com/scarf005)

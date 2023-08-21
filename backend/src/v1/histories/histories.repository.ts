@@ -1,6 +1,6 @@
 import { QueryRunner, Repository } from 'typeorm';
-import VHistories from '~/entity/entities/VHistories';
 import jipDataSource from '~/app-data-source';
+import { VHistories } from '~/entity/entities';
 
 class HistoriesRepository extends Repository<VHistories> {
   constructor(transactionQueryRunner?: QueryRunner) {

@@ -14,5 +14,6 @@ const fromEnum = (role: number): Role =>
 export type ParsedUser = z.infer<typeof getUser>;
 export const getUser = z.object({
   id: positiveInt,
+  nickname: z.string(),
   role: z.number().int().min(0).max(3).transform(fromEnum),
 });
