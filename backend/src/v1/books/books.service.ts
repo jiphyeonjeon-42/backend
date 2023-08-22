@@ -7,6 +7,7 @@ import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
+import { VSearchBookByTag } from '~/entity/entities';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -14,7 +15,6 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import { VSearchBookByTag } from '~/entity/entities';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -425,4 +425,53 @@ export const updateBook = async (book: UpdateBook) => {
 export const updateBookDonator = async (bookDonator: UpdateBookDonator) => {
   const booksRepository = new BooksRepository();
   await booksRepository.updateBookDonator(bookDonator);
-}
+};
+
+export const getAccessToken = async (): Promise<string> => {
+  const tokenURL = 'https://api.intra.42.fr/oauth/token';
+  const queryString = {
+    grant_type: 'client_credentials',
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    redirect_uri: process.env.REDIRECT_URL,
+  };
+  let accessToken: string = '';
+  await axios(tokenURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: queryString,
+  }).then((response) => {
+    accessToken = response.data.access_token;
+  }).catch((error) => {
+    console.log(error.message);
+  });
+  return accessToken;
+};
+
+export const getUserIdFrom42API = async (
+  accessToken: string,
+): Promise<string> => {
+  const userURL = 'https://api.intra.42.fr/v2/users';
+  const queryString = 'filter[login]=yena';
+  let userId: string = '';
+  await axios(`${userURL}?${queryString}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((response) => {
+    userId = response.data[0].id;
+  }).catch((error) => {
+    console.log(error.message);
+  });
+  return userId;
+};
+
+export const getUserProject = async (
+  accessToken: string,
+  userId: string,
+): Promise<any> => {
+};

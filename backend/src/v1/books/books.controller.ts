@@ -9,7 +9,7 @@ import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
 import * as parseCheck from '~/v1/utils/parseCheck';
 import { fetchApi } from '@ts-rest/core';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import { jwtOption } from '~/config';
 import axios from 'axios';
 import * as BooksService from './books.service';
@@ -471,31 +471,10 @@ export const recommandBook = async (
   req: Request,
   res: Response,
 ) => {
-  const tokenURL = 'https://api.intra.42.fr/oauth/token';
-  const queryString = `grant_type=client_credentials&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&redirect_uri=${process.env.REDIRECT_URI}`;
-  const path = 'https://api.intra.42.fr/v2/cursus';
-  let accessToken;
-  await axios(tokenURL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    data: queryString,
-  }).then((response) => {
-    accessToken = response.data.access_token;
-  }).catch((error) => {
-    console.log(error);
-  });
-
-  await axios(path, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((response) => {
-    console.log(response.data);
-  }).catch((error) => {
-    console.log(error);
-  });
+  // TODO => 사용자의 과제 정보 가져오는 서비스 함수 호출하게 분리
+  const accessToken: string = await BooksService.getAccessToken();
+  const userId: string = await BooksService.getUserIdFrom42API(accessToken);
+  const userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
+  console.log(userId);
   res.status(status.OK).send();
 };
