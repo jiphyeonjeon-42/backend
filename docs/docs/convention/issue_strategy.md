@@ -8,6 +8,6 @@
 
 [참고: 415 이슈](https://github.com/jiphyeonjeon-42/backend/issues/415)
 
-## [우산 이슈 ☂️](./convention/umbrella.md)
+## [우산 이슈 ☂️](./umbrella.md)
 
 장기간 (~1주일) 진행되는 이슈는 우산 이슈를 이용해 태스크리스트 형태로 관리합니다.
