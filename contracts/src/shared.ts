@@ -6,6 +6,8 @@ export const dateLike = z.union([z.date(), z.string()]).transform(String)
 
 export const bookInfoIdSchema = positiveInt.describe('개별 도서 ID');
 
+export const statusSchema = z.enum(["ok", "lost", "damaged"]);
+
 type ErrorMessage = { code: string; description: string };
 
 /**
