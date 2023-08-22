@@ -1,4 +1,4 @@
-import { metaSchema, positiveInt, mkErrorMessageSchema } from "../shared";
+import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema } from "../shared";
 import { z } from "../zodWithOpenapi";
 
 const commonQuerySchema = z.object({
@@ -48,7 +48,7 @@ export const updateBookBodySchema = z.object({
 	image: z.string(),
 	bookId: positiveInt,
 	callSign: z.string(),
-	status: positiveInt.gte(0).lte(2),
+	status: statusSchema,
 });
 
 export const updateDonatorBodySchema = z.object({
@@ -96,7 +96,7 @@ export const searchBookInfoByIdResponseSchema = z.object({
 			id: positiveInt,
 			callSign: z.string(),
 			donator: z.string(),
-			status: positiveInt.gte(0).lte(2),
+			status: statusSchema,
 			dueDate: z.string(),
 			isLendable: positiveInt,
 			isReserved: positiveInt,
@@ -116,7 +116,7 @@ export const searchAllBooksResponseSchema = z.object({
 			publishedAt: z.string().openapi({ example: '20170714' }),
 			isbn: z.string().openapi({ example: '9791160502152' }),
 			image: z.string().openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/152/x9791160502152.jpg' }),
-			status: positiveInt.gte(0).lte(2).openapi({ example: 3 }),
+			status: statusSchema.openapi({ example: 3 }),
 			categoryId: positiveInt.openapi({ example: 8 }),
 			callSign: z.string().openapi({ example: 'K23.17.v1.c1' }),
 			category: z.string().openapi({ example: '데이터 분석/AI/ML' }),
@@ -149,7 +149,7 @@ export const searchBookByIdResponseSchema = z.object({
 	publishedAt: z.string().openapi({ example: '20130730' }),
 	isbn: z.string().openapi({ example: '9788998756444' }),
 	image: z.string().openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg' }),
-	status: positiveInt.gte(0).lte(2).openapi({ example: 0 }),
+	status: statusSchema.openapi({ example: 0 }),
 	categoryId: positiveInt.openapi({ example: 2}),
 	callsign: z.string().openapi({ example: 'C5.13.v1.c2' }),
 	category: z.string().openapi({ example: '네트워크' }),
