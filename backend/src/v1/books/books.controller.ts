@@ -471,10 +471,9 @@ export const recommandBook = async (
   req: Request,
   res: Response,
 ) => {
-  // TODO => 사용자의 과제 정보 가져오는 서비스 함수 호출하게 분리
   const accessToken: string = await BooksService.getAccessToken();
+  // TODO => accessToken이 없을 경우를 분리해야 함
   const userId: string = await BooksService.getUserIdFrom42API(accessToken);
   const userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
-  console.log(userId);
   res.status(status.OK).send();
 };

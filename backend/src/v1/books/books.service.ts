@@ -15,6 +15,7 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
+import { Project, RawProject } from '../DTO/cursus.model';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -454,6 +455,7 @@ export const getUserIdFrom42API = async (
   accessToken: string,
 ): Promise<string> => {
   const userURL = 'https://api.intra.42.fr/v2/users';
+  // TODO => login 이름 변수로 받아오게 해야함
   const queryString = 'filter[login]=yena';
   let userId: string = '';
   await axios(`${userURL}?${queryString}`, {
@@ -470,8 +472,32 @@ export const getUserIdFrom42API = async (
   return userId;
 };
 
-export const getUserProject = async (
+export const getUserProjectFrom42API = async (
   accessToken: string,
   userId: string,
-): Promise<any> => {
+): Promise<Project[]> => {
+  const projectURL = `https://api.intra.42.fr/v2/users/${userId}/projects_users`;
+  const userProject: Array<Project> = [];
+  await axios(projectURL, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((response) => {
+    const rawData: RawProject[] = response.data;
+    rawData.forEach((data: RawProject) => {
+      userProject.push({
+        id: data.id,
+        status: data.status,
+        validated: data['validated?'],
+        project: data.project,
+        cursus_ids: data.cursus_ids,
+        marked: data.marked,
+      });
+    });
+  }).catch((error) => {
+    console.log(error.message);
+  });
+  return userProject;
 };
