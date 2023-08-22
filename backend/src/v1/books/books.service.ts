@@ -453,10 +453,10 @@ export const getAccessToken = async (): Promise<string> => {
 
 export const getUserIdFrom42API = async (
   accessToken: string,
+  login: string,
 ): Promise<string> => {
   const userURL = 'https://api.intra.42.fr/v2/users';
-  // TODO => login 이름 변수로 받아오게 해야함
-  const queryString = 'filter[login]=yena';
+  const queryString = `filter[login]=${login}`;
   let userId: string = '';
   await axios(`${userURL}?${queryString}`, {
     method: 'GET',

@@ -471,9 +471,10 @@ export const recommandBook = async (
   req: Request,
   res: Response,
 ) => {
+  const { nickname: login } = req.user as any;
   const accessToken: string = await BooksService.getAccessToken();
   // TODO => accessToken이 없을 경우를 분리해야 함
-  const userId: string = await BooksService.getUserIdFrom42API(accessToken);
+  const userId: string = await BooksService.getUserIdFrom42API(accessToken, login);
   const userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
   res.status(status.OK).send();
 };
