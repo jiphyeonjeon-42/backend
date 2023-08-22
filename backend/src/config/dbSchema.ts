@@ -1,4 +1,4 @@
-import { envObject } from './envObject';
+import { envObject, nonempty } from './envObject';
 
 /** RDS 연결 옵션 파싱을 위한 스키마 */
 export const rdsSchema = envObject('RDS_HOSTNAME', 'RDS_USERNAME', 'RDS_PASSWORD', 'RDS_DB_NAME')
@@ -11,14 +11,16 @@ export const rdsSchema = envObject('RDS_HOSTNAME', 'RDS_USERNAME', 'RDS_PASSWORD
 
 /** MYSQL 연결 옵션 파싱을 위한 스키마 */
 const mysqlSchema = envObject('MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE')
+  .extend({ MYSQL_HOST: nonempty.default('database') })
   .transform((v) => ({
+    host: v.MYSQL_HOST,
     username: v.MYSQL_USER,
     password: v.MYSQL_PASSWORD,
     database: v.MYSQL_DATABASE,
   }));
 
 /** MYSQL 로컬 환경 연결 옵션 파싱을 위한 스키마 */
-export const localSchema = mysqlSchema.transform((args) => ({ ...args, host: 'localhost' as const }));
+export const localSchema = mysqlSchema;
 
 /** MYSQL 배포 환경 연결 옵션 파싱을 위한 스키마 */
-export const prodSchema = mysqlSchema.transform((args) => ({ ...args, host: 'database' as const }));
+export const prodSchema = mysqlSchema;
