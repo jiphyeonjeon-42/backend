@@ -54,4 +54,5 @@ export type Project = {
   project: RawProject['project'];
   cursus_ids: RawProject['cursus_ids'];
   marked: RawProject['marked'];
+  marked_at: RawProject['marked_at'];
 }

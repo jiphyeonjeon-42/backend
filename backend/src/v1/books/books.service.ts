@@ -494,6 +494,7 @@ export const getUserProjectFrom42API = async (
         project: data.project,
         cursus_ids: data.cursus_ids,
         marked: data.marked,
+        marked_at: data.marked_at,
       });
     });
   }).catch((error) => {
