@@ -114,7 +114,7 @@ router
    *                description: error decription
    *                example: { errorCode: 500 }
    */
-  .get('/recommand', recommandBook);
+  .get('/recommand', authValidate(roleSet.all), recommandBook);
 
 router
   /**
