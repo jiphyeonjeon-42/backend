@@ -3,28 +3,34 @@ import { z } from "../zodWithOpenapi";
 
 export const commonQuerySchema = z.object({
 	query: z.string().optional(),
-	page: positiveInt.default(0),
-	limit: positiveInt.default(10),
+	page: positiveInt.default(0).openapi({ example: 0 }),
+	limit: positiveInt.default(10).openapi({ example: 10 }),
 });
 
-export const searchBookInfosQuerySchema = commonQuerySchema.extend({
-	sort: z.string(),
-	category: z.string(),
+export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
+	sort: z.enum(["new", "popular", "title"]).optional(),
+	category: z.string().optional(),
+});
+
+export const searchBookInfosByTagQuerySchema = commonQuerySchema.extend({
+	query: z.string(),
+	sort: z.enum(["new", "popular", "title"]).optional(),
+	category: z.string().optional(),
 });
 
 export const searchBookInfosSortedQuerySchema = z.object({
-	sort: z.string(),
-	limit: positiveInt.default(10),
+	sort: z.enum(["new", "popular"]),
+	limit: positiveInt.default(10).openapi({ example: 10 }),
 });
 
-export const searchBookInfoByIdQuerySchema = z.object({
+export const searchBookInfoByIdPathSchema = z.object({
 	id: positiveInt,
 });
 
 export const searchAllBooksQuerySchema = commonQuerySchema;
 
 export const searchBookInfoCreateQuerySchema = z.object({
-	isbnQuery: z.string(),
+	isbnQuery: z.string().openapi({ example: '9791191114225' }),
 });
 
 export const createBookBodySchema = z.object({
@@ -36,6 +42,10 @@ export const createBookBodySchema = z.object({
 	categoryId: z.string(),
 	pubdate: z.string(),
 	donator: z.string(),
+});
+
+export const searchBookByIdParamSchema = z.object({
+	id: positiveInt,
 });
 
 export const updateBookBodySchema = z.object({
@@ -53,7 +63,7 @@ export const updateBookBodySchema = z.object({
 
 export const updateDonatorBodySchema = z.object({
 	bookId: positiveInt,
-	nickname: z.string(),
+	nicknameOrEmail: z.string(),
 });
 
 export const bookInfoSchema = z.object({
