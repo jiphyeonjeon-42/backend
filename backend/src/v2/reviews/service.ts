@@ -8,37 +8,36 @@ import {
 } from './errors';
 import { ParsedUser } from '~/v2/shared';
 import {
-  bookInfoRepo,
-  findDisabledReviewById,
-  reviewsRepo,
-  toggleReviewVisibilityById,
+  bookInfoExistsById,
+  deleteReviewById,
+  getReviewById,
+  insertReview,
+  toggleVisibilityById,
+  updateReviewById,
 } from './repository';
-import { removeReviewById } from './repository';
 
 type CreateArgs = { bookInfoId: number; userId: number; content: string };
-export const createReview = async ({
-  bookInfoId,
-  userId,
-  content,
-}: CreateArgs) => {
-  const bookInfo = await bookInfoRepo.findOneBy({ id: bookInfoId });
+export const createReview = async (args: CreateArgs) => {
+  const bookInfo = await bookInfoExistsById(args.bookInfoId);
 
-  return match(bookInfo)
-    .with(null, () => new BookInfoNotFoundError(bookInfoId))
-    .otherwise(({ id: bookInfoId }) =>
-      reviewsRepo.insert({ userId, updateUserId: userId, bookInfoId, content }),
-    );
+  return await match(bookInfo)
+    .with(false, () => new BookInfoNotFoundError(args.bookInfoId))
+    .otherwise(() => insertReview(args));
 };
 
 type RemoveArgs = { reviewsId: number; deleter: ParsedUser };
 export const removeReview = async ({ reviewsId, deleter }: RemoveArgs) => {
   const isAdmin = () => deleter.role === 'librarian';
   const doRemoveReview = () =>
-    removeReviewById({ reviewsId, deleteUserId: deleter.id });
+    deleteReviewById({ reviewsId, deleteUserId: deleter.id });
 
-  const review = await reviewsRepo.findOneBy({ id: reviewsId });
+  const review = await getReviewById(reviewsId);
   return match(review)
-    .with(null, { isDeleted: true }, () => new ReviewNotFoundError(reviewsId))
+    .with(
+      undefined,
+      { isDeleted: true },
+      () => new ReviewNotFoundError(reviewsId),
+    )
     .when(isAdmin, doRemoveReview)
     .with({ userId: deleter.id }, doRemoveReview)
     .otherwise(
@@ -52,14 +51,12 @@ export const updateReview = async ({
   userId,
   content,
 }: UpdateArgs) => {
-  const review = await reviewsRepo.findOneBy({ id: reviewsId });
+  const review = await getReviewById(reviewsId);
 
-  return match(review)
-    .with(null, () => new ReviewNotFoundError(reviewsId))
+  return await match(review)
+    .with(undefined, () => new ReviewNotFoundError(reviewsId))
     .with({ disabled: true }, () => new ReviewDisabledError(reviewsId))
-    .with({ userId }, () =>
-      reviewsRepo.update(reviewsId, { content, updateUserId: userId }),
-    )
+    .with({ userId }, () => updateReviewById({ reviewsId, userId, content }))
     .otherwise(() => new ReviewForbiddenAccessError({ userId, reviewsId }));
 };
 
@@ -68,11 +65,11 @@ export const toggleReviewVisibility = async ({
   reviewsId,
   userId,
 }: ToggleReviewArgs) => {
-  const review = await findDisabledReviewById({ id: reviewsId });
+  const review = await getReviewById(reviewsId);
 
-  return match(review)
-    .with(null, () => new ReviewNotFoundError(reviewsId))
-    .otherwise(async ({ disabled }) =>
-      toggleReviewVisibilityById({ reviewsId, userId, disabled }),
+  return await match(review)
+    .with(undefined, () => new ReviewNotFoundError(reviewsId))
+    .otherwise(({ disabled }) =>
+      toggleVisibilityById({ reviewsId, userId, disabled }),
     );
 };
