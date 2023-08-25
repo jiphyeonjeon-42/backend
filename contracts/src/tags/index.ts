@@ -178,6 +178,19 @@ export const tagContract = c.router(
         500: serverErrorSchema,
       },
     },
+    deleteSuperTag: {
+      method: 'DELETE',
+      path: '/super/{tagId}',
+      description: '슈퍼 태그를 삭제한다.',
+      pathParams: tagIdSchema,
+      body: null,
+      responses: {
+        200: modifyTagResponseSchema,
+        910: invalidTagIdSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
   },
   { pathPrefix: '/tags' },
 );
