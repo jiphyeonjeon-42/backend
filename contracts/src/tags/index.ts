@@ -15,14 +15,18 @@ import {
   NoAuthorityToModifyTagSchema,
   mergeTagsBodySchema,
   invalidTagIdSchema,
+  createDefaultTagBodySchema,
+  duplicateTagSchema,
 } from './schema';
 import {
   badRequestSchema,
   bookInfoIdSchema,
+  bookInfoNotFoundSchema,
   forbiddenSchema,
   paginationQuerySchema,
   serverErrorSchema,
 } from '../shared';
+import { create } from 'domain';
 
 const c = initContract();
 
@@ -130,6 +134,20 @@ export const tagContract = c.router(
         902: alreadyExistTagSchema,
         906: defaultTagCannotBeModifiedSchema,
         910: invalidTagIdSchema,
+        500: serverErrorSchema,
+      },
+    },
+    createDefaultTag: {
+      method: 'POST',
+      path: '/default',
+      description: '디폴트 태그를 생성한다. 태그 길이는 42자 이하여야 한다.',
+      body: createDefaultTagBodySchema,
+      responses: {
+        201: modifyTagResponseSchema,
+        900: incorrectTagFormatSchema,
+        907: bookInfoNotFoundSchema,
+        909: duplicateTagSchema,
+        401: forbiddenSchema,
         500: serverErrorSchema,
       },
     },

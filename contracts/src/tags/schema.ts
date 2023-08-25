@@ -175,3 +175,17 @@ export const mergeTagsBodySchema = z.object({
 
 export const invalidTagIdSchema = mkErrorMessageSchema('INVALID_TAG_ID')
   .describe('태그 id가 올바르지 않습니다.');
+
+export const createDefaultTagBodySchema = z.object({
+  bookInfoId: positiveInt.openapi({
+    description: '태그를 등록할 도서의 info id',
+    example: 1,
+  }),
+  content: z.string().openapi({
+    description: '태그 내용',
+    example: 'yena가_추천하는',
+  }),
+});
+
+export const duplicateTagSchema = mkErrorMessageSchema('DUPLICATE_TAG')
+  .describe('이미 존재하는 태그입니다.');
