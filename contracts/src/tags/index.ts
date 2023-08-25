@@ -5,9 +5,11 @@ import {
   superDefaultTagResponseSchema,
   superTagIdQuerySchema,
   subTagResponseSchema,
+  tagsOfBookResponseSchema,
 } from './schema';
 import {
   badRequestSchema,
+  bookInfoIdSchema,
   forbiddenSchema,
   paginationQuerySchema,
   serverErrorSchema,
@@ -64,6 +66,19 @@ export const tagContract = c.router(
       pathParams: superTagIdQuerySchema,
       responses: {
         200: subTagResponseSchema,
+        400: badRequestSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
+    getTagsOfBook: {
+      method: 'GET',
+      path: '/{bookInfoId}',
+      summary: '도서에 등록된 슈퍼 태그, 디폴트 태그 목록을 가져온다.',
+      description: '슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다. 이는 도서 상세 페이지 및 태그 병합 페이지에서 사용된다.',
+      pathParams: bookInfoIdSchema,
+      responses: {
+        200: tagsOfBookResponseSchema,
         400: badRequestSchema,
         401: forbiddenSchema,
         500: serverErrorSchema,

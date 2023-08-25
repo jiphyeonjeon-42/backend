@@ -92,3 +92,30 @@ export const subTagResponseSchema = z.object({
     example: 'yena가_추천하는',
   }),
 });
+
+export const tagsOfBookResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      id: positiveInt.openapi({
+        description: '태그 고유 id',
+        example: 1,
+      }),
+      login: z.string().openapi({
+        description: '태그를 작성한 카뎃의 닉네임',
+        example: 'yena',
+      }),
+      content: z.string().openapi({
+        description: '슈퍼/디폴트 태그의 내용',
+        example: 'yena가_추천하는',
+      }),
+      type: z.enum(['super', 'default']).openapi({
+        description: '태그의 타입. 슈퍼 태그는 super, 디폴트 태그는 default',
+        example: 'super',
+      }),
+      count: positiveInt.openapi({
+        description: '슈퍼 태그에 속한 서브 태그의 개수. 디폴트 태그는 0',
+        example: 1,
+      }),
+    }),
+  ),
+});
