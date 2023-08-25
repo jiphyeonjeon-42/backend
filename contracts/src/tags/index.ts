@@ -6,6 +6,11 @@ import {
   superTagIdQuerySchema,
   subTagResponseSchema,
   tagsOfBookResponseSchema,
+  modifySuperTagBodySchema,
+  modifySuperTagResponseSchema,
+  incorrectTagFormatSchema,
+  alreadyExistTagSchema,
+  defaultTagCannotBeModifiedSchema,
 } from './schema';
 import {
   badRequestSchema,
@@ -81,6 +86,20 @@ export const tagContract = c.router(
         200: tagsOfBookResponseSchema,
         400: badRequestSchema,
         401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
+    modifySuperTag: {
+      method: 'PATCH',
+      path: '/super',
+      description: '슈퍼 태그를 수정한다.',
+      body: modifySuperTagBodySchema,
+      responses: {
+        200: modifySuperTagResponseSchema,
+        400: badRequestSchema,
+        900: incorrectTagFormatSchema,
+        902: alreadyExistTagSchema,
+        906: defaultTagCannotBeModifiedSchema,
         500: serverErrorSchema,
       },
     },
