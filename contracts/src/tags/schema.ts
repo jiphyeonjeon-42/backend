@@ -161,3 +161,17 @@ export const modifySubTagBodySchema = z.object({
 
 export const NoAuthorityToModifyTagSchema = mkErrorMessageSchema('NO_AUTHORITY_TO_MODIFY_TAG')
   .describe('태그를 수정할 권한이 없습니다.');
+
+export const mergeTagsBodySchema = z.object({
+  superTagId: positiveInt.nullable().openapi({
+    description: '병합할 슈퍼 태그의 id. null이면 디폴트 태그로 병합됨을 의미한다.',
+    example: 1,
+  }),
+  subTagIds: z.array(positiveInt).openapi({
+    description: '병합할 서브 태그의 id 목록',
+    example: [1, 2, 3],
+  }),
+});
+
+export const invalidTagIdSchema = mkErrorMessageSchema('INVALID_TAG_ID')
+  .describe('태그 id가 올바르지 않습니다.');

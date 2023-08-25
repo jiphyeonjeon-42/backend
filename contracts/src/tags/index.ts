@@ -13,6 +13,8 @@ import {
   defaultTagCannotBeModifiedSchema,
   modifySubTagBodySchema,
   NoAuthorityToModifyTagSchema,
+  mergeTagsBodySchema,
+  invalidTagIdSchema,
 } from './schema';
 import {
   badRequestSchema,
@@ -113,6 +115,21 @@ export const tagContract = c.router(
         200: modifyTagResponseSchema,
         900: incorrectTagFormatSchema,
         901: NoAuthorityToModifyTagSchema,
+        500: serverErrorSchema,
+      },
+    },
+    mergeTags: {
+      method: 'PATCH',
+      path: '/{bookInfoId}/merge',
+      description: '태그를 병합한다.',
+      pathParams: bookInfoIdSchema,
+      body: mergeTagsBodySchema,
+      responses: {
+        200: modifyTagResponseSchema,
+        900: incorrectTagFormatSchema,
+        902: alreadyExistTagSchema,
+        906: defaultTagCannotBeModifiedSchema,
+        910: invalidTagIdSchema,
         500: serverErrorSchema,
       },
     },
