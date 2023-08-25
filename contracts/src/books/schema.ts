@@ -8,7 +8,7 @@ export const commonQuerySchema = z.object({
 });
 
 export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
-	sort: z.enum(["new", "popular", "title"]).optional(),
+	sort: z.enum(["new", "popular", "title"]).default('new'),
 	category: z.string().optional(),
 });
 
@@ -156,7 +156,7 @@ export const searchBookByIdResponseSchema = z.object({
 	image: z.string().openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg' }),
 	status: statusSchema.openapi({ example: 0 }),
 	categoryId: positiveInt.openapi({ example: 2}),
-	callsign: z.string().openapi({ example: 'C5.13.v1.c2' }),
+	callSign: z.string().openapi({ example: 'C5.13.v1.c2' }),
 	category: z.string().openapi({ example: '네트워크' }),
 	isLendable: positiveInt.openapi({ example: 1 }),
 });
