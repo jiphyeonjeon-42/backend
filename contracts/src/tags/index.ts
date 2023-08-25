@@ -17,6 +17,7 @@ import {
   invalidTagIdSchema,
   createTagBodySchema,
   duplicateTagSchema,
+  tagIdSchema,
 } from './schema';
 import {
   badRequestSchema,
@@ -162,7 +163,21 @@ export const tagContract = c.router(
         909: duplicateTagSchema,
         401: forbiddenSchema,
         500: serverErrorSchema,
-    }
+      },
+    },
+    deleteSubDefaultTag: {
+      method: 'DELETE',
+      path: '/sub/{tagId}',
+      description: '서브/디폴트 태그를 삭제한다.',
+      pathParams: tagIdSchema,
+      body: null,
+      responses: {
+        200: modifyTagResponseSchema,
+        910: invalidTagIdSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
   },
   { pathPrefix: '/tags' },
 );

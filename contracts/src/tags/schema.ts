@@ -189,3 +189,10 @@ export const createTagBodySchema = z.object({
 
 export const duplicateTagSchema = mkErrorMessageSchema('DUPLICATE_TAG')
   .describe('이미 존재하는 태그입니다.');
+
+export const tagIdSchema = z.object({
+  tagId: positiveInt.openapi({
+    description: '태그의 id',
+    example: 1,
+  }),
+});
