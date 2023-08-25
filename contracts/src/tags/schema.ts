@@ -133,7 +133,7 @@ export const modifySuperTagBodySchema = z.object({
   }),
 });
 
-export const modifySuperTagResponseSchema = z.literal('success');
+export const modifyTagResponseSchema = z.literal('success');
 
 export const incorrectTagFormatSchema = mkErrorMessageSchema('INCORRECT_TAG_FORMAT')
   .describe('태그 형식이 올바르지 않습니다.');
@@ -143,3 +143,21 @@ export const alreadyExistTagSchema = mkErrorMessageSchema('ALREADY_EXIST_TAG')
 
 export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema('DEFAULT_TAG_CANNOT_BE_MODIFIED')
   .describe('디폴트 태그는 수정할 수 없습니다.');
+
+export const modifySubTagBodySchema = z.object({
+  id: positiveInt.openapi({
+    description: '수정할 서브 태그의 id',
+    example: 1,
+  }),
+  content: z.string().openapi({
+    description: '수정할 서브 태그의 내용',
+    example: 'yena가_추천하는',
+  }),
+  visibility: z.enum(['public', 'private']).openapi({
+    description: '태그의 공개 여부. 공개는 public, 비공개는 private',
+    example: 'private',
+  }),
+});
+
+export const NoAuthorityToModifyTagSchema = mkErrorMessageSchema('NO_AUTHORITY_TO_MODIFY_TAG')
+  .describe('태그를 수정할 권한이 없습니다.');
