@@ -176,7 +176,7 @@ export const mergeTagsBodySchema = z.object({
 export const invalidTagIdSchema = mkErrorMessageSchema('INVALID_TAG_ID')
   .describe('태그 id가 올바르지 않습니다.');
 
-export const createDefaultTagBodySchema = z.object({
+export const createTagBodySchema = z.object({
   bookInfoId: positiveInt.openapi({
     description: '태그를 등록할 도서의 info id',
     example: 1,
