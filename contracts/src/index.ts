@@ -4,6 +4,7 @@ import { historiesContract } from './histories';
 import { usersContract } from './users';
 import { likesContract } from './likes';
 import { stockContract } from './stock';
+import { tagContract } from './tags';
 
 export * from './reviews';
 export * from './shared';
@@ -18,6 +19,7 @@ export const contract = c.router(
     histories: historiesContract,
 
     stock: stockContract,
+    tags: tagContract,
     // TODO(@scarf005): 유저 서비스 작성
 //     users: usersContract,
   },
