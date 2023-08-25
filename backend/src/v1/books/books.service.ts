@@ -16,6 +16,8 @@ import {
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
 import { Project, RawProject } from '../DTO/cursus.model';
+import UsersRepository from '../users/users.repository';
+import ErrorResponse from '../utils/error/errorResponse';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -451,25 +453,12 @@ export const getAccessToken = async (): Promise<string> => {
   return accessToken;
 };
 
-export const getUserIdFrom42API = async (
-  accessToken: string,
+export const getIntraId = async (
   login: string,
 ): Promise<string> => {
-  const userURL = 'https://api.intra.42.fr/v2/users';
-  const queryString = `filter[login]=${login}`;
-  let userId: string = '';
-  await axios(`${userURL}?${queryString}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((response) => {
-    userId = response.data[0].id;
-  }).catch((error) => {
-    console.log(error.message);
-  });
-  return userId;
+  const usersRepo = new UsersRepository();
+  const user = (await usersRepo.searchUserBy({ nickname: login }, 1, 0))[0];
+  return user[0].intraId.toString();
 };
 
 export const getUserProjectFrom42API = async (
@@ -498,7 +487,11 @@ export const getUserProjectFrom42API = async (
       });
     });
   }).catch((error) => {
-    console.log(error.message);
+    if (error.response.status === 401) {
+      throw new ErrorResponse(errorCode.NO_TOKEN, 401);
+    } else {
+      throw new ErrorResponse(errorCode.UNKNOWN_ERROR, 500);
+    }
   });
   return userProject;
 };

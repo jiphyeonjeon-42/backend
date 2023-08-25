@@ -8,19 +8,18 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
 import * as parseCheck from '~/v1/utils/parseCheck';
-import { fetchApi } from '@ts-rest/core';
-import { JwtPayload, verify } from 'jsonwebtoken';
-import { jwtOption } from '~/config';
-import axios from 'axios';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';
 import { searchSchema } from '../users/users.types';
 import { User } from '../DTO/users.model';
 import UsersService from '../users/users.service';
+import { Project } from '../DTO/cursus.model';
+import { get } from 'http';
 
 const likesService = new LikesService();
 const usersService = new UsersService();
+let accessToken: string;
 
 const pubdateFormatValidator = (pubdate: string | Date) => {
   const regexConditon = /^[0-9]{8}$/;
@@ -470,11 +469,23 @@ export const updateBookDonator = async (
 export const recommandBook = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   const { nickname: login } = req.user as any;
-  const accessToken: string = await BooksService.getAccessToken();
-  // TODO => accessToken이 없을 경우를 분리해야 함
-  const userId: string = await BooksService.getUserIdFrom42API(accessToken, login);
-  const userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
+  let userProject: Project[];
+  let userId: string;
+  if (login !== null && login !== undefined) {
+    userId = await BooksService.getIntraId(login);
+    try {
+      userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
+    } catch (error: any) {
+      if (error.status === 401) {
+        accessToken = await BooksService.getAccessToken();
+        userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
+      } else {
+        next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+      }
+    }
+  }
   res.status(status.OK).send();
 };
