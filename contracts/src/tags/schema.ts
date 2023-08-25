@@ -1,4 +1,6 @@
-import { dateLike, metaSchema, mkErrorMessageSchema, positiveInt } from '../shared';
+import {
+  dateLike, metaSchema, mkErrorMessageSchema, positiveInt,
+} from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const subDefaultTagQuerySchema = z.object({
@@ -133,8 +135,11 @@ export const modifySuperTagBodySchema = z.object({
 
 export const modifySuperTagResponseSchema = z.literal('success');
 
-export const incorrectTagFormatSchema = mkErrorMessageSchema('INCORRECT_TAG_FORMAT').describe('태그 형식이 올바르지 않습니다.');
+export const incorrectTagFormatSchema = mkErrorMessageSchema('INCORRECT_TAG_FORMAT')
+  .describe('태그 형식이 올바르지 않습니다.');
 
-export const alreadyExistTagSchema = mkErrorMessageSchema('ALREADY_EXIST_TAG').describe('이미 존재하는 태그입니다.');
+export const alreadyExistTagSchema = mkErrorMessageSchema('ALREADY_EXIST_TAG')
+  .describe('이미 존재하는 태그입니다.');
 
-export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema('DEFAULT_TAG_CANNOT_BE_MODIFIED').describe(
+export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema('DEFAULT_TAG_CANNOT_BE_MODIFIED')
+  .describe('디폴트 태그는 수정할 수 없습니다.');
