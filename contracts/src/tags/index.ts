@@ -3,6 +3,7 @@ import {
   subDefaultTagQuerySchema,
   subDefaultTagResponseSchema,
 } from './schema';
+import { badRequestSchema, forbiddenSchema, serverErrorSchema } from '..';
 
 const c = initContract();
 
@@ -16,6 +17,9 @@ export const tagContract = c.router(
       query: subDefaultTagQuerySchema,
       responses: {
         200: subDefaultTagResponseSchema,
+        400: badRequestSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
       },
     },
   },
