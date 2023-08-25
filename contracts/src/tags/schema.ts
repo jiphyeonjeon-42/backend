@@ -70,3 +70,25 @@ export const superDefaultTagResponseSchema = z.object({
     }),
   ),
 });
+
+export const superTagIdQuerySchema = z.object({
+  superTagId: positiveInt.openapi({
+    description: '슈퍼 태그의 id',
+    example: 1,
+  }),
+});
+
+export const subTagResponseSchema = z.object({
+  id: positiveInt.openapi({
+    description: '태그 고유 id',
+    example: 1,
+  }),
+  login: z.string().openapi({
+    description: '태그를 작성한 카뎃의 닉네임',
+    example: 'yena',
+  }),
+  content: z.string().openapi({
+    description: '서브/디폴트 태그의 내용',
+    example: 'yena가_추천하는',
+  }),
+});

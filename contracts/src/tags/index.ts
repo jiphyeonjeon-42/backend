@@ -3,6 +3,8 @@ import {
   subDefaultTagQuerySchema,
   subDefaultTagResponseSchema,
   superDefaultTagResponseSchema,
+  superTagIdQuerySchema,
+  subTagResponseSchema,
 } from './schema';
 import {
   badRequestSchema,
@@ -36,6 +38,32 @@ export const tagContract = c.router(
       query: paginationQuerySchema.omit({ page: true }),
       responses: {
         200: superDefaultTagResponseSchema,
+        400: badRequestSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
+    getSubOfSuperTag: {
+      method: 'GET',
+      path: '/{superTagId}/sub',
+      summary: '슈퍼 태그에 속한 서브 태그 목록을 가져온다.',
+      description: 'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
+      pathParams: superTagIdQuerySchema,
+      responses: {
+        200: subTagResponseSchema,
+        400: badRequestSchema,
+        401: forbiddenSchema,
+        500: serverErrorSchema,
+      },
+    },
+    getSubOfSuperTagForAdmin: {
+      method: 'GET',
+      path: '/manage/{superTagId}/sub',
+      summary: '슈퍼 태그에 속한 서브 태그 목록을 가져온다.',
+      description: 'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 관리 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
+      pathParams: superTagIdQuerySchema,
+      responses: {
+        200: subTagResponseSchema,
         400: badRequestSchema,
         401: forbiddenSchema,
         500: serverErrorSchema,
