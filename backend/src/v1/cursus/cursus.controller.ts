@@ -1,7 +1,6 @@
 import {
   NextFunction, Request, Response,
 } from 'express';
-import axios from 'axios';
 import { getAccessToken } from '../auth/auth.service';
 import { getProjectsInfo, saveProjects } from './cursus.service';
 
@@ -13,7 +12,12 @@ export const getProjects = async (
   const page = req.query.page as string;
   const mode = req.query.mode as string;
   const accessToken = await getAccessToken();
-  const projects = await getProjectsInfo(accessToken, page);
-  saveProjects(projects, mode);
+  let projects: object[] = [];
+  try {
+    projects = await getProjectsInfo(accessToken, page);
+  } catch (error) {
+    next(error);
+  }
+  if (projects.length !== 0) { saveProjects(projects, mode); }
   res.status(200).send({ projects });
 };
