@@ -11,8 +11,9 @@ export const getProjects = async (
   next: NextFunction,
 ) => {
   const page = req.query.page as string;
+  const mode = req.query.mode as string;
   const accessToken = await getAccessToken();
   const projects = await getProjectsInfo(accessToken, page);
-  saveProjects(projects, page);
+  saveProjects(projects, mode);
   res.status(200).send({ projects });
 };

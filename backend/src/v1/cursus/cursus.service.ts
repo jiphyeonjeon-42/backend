@@ -58,25 +58,13 @@ export const getProjectsInfo = async (
 
 export const saveProjects = async (
   projects: object[],
-  pageNumber: string,
+  mode: string,
 ) => {
   const filePath: string = path.join(__dirname, '../../assets', 'projects_info.json');
-  const jsonString = JSON.stringify(projects);
-  if (pageNumber === '1') {
-    await fs.writeFileSync(filePath, jsonString, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Successfully wrote file');
-      }
-    });
+  const jsonString = JSON.stringify(projects, null, 2);
+  if (mode === 'overwrite') {
+    await fs.writeFileSync(filePath, jsonString);
   } else {
-    await fs.appendFileSync(filePath, jsonString, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Successfully wrote file');
-      }
-    });
+    await fs.appendFileSync(filePath, jsonString);
   }
 };

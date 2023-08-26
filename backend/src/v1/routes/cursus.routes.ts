@@ -21,6 +21,14 @@ router
  *          type: integer
  *          example: 1
  *          default: 1
+ *      - name: mode
+ *        in: query
+ *        description: 프로젝트 정보를 가져올 모드. append면 기존에 저장된 정보에 추가로 저장하고, overwrite면 기존에 저장된 정보를 덮어쓴다.
+ *        required: true
+ *        schema:
+ *          type: string
+ *          enum: [append, overwrite]
+ *          example: overwrite
  *      responses:
  *        '200':
  *          description: 프로젝트 정보를 성공적으로 가져옴.
