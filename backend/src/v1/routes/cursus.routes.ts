@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import wrapAsyncController from '~/v1/middlewares/wrapAsyncController';
 import { getProjects } from '../cursus/cursus.controller';
 
 export const path = '/cursus';
@@ -20,8 +19,8 @@ router
  *        required: true
  *        schema:
  *          type: integer
- *          example: 0
- *          default: 0
+ *          example: 1
+ *          default: 1
  *      responses:
  *        '200':
  *          description: 프로젝트 정보를 성공적으로 가져옴.
