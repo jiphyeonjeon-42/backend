@@ -56,3 +56,56 @@ export type Project = {
   marked: RawProject['marked'];
   marked_at: RawProject['marked_at'];
 }
+
+export type ProjectFrom42 = {
+  id: number;
+  name: string;
+  slug: string;
+  difficulty: number;
+  parent: [];
+  children: [];
+  attachments: [];
+  created_at: string;
+  updated_at: string;
+  exam: boolean;
+  git_id: number;
+  repository: string;
+  cursus: Cursus[];
+  campus: Campus[];
+  videos: [],
+  project_sessions: object[];
+}
+
+export type Campus = {
+  id: number;
+  name: string;
+  time_zone: string;
+  language: {
+    id: number;
+    name: string;
+    identifier: string;
+    created_at: string;
+    updated_at: string;
+  };
+  users_count: number;
+  vogsphere_id: number;
+  country: string;
+  address: string;
+  zip: string;
+  city: string;
+  website: string;
+  facebook: string;
+  twitter: string;
+  active: boolean;
+  public: boolean;
+  email_extension: string;
+  default_hidden_phone: boolean;
+}
+
+export type Cursus = {
+  id: number;
+  created_at: string;
+  name: string;
+  slug: string;
+  kind: string;
+}

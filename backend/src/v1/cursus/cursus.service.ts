@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import httpStatus from 'http-status';
+import { ProjectFrom42 } from '../DTO/cursus.model';
 
 /**
  * 42 API에서 받아온 프로젝트 정보를 가공하는 함수. 42서울에서 진행하는 프로젝트만 필터링한다.
@@ -10,7 +11,7 @@ import httpStatus from 'http-status';
  * @returns
  */
 const processData = async (
-  data: [],
+  data: ProjectFrom42[],
 ) => {
   const ftSeoulData = data.filter((project) => {
     for (let i = 0; i < project.campus.length; i += 1) {
