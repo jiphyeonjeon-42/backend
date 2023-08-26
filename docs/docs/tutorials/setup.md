@@ -14,15 +14,9 @@ corepack prepare pnpm@latest --activate
 pnpm install
 ```
 
-3. `backend/`가 `contracts/` 패키지에 의존하므로, 터미널 창을 2개 준비해주세요.
+3. 프로젝트 루트에서 다음 명령어를 실행해 개발 모드를 실행해주세요.
 
 ```sh
-# 터미널 #1
-cd contracts
-pnpm dev
-
-# 터미널 #2
-cd backend
 pnpm dev
 ```
 
