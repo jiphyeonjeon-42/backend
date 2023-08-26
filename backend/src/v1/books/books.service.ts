@@ -7,6 +7,7 @@ import { logger } from '~/logger';
 import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
+import { VSearchBookByTag } from '~/entity/entities';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -14,7 +15,9 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import { VSearchBookByTag } from '~/entity/entities';
+import { Project, RawProject } from '../DTO/cursus.model';
+import UsersRepository from '../users/users.repository';
+import ErrorResponse from '../utils/error/errorResponse';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -425,4 +428,70 @@ export const updateBook = async (book: UpdateBook) => {
 export const updateBookDonator = async (bookDonator: UpdateBookDonator) => {
   const booksRepository = new BooksRepository();
   await booksRepository.updateBookDonator(bookDonator);
-}
+};
+
+export const getAccessToken = async (): Promise<string> => {
+  const tokenURL = 'https://api.intra.42.fr/oauth/token';
+  const queryString = {
+    grant_type: 'client_credentials',
+    client_id: process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    redirect_uri: process.env.REDIRECT_URL,
+  };
+  let accessToken: string = '';
+  await axios(tokenURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: queryString,
+  }).then((response) => {
+    accessToken = response.data.access_token;
+  }).catch((error) => {
+    console.log(error.message);
+  });
+  return accessToken;
+};
+
+export const getIntraId = async (
+  login: string,
+): Promise<string> => {
+  const usersRepo = new UsersRepository();
+  const user = (await usersRepo.searchUserBy({ nickname: login }, 1, 0))[0];
+  return user[0].intraId.toString();
+};
+
+export const getUserProjectFrom42API = async (
+  accessToken: string,
+  userId: string,
+): Promise<Project[]> => {
+  const projectURL = `https://api.intra.42.fr/v2/users/${userId}/projects_users`;
+  const userProject: Array<Project> = [];
+  await axios(projectURL, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((response) => {
+    const rawData: RawProject[] = response.data;
+    rawData.forEach((data: RawProject) => {
+      userProject.push({
+        id: data.id,
+        status: data.status,
+        validated: data['validated?'],
+        project: data.project,
+        cursus_ids: data.cursus_ids,
+        marked: data.marked,
+        marked_at: data.marked_at,
+      });
+    });
+  }).catch((error) => {
+    if (error.response.status === 401) {
+      throw new ErrorResponse(errorCode.NO_TOKEN, 401);
+    } else {
+      throw new ErrorResponse(errorCode.UNKNOWN_ERROR, 500);
+    }
+  });
+  return userProject;
+};
