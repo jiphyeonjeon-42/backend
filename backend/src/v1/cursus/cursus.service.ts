@@ -42,10 +42,10 @@ export const getProjectsInfo = async (
   accessToken: string,
   pageNumber: string,
 ) => {
-  const path: string = 'https://api.intra.42.fr/v2/projects';
+  const uri: string = 'https://api.intra.42.fr/v2/projects';
   const queryString: string = 'sort=id&filter[exam]=false&filter[visible]=true&filter[has_mark]=true&page[size]=100';
   const pageQuery: string = `&page[number]=${pageNumber}`;
-  const response = await axios.get(`${path}?${queryString}${pageQuery}`, {
+  const response = await axios.get(`${uri}?${queryString}${pageQuery}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
