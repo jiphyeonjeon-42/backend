@@ -13,77 +13,90 @@ router
  *      description: 42 API를 통해 cursus의 프로젝트를 정보를 가져와서 json으로 저장한다.
  *      tags:
  *      - cursus
+ *      parameters:
+ *      - name: page
+ *        in: query
+ *        description: 프로젝트 정보를 가져올 페이지 번호
+ *        required: true
+ *        schema:
+ *          type: integer
+ *          example: 0
+ *          default: 0
  *      responses:
  *        '200':
- *           content:
- *             application/json:
- *               schema:
- *                 type: object
- *               examples:
- *                default(bookInfoId = 1) :
- *                  value:
- *                    items : [
+ *          description: 프로젝트 정보를 성공적으로 가져옴.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                example: {
+ *                  projects: [
  *                      {
- *                      reviewsId : 1,
- *                      reviewerId : 100,
- *                      bookInfoId: 1,
- *                      title: 클린코드,
- *                      nickname : sechung1,
- *                      content : hello,
+ *                          id: 1,
+ *                          name: "Libft",
+ *                          slug: "libft",
+ *                          parent: null,
+ *                          cursus: [
+ *                              {
+ *                                 id: 1,
+ *                                 name: "42",
+ *                                 slug: "42"
+ *                              },
+ *                              {
+ *                                 id: 8,
+ *                                 name: "WeThinkCode_",
+ *                                 slug: "wethinkcode_"
+ *                              },
+ *                              {
+ *                                 id: 10,
+ *                                 name: "Formation Pole Emploi",
+ *                                 slug: "formation-pole-emploi"
+ *                              }
+ *                          ]
  *                      },
  *                      {
- *                      reviewsId : 2,
- *                      reviewerId : 101,
- *                      bookInfoId: 1,
- *                      title: 클린코드,
- *                      nickname : sechung2,
- *                      content : hello,
- *                      },
- *                      {
- *                      reviewsId : 3,
- *                      reviewerId : 102,
- *                      bookInfoId: 1,
- *                      title: 클린코드,
- *                      nickname : sechung3,
- *                      content : hello,
- *                      },
- *                      {
- *                      reviewsId : 4,
- *                      reviewerId : 103,
- *                      bookInfoId: 1,
- *                      title: 클린코드,
- *                      nickname : sechung4,
- *                      content : hello,
- *                      },
- *                      {
- *                      reviewsId : 5,
- *                      reviewerId : 104,
- *                      bookInfoId: 1,
- *                      title: 클린코드,
- *                      nickname : sechung5,
- *                      content : hello,
+ *                          id: 2,
+ *                          name: "GET_Next_Line",
+ *                          slug: "get_next_line",
+ *                          parent: null,
+ *                          cursus: [
+ *                              {
+ *                                 id: 1,
+ *                                 name: "42",
+ *                                 slug: "42"
+ *                              },
+ *                              {
+ *                                 id: 8,
+ *                                 name: "WeThinkCode_",
+ *                                 slug: "wethinkcode_"
+ *                              },
+ *                              {
+ *                                 id: 10,
+ *                                 name: "Formation Pole Emploi",
+ *                                 slug: "formation-pole-emploi"
+ *                              },
+ *                              {
+ *                               id: 18,
+ *                               name: "Starfleet",
+ *                               slug: "starfleet"
+ *                              }
+ *                          ]
  *                      }
- *                      ]
- *                    "meta": {
- *                        totalItems: 100,
- *                        itemsPerPage : 5,
- *                        totalPages : 20,
- *                        finalPage : False,
- *                        finalReviewsId : 104
- *                      }
+ *                   ]
+ *                }
  *        '400':
- *           content:
- *             application/json:
- *               schema:
- *                 type: json
- *                 description: 잘못된 요청 URL입니다.
- *                 examples: {errorCode: 400}
+ *          description: 잘못된 요청 URL입니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: json
+ *                example: {errorCode: 400}
  *        '401':
- *           content:
- *             application/json:
- *               schema:
- *                 type: json
- *                 description: 토큰이 유효하지 않습니다.
- *               examples: {errorCode: 401}
+ *          description: 토큰이 유효하지 않습니다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: json
+ *                example: {errorCode: 401}
  */
-  .get('/cursus/projects', getProjects);
+  .get('/projects', getProjects);
