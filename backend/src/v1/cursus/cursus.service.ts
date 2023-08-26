@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
+import httpStatus from 'http-status';
 
 /**
  * 42 API에서 받아온 프로젝트 정보를 가공하는 함수. 42서울에서 진행하는 프로젝트만 필터링한다.
@@ -50,7 +51,7 @@ export const getProjectsInfo = async (
       Authorization: `Bearer ${accessToken}`,
     },
   }).catch((error) => {
-    if (error.status === 401) { throw new ErrorResponse('Unauthorized', 401); } else { throw new ErrorResponse('Internal Server Error', 500); }
+    if (error.status === 401) { throw new ErrorResponse(httpStatus[401], 401, 'Unauthorized'); } else { throw new ErrorResponse(httpStatus[500], 500, 'Internal Server Error'); }
   });
   const processedData = await processData(response.data);
   return (processedData);

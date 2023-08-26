@@ -16,8 +16,8 @@ export const getProjects = async (
   try {
     projects = await getProjectsInfo(accessToken, page);
   } catch (error) {
-    next(error);
+    return next(error);
   }
   if (projects.length !== 0) { saveProjects(projects, mode); }
-  res.status(200).send({ projects });
+  return res.status(200).send({ projects });
 };
