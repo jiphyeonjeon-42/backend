@@ -215,8 +215,8 @@ importers:
   contracts:
     dependencies:
       '@anatine/zod-openapi':
-        specifier: ^2.1.0
-        version: 2.1.0(openapi3-ts@4.1.2)(zod@3.22.2)
+        specifier: ^2.2.0
+        version: 2.2.0(openapi3-ts@4.1.2)(zod@3.22.2)
       openapi3-ts:
         specifier: ^4.1.2
         version: 4.1.2
@@ -263,8 +263,8 @@ packages:
       zod: 3.22.2
     dev: false
 
-  /@anatine/zod-openapi@2.1.0(openapi3-ts@4.1.2)(zod@3.22.2):
-    resolution: {integrity: sha512-SQML15KBRP8FyV7djAEZiv3iCA0ve++WZ6wW3OBqrABwxszoOcXbtQs27eM13I7FN8GD/9NBSmoh1pgI+fM75A==}
+  /@anatine/zod-openapi@2.2.0(openapi3-ts@4.1.2)(zod@3.22.2):
+    resolution: {integrity: sha512-Ponwenf2NMIVbs9IuB3YoW7CQPkuRWxhYV/qxBu48DQhmRyipEw/YROVTWnvku7+lwhv1EyP4+h3J5SwrvmfHg==}
     peerDependencies:
       openapi3-ts: ^4.1.2
       zod: ^3.20.0
