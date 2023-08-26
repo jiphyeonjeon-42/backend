@@ -20,6 +20,14 @@ pnpm install
 pnpm dev
 ```
 
-4. 올바르게 실행된다면 `https://localhost:3000/swagger-v2` 경로에 접속해 API 문서를 확인하실 수 있습니다.
+4. 올바르게 실행된다면 <localhost:3000/swagger>와 <localhost:3000/swagger-v2>
+   경로에 접속해 API 문서를 확인하실 수 있습니다.
 
-![swagger-v2](https://github.com/jiphyeonjeon-42/backend/assets/54838975/21c160f9-150b-4321-a9fa-0c61842477b0)
+| [V1 OpenApi 명세][swagger-url] | [V2 OpenApi 명세][swagger-v2-url] |
+| :----------------------------: | :-------------------------------: |
+|          ![][swagger]          |          ![][swagger-v2]          |
+
+[swagger-url]: localhost:3000/swagger
+[swagger-v2-url]: localhost:3000/swagger-v2
+[swagger]: https://github.com/jiphyeonjeon-42/backend/assets/54838975/6d3bc1a2-c305-4a4e-be52-f6c9ef52c5e0
+[swagger-v2]: https://github.com/jiphyeonjeon-42/backend/assets/54838975/21c160f9-150b-4321-a9fa-0c61842477b0
