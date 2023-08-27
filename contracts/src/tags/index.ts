@@ -20,12 +20,9 @@ import {
   tagIdSchema,
 } from './schema';
 import {
-  badRequestSchema,
   bookInfoIdSchema,
   bookInfoNotFoundSchema,
-  forbiddenSchema,
   paginationQuerySchema,
-  serverErrorSchema,
 } from '../shared';
 
 const c = initContract();
@@ -40,9 +37,6 @@ export const tagContract = c.router(
       query: subDefaultTagQuerySchema,
       responses: {
         200: subDefaultTagResponseSchema,
-        400: badRequestSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     getSuperDefaultForMain: {
@@ -53,9 +47,6 @@ export const tagContract = c.router(
       query: paginationQuerySchema.omit({ page: true }),
       responses: {
         200: superDefaultTagResponseSchema,
-        400: badRequestSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     getSubOfSuperTag: {
@@ -66,9 +57,6 @@ export const tagContract = c.router(
       pathParams: superTagIdQuerySchema,
       responses: {
         200: subTagResponseSchema,
-        400: badRequestSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     getSubOfSuperTagForAdmin: {
@@ -79,9 +67,6 @@ export const tagContract = c.router(
       pathParams: superTagIdQuerySchema,
       responses: {
         200: subTagResponseSchema,
-        400: badRequestSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     getTagsOfBook: {
@@ -92,9 +77,6 @@ export const tagContract = c.router(
       pathParams: bookInfoIdSchema,
       responses: {
         200: tagsOfBookResponseSchema,
-        400: badRequestSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     modifySuperTag: {
@@ -107,7 +89,6 @@ export const tagContract = c.router(
         900: incorrectTagFormatSchema,
         902: alreadyExistTagSchema,
         906: defaultTagCannotBeModifiedSchema,
-        500: serverErrorSchema,
       },
     },
     modifySubTag: {
@@ -119,7 +100,6 @@ export const tagContract = c.router(
         200: modifyTagResponseSchema,
         900: incorrectTagFormatSchema,
         901: NoAuthorityToModifyTagSchema,
-        500: serverErrorSchema,
       },
     },
     mergeTags: {
@@ -134,7 +114,6 @@ export const tagContract = c.router(
         902: alreadyExistTagSchema,
         906: defaultTagCannotBeModifiedSchema,
         910: invalidTagIdSchema,
-        500: serverErrorSchema,
       },
     },
     createDefaultTag: {
@@ -147,8 +126,6 @@ export const tagContract = c.router(
         900: incorrectTagFormatSchema,
         907: bookInfoNotFoundSchema,
         909: duplicateTagSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     createSuperTag: {
@@ -161,8 +138,6 @@ export const tagContract = c.router(
         900: incorrectTagFormatSchema,
         907: bookInfoNotFoundSchema,
         909: duplicateTagSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     deleteSubDefaultTag: {
@@ -174,8 +149,6 @@ export const tagContract = c.router(
       responses: {
         200: modifyTagResponseSchema,
         910: invalidTagIdSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
     deleteSuperTag: {
@@ -187,8 +160,6 @@ export const tagContract = c.router(
       responses: {
         200: modifyTagResponseSchema,
         910: invalidTagIdSchema,
-        401: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
   },
