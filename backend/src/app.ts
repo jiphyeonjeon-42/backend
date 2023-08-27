@@ -8,6 +8,7 @@ import { FtAuthentication, FtStrategy, JwtStrategy } from '~/v1/auth/auth.strate
 import swaggerOptions from '~/v1/swagger/swagger';
 import errorConverter from '~/v1/utils/error/errorConverter';
 import errorHandler from '~/v1/utils/error/errorHandler';
+import rateLimit from 'express-rate-limit';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { contract } from '@jiphyeonjeon-42/contracts';
@@ -87,4 +88,13 @@ createExpressEndpoints(contract, routerV2, app, {
 // 에러 핸들러
 app.use(errorConverter);
 app.use(errorHandler);
+
+// express-rate-limit
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 100, // 1분에 100번
+  message: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
+});
+app.use(limiter);
+
 export default app;
