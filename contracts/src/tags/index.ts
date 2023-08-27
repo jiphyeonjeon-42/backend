@@ -86,8 +86,7 @@ export const tagContract = c.router(
       body: modifySuperTagBodySchema,
       responses: {
         204: z.null()
-        902: alreadyExistTagSchema,
-        906: defaultTagCannotBeModifiedSchema,
+        400: z.union([alreadyExistTagSchema, defaultTagCannotBeModifiedSchema]),
       },
     },
     modifySubTag: {
