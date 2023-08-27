@@ -18,9 +18,17 @@ import {
 import authValidate from '~/v1/auth/auth.validate';
 import authValidateDefaultNullUser from '~/v1/auth/auth.validateDefaultNullUser';
 import { roleSet } from '~/v1/auth/auth.type';
+import rateLimit from 'express-rate-limit';
 
 export const path = '/books';
 export const router = Router();
+
+// express-rate-limit
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 100, // 1분에 100번
+  message: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
+});
 
 router
   /**
@@ -114,7 +122,7 @@ router
    *                description: error decription
    *                example: { errorCode: 500 }
    */
-  .get('/recommand', authValidate(roleSet.all), recommandBook);
+  .get('/recommand', authValidate(roleSet.all), limiter, recommandBook);
 
 router
   /**
