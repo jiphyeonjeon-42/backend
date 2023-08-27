@@ -86,7 +86,6 @@ export const tagContract = c.router(
       body: modifySuperTagBodySchema,
       responses: {
         200: modifyTagResponseSchema,
-        900: incorrectTagFormatSchema,
         902: alreadyExistTagSchema,
         906: defaultTagCannotBeModifiedSchema,
       },
