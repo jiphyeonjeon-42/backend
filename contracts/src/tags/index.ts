@@ -85,7 +85,7 @@ export const tagContract = c.router(
       description: '슈퍼 태그를 수정한다.',
       body: modifySuperTagBodySchema,
       responses: {
-        200: modifyTagResponseSchema,
+        204: z.null()
         902: alreadyExistTagSchema,
         906: defaultTagCannotBeModifiedSchema,
       },
