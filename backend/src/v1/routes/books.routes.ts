@@ -120,7 +120,7 @@ router
    *                description: error decription
    *                example: { errorCode: 500 }
    */
-  .get('/recommand', limiter, authValidate(roleSet.all), recommandBook);
+  .get('/recommend', limiter, authValidate(roleSet.all), recommandBook);
 
 router
   /**
