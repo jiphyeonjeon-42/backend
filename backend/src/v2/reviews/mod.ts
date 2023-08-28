@@ -16,9 +16,18 @@ import {
   updateReview,
 } from './service.ts';
 import { ReviewNotFoundError } from './errors.js';
+import { searchReviews } from './repository.ts'
 
 const s = initServer();
 export const reviews = s.router(contract.reviews, {
+  get: {
+    middleware: [authValidate(roleSet.librarian)],
+    handler: async ({ query }) => {
+      const body = await searchReviews(query);
+
+      return { status: 200, body };
+    }
+  },
   post: {
     middleware: [authValidate(roleSet.all)],
     // prettier-ignore
