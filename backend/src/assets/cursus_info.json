@@ -1,0 +1,29 @@
+{
+  "0": {
+    "subject": ["Libft"]
+  },
+
+  "1": {
+    "subject": ["get_next_line", "ft_printf", "Born2beroot"]
+  },
+  
+  "2": {
+    "subject": ["push_swap", "minitalk", "pipex", "so_long", "FdF", "fract-ol"]
+  },
+
+  "3": {
+    "subject": ["Philosophers", "minishell"]
+  },
+
+  "4": {
+    "subject": ["CPP Module 00", "CPP Module 01", "CPP Module 02", "CPP Module 03", "CPP Module 04", "miniRT", "cub3d", "NetPractice"]
+  },
+
+  "5": {
+    "subject": ["CPP Module 05", "CPP Module 06", "CPP Module 07", "CPP Module 08", "CPP Module 09", "Inception", "ft_irc", "webserv"]
+  },
+
+  "6": {
+    "subject": ["ft_transcendence"]
+  }
+}
