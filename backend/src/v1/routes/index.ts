@@ -9,6 +9,7 @@ import * as reviews from './reviews.routes';
 import * as bookInfoReviews from './bookInfoReviews.routes';
 import * as stock from './stock.routes';
 import * as tags from './tags.routes';
+import * as cursus from './cursus.routes';
 
 const router = Router();
 
@@ -27,5 +28,6 @@ router.use(histories.path, histories.router);
 router.use(bookInfoReviews.path, bookInfoReviews.router);
 router.use(stock.path, stock.router);
 router.use(tags.path, tags.router);
+router.use(cursus.path, cursus.router);
 
 export default router;

@@ -8,6 +8,7 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
 import * as parseCheck from '~/v1/utils/parseCheck';
+import { getAccessToken } from '~/v1/auth/auth.service';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';
@@ -15,7 +16,6 @@ import { searchSchema } from '../users/users.types';
 import { User } from '../DTO/users.model';
 import UsersService from '../users/users.service';
 import { Project } from '../DTO/cursus.model';
-import { get } from 'http';
 
 const likesService = new LikesService();
 const usersService = new UsersService();
@@ -480,7 +480,7 @@ export const recommandBook = async (
       userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
     } catch (error: any) {
       if (error.status === 401) {
-        accessToken = await BooksService.getAccessToken();
+        accessToken = await getAccessToken();
         userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
       } else {
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
