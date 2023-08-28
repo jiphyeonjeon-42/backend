@@ -472,7 +472,7 @@ export const recommandBook = async (
   next: NextFunction,
 ) => {
   const { nickname: login } = req.user as any;
-  let userProject: Project[];
+  let userProject: Project[] = [];
   let userId: string;
   if (login !== null && login !== undefined) {
     userId = await BooksService.getIntraId(login);
@@ -486,6 +486,7 @@ export const recommandBook = async (
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
       }
     }
+    const recommendedProjectId = await getRecommendedProject(userProject);
   }
   res.status(status.OK).send();
 };
