@@ -1,4 +1,5 @@
 import { initContract } from '@ts-rest/core';
+import { z } from 'zod';
 import {
   subDefaultTagQuerySchema,
   subDefaultTagResponseSchema,
@@ -85,7 +86,7 @@ export const tagContract = c.router(
       description: '슈퍼 태그를 수정한다.',
       body: modifySuperTagBodySchema,
       responses: {
-        204: z.null()
+        204: z.null(),
         400: z.union([alreadyExistTagSchema, defaultTagCannotBeModifiedSchema]),
       },
     },
