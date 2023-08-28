@@ -7,6 +7,7 @@ import { ProjectFrom42 } from '../DTO/cursus.model';
 
 /**
  * 42 API에서 받아온 프로젝트 정보를 가공하는 함수. 42서울에서 진행하는 프로젝트만 필터링한다.
+ * 42서울에서 진행하는 프로젝트는 campus id가 29이고 cursus id가 21인 프로젝트이다.
  * @param data 42 API에서 받아온 프로젝트 정보
  * @returns
  */
@@ -16,7 +17,11 @@ const processData = async (
   const ftSeoulData = data.filter((project) => {
     for (let i = 0; i < project.campus.length; i += 1) {
       if (project.campus[i].id === 29) {
-        return (true);
+        for (let j = 0; j < project.cursus.length; j += 1) {
+          if (project.cursus[j].id === 21) {
+            return (true);
+          }
+        }
       }
     }
     return (false);
