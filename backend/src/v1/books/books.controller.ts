@@ -156,6 +156,39 @@ export const searchBookInfoByTag = async (
   }
 };
 
+/**SearchBookInfoQuery
+ * TODO search keywords preview
+ * 생쿼리를 날려서 확인 필요
+ * book.service 와의 연관성 확인 필요
+ * 보니까 service에서 query를 날리는 듯 싶다
+ */
+export const searchKeywordsPreview: any = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // // URI에 있는 파라미터/쿼리 변수에 저장
+  const query = req.query?.query ?? '';
+  const {
+    page, limit, sort, category,
+  } = req.query;
+
+  // 유효한 인자인지 파악
+  if (Number.isNaN(page) || Number.isNaN(limit)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
+
+  try {
+    const searchKeywordsPreviewResult = await BooksService.searchKeywordsPreview(
+      query,
+      limit,
+    );
+  } catch (error: any) {
+    return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+  return 0;
+}
+
 export const getBookById: RequestHandler = async (
   req: Request,
   res: Response,

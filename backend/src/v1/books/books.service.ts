@@ -415,6 +415,38 @@ export const getInfo = async (id: string) => {
   return bookSpec;
 };
 
+/**
+ * TODO search-keywords autocomplete
+ * @param query 
+ * @param limit 
+ * @returns 
+ */
+export const searchKeywordsPreview = async (
+  query: string,
+  limit: number,
+) => {
+  return 0;
+}
+/*
+export const searchKeywords = async (
+  query: string,
+  page: number,
+  limit: number,
+) => {
+  const booksRepository = new BooksRepository();
+  const bookList = await booksRepository.getBookList(query, limit, page);
+  const totalItems = await booksRepository.getTotalItems(query);
+  const meta = {
+    totalItems,
+    itemCount: bookList.length,
+    itemsPerPage: limit,
+    totalPages: Math.ceil(totalItems / limit),
+    currentPage: page + 1,
+  };
+  return { items: bookList, meta };
+};
+*/
+
 export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
   const booksRepository = new BooksRepository();
   await booksRepository.updateBookInfo(bookInfo);
