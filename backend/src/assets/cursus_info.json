@@ -1,29 +1,29 @@
 {
   "0": {
-    "subject": ["Libft"]
+    "project_ids": [1314]
   },
 
   "1": {
-    "subject": ["get_next_line", "ft_printf", "Born2beroot"]
+    "project_ids": [1327, 1316, 1994]
   },
   
   "2": {
-    "subject": ["push_swap", "minitalk", "pipex", "so_long", "FdF", "fract-ol"]
+    "project_ids": [1471, 1476, 2004, 2005, 2008, 2009]
   },
 
   "3": {
-    "subject": ["Philosophers", "minishell"]
+    "project_ids": [1315, 1334]
   },
 
   "4": {
-    "subject": ["CPP Module 00", "CPP Module 01", "CPP Module 02", "CPP Module 03", "CPP Module 04", "miniRT", "cub3d", "NetPractice"]
+    "project_ids": [1315, 1326, 1338, 1339, 1340, 1341, 1342, 2007]
   },
 
   "5": {
-    "subject": ["CPP Module 05", "CPP Module 06", "CPP Module 07", "CPP Module 08", "CPP Module 09", "Inception", "ft_irc", "webserv"]
+    "project_ids": [1332, 1336, 1343, 1344, 1345, 1346, 1983, 2309]
   },
 
   "6": {
-    "subject": ["ft_transcendence"]
+    "project_ids": [1337]
   }
 }
