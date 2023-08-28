@@ -8,6 +8,8 @@ import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
 import { VSearchBookByTag } from '~/entity/entities';
+import fs from 'fs';
+import path from 'path';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -15,7 +17,7 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import { Project, RawProject } from '../DTO/cursus.model';
+import { Project, ProjectWithCircle, RawProject } from '../DTO/cursus.model';
 import UsersRepository from '../users/users.repository';
 import ErrorResponse from '../utils/error/errorResponse';
 
@@ -461,6 +463,7 @@ export const getUserProjectFrom42API = async (
         cursus_ids: data.cursus_ids,
         marked: data.marked,
         marked_at: data.marked_at,
+        updated_at: data.updated_at,
       });
     });
   }).catch((error) => {
@@ -471,4 +474,89 @@ export const getUserProjectFrom42API = async (
     }
   });
   return userProject;
+};
+
+/**
+ * cursus 객체에서 projectId가 포함된 서클 번호를 찾는 함수.
+ * Inner circle은 0 부터 6까지이며, Outer circle은 null이다.
+ * @param cursus 키가 서클 번호, 값이 프로젝트 id 배열인 객체
+ * @param projectId 프로젝트 id
+ * @returns projectId가 포함된 서클 번호 문자열
+ */
+const findCircle = (
+  cursus: ProjectWithCircle,
+  projectId: number,
+) => {
+  let circle: string | null = null;
+  Object.keys(cursus).forEach((key) => {
+    const projectIds = cursus[key].project_ids;
+    if (projectIds.includes(projectId)) {
+      circle = key;
+      return true; // 순회 중단
+    }
+    return false;
+  });
+  return circle;
+};
+
+const getOuterProjectIds = (
+  cursus: ProjectWithCircle,
+  projectList: Project[] | null,
+) => {
+  // TODO => project_info.json 파일을 읽어서 프로젝트 id 배열을 반환한다.
+  // TODO => cursus와 project_info.json 파일을 비교하여 cursus에 포함되지 않은 프로젝트 id 배열을 반환한다.
+  // TODO => projectList가 null이 아니라면 projectList.id를 제외한 프로젝트 id 배열을 반환한다.
+  // TODO => projectList가 null이라면 두 번째 내용으로 얻은 id 리스트를 반환한다.
+};
+
+/**
+ * 추천할 프로젝트 id 배열을 반환하는 함수. 만약 현재 서클 내에 추천할 프로젝트가 없다면 다음 서클에서 추천할 프로젝트를 반환한다.
+ * @param cursus 키가 서클 번호, 값이 프로젝트 id 배열인 객체
+ * @param circle 서클 번호
+ * @returns 추천할 프로젝트 id 배열
+ */
+const getNextProjectIds = (
+  cursus: ProjectWithCircle,
+  circle: string,
+) => {
+  const projectIds = cursus[circle].project_ids;
+  let innerProjectIds = projectIds.filter((id) => id !== 0);
+  if (innerProjectIds.length === 0) {
+    const nextCircle = Number(circle) + 1;
+    if (nextCircle > 6) {
+      innerProjectIds = getOuterProjectIds(cursus, null);
+    }
+    innerProjectIds = cursus[nextCircle].project_ids;
+  }
+  return innerProjectIds;
+};
+
+/**
+ *
+ * @param userProject 사용자의 프로젝트 정보
+ * @returns 사용자에게 추천할 프로젝트
+ */
+export const getRecommendedProject = async (
+  userProject: Project[],
+) => {
+  const projectList = userProject.sort((prev, post) =>
+    new Date(post.updated_at).getTime() - new Date(prev.updated_at).getTime())
+    .filter((item: Project) => !item.project.name.includes('Exam Rank'));
+  const recommendedProject = projectList.filter((project) =>
+    project.status === 'in_progress');
+  if (recommendedProject.length > 0) {
+    return recommendedProject.map((project) => project.project.id);
+  }
+  // 최근에 진행한 프로젝트를 바탕으로 추천할 프로젝트를 찾는다.
+  const filePath: string = path.join(__dirname, '../../assets', 'cursus_info.json');
+  const cursus: ProjectWithCircle = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  const userProjectId = userProject[0].project.id;
+  const circle: string | null = findCircle(cursus, userProjectId);
+  let nextProjectIds: number[] = [];
+  if (circle) { // Inner Circle
+    nextProjectIds = getNextProjectIds(cursus, circle);
+  } else { // Outer Circle
+    nextProjectIds = getOuterProjectIds(cursus, projectList);
+  }
+  return nextProjectIds;
 };
