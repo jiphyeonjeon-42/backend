@@ -55,6 +55,7 @@ export type Project = {
   cursus_ids: RawProject['cursus_ids'];
   marked: RawProject['marked'];
   marked_at: RawProject['marked_at'];
+  updated_at: RawProject['updated_at'];
 }
 
 export type ProjectFrom42 = {
@@ -108,4 +109,10 @@ export type Cursus = {
   name: string;
   slug: string;
   kind: string;
+}
+
+export type ProjectWithCircle = {
+  [key: string]: {
+    project_ids: number[];
+  }
 }
