@@ -4,8 +4,8 @@ import {
 	FunctionModule as fn,
 	ExpressionBuilder as eb
 } from "kysely";
-import { vSearchBookRepo } from "./repository";
-import { BookNotFoundError } from "../shared";
+import { searchBookListAndCount, vSearchBookRepo } from "./repository";
+import { BookNotFoundError, Meta } from "../shared";
 
 // const querySearchCategoryByName = (category: string) =>
 // 	db
@@ -78,6 +78,24 @@ import { BookNotFoundError } from "../shared";
 
 	
 // }
+
+type SearchAllBooksArgs = { query?: string | undefined, page: number, limit: number };
+export const searchAllBooks = async ({
+	query,
+	page,
+	limit
+}: SearchAllBooksArgs) => {
+	const [BookList, totalItems] = await searchBookListAndCount({query: query ? query : '', page, limit});
+
+	const meta: Meta = {
+		totalItems,
+		itemCount: BookList.length,
+		itemsPerPage: limit,
+		totalPages: Math.ceil(totalItems / limit),
+		currentPage: page + 1,
+	}
+	return {items: BookList, meta};
+}
 
 type SearchBookByIdArgs = { id: number };
 export const searchBookById = async ({ 

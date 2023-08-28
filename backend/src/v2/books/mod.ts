@@ -1,6 +1,6 @@
 import { contract } from "@jiphyeonjeon-42/contracts";
 import { initServer } from "@ts-rest/express";
-import { searchBookById } from "./service";
+import { searchAllBooks, searchBookById } from "./service";
 import { BookNotFoundError, bookNotFound } from "../shared";
 
 const s = initServer();
@@ -13,7 +13,11 @@ export const books = s.router(contract.books, {
 	// searchBookInfosByTag: ,
 	// searchBookInfosSorted: ,
 	// searchBookInfoById: ,
-	// searchAllBooks: ,
+	searchAllBooks: async ({ query }) => {
+		const result = await searchAllBooks( query );
+
+		return { status: 200, body: result} as const;
+	},
 	// searchBookInfoForCreate: ,
 	searchBookById: async ({ params: {id}}) => {
 		const result = await searchBookById({ id });
