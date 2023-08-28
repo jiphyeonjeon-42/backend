@@ -486,7 +486,7 @@ export const recommandBook = async (
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
       }
     }
-    const recommendedProjectId = await getRecommendedProject(userProject);
+    const recommendedProjectId = await BooksService.getRecommendedProject(userProject);
   }
   res.status(status.OK).send();
 };
