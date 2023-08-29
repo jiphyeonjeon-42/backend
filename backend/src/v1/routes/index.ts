@@ -11,6 +11,7 @@ import * as bookInfoReviews from './bookInfoReviews.routes';
 import * as stock from './stock.routes';
 import * as tags from './tags.routes';
 import * as cursus from './cursus.routes';
+import * as searchKeywords from './search-keywords.routes';
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use(bookSearchKeyword.path, bookSearchKeyword.router);
 router.use(stock.path, stock.router);
 router.use(tags.path, tags.router);
 router.use(cursus.path, cursus.router);
+router.use(searchKeywords.path, searchKeywords.router);
 
 export default router;
