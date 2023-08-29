@@ -10,7 +10,7 @@ import * as bookInfoReviews from './bookInfoReviews.routes';
 import * as stock from './stock.routes';
 import * as tags from './tags.routes';
 import * as cursus from './cursus.routes';
-import * as searchKeywords from './search-keywords.routes';
+import * as searchKeywords from './searchKeywords.routes';
 
 const router = Router();
 

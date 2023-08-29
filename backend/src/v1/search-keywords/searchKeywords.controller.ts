@@ -3,8 +3,7 @@ import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as status from 'http-status';
-import * as SearchKeywordsService from './search-keywords.service';
-import { PopularSearchKeyword } from './search-keywords.type';
+import * as searchKeywordsService from './searchKeywords.service';
 
 export const getPopularSearchKeywords = async (
   req: Request,
@@ -12,7 +11,7 @@ export const getPopularSearchKeywords = async (
   next: NextFunction,
 ): Promise<Response | void> => {
   try {
-    const items: PopularSearchKeyword[] = await SearchKeywordsService.getPopularSearchKeywords();
+    const items = await searchKeywordsService.getPopularSearchKeywords();
     return res.status(status.OK).json({ items });
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
