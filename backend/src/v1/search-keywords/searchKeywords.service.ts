@@ -1,5 +1,5 @@
 import { executeQuery } from '~/mysql';
-import { PopularSearchKeyword, SearchKeyword } from './search-keywords.type';
+import { PopularSearchKeyword, SearchKeyword } from './searchKeywords.type';
 
 const MINIMUN_SEARCH_COUNT = 5;
 const POPULAR_KEYWORDS_LIMIT = 10;

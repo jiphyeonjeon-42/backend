@@ -1,23 +1,50 @@
 /* eslint-disable import/no-unresolved */
-import {
-  NextFunction, Request, RequestHandler, Response,
-} from 'express';
-import * as status from 'http-status';
-import { executeQuery } from '~/mysql';
-// import { logger } from '~/logger';
+import { NextFunction, Request, Response } from 'express';
+import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
-// import * as parseCheck from '~/v1/utils/parseCheck';
-// import * as SearchKeywordervice from './searchKeyword.service';
+import * as status from 'http-status';
+import * as SearchKeywordsService from './searchKeywords.service';
+import { PopularSearchKeyword } from './searchKeywords.type';
+
+import { executeQuery } from '~/mysql';
 import * as hangul from 'hangul-js';
 
+export const getPopularSearchKeywords = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<Response | void> => {
+  try {
+    const items: PopularSearchKeyword[] = await SearchKeywordsService.getPopularSearchKeywords();
+    return res.status(status.OK).json({ items });
+  } catch (error: any) {
+    const errorNumber = parseInt(error.message, 10);
+    if (errorNumber >= 300 && errorNumber < 400) {
+      return next(new ErrorResponse(error.message, status.BAD_REQUEST));
+    }
+    if (error.message === 'DB error') {
+      return next(
+        new ErrorResponse(
+          errorCode.QUERY_EXECUTION_FAILED,
+          status.INTERNAL_SERVER_ERROR,
+        ),
+      );
+    }
+    logger.error(error);
+    return next(
+      new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR),
+    );
+  }
+};
 
-const disassembleHangul = (original: string) => {
+
+const disassembleHangul = (original?: string) => {
   if (!original) return null;
   return hangul.d(original).join("");
 };
 
-const extractHangulCho = (original: string) => {
+const extractHangulCho = (original?: string) => {
   if (!original) return null;
   return hangul
     .d(original, true)
@@ -52,11 +79,11 @@ export const searchKeywordPreview: any = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
 
-  // keyword 비어 있을때에 대한 처리 필요, 초기화를 잘 할것.
-  let keyword_d = extractHangulCho(keyword)
+  // keyword 비어 있을때에 대한 처리 필요, 초기화를 잘 할것. // keyword as string
+  let keyword_d = extractHangulCho(keyword as string)
   let isCho = true;
   if (keyword !== keyword_d) {
-    keyword_d = disassembleHangul(keyword);
+    keyword_d = disassembleHangul(keyword as string);
     isCho = false;
   }
   console.log(`keyword_d: ${keyword_d}`);
@@ -70,8 +97,8 @@ export const searchKeywordPreview: any = async (
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
-              FROM book_search_keywords_442
-              WHERE MATCH(book_name_cho, author_name_cho, publisher_name_cho) AGAINST (? IN BOOLEAN MODE)
+              FROM book_info_search_keywords
+              WHERE MATCH(title_initials, author_initials, publisher_initials) AGAINST (? IN BOOLEAN MODE)
           )
       )
       UNION (
@@ -79,10 +106,10 @@ export const searchKeywordPreview: any = async (
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
-              FROM book_search_keywords_442
-              WHERE book_name_cho LIKE ('%${keyword_d}%')
-                      OR author_name_cho LIKE ('%${keyword_d}%')
-                      OR publisher_name_cho LIKE ('%${keyword_d}%')
+              FROM book_info_search_keywords
+              WHERE title_initials LIKE ('%${keyword_d}%')
+                      OR author_initials LIKE ('%${keyword_d}%')
+                      OR publisher_initials LIKE ('%${keyword_d}%')
           )
       )
       LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}
@@ -95,8 +122,8 @@ export const searchKeywordPreview: any = async (
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
-              FROM book_search_keywords_442
-              WHERE MATCH(book_name_jamo, author_name_jamo, publisher_name_jamo) AGAINST (? IN BOOLEAN MODE)
+              FROM book_info_search_keywords
+              WHERE MATCH(disassembled_title, disassembled_author, disassembled_publisher) AGAINST (? IN BOOLEAN MODE)
           )
       )
       UNION (
@@ -104,10 +131,10 @@ export const searchKeywordPreview: any = async (
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
-              FROM book_search_keywords_442
-              WHERE book_name_jamo LIKE ('%${keyword_d}%')
-                      OR author_name_jamo LIKE ('%${keyword_d}%')
-                      OR publisher_name_jamo LIKE ('%${keyword_d}%')
+              FROM book_info_search_keywords
+              WHERE disassembled_title LIKE ('%${keyword_d}%')
+                      OR disassembled_author LIKE ('%${keyword_d}%')
+                      OR disassembled_publisher LIKE ('%${keyword_d}%')
           )
       )
       LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}

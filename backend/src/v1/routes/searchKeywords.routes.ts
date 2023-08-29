@@ -1,8 +1,21 @@
 import { Router } from 'express';
-import { getPopularSearchKeywords } from '../search-keywords/search-keywords.controller';
+import { getPopularSearchKeywords, searchKeywordPreview } from '~/v1/search-keywords/searchKeyword.controller';
+import rateLimit from 'express-rate-limit';
 
 export const path = '/search-keywords';
 export const router = Router();
+
+/**
+ * TODO
+ * 초당 요청할수 있는 api회수인듯 싶다. 
+ * 검색결과 미리보기에서는 어떻게 활용할지 고려필요
+ * 매직넘버 환경변수나 const 변수로 대체할지 고민 필요.
+ */
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1분
+  max: 100, // 1분에 100번
+  message: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
+});
 
 router
   /**
@@ -46,3 +59,14 @@ router
    *                          type: integer
    */
   .get('/popular', getPopularSearchKeywords);
+
+router
+  /**
+   * @openapi
+   * TODO swagger
+   * /api/search-keywords/autocomplete/preview
+   * e.g)
+   *   http://localhost:3000/api/search-keywords/autocomplete/preview?keyword=파이썬
+   */
+  .get('/autocomplete/preview', searchKeywordPreview);
+
