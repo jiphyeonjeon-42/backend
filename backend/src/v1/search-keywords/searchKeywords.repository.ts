@@ -1,5 +1,5 @@
 import { executeQuery } from '~/mysql';
-import { SearchKeyword } from './search-keywords.type';
+import { SearchKeyword } from './searchKeywords.type';
 
 export const getPopularSearchKeywords = async (
   base: number, // 검색어를 집계할 날짜 기준. ex) 0: 현재 시각부터 집계, 1: 1일 전부터 집계

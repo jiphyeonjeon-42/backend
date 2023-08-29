@@ -1,7 +1,7 @@
 import * as schedule from 'node-schedule';
 import * as slack from '../slack/slack.service';
 import * as notifications from '../notifications/notifications.service';
-import * as searchKeywords from '../search-keywords/search-keywords.service';
+import * as searchKeywords from '../search-keywords/searchKeywords.service';
 
 const midnightScheduler = () => {
   const rule = new schedule.RecurrenceRule();

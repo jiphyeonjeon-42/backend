@@ -1,4 +1,4 @@
-import { PopularSearchKeyword } from './search-keywords.type';
+import { PopularSearchKeyword } from './searchKeywords.type';
 import * as searchKeywordRepository from './searchKeywords.repository';
 
 const LEAST_SEARCH_COUNT = 5;

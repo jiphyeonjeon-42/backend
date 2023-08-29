@@ -3,7 +3,7 @@ import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as status from 'http-status';
-import * as searchKeywordsService from './search-keywords.service';
+import * as searchKeywordsService from './searchKeywords.service';
 
 export const getPopularSearchKeywords = async (
   req: Request,

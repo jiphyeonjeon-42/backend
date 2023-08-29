@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getPopularSearchKeywords } from '../search-keywords/search-keywords.controller';
+import { getPopularSearchKeywords } from '../search-keywords/searchKeywords.controller';
 
 export const path = '/search-keywords';
 export const router = Router();
