@@ -15,7 +15,7 @@ import LikesService from './likes.service';
 import { searchSchema } from '../users/users.types';
 import { User } from '../DTO/users.model';
 import UsersService from '../users/users.service';
-import { Project } from '../DTO/cursus.model';
+import { BookListWithSubject, Project } from '../DTO/cursus.model';
 
 const likesService = new LikesService();
 const usersService = new UsersService();
@@ -472,6 +472,9 @@ export const recommandBook = async (
   next: NextFunction,
 ) => {
   const { nickname: login } = req.user as any;
+  const limit = Number(req.query.limit);
+  let bookList: BookListWithSubject[] = [];
+  let meta: string[] = [];
   let userProject: Project[] = [];
   let userId: string;
   if (login !== null && login !== undefined) {
@@ -486,7 +489,10 @@ export const recommandBook = async (
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
       }
     }
-    const recommendedProjectId = await BooksService.getRecommendedProject(userProject);
+    const projectIds: number[] = await BooksService.getRecommendedProject(userProject);
+    const bookIds: number[] = await BooksService.getRecommendedBookIds(projectIds);
+    bookList = await BooksService.getBookListByIds(bookIds, limit);
+    meta = await BooksService.getRecommendMeta();
   }
-  res.status(status.OK).send();
+  res.status(status.OK).json({ bookList, meta });
 };

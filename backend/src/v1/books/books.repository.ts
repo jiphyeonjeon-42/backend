@@ -7,10 +7,10 @@ import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
 import {
   Book, BookInfo, User, Lending, Category, VSearchBook,
 } from '~/entity/entities';
+import { number } from 'zod';
 import {
   CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo, UpdateBookDonator,
 } from './books.type';
-import { number } from "zod";
 
 class BooksRepository extends Repository<Book> {
   private readonly searchBook: Repository<VSearchBook>;
@@ -217,6 +217,19 @@ class BooksRepository extends Repository<Book> {
       infoId: target.infoId,
     };
     await this.books.save(book);
+  }
+
+  async findBooksByIds(idList: number[]) {
+    const bookList = await this.bookInfo.createQueryBuilder('bi')
+      .select('bi.id', 'id')
+      .addSelect('bi.title', 'title')
+      .addSelect('bi.author', 'author')
+      .addSelect('bi.publisher', 'publisher')
+      .addSelect('bi.image', 'image')
+      .addSelect('DATE_FORMAT(bi.publishedAt, "%Y-%m-%d")', 'publishedAt')
+      .where('bi.id IN (:...idList)', { idList })
+      .getRawMany();
+    return bookList;
   }
 }
 

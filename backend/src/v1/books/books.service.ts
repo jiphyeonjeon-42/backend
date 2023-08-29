@@ -17,7 +17,10 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import { Project, ProjectWithCircle, RawProject } from '../DTO/cursus.model';
+import {
+  BookListWithSubject,
+  BooksWithProjectInfo, Cursus, Project, ProjectFrom42, ProjectInfo, ProjectWithCircle, RawProject,
+} from '../DTO/cursus.model';
 import UsersRepository from '../users/users.repository';
 import ErrorResponse from '../utils/error/errorResponse';
 
@@ -499,14 +502,32 @@ const findCircle = (
   return circle;
 };
 
+/**
+ * 아우터 서클에 있는 프로젝트 id 배열을 반환하는 함수.
+ * 사용자가 진행한 프로젝
+ * @param cursus 서클 번호를 키로, 프로젝트 id 배열을 값으로 갖는 객체
+ * @param projectList 사용자가 진행한 프로젝트 목록
+ * @returns 아우터 서클에 있는 프로젝트 id 배열
+ */
 const getOuterProjectIds = (
   cursus: ProjectWithCircle,
   projectList: Project[] | null,
 ) => {
-  // TODO => project_info.json 파일을 읽어서 프로젝트 id 배열을 반환한다.
-  // TODO => cursus와 project_info.json 파일을 비교하여 cursus에 포함되지 않은 프로젝트 id 배열을 반환한다.
-  // TODO => projectList가 null이 아니라면 projectList.id를 제외한 프로젝트 id 배열을 반환한다.
-  // TODO => projectList가 null이라면 두 번째 내용으로 얻은 id 리스트를 반환한다.
+  const filePath = path.join(__dirname, '../../assets', 'projects_info.json');
+  const project42: ProjectInfo[] = JSON.parse(fs.readFileSync(path.join(filePath), { encoding: 'utf8', flag: 'r' }));
+  let outerProjectIds: number[] = [];
+  for (let i = 0; i < project42.length; i += 1) {
+    const projectId = project42[i].id;
+    const circle = findCircle(cursus, projectId);
+    if (circle === null) {
+      outerProjectIds.push(project42[i].id);
+    }
+  }
+  if (projectList) {
+    const projectIds = projectList.map((project) => project.project.id);
+    outerProjectIds = outerProjectIds.filter((id) => !projectIds.includes(id));
+  }
+  return outerProjectIds;
 };
 
 /**
@@ -559,4 +580,88 @@ export const getRecommendedProject = async (
     nextProjectIds = getOuterProjectIds(cursus, projectList);
   }
   return nextProjectIds;
+};
+
+/**
+ * books_with_project_info.json 파일에서 추천할 책 id 배열을 반환하는 함수.
+ * @param projectIds 추천할 프로젝트 id 배열
+ * @returns 추천할 책 id 배열
+ */
+export const getRecommendedBookIds = async (
+  projectIds: number[],
+) => {
+  let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
+  const booksWithCursusInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  filePath = path.join(__dirname, '../../assets', 'cursus_info.json');
+  const recommendedBookIds: number[] = [];
+  for (let i = 0; i < booksWithCursusInfo.length; i += 1) {
+    const { projects } = booksWithCursusInfo[i];
+    for (let j = 0; j < projects.length; j += 1) {
+      const { id } = projects[j];
+      if (projectIds.includes(id)) {
+        recommendedBookIds.push(booksWithCursusInfo[i].book_info_id);
+      }
+    }
+  }
+  recommendedBookIds.filter(( // 중복 제거
+    bookInfoId,
+    index,
+  ) => recommendedBookIds.indexOf(bookInfoId) === index);
+  return recommendedBookIds;
+};
+
+/**
+ * 추천 도서의 기존 book_info 정보에 프로젝트 정보를 추가하여 반환하는 함수.
+ * @param bookInfoIds 추천 도서의 id 배열
+ * @param limit 추천 도서의 개수
+ * @returns 추천 도서의 정보
+ */
+export const getBookListByIds = async (
+  bookInfoIds: number[],
+  limit: number,
+) => {
+  const booksRepository = new BooksRepository();
+  const bookList = await booksRepository.findBooksByIds(bookInfoIds);
+  const bookListWithProject: BookListWithSubject[] = [];
+  let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
+  const booksWithCursusInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  filePath = path.join(__dirname, '../../assets', 'projects_info.json');
+  const projectInfo: ProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  for (let i = 0; i < bookList.length; i += 1) {
+    const { id } = bookList[i];
+    const projectId = booksWithCursusInfo.find((book) => book.book_info_id === id)?.projects[0].id;
+    if (projectId) {
+      const project = projectInfo.find((item) => item.id === projectId);
+      if (project) {
+        const { name } = project;
+        bookListWithProject.push({ ...bookList[i], project: [name] });
+      }
+    }
+  }
+  return bookListWithProject.slice(0, limit);
+};
+
+/**
+ * books_with_project_info.json 파일에 저장된 추천 도서의 프로젝트 정보를 반환하는 함수.
+ * @returns 추천 도서의 프로젝트 정보
+ */
+export const getRecommendMeta = async () => {
+  let filePath: string = path.join(__dirname, '../../assets', 'books_with_project_info.json');
+  const booksWithProjectInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  filePath = path.join(__dirname, '../../assets', 'projects_info.json');
+  const cursus: ProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  const meta: string[] = [];
+  for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
+    const { projects } = booksWithProjectInfo[i];
+    for (let j = 0; j < projects.length; j += 1) {
+      let projectName = cursus.find((project) => project.id === projects[j].id)?.name;
+      if (projectName === undefined) {
+        projectName = '기타';
+      }
+      let circle = projects[j].circle.toString();
+      if (circle === '-1') { circle = '아우터 '; }
+      meta.push(`${circle}서클 | ${projectName}`);
+    }
+  }
+  return [...new Set(meta)];
 };
