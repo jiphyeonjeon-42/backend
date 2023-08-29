@@ -12,6 +12,7 @@ const updateLastPopular = (items: string[]) => {
 
 export const getPopularSearchKeywords = async () => {
   const popularKeywords = await searchKeywordRepository.getPopularSearchKeywords(
+    0,
     `${LEAST_SEARCH_COUNT}`,
     POPULAR_RANKING_LIMIT,
   );
@@ -34,6 +35,7 @@ export const getPopularSearchKeywords = async () => {
 
 export const renewLastPopular = async () => {
   const popularKeywords = await searchKeywordRepository.getPopularSearchKeywords(
+    1,
     `${LEAST_SEARCH_COUNT}`,
     POPULAR_RANKING_LIMIT,
   );
