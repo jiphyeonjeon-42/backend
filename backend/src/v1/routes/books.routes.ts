@@ -14,7 +14,6 @@ import {
   updateBookInfo,
   updateBookDonator,
   recommandBook,
-  searchKeywordsPreview,
 } from '~/v1/books/books.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import authValidateDefaultNullUser from '~/v1/auth/auth.validateDefaultNullUser';
@@ -1108,14 +1107,6 @@ router
    */
   .get('/info/:bookInfoId/like', authValidateDefaultNullUser(roleSet.all), getLikeInfo);
 
-
-  router
-.get('/search-keywords', searchKeywordsPreview);
-  /**
-   * openapi
-   * /search-keywords/autocomplete
-   * -- candidate /api/books/search-keywords/autocomplete
-   */
 
 router
 /**

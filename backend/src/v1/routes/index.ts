@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as auth from './auth.routes';
 import * as books from './books.routes';
+import * as bookSearchKeyword from './bookSearchKeyword.routes';
 import * as lendings from './lendings.routes';
 import * as reservations from './reservations.routes';
 import * as users from './users.routes';
@@ -26,6 +27,7 @@ router.use(histories.path, histories.router);
 router.use(reviews.path, reviews.router);
 router.use(histories.path, histories.router);
 router.use(bookInfoReviews.path, bookInfoReviews.router);
+router.use(bookSearchKeyword.path, bookSearchKeyword.router);
 router.use(stock.path, stock.router);
 router.use(tags.path, tags.router);
 router.use(cursus.path, cursus.router);

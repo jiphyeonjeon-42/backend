@@ -4,10 +4,12 @@ import { connectOption } from '~/config';
 import { logger } from '~/logger';
 
 export const DBError = 'DB error';
+// TODO To be replaced Config
+const DB_PORT = 3306;
 
 export const pool = mysql.createPool({
   host: connectOption.host,
-  port: 3306,
+  port: DB_PORT,
   user: connectOption.username,
   password: connectOption.password,
   database: connectOption.database,
