@@ -1,6 +1,7 @@
 import * as schedule from 'node-schedule';
 import * as slack from '../slack/slack.service';
 import * as notifications from '../notifications/notifications.service';
+import * as searchKeywords from '../search-keywords/search-keywords.service';
 
 const midnightScheduler = () => {
   const rule = new schedule.RecurrenceRule();
@@ -11,6 +12,7 @@ const midnightScheduler = () => {
   schedule.scheduleJob(rule, async () => {
     await slack.updateSlackId();
     await notifications.notifyReservationOverdue();
+    await searchKeywords.renewLastPopular();
   });
 };
 
