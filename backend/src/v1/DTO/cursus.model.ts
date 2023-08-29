@@ -77,6 +77,18 @@ export type ProjectFrom42 = {
   project_sessions: object[];
 }
 
+export type ProjectInfo = {
+  id: number;
+  name: string;
+  slug: string;
+  parent: [];
+  cursus: {
+    id: number;
+    name: string;
+    slug: string;
+  }[];
+}
+
 export type Campus = {
   id: number;
   name: string;
@@ -115,4 +127,22 @@ export type ProjectWithCircle = {
   [key: string]: {
     project_ids: number[];
   }
+}
+
+export type BooksWithProjectInfo = {
+  book_info_id: number;
+  projects: {
+    id: number;
+    circle: number;
+  }[];
+}
+
+export type BookListWithSubject = {
+  id: number;
+  title: string;
+  author: string;
+  publisher: string;
+  image: string;
+  publishedAt: string;
+  subjects: string[];
 }
