@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import httpStatus from 'http-status';
-import { ProjectFrom42 } from '../DTO/cursus.model';
+import { ProjectFrom42, ProjectInfo } from '../DTO/cursus.model';
 
 /**
  * 42 API에서 받아온 프로젝트 정보를 가공하는 함수. 42서울에서 진행하는 프로젝트만 필터링한다.
@@ -26,7 +26,7 @@ const processData = async (
     }
     return (false);
   });
-  const processedData = ftSeoulData.map((project) => ({
+  const processedData: ProjectInfo[] = ftSeoulData.map((project) => ({
     id: project.id,
     name: project.name,
     slug: project.slug,
@@ -64,7 +64,7 @@ export const getProjectsInfo = async (
 };
 
 export const saveProjects = async (
-  projects: object[],
+  projects: ProjectInfo[],
   mode: string,
 ) => {
   const filePath: string = path.join(__dirname, '../../assets', 'projects_info.json');
