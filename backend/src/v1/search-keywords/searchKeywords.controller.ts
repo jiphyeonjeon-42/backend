@@ -145,9 +145,9 @@ export const searchKeywordsAutocomplete: any = async (
   }
 
   return res.status(status.OK).send({
-    result: {
-      fulltext: { length: result.length },
-    },
-    fulltext: result,
+    items: result,
+    meta: {
+      totalCount: result.length
+    }
   });
 }
