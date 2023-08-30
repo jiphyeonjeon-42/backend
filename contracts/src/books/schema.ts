@@ -49,16 +49,16 @@ export const searchBookByIdParamSchema = z.object({
 });
 
 export const updateBookBodySchema = z.object({
-	bookInfoId: positiveInt,
-	categoryId: positiveInt,
-	title: z.string(),
-	author: z.string(),
-	publisher: z.string(),
-	publishedAt: z.string(),
-	image: z.string(),
-	bookId: positiveInt,
-	callSign: z.string(),
-	status: statusSchema,
+	bookInfoId: positiveInt.optional(),
+	title: z.string().optional(),
+	author: z.string().optional(),
+	publisher: z.string().optional(),
+	publishedAt: z.string().optional(),
+	image: z.string().optional(),
+	categoryId: positiveInt.optional(),
+	bookId: positiveInt.optional(),
+	callSign: z.string().optional(),
+	status: statusSchema.optional(),
 });
 
 export const updateDonatorBodySchema = z.object({
@@ -177,7 +177,7 @@ export const insertionFailureSchema = mkErrorMessageSchema('INSERT_FAILURE').des
 
 export const categoryNotFoundSchema = mkErrorMessageSchema('CATEGORY_NOT_FOUND').describe('보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음');
 
-export const formatErrorSchema = mkErrorMessageSchema('FORMAT_ERROR').describe('입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"');
+export const pubdateFormatErrorSchema = mkErrorMessageSchema('PUBDATE_FORMAT_ERROR').describe('입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"');
 
 export const unknownPatchErrorSchema = mkErrorMessageSchema('PATCH_ERROR').describe('예상치 못한 에러로 patch에 실패.');
 

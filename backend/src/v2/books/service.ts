@@ -1,11 +1,7 @@
 import { match } from "ts-pattern";
-import { db } from "~/kysely/mod";
-import {
-	FunctionModule as fn,
-	ExpressionBuilder as eb
-} from "kysely";
-import { searchBookListAndCount, vSearchBookRepo } from "./repository";
+import { bookExists, createBookInfo, getNewCallsignPrimaryNum, searchBookListAndCount, vSearchBookRepo, updateBookById, updateBookInfoById } from "./repository";
 import { BookNotFoundError, Meta } from "../shared";
+import { PubdateFormatError } from "./errors";
 
 // const querySearchCategoryByName = (category: string) =>
 // 	db
@@ -110,5 +106,102 @@ export const searchBookById = async ({
 				id: book?.bookId,
 				...book
 			};
+		});
+}
+
+// const getCategoryAlphabet = (categoryId: number): string => {
+// 	const category = Object.values(categoryId) as string[];
+// 	return category[categoryId - 1];
+// }
+
+// export type CreateBookArgs = {
+// 	infoId?: number | undefined,
+// 	title: string,
+// 	isbn: string,
+// 	author: string,
+// 	publisher: string,
+// 	image?: string | undefined,
+// 	categoryId: string,
+// 	pubdate: string,
+// 	donator?: string | undefined
+// }
+// export const createBook = async (book: CreateBookArgs) => {
+// 	const bookExistence = await bookExists(book.isbn);
+// 	const categoryAlphabet = getCategoryAlphabet(Number(book.categoryId));
+// 	let recommendPrimaryNum;
+
+// 	if (bookExistence === 0)
+// 	{
+// 		const bookInfo = await createBookInfo(book);
+// 		book.infoId = bookInfo.id;
+// 		recommendPrimaryNum = getNewCallsignPrimaryNum(book.categoryId);
+// 	}
+// 	else
+// 	{
+// 		const [bookInfo, count] = await  searchBookListAndCount({ query: book.isbn, page: 0, limit: 1 });
+// 		book.infoId = bookInfo[0].bookInfoId;
+// 		const nums = 
+// 	}
+// }
+
+type UpdateBookArgs = {
+	bookId: number,
+	callSign?: string | undefined,
+	status?: number | undefined
+};
+const updateBook = async (book: UpdateBookArgs) => {
+	return await updateBookById({ id: book.bookId, callSign: book.callSign, status: book.status });
+}
+
+type UpdateBookInfoArgs = {
+	bookInfoId: number,
+	title?: string | undefined,
+	author?: string | undefined,
+	publisher?: string | undefined,
+	publishedAt?: string | undefined,
+	image?: string | undefined,
+	categoryId?: number | undefined,
+}
+const pubdateFormatValidator = (pubdate: string) => {
+	const regexCondition = /^[0-9]{8}$/;
+	return regexCondition.test(pubdate)
+}
+const updateBookInfo = async (book: UpdateBookInfoArgs) => {
+	if (book.publishedAt && !pubdateFormatValidator(book.publishedAt))
+		return new PubdateFormatError(book.publishedAt);
+	return await updateBookInfoById({
+		id: book.bookInfoId,
+		title: book.title,
+		author: book.author,
+		publisher: book.publisher,
+		publishedAt: book.publishedAt,
+		image: book.image,
+		categoryId: book.categoryId
+	});
+}
+
+type UpdateBookOrBookInfoArgs = 
+	Omit<UpdateBookArgs, 'bookId'>
+	& Omit<UpdateBookInfoArgs, 'bookInfoId'> 
+	& {
+	bookId?: number | undefined,
+	bookInfoId?: number | undefined,
+};
+export const updateBookOrBookInfo = async ( book: UpdateBookOrBookInfoArgs ) => {
+	if (book.bookId)
+		await updateBook({
+			bookId: book.bookId,
+			callSign: book.callSign,
+			status: book.status
+		});
+	if (book.bookInfoId)
+		return await updateBookInfo({
+			bookInfoId: book.bookInfoId,
+			title: book.title,
+			author: book.author,
+			publisher: book.publisher,
+			publishedAt: book.publishedAt,
+			image: book.image,
+			categoryId: book.categoryId
 		});
 }

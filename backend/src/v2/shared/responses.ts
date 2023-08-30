@@ -32,3 +32,11 @@ export const bookNotFound = {
     description: '검색한 책이 존재하지 않습니다.',
   } as z.infer<typeof bookNotFoundSchema>,
 } as const;
+
+export const pubdateFormatError = {
+  status: 311,
+  body: {
+    code: 'PUBDATE_FORMAT_ERROR',
+    description: '입력한 pubdate가 알맞은 형식이 아님.'
+  }
+} as const;

@@ -1,7 +1,10 @@
 import { contract } from "@jiphyeonjeon-42/contracts";
 import { initServer } from "@ts-rest/express";
-import { searchAllBooks, searchBookById } from "./service";
-import { BookNotFoundError, bookNotFound } from "../shared";
+import { searchAllBooks, searchBookById, updateBookOrBookInfo } from "./service";
+import { BookNotFoundError, bookNotFound, pubdateFormatError } from "../shared";
+import { PubdateFormatError } from "./errors";
+import authValidate from "~/v1/auth/auth.validate";
+import { roleSet } from '~/v1/auth/auth.type';
 
 const s = initServer();
 export const books = s.router(contract.books, {
@@ -31,7 +34,22 @@ export const books = s.router(contract.books, {
 			body: result
 		} as const;
 	},
-	// createBook: ,
-	// updateBook: ,
+	// createBook: {
+	// 	middleware: [authValidate(roleSet.librarian)],
+	// 	handler: async ({ body }) => {
+
+	// 	}
+	// },
+	updateBook: {
+		// middleware: [authValidate(roleSet.librarian)],
+		handler: async ({ body }) => {
+			const result = await updateBookOrBookInfo(body);
+
+			if (result instanceof PubdateFormatError) {
+				return pubdateFormatError;
+			}
+			return {status: 200, body: '책 정보가 수정되었습니다.'} as const;
+		}
+	},
 	// updateDonator: ,
 });
