@@ -38,7 +38,7 @@ export const recommendBook = async (
     bookList = await CursusService.getBookListByIds(bookIds, limit);
     meta = await CursusService.getRecommendMeta();
   }
-  res.status(status.OK).json({ bookList, meta });
+  res.status(status.OK).json({ items: bookList, meta });
 };
 
 export const getProjects = async (

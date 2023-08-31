@@ -29,15 +29,10 @@ router
    *        schema:
    *          type: integer
    *        example: 4
-   *      - name: type
+   *      - name: project
    *        in: query
-   *        description: 이너 서클과 아우터 서클을 구분한다
-   *        schema:
-   *          type: string
-   *          enum: [inner, outer]
-   *      - name: circleOrSubject
-   *        in: query
-   *        description: 서클 또는 과제 명을 받아온다.
+   *        description: 과제 명을 받아온다. 과제 명이 없으면, 사용자가 진행 중인 과제 중 가장 최근에 진행한 과제를 가져온다.
+   *                     로그인하지 않은 사용자는 추천 도서 목록을 랜덤으로 가져온다.
    *        schema:
    *          type: string
    *        example: Libft
@@ -55,7 +50,7 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *                        id:
+   *                        bookInfoId:
    *                          description: DB 상의 book_info.id
    *                          type: integer
    *                          example: 42
@@ -87,15 +82,8 @@ router
    *                  meta:
    *                    description: 드롭다운에서 선택할 수 있는 서클과 과제 정보
    *                    type: array
-   *                    example: ["0서클 | Libft", "1서클 | ft_printf", ..., "Outer | ft_ping"]
-   *        '400':
-   *          description: x 서클에서 y 과제의 추천 도서를 가져오려고 했는데, x 서클에 y 과제가 없다.
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: json
-   *                description: error decription
-   *                example: { errorCode: 400 }
+   *                    example: ["사용자 맞춤", "0서클 | Libft", "1서클 | ft_printf", ...,
+   *                              "아우터 서클 | ft_ping"]
    *        '500':
    *          description: 서버 오류
    *          content:
