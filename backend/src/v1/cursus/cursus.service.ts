@@ -16,6 +16,19 @@ import {
 import UsersRepository from '../users/users.repository';
 import BooksRepository from '../books/books.repository';
 
+let booksWithProjectInfo: BooksWithProjectInfo[];
+let cursusInfo: ProjectWithCircle;
+let projectsInfo: ProjectInfo[];
+
+export const readFiles = async () => {
+  let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
+  booksWithProjectInfo = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  filePath = path.join(__dirname, '../../assets', 'cursus_info.json');
+  cursusInfo = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  filePath = path.join(__dirname, '../../assets', 'projects_info.json');
+  projectsInfo = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+};
+
 export const getIntraId = async (
   login: string,
 ): Promise<string> => {
@@ -94,14 +107,12 @@ const getOuterProjectIds = (
   cursus: ProjectWithCircle,
   projectList: Project[] | null,
 ) => {
-  const filePath = path.join(__dirname, '../../assets', 'projects_info.json');
-  const project42: ProjectInfo[] = JSON.parse(fs.readFileSync(path.join(filePath), { encoding: 'utf8', flag: 'r' }));
   let outerProjectIds: number[] = [];
-  for (let i = 0; i < project42.length; i += 1) {
-    const projectId = project42[i].id;
+  for (let i = 0; i < projectsInfo.length; i += 1) {
+    const projectId = projectsInfo[i].id;
     const circle = findCircle(cursus, projectId);
     if (circle === null) {
-      outerProjectIds.push(project42[i].id);
+      outerProjectIds.push(projectsInfo[i].id);
     }
   }
   if (projectList) {
@@ -150,15 +161,13 @@ export const getRecommendedProject = async (
     return recommendedProject.map((project) => project.project.id);
   }
   // 최근에 진행한 프로젝트를 바탕으로 추천할 프로젝트를 찾는다.
-  const filePath: string = path.join(__dirname, '../../assets', 'cursus_info.json');
-  const cursus: ProjectWithCircle = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
   const userProjectId = userProject[0].project.id;
-  const circle: string | null = findCircle(cursus, userProjectId);
+  const circle: string | null = findCircle(cursusInfo, userProjectId);
   let nextProjectIds: number[] = [];
   if (circle) { // Inner Circle
-    nextProjectIds = getNextProjectIds(cursus, circle);
+    nextProjectIds = getNextProjectIds(cursusInfo, circle);
   } else { // Outer Circle
-    nextProjectIds = getOuterProjectIds(cursus, projectList);
+    nextProjectIds = getOuterProjectIds(cursusInfo, projectList);
   }
   return nextProjectIds;
 };
@@ -169,18 +178,15 @@ export const getRecommendedProject = async (
  * @returns 추천할 책 id 배열
  */
 export const getRecommendedBookIds = async (
-  projectIds: number[],
+  userProjectIds: number[],
 ) => {
-  let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
-  const booksWithCursusInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
-  filePath = path.join(__dirname, '../../assets', 'cursus_info.json');
   const recommendedBookIds: number[] = [];
-  for (let i = 0; i < booksWithCursusInfo.length; i += 1) {
-    const { projects } = booksWithCursusInfo[i];
-    for (let j = 0; j < projects.length; j += 1) {
-      const { id } = projects[j];
-      if (projectIds.includes(id)) {
-        recommendedBookIds.push(booksWithCursusInfo[i].book_info_id);
+  for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
+    const projectIds: number[] = booksWithProjectInfo[i].projects.map((project) => project.id);
+    for (let j = 0; j < projectIds.length; j += 1) {
+      const id = projectIds[j];
+      if (userProjectIds.includes(id)) {
+        recommendedBookIds.push(booksWithProjectInfo[i].book_info_id);
       }
     }
   }
@@ -203,23 +209,19 @@ export const getBookListByIds = async (
 ) => {
   const booksRepository = new BooksRepository();
   const bookList = await booksRepository.findBooksByIds(bookInfoIds);
-  const bookListWithProject: BookListWithSubject[] = [];
-  let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
-  const booksWithCursusInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
-  filePath = path.join(__dirname, '../../assets', 'projects_info.json');
-  const projectInfo: ProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
+  const bookListWithSubject: BookListWithSubject[] = [];
   for (let i = 0; i < bookList.length; i += 1) {
     const { id } = bookList[i];
-    const projectId = booksWithCursusInfo.find((book) => book.book_info_id === id)?.projects[0].id;
+    const projectId = booksWithProjectInfo.find((book) => book.book_info_id === id)?.projects[0].id;
     if (projectId) {
-      const project = projectInfo.find((item) => item.id === projectId);
+      const project = projectsInfo.find((item) => item.id === projectId);
       if (project) {
         const { name } = project;
-        bookListWithProject.push({ ...bookList[i], project: [name] });
+        bookListWithSubject.push({ ...bookList[i], project: [name] });
       }
     }
   }
-  return bookListWithProject.slice(0, limit);
+  return bookListWithSubject.slice(0, limit);
 };
 
 /**
@@ -227,15 +229,12 @@ export const getBookListByIds = async (
  * @returns 추천 도서의 프로젝트 정보
  */
 export const getRecommendMeta = async () => {
-  let filePath: string = path.join(__dirname, '../../assets', 'books_with_project_info.json');
-  const booksWithProjectInfo: BooksWithProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
-  filePath = path.join(__dirname, '../../assets', 'projects_info.json');
-  const cursus: ProjectInfo[] = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
   const meta: string[] = [];
+  console.log(booksWithProjectInfo);
   for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
     const { projects } = booksWithProjectInfo[i];
     for (let j = 0; j < projects.length; j += 1) {
-      let projectName = cursus.find((project) => project.id === projects[j].id)?.name;
+      let projectName = projectsInfo.find((project) => project.id === projects[j].id)?.name;
       if (projectName === undefined) {
         projectName = '기타';
       }

@@ -21,6 +21,7 @@ export const recommendBook = async (
   let meta: string[] = [];
   let userProject: Project[] = [];
   let userId: string;
+  CursusService.readFiles();
   if (login !== null && login !== undefined) {
     userId = await CursusService.getIntraId(login);
     try {
