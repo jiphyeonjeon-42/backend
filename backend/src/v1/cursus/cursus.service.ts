@@ -11,9 +11,9 @@ import {
   ProjectInfo,
   ProjectWithCircle,
   UserProjectFrom42,
-} from '../DTO/cursus.model';
-import UsersRepository from '../users/users.repository';
-import BooksRepository from '../books/books.repository';
+} from '~/v1/DTO/cursus.model';
+import UsersRepository from '~/v1/users/users.repository';
+import BooksRepository from '~/v1/books/books.repository';
 
 let booksWithProjectInfo: BooksWithProjectInfo[];
 let cursusInfo: ProjectWithCircle;

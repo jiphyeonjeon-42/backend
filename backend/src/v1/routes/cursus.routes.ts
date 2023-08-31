@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { recommendBook, getProjects } from '../cursus/cursus.controller';
-import { roleSet } from '../auth/auth.type';
-import authValidate from '../auth/auth.validate';
+import { recommendBook, getProjects } from '~/v1/cursus/cursus.controller';
+import { roleSet } from '~/v1/auth/auth.type';
+import authValidate from '~/v1/auth/auth.validate';
 
 export const path = '/cursus';
 export const router = Router();

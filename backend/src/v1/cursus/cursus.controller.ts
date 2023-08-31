@@ -3,10 +3,10 @@ import {
 } from 'express';
 import * as status from 'http-status';
 import * as errorCode from '~/v1/utils/error/errorCode';
-import { getAccessToken } from '../auth/auth.service';
+import { getAccessToken } from '~/v1/auth/auth.service';
+import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model';
+import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as CursusService from './cursus.service';
-import { RecommendedBook, UserProject, ProjectInfo } from '../DTO/cursus.model';
-import ErrorResponse from '../utils/error/errorResponse';
 
 let accessToken: string;
 
