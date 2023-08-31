@@ -190,11 +190,7 @@ export const getRecommendedBookIds = async (
       }
     }
   }
-  recommendedBookIds.filter(( // 중복 제거
-    bookInfoId,
-    index,
-  ) => recommendedBookIds.indexOf(bookInfoId) === index);
-  return recommendedBookIds;
+  return [...new Set(recommendedBookIds)];
 };
 
 /**
