@@ -1,4 +1,4 @@
-# How to use Mkdocs
+# Mkdocs로 개발 문서 작성하기
 ### 로컬에서 정적 페이지 빌드
 1. working directory의 루트 디렉토리에 docs/ 생성
 2. mkdocs 설치 (mkdocs 공식문서 참조)

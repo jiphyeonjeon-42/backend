@@ -22,11 +22,13 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./database:/docker-entrypoint-initdb.d:ro
+      - ./database/init:/docker-entrypoint-initdb.d:ro
       - ./database/data:/var/lib/mysql
+      - ./database/cnf:/etc/mysql/conf.d
 
   backend:
     container_name: backend
+    restart: on-failure
     build:
       context: .
     entrypoint: ["./node_modules/.bin/vite-node", "src/server.ts"]
@@ -35,5 +37,3 @@ services:
     ports:
       - 3000:3000
     env_file: .env
-volumes:
-  db_data:

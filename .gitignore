@@ -113,10 +113,13 @@ dist
 .DS_Store
 
 ################################################################################
-00_init.sql
+database/*.sql
 database/data/
 _*
 
 .vscode
 package-lock.json
 .idea
+
+# nginx
+.htpasswd

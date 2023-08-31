@@ -1,9 +1,30 @@
 site_name: 집현전 개발 가이드
+
+repo_name: jiphyeonjeon-42/backend
+repo_url: https://github.com/jiphyeonjeon-42/backend
+edit_uri: edit/develop/docs/
+
 theme:
   name: material
   language: ko
+  palette:
+    primary: black
+  logo: image/logo.png
+  favicon: image/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  features:
+    - header.autohide
+    - navigation.sections
+    - navigation.footer
+    - content.action.edit
+    - content.action.view
+
 
 extra:
+  generator: false
   static_dirs:
     - docs/image
 

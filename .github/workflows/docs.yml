@@ -18,13 +18,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v3
-        with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
-          clear-keys: |
-            mkdocs-material-
-      - run: pip install mkdocs-material
+          python-version: 3.10.x
+          cache: pip
+      - run: pip install -r requirements.txt
       - run: mkdocs gh-deploy --force
+
+# 과정 참고:
+# https://github.com/actions/setup-python/tree/v4/#caching-packages-dependencies
