@@ -10,7 +10,7 @@ import ErrorResponse from '../utils/error/errorResponse';
 
 let accessToken: string;
 
-export const recommandBook = async (
+export const recommendBook = async (
   req: Request,
   res: Response,
   next: NextFunction,

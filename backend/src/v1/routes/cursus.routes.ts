@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { recommandBook, getProjects } from '../cursus/cursus.controller';
+import { recommendBook, getProjects } from '../cursus/cursus.controller';
 import { roleSet } from '../auth/auth.type';
 import authValidate from '../auth/auth.validate';
 
@@ -105,7 +105,7 @@ router
    *                description: error decription
    *                example: { errorCode: 500 }
    */
-  .get('/recommend/books', limiter, authValidate(roleSet.all), recommandBook);
+  .get('/recommend/books', limiter, authValidate(roleSet.all), recommendBook);
 
 router
 /**
