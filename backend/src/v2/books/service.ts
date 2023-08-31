@@ -1,6 +1,18 @@
 import { match } from "ts-pattern";
-import { bookExists, createBookInfo, getNewCallsignPrimaryNum, searchBookListAndCount, vSearchBookRepo, updateBookById, updateBookInfoById } from "./repository";
-import { BookNotFoundError, Meta } from "../shared";
+import { 
+	// bookExists,
+	// createBookInfo,
+	// getNewCallsignPrimaryNum,
+	searchBookListAndCount,
+	vSearchBookRepo,
+	updateBookById,
+	updateBookInfoById,
+	searchBookInfoSpecById,
+	searchBooksByInfoId, 
+	getIsLendable,
+	getIsReserved,
+	getDuedate} from "./repository";
+import { BookInfoNotFoundError, Meta, bookNotFound } from "../shared";
 import { PubdateFormatError } from "./errors";
 
 // const querySearchCategoryByName = (category: string) =>
@@ -74,6 +86,49 @@ import { PubdateFormatError } from "./errors";
 
 	
 // }
+
+export const searchBookInfoById = async (id: number) => {
+	let bookSpec = await searchBookInfoSpecById(id);
+
+	if (bookSpec === undefined)
+		return new BookInfoNotFoundError(id);
+
+	if (bookSpec.publishedAt)
+	{
+		const date = new Date(bookSpec.publishedAt);
+		bookSpec.publishedAt = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+	}
+
+	const eachbooks = await searchBooksByInfoId(id);
+
+	const books = await Promise.all(
+		eachbooks.map(async (eachBook) => {
+			const isLendable = await getIsLendable(eachBook.id);
+			const isReserved = await getIsReserved(eachBook.id);
+			let dueDate;
+
+			if (eachBook.status === 0 && isLendable === 0)
+			{
+				dueDate = await getDuedate(eachBook.id);
+				dueDate = dueDate?.dueDate;
+			}
+			else
+				dueDate = '-';
+
+			return {
+				...eachBook,
+				dueDate,
+				isLendable,
+				isReserved
+			}
+		})
+	);
+
+	return {
+		...bookSpec,
+		books: books
+	}
+}
 
 type SearchAllBooksArgs = { query?: string | undefined, page: number, limit: number };
 export const searchAllBooks = async ({

@@ -75,9 +75,8 @@ export const bookInfoSchema = z.object({
 	image: z.string(),
 	category: z.string(),
 	publishedAt: z.string(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-	lendingCnt: positiveInt,
+	createdAt: dateLike,
+	updatedAt: dateLike,
 });
 
 export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
@@ -96,15 +95,14 @@ export const searchBookInfosSortedResponseSchema = z.object({
 	)
 });
 
-export const searchBookInfoByIdResponseSchema = z.object({
-	bookInfoSchema,
+export const searchBookInfoByIdResponseSchema = bookInfoSchema.extend({
 	books: z.array(
 		z.object({
 			id: positiveInt,
 			callSign: z.string(),
 			donator: z.string(),
 			status: statusSchema,
-			dueDate: z.string(),
+			dueDate: dateLike,
 			isLendable: positiveInt,
 			isReserved: positiveInt,
 		}),
