@@ -15,7 +15,6 @@
 ├── database # 배포/로컬 mysql 데이터베이스 (주의: 업데이트/테스트되지 않음)
 ├── docs # 개발 가이드
 ├── nginx # nginx 설정 파일
-├── patches # 문제가 있는 패키지를 수정한 패치 파일
 └── scripts # AWS 배포 이후 docker-compose 실행용 스크립트
 ```
 
