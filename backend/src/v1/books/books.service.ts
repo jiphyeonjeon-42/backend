@@ -8,8 +8,6 @@ import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
 import { VSearchBookByTag } from '~/entity/entities';
-import fs from 'fs';
-import path from 'path';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -17,12 +15,6 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import {
-  BookListWithSubject,
-  BooksWithProjectInfo, Cursus, Project, ProjectFrom42, ProjectInfo, ProjectWithCircle, RawProject,
-} from '../DTO/cursus.model';
-import UsersRepository from '../users/users.repository';
-import ErrorResponse from '../utils/error/errorResponse';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;

@@ -5,13 +5,13 @@ import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as status from 'http-status';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import {
-  BookListWithSubject,
+  RecommendedBook,
   BooksWithProjectInfo,
-  Project,
+  UserProject,
   ProjectFrom42,
   ProjectInfo,
   ProjectWithCircle,
-  RawProject,
+  UserProjectFrom42,
 } from '../DTO/cursus.model';
 import UsersRepository from '../users/users.repository';
 import BooksRepository from '../books/books.repository';
@@ -40,9 +40,9 @@ export const getIntraId = async (
 export const getUserProjectFrom42API = async (
   accessToken: string,
   userId: string,
-): Promise<Project[]> => {
+): Promise<UserProject[]> => {
   const projectURL = `https://api.intra.42.fr/v2/users/${userId}/projects_users`;
-  const userProject: Array<Project> = [];
+  const userProject: Array<UserProject> = [];
   await axios(projectURL, {
     method: 'GET',
     headers: {
@@ -50,8 +50,8 @@ export const getUserProjectFrom42API = async (
       Authorization: `Bearer ${accessToken}`,
     },
   }).then((response) => {
-    const rawData: RawProject[] = response.data;
-    rawData.forEach((data: RawProject) => {
+    const rawData: UserProjectFrom42[] = response.data;
+    rawData.forEach((data: UserProjectFrom42) => {
       userProject.push({
         id: data.id,
         status: data.status,
@@ -105,7 +105,7 @@ const findCircle = (
  */
 const getOuterProjectIds = (
   cursus: ProjectWithCircle,
-  projectList: Project[] | null,
+  projectList: UserProject[] | null,
 ) => {
   let outerProjectIds: number[] = [];
   for (let i = 0; i < projectsInfo.length; i += 1) {
@@ -150,11 +150,11 @@ const getNextProjectIds = (
  * @returns 사용자에게 추천할 프로젝트
  */
 export const getRecommendedProject = async (
-  userProject: Project[],
+  userProject: UserProject[],
 ) => {
   const projectList = userProject.sort((prev, post) =>
     new Date(post.updated_at).getTime() - new Date(prev.updated_at).getTime())
-    .filter((item: Project) => !item.project.name.includes('Exam Rank'));
+    .filter((item: UserProject) => !item.project.name.includes('Exam Rank'));
   const recommendedProject = projectList.filter((project) =>
     project.status === 'in_progress');
   if (recommendedProject.length > 0) {
@@ -209,7 +209,7 @@ export const getBookListByIds = async (
 ) => {
   const booksRepository = new BooksRepository();
   const bookList = await booksRepository.findBooksByIds(bookInfoIds);
-  const bookListWithSubject: BookListWithSubject[] = [];
+  const bookListWithSubject: RecommendedBook[] = [];
   for (let i = 0; i < bookList.length; i += 1) {
     const { id } = bookList[i];
     const projectId = booksWithProjectInfo.find((book) => book.book_info_id === id)?.projects[0].id;
@@ -230,7 +230,6 @@ export const getBookListByIds = async (
  */
 export const getRecommendMeta = async () => {
   const meta: string[] = [];
-  console.log(booksWithProjectInfo);
   for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
     const { projects } = booksWithProjectInfo[i];
     for (let j = 0; j < projects.length; j += 1) {

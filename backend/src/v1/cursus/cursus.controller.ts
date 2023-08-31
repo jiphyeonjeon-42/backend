@@ -5,7 +5,7 @@ import * as status from 'http-status';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { getAccessToken } from '../auth/auth.service';
 import * as CursusService from './cursus.service';
-import { BookListWithSubject, Project, ProjectInfo } from '../DTO/cursus.model';
+import { RecommendedBook, UserProject, ProjectInfo } from '../DTO/cursus.model';
 import ErrorResponse from '../utils/error/errorResponse';
 
 let accessToken: string;
@@ -17,9 +17,9 @@ export const recommendBook = async (
 ) => {
   const { nickname: login } = req.user as any;
   const limit = Number(req.query.limit);
-  let bookList: BookListWithSubject[] = [];
+  let bookList: RecommendedBook[] = [];
   let meta: string[] = [];
-  let userProject: Project[] = [];
+  let userProject: UserProject[] = [];
   let userId: string;
   CursusService.readFiles();
   if (login !== null && login !== undefined) {
