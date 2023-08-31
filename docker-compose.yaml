@@ -24,6 +24,7 @@ services:
     volumes:
       - ./database/init:/docker-entrypoint-initdb.d:ro
       - ./database/data:/var/lib/mysql
+      - ./database/cnf:/etc/mysql/conf.d
 
   backend:
     container_name: backend
