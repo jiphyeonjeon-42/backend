@@ -11,7 +11,6 @@ WORKDIR /app
 
 FROM pnpm-installed as workspace
 COPY ./pnpm-lock.yaml .
-COPY patches patches
 
 RUN pnpm fetch
 
