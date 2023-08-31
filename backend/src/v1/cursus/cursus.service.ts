@@ -65,9 +65,9 @@ export const getUserProjectFrom42API = async (
     });
   }).catch((error) => {
     if (error.response.status === 401) {
-      throw new ErrorResponse(errorCode.NO_TOKEN, 401);
+      throw new ErrorResponse('401', 401);
     } else {
-      throw new ErrorResponse(errorCode.UNKNOWN_ERROR, 500);
+      throw new ErrorResponse('500', 500);
     }
   });
   return userProject;
@@ -297,7 +297,7 @@ export const getProjectsInfo = async (
       Authorization: `Bearer ${accessToken}`,
     },
   }).catch((error) => {
-    if (error.status === 401) { throw new ErrorResponse(status[401], 401, 'Unauthorized'); } else { throw new ErrorResponse(status[500], 500, 'Internal Server Error'); }
+    if (error.status === 401) { throw new ErrorResponse(status[401], 401, 'Unauthorized'); } else { throw new ErrorResponse('500', 500, 'Internal Server Error'); }
   });
   const processedData = await processData(response.data);
   return (processedData);
@@ -319,7 +319,7 @@ export const saveProjects = async (
 export function getBookInfoIdsByProjectName(projectName: string) {
   const projectInfo = projectsInfo.find((project) => project.name === projectName);
   if (projectInfo === undefined) {
-    throw new ErrorResponse(status[404], 404, 'Not Found');
+    throw new ErrorResponse('404', 404, 'Not Found');
   }
   const projectId = projectInfo.id;
   const bookInfoList = booksWithProjectInfo.filter((book) => {
