@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as status from 'http-status';
-import * as errorCode from '~/v1/utils/error/errorCode';
 import {
   RecommendedBook,
   BooksWithProjectInfo,
@@ -20,6 +19,9 @@ let booksWithProjectInfo: BooksWithProjectInfo[];
 let cursusInfo: ProjectWithCircle;
 let projectsInfo: ProjectInfo[];
 
+/**
+ * books_with_project_info.json, cursus_info.json, projects_info.json 파일을 읽어서 변수에 저장하는 함수.
+ */
 export const readFiles = async () => {
   let filePath = path.join(__dirname, '../../assets', 'books_with_project_info.json');
   booksWithProjectInfo = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
@@ -29,6 +31,11 @@ export const readFiles = async () => {
   projectsInfo = JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
 };
 
+/**
+ * 사용자의 닉네임을 받아서 intra id를 반환하는 함수.
+ * @param login 사용자의 닉네임
+ * @returns 사용자의 intra id
+ */
 export const getIntraId = async (
   login: string,
 ): Promise<string> => {
@@ -37,6 +44,12 @@ export const getIntraId = async (
   return user[0].intraId.toString();
 };
 
+/**
+ * 42 API에서 사용자의 프로젝트 정보를 받아오는 함수.
+ * @param accessToken 42 API에 접근하기 위한 access token
+ * @param userId 42 API에서 사용자를 식별하기 위한 id
+ * @returns 사용자의 프로젝트 정보
+ */
 export const getUserProjectFrom42API = async (
   accessToken: string,
   userId: string,
@@ -303,6 +316,11 @@ export const getProjectsInfo = async (
   return (processedData);
 };
 
+/**
+ * 프로젝트 정보를 json 파일에 저장하는 함수.
+ * @param projects 저장할 프로젝트 정보 배열
+ * @param mode 저장할 모드. append면 기존에 저장된 정보에 추가로 저장하고, overwrite면 기존에 저장된 정보를 덮어쓴다.
+ */
 export const saveProjects = async (
   projects: ProjectInfo[],
   mode: string,
@@ -316,6 +334,11 @@ export const saveProjects = async (
   }
 };
 
+/**
+ * 프로젝트 이름을 받아서 추천 도서의 bookInfoId 배열을 반환하는 함수.
+ * @param projectName 추천 도서를 필터링할 프로젝트 이름
+ * @returns 추천 도서의 bookInfoId 배열
+ */
 export function getBookInfoIdsByProjectName(projectName: string) {
   const projectInfo = projectsInfo.find((project) => project.name === projectName);
   if (projectInfo === undefined) {
