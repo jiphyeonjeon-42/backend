@@ -315,3 +315,16 @@ export const saveProjects = async (
     await fs.appendFileSync(filePath, jsonString);
   }
 };
+
+export function getBookInfoIdsByProjectName(projectName: string) {
+  const projectInfo = projectsInfo.find((project) => project.name === projectName);
+  if (projectInfo === undefined) {
+    throw new ErrorResponse(status[404], 404, 'Not Found');
+  }
+  const projectId = projectInfo.id;
+  const bookInfoList = booksWithProjectInfo.filter((book) => {
+    const projectIds = book.projects.map((project) => project.id);
+    return projectIds.includes(projectId);
+  });
+  return bookInfoList.map((book) => book.book_info_id);
+}

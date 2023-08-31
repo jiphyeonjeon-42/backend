@@ -23,7 +23,11 @@ export const recommendBook = async (
   let meta: string[] = [];
   CursusService.readFiles();
   if (project !== null && project !== undefined) {
-    bookInfoIds
+    try {
+      bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+    } catch (error) {
+      return next(error);
+    }
     bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
     meta = await CursusService.getRecommendMeta();
   } else if (login !== null && login !== undefined) {
