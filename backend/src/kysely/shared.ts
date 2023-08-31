@@ -8,7 +8,7 @@ const throwIf = <T>(value: T, ok: (v: T) => boolean) => {
   throw new Error(`값이 예상과 달리 ${value}입니다`);
 };
 
-export type Visibility = 'public' | 'private' | 'all'
+export type Visibility = 'public' | 'hidden' | 'all'
 const roles = ['user', 'cadet', 'librarian', 'staff'] as const;
 export type Role = typeof roles[number]
 
