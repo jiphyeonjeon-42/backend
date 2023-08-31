@@ -19,11 +19,11 @@ export const recommendBook = async (
   const limit = Number(req.query.limit);
   let bookList: RecommendedBook[] = [];
   let meta: string[] = [];
-  let userProject: UserProject[] = [];
-  let userId: string;
   CursusService.readFiles();
   if (login !== null && login !== undefined) {
-    userId = await CursusService.getIntraId(login);
+    let userProject: UserProject[] = [];
+    let userProjectIds: number[] = [];
+    const userId: string = await CursusService.getIntraId(login);
     try {
       userProject = await CursusService.getUserProjectFrom42API(accessToken, userId);
     } catch (error: any) {
@@ -33,9 +33,9 @@ export const recommendBook = async (
       } else {
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
       }
+      userProjectIds = await CursusService.getRecommendedProject(userProject);
     }
-    const projectIds: number[] = await CursusService.getRecommendedProject(userProject);
-    const bookIds: number[] = await CursusService.getRecommendedBookIds(projectIds);
+    const bookIds: number[] = await CursusService.getRecommendedBookIds(userProjectIds);
     bookList = await CursusService.getBookListByIds(bookIds, limit);
     meta = await CursusService.getRecommendMeta();
   }

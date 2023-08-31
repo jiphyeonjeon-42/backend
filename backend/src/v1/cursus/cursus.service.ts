@@ -180,6 +180,9 @@ export const getRecommendedProject = async (
 export const getRecommendedBookIds = async (
   userProjectIds: number[],
 ) => {
+  if (userProjectIds.length === 0) {
+    return (booksWithProjectInfo.map((book) => book.book_info_id));
+  }
   const recommendedBookIds: number[] = [];
   for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
     const projectIds: number[] = booksWithProjectInfo[i].projects.map((project) => project.id);
