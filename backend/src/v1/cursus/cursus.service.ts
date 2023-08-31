@@ -242,6 +242,7 @@ export const getRecommendMeta = async () => {
       meta.push(`${circle}서클 | ${projectName}`);
     }
   }
+  meta.unshift('사용자 지정');
   return [...new Set(meta)];
 };
 
