@@ -177,7 +177,7 @@ export const getRecommendedProject = async (
  * @param projectIds 추천할 프로젝트 id 배열
  * @returns 추천할 책 id 배열
  */
-export const getRecommendedBookIds = async (
+export const getRecommendedBookInfoIds = async (
   userProjectIds: number[],
 ) => {
   if (userProjectIds.length === 0) {

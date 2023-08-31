@@ -17,10 +17,16 @@ export const recommendBook = async (
 ) => {
   const { nickname: login } = req.user as any;
   const limit = Number(req.query.limit);
+  const project = req.query.project as string;
+  let bookInfoIds: number[] = [];
   let bookList: RecommendedBook[] = [];
   let meta: string[] = [];
   CursusService.readFiles();
-  if (login !== null && login !== undefined) {
+  if (project !== null && project !== undefined) {
+    bookInfoIds
+    bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
+    meta = await CursusService.getRecommendMeta();
+  } else if (login !== null && login !== undefined) {
     let userProject: UserProject[] = [];
     let userProjectIds: number[] = [];
     const userId: string = await CursusService.getIntraId(login);
@@ -35,8 +41,8 @@ export const recommendBook = async (
       }
       userProjectIds = await CursusService.getRecommendedProject(userProject);
     }
-    const bookIds: number[] = await CursusService.getRecommendedBookIds(userProjectIds);
-    bookList = await CursusService.getBookListByIds(bookIds, limit);
+    bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
+    bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
     meta = await CursusService.getRecommendMeta();
   }
   res.status(status.OK).json({ items: bookList, meta });
