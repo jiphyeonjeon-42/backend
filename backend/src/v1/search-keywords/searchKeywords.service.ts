@@ -25,7 +25,7 @@ export const getPopularSearchKeywords = async () => {
       const preRanking = lastPopular.indexOf(item.keyword);
       return {
         searchKeyword: item.keyword,
-        rankingChange: preRanking === -1 ? null : index - preRanking,
+        rankingChange: preRanking === -1 ? null : preRanking - index,
       };
     },
   );
