@@ -162,7 +162,6 @@ export const searchInfo = async (
   sort: string,
   category: string,
 ) => {
-  console.time('search book info');
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
 
@@ -309,7 +308,6 @@ export const searchInfo = async (
     totalPages: Math.ceil(totalItems / limit),
     currentPage: page + 1,
   };
-  console.timeEnd('search book info');
 
   return { items: bookList, categories: categoryList, meta };
 };

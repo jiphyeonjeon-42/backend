@@ -67,7 +67,6 @@ export const createSearchKeywordLog = async (
       `,
       [keyword],
     );
-    console.log(searchKeyword);
 
     let searchKeywordId = searchKeyword?.id;
     if (!searchKeyword) {
