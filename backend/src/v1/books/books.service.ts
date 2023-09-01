@@ -22,7 +22,8 @@ import { categoryWithBookCount } from '../DTO/common.interface';
 import { Project, RawProject } from '../DTO/cursus.model';
 import UsersRepository from '../users/users.repository';
 import ErrorResponse from '../utils/error/errorResponse';
-import { createSearchKeywordLog } from '../search-keywords/searchKeywords.service';
+import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
+import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -98,6 +99,9 @@ export const search = async (
 export const createBook = async (book: CreateBookInfo) => {
   const transactionQueryRunner = jipDataSource.createQueryRunner();
   const booksRepository = new BooksRepository(transactionQueryRunner);
+  const bookInfoSearchKeywordRepository = new BookInfoSearchKeywordRepository(
+    transactionQueryRunner,
+  );
   const isbn = book.isbn === undefined ? '' : book.isbn;
   const isbnInBookInfo = await booksRepository.isExistBook(isbn);
   const checkNickName = await booksRepository.checkNickName(book.donator);
@@ -113,6 +117,7 @@ export const createBook = async (book: CreateBookInfo) => {
 
     if (isbnInBookInfo === 0) {
       const BookInfo = await booksRepository.createBookInfo(book);
+      await bookInfoSearchKeywordRepository.createBookInfoSearchKeyword(BookInfo);
       if (typeof BookInfo.id === 'number') {
         book.infoId = BookInfo.id;
       }
@@ -298,7 +303,7 @@ export const searchInfo = async (
     categoryListPromise,
     bookListPromise,
     totalItemsPromise,
-    createSearchKeywordLog(query, disassemble, initials),
+    searchKeywordsService.createSearchKeywordLog(query, disassemble, initials),
   ]);
 
   const meta = {
