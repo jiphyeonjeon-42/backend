@@ -176,21 +176,19 @@ export const searchInfo = async (
       book_info_search_keywords.author_initials,
       book_info_search_keywords.publisher_initials)
       AGAINST ('${initials}' IN BOOLEAN MODE)`;
-    searchCondition = `book_info.isbn LIKE '%${query}%'
+    searchCondition = `${matchScore}
       OR book_info_search_keywords.title_initials LIKE '%${initials}%'
       OR book_info_search_keywords.author_initials LIKE '%${initials}%'
-      OR book_info_search_keywords.publisher_initials LIKE '%${initials}%'
-      OR ${matchScore}`;
+      OR book_info_search_keywords.publisher_initials LIKE '%${initials}%'`;
   } else {
     matchScore = `MATCH(book_info_search_keywords.disassembled_title,
       book_info_search_keywords.disassembled_author,
       book_info_search_keywords.disassembled_publisher)
       AGAINST ('${disassemble}' IN BOOLEAN MODE)`;
-    searchCondition = `book_info.isbn LIKE '%${query}%'
+    searchCondition = `${matchScore}
       OR book_info_search_keywords.disassembled_title LIKE '%${disassemble}%'
       OR book_info_search_keywords.disassembled_author LIKE '%${disassemble}%'
-      OR book_info_search_keywords.disassembled_publisher LIKE '%${disassemble}%'
-      OR ${matchScore}`;
+      OR book_info_search_keywords.disassembled_publisher LIKE '%${disassemble}%'`;
   }
 
   let ordering: string;
@@ -233,11 +231,14 @@ export const searchInfo = async (
     RIGHT JOIN category ON book_info.categoryId = category.id
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
-    WHERE (${searchCondition})
+    WHERE (
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
+    )
     GROUP BY category.name WITH ROLLUP) as a
     ORDER BY name ASC;
     `,
-    [],
+    [`%${query}%`],
   ) as Promise<models.categoryCount[]>;
 
   const bookListPromise = executeQuery(
@@ -263,14 +264,17 @@ export const searchInfo = async (
     FROM book_info
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
-    WHERE (${searchCondition})
+    WHERE (
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
+    )
     GROUP BY book_info.id
     HAVING ${categoryHaving}
     ${ordering}
     LIMIT ?
     OFFSET ?;
   `,
-    [limit, page * limit],
+    [`%${query}%`, limit, page * limit],
   ) as Promise<models.BookInfo[]>;
 
   const totalItemsPromise = executeQuery(
@@ -281,9 +285,14 @@ export const searchInfo = async (
     LEFT JOIN category ON book_info.categoryId = category.id
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
-    WHERE (${searchCondition}) AND (${categoryWhere})
+    WHERE (
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
+    ) AND (
+      ${categoryWhere}
+    )
   `,
-    [],
+    [`%${query}%`],
   ).then((result) => result[0].count) as Promise<number>;
 
   const [categoryList, bookList, totalItems] = await Promise.all([
