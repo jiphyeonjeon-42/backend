@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -63,6 +63,9 @@ importers:
       express-rate-limit:
         specifier: ^6.9.0
         version: 6.9.0(express@4.17.2)
+      hangul-js:
+        specifier: ^0.2.6
+        version: 0.2.6
       http-errors:
         specifier: ^2.0.0
         version: 2.0.0
@@ -3752,6 +3755,10 @@ packages:
     optionalDependencies:
       uglify-js: 3.17.4
     dev: true
+
+  /hangul-js@0.2.6:
+    resolution: {integrity: sha512-48axU8LgjCD30FEs66Xc04/8knxMwCMQw0f67l67rlttW7VXT3qRJgQeHmhiuGwWXGvSbk6YM0fhQlcjE1JFQA==}
+    dev: false
 
   /has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
