@@ -187,6 +187,7 @@ export const getRecommendedProject = async (
 
 /**
  * books_with_project_info.json 파일에서 추천할 책 id 배열을 반환하는 함수.
+ * 만약 사용자가 진행하는 과제와 연관된 추천 도서가 없다면, 모든 추천 도서를 반환한다.
  * @param projectIds 추천할 프로젝트 id 배열
  * @returns 추천할 책 id 배열
  */
@@ -206,6 +207,9 @@ export const getRecommendedBookInfoIds = async (
       }
     }
   }
+  if (recommendedBookIds.length === 0) {
+    return (booksWithProjectInfo.map((book) => book.book_info_id));
+  }
   return [...new Set(recommendedBookIds)];
 };
 
@@ -220,6 +224,9 @@ export const getBookListByIds = async (
   limit: number,
   shuffle: boolean = false,
 ) => {
+  if (bookInfoIds.length === 0) {
+    return [];
+  }
   const booksRepository = new BooksRepository();
   const bookList = await booksRepository.findBooksByIds(bookInfoIds);
   const bookListWithSubject: RecommendedBook[] = [];
