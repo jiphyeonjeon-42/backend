@@ -81,7 +81,7 @@
     "ts-pattern": "^5.0.1",
     "typeorm": "^0.3.11",
     "vite": "^4.4.7",
-    "vite-node": "https://github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz",
+    "vite-node": "^0.34.1",
     "vite-tsconfig-paths": "^4.2.0",
     "winston": "^3.6.0",
     "winston-daily-rotate-file": "^4.6.1"

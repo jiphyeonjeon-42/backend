@@ -2,15 +2,19 @@ import { z } from 'zod';
 import { JwtOption, OauthUrlOption } from './config.type';
 import { nonempty } from './envObject';
 import { Mode } from './modeOption';
+import { match } from 'ts-pattern';
 
 type getJwtOption = (mode: Mode) => (option: OauthUrlOption) => JwtOption;
 export const getJwtOption: getJwtOption = (mode) => ({ redirectURL, clientURL }) => {
   const redirectDomain = new URL(redirectURL).hostname;
   const clientDomain = new URL(clientURL).hostname;
+  const secure = mode === 'prod' || mode === 'https';
 
-  const issuer = mode === 'local' ? 'localhost' : redirectDomain;
-  const domain = mode === 'prod' ? clientDomain : 'localhost';
-  const secure = mode === 'prod';
+  const issuer = secure ? redirectDomain : 'localhost';
+  const domain = match(mode)
+    .with('prod', () => clientDomain)
+    .with('https', () => undefined)
+    .otherwise(() => 'localhost');
 
   return { issuer, domain, secure };
 };

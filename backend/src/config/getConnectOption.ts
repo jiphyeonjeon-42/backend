@@ -6,7 +6,7 @@ import { Mode } from './modeOption';
 /** DB 모드에 따라 사용할 DB 연결 옵션 스키마를 고르는 함수 */
 const getConnectOptionSchema = (mode: Mode) => {
   if (mode === 'local') return localSchema;
-  if (mode === 'RDS') return rdsSchema;
+  if (mode === 'RDS' || mode === 'https') return rdsSchema;
   return prodSchema;
 };
 

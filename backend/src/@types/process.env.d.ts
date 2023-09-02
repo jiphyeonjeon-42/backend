@@ -35,8 +35,15 @@ export declare global {
       /** 42 API OAuth 리다이렉트 URL */
       REDIRECT_URL: string;
 
-      /** 레포지토리 선택 모드 */
-      MODE: 'local' | 'RDS' | 'prod';
+      /**
+       * 레포지토리 선택 모드
+       *
+       * - local: 호스트 머신의 DB에 연결
+       * - prod: 도커 컨테이너의 DB에 연결
+       * - RDS: AWS RDS에 연결
+       * - https: RDS + SSL에 연결
+       */
+      MODE: 'local' | 'RDS' | 'prod' | 'https';
 
       // local 또는 prod MODE에서
       /** MySQL 데이터베이스 이름 */
@@ -48,7 +55,7 @@ export declare global {
       /** MySQL 데이터베이스 사용자 이름 */
       MYSQL_USER?: string;
 
-      // RDS MODE에서
+      // RDS 또는 https MODE에서
       /** RDS 데이터베이스 이름 */
       RDS_DB_NAME?: string;
       /** RDS 데이터베이스 주소 */
