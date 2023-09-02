@@ -18,6 +18,12 @@ const authValidate = (roles: role[]) => async (
 ) : Promise<void> => {
   try {
     if (!req.cookies.access_token) {
+      if (roles.includes(role.user)) {
+        req.user = {
+          intraProfile: null, id: null, role: role.user, nickname: null,
+        };
+        return next();
+      }
       throw new ErrorResponse(errorCode.NO_TOKEN, 401);
     }
     // 토큰 복호화
@@ -32,7 +38,9 @@ const authValidate = (roles: role[]) => async (
     if (!roles.includes(user.items[0].role)) {
       throw new ErrorResponse(errorCode.NO_AUTHORIZATION, 403);
     }
-    req.user = { intraProfile: req.user, id, role: user.items[0].role, nickname: user.items[0].nickname };
+    req.user = {
+      intraProfile: req.user, id, role: user.items[0].role, nickname: user.items[0].nickname,
+    };
     next();
   } catch (error: any) {
     switch (error.message) {
