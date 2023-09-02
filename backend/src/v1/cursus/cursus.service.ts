@@ -232,13 +232,17 @@ export const getBookListByIds = async (
   const bookListWithSubject: RecommendedBook[] = [];
   for (let i = 0; i < bookList.length; i += 1) {
     const { id } = bookList[i];
-    const projectId = booksWithProjectInfo.find((book) => book.book_info_id === id)?.projects[0].id;
-    if (projectId) {
-      const project = projectsInfo.find((item) => item.id === projectId);
-      if (project) {
-        const { name } = project;
-        bookListWithSubject.push({ ...bookList[i], project: [name] });
+    const bookWithProjectInfo = booksWithProjectInfo.find((book) => book.book_info_id === id);
+    if (bookWithProjectInfo) {
+      const { projects } = bookWithProjectInfo;
+      const projectNames: string[] = [];
+      for (let j = 0; j < projects.length; j += 1) {
+        const projectName = projectsInfo.find((project) => project.id === projects[j].id)?.name;
+        if (projectName) {
+          projectNames.push(projectName);
+        }
       }
+      bookListWithSubject.push({ ...bookList[i], project: projectNames });
     }
   }
   if (shuffle) {
