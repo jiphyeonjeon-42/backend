@@ -1,8 +1,7 @@
-import { makeExecuteQuery, pool } from '~/mysql';
+import { executeQuery, makeExecuteQuery, pool } from '~/mysql';
 import { logger } from '~/logger';
-import { PopularSearchKeyword, SearchKeyword } from './searchKeywords.type';
 import { extractHangulInitials, disassembleHangul } from '~/v1/utils/disassembleKeywords';
-import { executeQuery } from '~/mysql';
+import { AutocompleteKeyword, PopularSearchKeyword, SearchKeyword } from './searchKeywords.type';
 import * as searchKeywordRepository from './searchKeywords.repository';
 
 const LEAST_SEARCH_COUNT = 5;
@@ -103,26 +102,24 @@ export const createSearchKeywordLog = async (
   }
 };
 
-
 export const getSearchAutocompletePreviewResult = async (
-  keyword: string
+  keyword: string,
 ) => {
-  const LIMIT_OF_SEARCH_keyword_PREVIEW = 12;
-  let keyword_d = extractHangulInitials(keyword as string)
+  const LIMIT_OF_SEARCH_KEYWORD_PREVIEW = 12;
+  let keywordInitials = extractHangulInitials(keyword as string);
   let isCho = true;
 
-  if (keyword !== keyword_d) {
-    keyword_d = disassembleHangul(keyword as string);
+  if (keyword !== keywordInitials) {
+    keywordInitials = disassembleHangul(keyword as string);
     isCho = false;
   }
 
-  let result: any = [];
+  let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
   if (isCho) {
-    result = await executeQuery(
-      `
+    queryResult = await executeQuery(`
       (
-        SELECT id as book_info_id, title, author, publisher, publishedAt, image
+        SELECT id as bookInfoId, title, author, publisher, publishedAt, image
         FROM book_info
         WHERE id IN (
             SELECT book_info_id
@@ -131,21 +128,19 @@ export const getSearchAutocompletePreviewResult = async (
         )
     )
     UNION (
-        SELECT id as book_info_id, title, author, publisher, publishedAt, image
+        SELECT id as bookInfoId, title, author, publisher, publishedAt, image
         FROM book_info
         WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE title_initials LIKE ('%${keyword_d}%')
-                    OR author_initials LIKE ('%${keyword_d}%')
-                    OR publisher_initials LIKE ('%${keyword_d}%')
+            WHERE title_initials LIKE ('%${keywordInitials}%')
+                    OR author_initials LIKE ('%${keywordInitials}%')
+                    OR publisher_initials LIKE ('%${keywordInitials}%')
         )
     )
-    LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}
-      `,      [keyword_d]
-    );
-    totalCount = await executeQuery(
-      `SELECT COUNT(*) AS totalCount FROM (
+    LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
+      `, [keywordInitials]);
+    totalCount = await executeQuery(`SELECT COUNT(*) AS totalCount FROM (
         (
           SELECT id
           FROM book_info
@@ -161,19 +156,14 @@ export const getSearchAutocompletePreviewResult = async (
           WHERE id IN (
               SELECT book_info_id
               FROM book_info_search_keywords
-              WHERE title_initials LIKE ('%${keyword_d}%')
-                      OR author_initials LIKE ('%${keyword_d}%')
-                      OR publisher_initials LIKE ('%${keyword_d}%')
+              WHERE title_initials LIKE ('%${keywordInitials}%')
+                      OR author_initials LIKE ('%${keywordInitials}%')
+                      OR publisher_initials LIKE ('%${keywordInitials}%')
           )
-      )) AS COUNT_SET`,      [keyword_d]
-      ).then((result) => {
-        return result[0]
-      });
+      )) AS COUNT_SET`, [keywordInitials]).then((result) => result[0]);
   } else {
-    result = await executeQuery(
-      
-      `(
-        SELECT id as book_info_id, title, author, publisher, publishedAt, image         
+    queryResult = await executeQuery(`(
+        SELECT id as bookInfoId, title, author, publisher, publishedAt, image         
         FROM book_info
         WHERE id IN (
             SELECT book_info_id
@@ -182,21 +172,19 @@ export const getSearchAutocompletePreviewResult = async (
         )
     )
     UNION (
-        SELECT id as book_info_id, title, author, publisher, publishedAt, image         
+        SELECT id as bookInfoId, title, author, publisher, publishedAt, image         
         FROM book_info
         WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE disassembled_title LIKE ('%${keyword_d}%')
-                    OR disassembled_author LIKE ('%${keyword_d}%')
-                    OR disassembled_publisher LIKE ('%${keyword_d}%')
+            WHERE disassembled_title LIKE ('%${keywordInitials}%')
+                    OR disassembled_author LIKE ('%${keywordInitials}%')
+                    OR disassembled_publisher LIKE ('%${keywordInitials}%')
         )
     )
-    LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}
-      `,      [keyword_d]
-    );
-    totalCount = await executeQuery(
-      `SELECT COUNT(*) AS totalCount FROM (
+    LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
+      `, [keywordInitials]);
+    totalCount = await executeQuery(`SELECT COUNT(*) AS totalCount FROM (
         (
           SELECT id
           FROM book_info
@@ -212,19 +200,14 @@ export const getSearchAutocompletePreviewResult = async (
           WHERE id IN (
               SELECT book_info_id
               FROM book_info_search_keywords
-              WHERE disassembled_title LIKE ('%${keyword_d}%')
-                      OR disassembled_author LIKE ('%${keyword_d}%')
-                      OR disassembled_publisher LIKE ('%${keyword_d}%')
+              WHERE disassembled_title LIKE ('%${keywordInitials}%')
+                      OR disassembled_author LIKE ('%${keywordInitials}%')
+                      OR disassembled_publisher LIKE ('%${keywordInitials}%')
           )
-      )) AS COUNT_SET`,      [keyword_d]
-    ).then((result) => {
-      return result[0]
-    });
-    
+      )) AS COUNT_SET`, [keywordInitials]).then((result) => result[0]);
   }
   return {
-    items: result,
-    meta: 
-      totalCount
+    items: queryResult,
+    meta: totalCount,
   };
-}
+};

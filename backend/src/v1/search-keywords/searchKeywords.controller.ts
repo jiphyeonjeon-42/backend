@@ -34,26 +34,25 @@ export const getPopularSearchKeywords = async (
   }
 };
 
-export const searchKeywordsAutocomplete: any = async (
+export const searchKeywordsAutocomplete = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
+) : Promise<Response | void> => {
   const {
-    keyword
+    keyword,
   } = req.query;
 
   if (!keyword) {
     return res.status(status.OK).send({
       items: [],
-      meta: 
-        0
+      meta: 0,
     });
   }
   try {
     const items = await searchKeywordsService.getSearchAutocompletePreviewResult(keyword as string);
-    return res.status(status.OK).send( items );
+    return res.status(status.OK).send(items);
   } catch (error) {
     return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
-}
+};
