@@ -14,7 +14,7 @@ import { Likes } from './Likes';
 import { Reservation } from './Reservation';
 import { Reviews } from './Reviews';
 import { SuperTag } from './SuperTag';
-import { BookInfoSearchKeywords } from '.';
+import { BookInfoSearchKeywords } from './BookInfoSearchKeywords';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')
