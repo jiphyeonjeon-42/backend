@@ -1,21 +1,8 @@
 import { Router } from 'express';
 import { searchKeywordsAutocomplete, getPopularSearchKeywords } from '../search-keywords/searchKeywords.controller';
-import rateLimit from 'express-rate-limit';
 
 export const path = '/search-keywords';
 export const router = Router();
-
-/**
- * TODO
- * 초당 요청할수 있는 api회수인듯 싶다. 
- * 검색결과 미리보기에서는 어떻게 활용할지 고려필요
- * 매직넘버 환경변수나 const 변수로 대체할지 고민 필요.
- */
-// const limiter = rateLimit({
-//   windowMs: 60 * 1000, // 1분
-//   max: 100, // 1분에 100번
-//   message: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
-// });
 
 router
   /**
@@ -147,12 +134,8 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *                        book_info_id:
-   *                          description: 검색어
-   *                          type: string
-   *                        title:
-   *                          description: 책 이름
-   *                          type: string
+   *        import rateLimit from 'express-rate-limit';
+                       type: string
    *                        author:
    *                          description: 저자 이름
    *                          type: string
