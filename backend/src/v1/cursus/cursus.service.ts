@@ -221,18 +221,18 @@ export const getRecommendedBookInfoIds = async (
 const findProjectNamesWithBookInfoId = (
   bookInfoId: number,
 ) => {
-  const projectNames: string[] = [];
   const bookWithProjectInfo = booksWithProjectInfo.find((book) => book.book_info_id === bookInfoId);
-  if (bookWithProjectInfo) {
-    const { projects } = bookWithProjectInfo;
-    for (let j = 0; j < projects.length; j += 1) {
-      const projectName = projectsInfo.find((project) => project.id === projects[j].id)?.name;
-      if (projectName) {
-        projectNames.push(projectName);
+  const recommendedProjects: ProjectInfo[] = projectsInfo.filter((info) => {
+    if (bookWithProjectInfo) {
+      const { projects } = bookWithProjectInfo;
+      const project = projects.find((item) => item.id === info.id);
+      if (project) {
+        return true;
       }
     }
-  }
-  return projectNames;
+    return false;
+  });
+  return recommendedProjects.map((project) => project.name);
 };
 
 /**
