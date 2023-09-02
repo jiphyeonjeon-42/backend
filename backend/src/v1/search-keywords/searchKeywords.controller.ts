@@ -39,10 +39,12 @@ export const searchKeywordsAutocomplete = async (
   res: Response,
   next: NextFunction,
 ) : Promise<Response | void> => {
-  const {
+  let {
     keyword,
   } = req.query;
-
+  if (typeof keyword === 'string') {
+    keyword = keyword.trim();
+  }
   if (!keyword) {
     return res.status(status.OK).send({
       items: [],
