@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+
+import { extractHangulInitials, disassembleHangul } from '~/v1/utils/disassembleKeywords';
 import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
@@ -36,20 +38,6 @@ export const getPopularSearchKeywords = async (
   }
 };
 
-
-const disassembleHangul = (original?: string) => {
-  if (!original) return null;
-  return hangul.d(original).join("");
-};
-
-const extractHangulCho = (original?: string) => {
-  if (!original) return null;
-  return hangul
-    .d(original, true)
-    .map((letter) => letter[0])
-    .join("");
-};
-
 /**SearchBookInfoQuery
  * TODO search keyword preview
  * 생쿼리를 날려서 확인 필요
@@ -63,14 +51,10 @@ export const searchKeywordsAutocomplete: any = async (
 ) => {
 
   // // URI에 있는 파라미터/쿼리 변수에 저장
-  const query = req.query?.query ?? '';
   const {
     keyword
   } = req.query;
   const LIMIT_OF_SEARCH_keyword_PREVIEW = 12;
-  
-  console.log(`query: ${query}`);
-  console.log(`keyword: ${keyword}`);
 
   // 유효한 인자인지 파악
   if (!keyword) {
@@ -78,7 +62,7 @@ export const searchKeywordsAutocomplete: any = async (
   }
 
   // keyword 비어 있을때에 대한 처리 필요, 초기화를 잘 할것. // keyword as string
-  let keyword_d = extractHangulCho(keyword as string)
+  let keyword_d = extractHangulInitials(keyword as string)
   let isCho = true;
   if (keyword !== keyword_d) {
     keyword_d = disassembleHangul(keyword as string);
@@ -86,12 +70,13 @@ export const searchKeywordsAutocomplete: any = async (
   }
   console.log(`keyword_d: ${keyword_d}`);
   let result: any;
+  let totalCount: number;
   try {
     if (isCho) {
       result = await executeQuery(
         `
         (
-          SELECT id, title, author, publisher, publishedAt, image
+          SELECT id as book_info_id, title, author, publisher, publishedAt, image
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
@@ -100,7 +85,7 @@ export const searchKeywordsAutocomplete: any = async (
           )
       )
       UNION (
-          SELECT id, title, author, publisher, publishedAt, image
+          SELECT id as book_info_id, title, author, publisher, publishedAt, image
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
@@ -113,10 +98,36 @@ export const searchKeywordsAutocomplete: any = async (
       LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}
         `,      [keyword_d]
       );
+      totalCount = await executeQuery(
+        `SELECT COUNT(*) AS totalCount FROM (
+          (
+            SELECT id
+            FROM book_info
+            WHERE id IN (
+                SELECT book_info_id
+                FROM book_info_search_keywords
+                WHERE MATCH(title_initials, author_initials, publisher_initials) AGAINST (? IN BOOLEAN MODE)
+            )
+        )
+        UNION (
+            SELECT id
+            FROM book_info
+            WHERE id IN (
+                SELECT book_info_id
+                FROM book_info_search_keywords
+                WHERE title_initials LIKE ('%${keyword_d}%')
+                        OR author_initials LIKE ('%${keyword_d}%')
+                        OR publisher_initials LIKE ('%${keyword_d}%')
+            )
+        )) AS COUNT_SET`,      [keyword_d]
+        ).then((result) => {
+          return result[0]
+        });
     } else {
       result = await executeQuery(
+        
         `(
-          SELECT id, title, author, publisher, publishedAt, image
+          SELECT id as book_info_id, title, author, publisher, publishedAt, image         
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
@@ -125,7 +136,7 @@ export const searchKeywordsAutocomplete: any = async (
           )
       )
       UNION (
-          SELECT id, title, author, publisher, publishedAt, image
+          SELECT id as book_info_id, title, author, publisher, publishedAt, image         
           FROM book_info
           WHERE id IN (
               SELECT book_info_id
@@ -136,9 +147,34 @@ export const searchKeywordsAutocomplete: any = async (
           )
       )
       LIMIT ${LIMIT_OF_SEARCH_keyword_PREVIEW}
-      `,
-        [keyword_d]
+        `,      [keyword_d]
       );
+      totalCount = await executeQuery(
+        `SELECT COUNT(*) AS totalCount FROM (
+          (
+            SELECT id
+            FROM book_info
+            WHERE id IN (
+                SELECT book_info_id
+                FROM book_info_search_keywords
+                WHERE MATCH(disassembled_title, disassembled_author, disassembled_publisher) AGAINST (? IN BOOLEAN MODE)
+            )
+        )
+        UNION (
+            SELECT id
+            FROM book_info
+            WHERE id IN (
+                SELECT book_info_id
+                FROM book_info_search_keywords
+                WHERE disassembled_title LIKE ('%${keyword_d}%')
+                        OR disassembled_author LIKE ('%${keyword_d}%')
+                        OR disassembled_publisher LIKE ('%${keyword_d}%')
+            )
+        )) AS COUNT_SET`,      [keyword_d]
+      ).then((result) => {
+        return result[0]
+      });
+      
     }
   } catch (error) {
     return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
@@ -146,8 +182,7 @@ export const searchKeywordsAutocomplete: any = async (
 
   return res.status(status.OK).send({
     items: result,
-    meta: {
-      totalCount: result.length
-    }
+    meta: 
+      totalCount
   });
 }
