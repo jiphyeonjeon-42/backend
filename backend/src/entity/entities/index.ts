@@ -1,5 +1,6 @@
 export * from './Book.ts';
 export * from './BookInfo.ts';
+export * from './BookInfoSearchKeywords.ts';
 export * from './Category.ts';
 export * from './Lending.ts';
 export * from './Likes.ts';

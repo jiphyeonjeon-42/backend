@@ -1,4 +1,5 @@
 export type SearchKeyword = {
+  id?: number;
   keyword: string;
 };
 

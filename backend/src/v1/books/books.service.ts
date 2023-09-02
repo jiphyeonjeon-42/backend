@@ -8,6 +8,10 @@ import { executeQuery } from '~/mysql';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import { StringRows } from '~/v1/utils/types';
 import { VSearchBookByTag } from '~/entity/entities';
+import {
+  disassembleHangul,
+  extractHangulInitials,
+} from '~/v1/utils/disassembleKeywords';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -18,6 +22,8 @@ import { categoryWithBookCount } from '../DTO/common.interface';
 import { Project, RawProject } from '../DTO/cursus.model';
 import UsersRepository from '../users/users.repository';
 import ErrorResponse from '../utils/error/errorResponse';
+import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
+import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -93,6 +99,9 @@ export const search = async (
 export const createBook = async (book: CreateBookInfo) => {
   const transactionQueryRunner = jipDataSource.createQueryRunner();
   const booksRepository = new BooksRepository(transactionQueryRunner);
+  const bookInfoSearchKeywordRepository = new BookInfoSearchKeywordRepository(
+    transactionQueryRunner,
+  );
   const isbn = book.isbn === undefined ? '' : book.isbn;
   const isbnInBookInfo = await booksRepository.isExistBook(isbn);
   const checkNickName = await booksRepository.checkNickName(book.donator);
@@ -108,6 +117,7 @@ export const createBook = async (book: CreateBookInfo) => {
 
     if (isbnInBookInfo === 0) {
       const BookInfo = await booksRepository.createBookInfo(book);
+      await bookInfoSearchKeywordRepository.createBookInfoSearchKeyword(BookInfo);
       if (typeof BookInfo.id === 'number') {
         book.infoId = BookInfo.id;
       }
@@ -157,7 +167,35 @@ export const searchInfo = async (
   sort: string,
   category: string,
 ) => {
-  let ordering = '';
+  const disassemble = query ? disassembleHangul(query) : '';
+  const initials = query ? extractHangulInitials(query) : '';
+
+  let matchScore: string;
+  let searchCondition: string;
+  if (!query) {
+    matchScore = '';
+    searchCondition = 'TRUE';
+  } else if (query === initials) {
+    matchScore = `MATCH(book_info_search_keywords.title_initials,
+      book_info_search_keywords.author_initials,
+      book_info_search_keywords.publisher_initials)
+      AGAINST ('${initials}' IN BOOLEAN MODE)`;
+    searchCondition = `${matchScore}
+      OR book_info_search_keywords.title_initials LIKE '%${initials}%'
+      OR book_info_search_keywords.author_initials LIKE '%${initials}%'
+      OR book_info_search_keywords.publisher_initials LIKE '%${initials}%'`;
+  } else {
+    matchScore = `MATCH(book_info_search_keywords.disassembled_title,
+      book_info_search_keywords.disassembled_author,
+      book_info_search_keywords.disassembled_publisher)
+      AGAINST ('${disassemble}' IN BOOLEAN MODE)`;
+    searchCondition = `${matchScore}
+      OR book_info_search_keywords.disassembled_title LIKE '%${disassemble}%'
+      OR book_info_search_keywords.disassembled_author LIKE '%${disassemble}%'
+      OR book_info_search_keywords.disassembled_publisher LIKE '%${disassemble}%'`;
+  }
+
+  let ordering: string;
   switch (sort) {
     case 'title':
       ordering = 'ORDER BY book_info.title';
@@ -165,9 +203,16 @@ export const searchInfo = async (
     case 'popular':
       ordering = 'ORDER BY lendingCnt DESC, book_info.title';
       break;
-    default:
+    case 'new':
       ordering = 'ORDER BY book_info.createdAt DESC, book_info.title';
+      break;
+    default:
+      ordering = matchScore
+        ? `ORDER BY ${matchScore} DESC, book_info.title`
+        : 'ORDER BY book_info.title';
+      break;
   }
+
   const categoryResult = (await executeQuery(
     `
     SELECT name
@@ -178,7 +223,9 @@ export const searchInfo = async (
   )) as StringRows[];
   const categoryName = categoryResult?.[0]?.name;
   const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
-  const categoryList = (await executeQuery(
+  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
+
+  const categoryListPromise = executeQuery(
     `
     SELECT name, count FROM (
     SELECT
@@ -186,18 +233,19 @@ export const searchInfo = async (
       count(category.name) AS count
     FROM book_info
     RIGHT JOIN category ON book_info.categoryId = category.id
+    LEFT JOIN book_info_search_keywords
+      ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.title LIKE ?
-      OR book_info.author LIKE ?
-      OR book_info.isbn LIKE ?
-      )
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
+    )
     GROUP BY category.name WITH ROLLUP) as a
     ORDER BY name ASC;
-  `,
-    [`%${query}%`, `%${query}%`, `%${query}%`],
-  )) as models.categoryCount[];
-  const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
-  const bookList = (await executeQuery(
+    `,
+    [`%${query}%`],
+  ) as Promise<models.categoryCount[]>;
+
+  const bookListPromise = executeQuery(
     `
     SELECT
       book_info.id AS id,
@@ -218,11 +266,11 @@ export const searchInfo = async (
         SELECT COUNT(id) FROM lending WHERE lending.bookId = book_info.id
       ) as lendingCnt
     FROM book_info
-    WHERE
-    (
-      book_info.title like ?
-      OR book_info.author like ?
-      OR book_info.isbn like ?
+    LEFT JOIN book_info_search_keywords
+      ON book_info.id = book_info_search_keywords.book_info_id
+    WHERE (
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
     )
     GROUP BY book_info.id
     HAVING ${categoryHaving}
@@ -230,23 +278,33 @@ export const searchInfo = async (
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${query}%`, `%${query}%`, `%${query}%`, limit, page * limit],
-  )) as models.BookInfo[];
+    [`%${query}%`, limit, page * limit],
+  ) as Promise<models.BookInfo[]>;
 
-  const totalItems = (await executeQuery(
+  const totalItemsPromise = executeQuery(
     `
     SELECT
       count(category.name) AS count
     FROM book_info
     LEFT JOIN category ON book_info.categoryId = category.id
+    LEFT JOIN book_info_search_keywords
+      ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.title LIKE ?
-      OR book_info.author LIKE ?
-      OR book_info.isbn LIKE ?
-      ) AND (${categoryWhere})
+      book_info.isbn LIKE ?
+      OR ${searchCondition}
+    ) AND (
+      ${categoryWhere}
+    )
   `,
-    [`%${query}%`, `%${query}%`, `%${query}%`],
-  ))[0].count as number;
+    [`%${query}%`],
+  ).then((result) => result[0].count) as Promise<number>;
+
+  const [categoryList, bookList, totalItems] = await Promise.all([
+    categoryListPromise,
+    bookListPromise,
+    totalItemsPromise,
+    searchKeywordsService.createSearchKeywordLog(query, disassemble, initials),
+  ]);
 
   const meta = {
     totalItems,
@@ -255,6 +313,7 @@ export const searchInfo = async (
     totalPages: Math.ceil(totalItems / limit),
     currentPage: page + 1,
   };
+
   return { items: bookList, categories: categoryList, meta };
 };
 
