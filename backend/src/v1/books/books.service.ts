@@ -19,9 +19,6 @@ import {
   categoryIds, UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
-import { Project, RawProject } from '../DTO/cursus.model';
-import UsersRepository from '../users/users.repository';
-import ErrorResponse from '../utils/error/errorResponse';
 import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
 import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
 
