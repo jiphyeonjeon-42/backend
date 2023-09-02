@@ -8,7 +8,6 @@ import * as status from 'http-status';
 import * as searchKeywordsService from './searchKeywords.service';
 
 import { executeQuery } from '~/mysql';
-import * as hangul from 'hangul-js';
 
 export const getPopularSearchKeywords = async (
   req: Request,
@@ -38,38 +37,32 @@ export const getPopularSearchKeywords = async (
   }
 };
 
-/**SearchBookInfoQuery
- * TODO search keyword preview
- * 생쿼리를 날려서 확인 필요
- * book.service 와의 연관성 확인 필요
- * 보니까 service에서 query를 날리는 듯 싶다
- */
 export const searchKeywordsAutocomplete: any = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-
-  // // URI에 있는 파라미터/쿼리 변수에 저장
   const {
     keyword
   } = req.query;
   const LIMIT_OF_SEARCH_keyword_PREVIEW = 12;
 
-  // 유효한 인자인지 파악
   if (!keyword) {
-    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+    return res.status(status.OK).send({
+      items: [],
+      meta: 
+        0
+    });
   }
 
-  // keyword 비어 있을때에 대한 처리 필요, 초기화를 잘 할것. // keyword as string
   let keyword_d = extractHangulInitials(keyword as string)
   let isCho = true;
   if (keyword !== keyword_d) {
     keyword_d = disassembleHangul(keyword as string);
     isCho = false;
   }
-  console.log(`keyword_d: ${keyword_d}`);
-  let result: any;
+
+  let result: any = [];
   let totalCount: number;
   try {
     if (isCho) {
