@@ -1,12 +1,13 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { bookInfoIdSchema, bookInfoNotFoundSchema } from '../shared';
+import { bookInfoIdSchema, bookInfoNotFoundSchema, metaPaginatedSchema, offsetPaginatedSchema, paginatedSearchSchema, visibility } from '../shared';
 import {
   contentSchema,
   mutationDescription,
   reviewIdPathSchema,
   reviewNotFoundSchema,
 } from './schema';
+import { reviewSchema } from './schema'
 
 export * from './schema';
 
@@ -15,6 +16,18 @@ const c = initContract();
 
 export const reviewsContract = c.router(
   {
+    get: {
+      method: 'GET',
+      path: '/',
+      query: paginatedSearchSchema.extend({
+        search: z.string().optional().describe('도서 제목 또는 리뷰 작성자 닉네임'),
+        visibility,
+      }),
+      description: '전체 도서 리뷰 목록을 조회합니다.',
+      responses: {
+        200: metaPaginatedSchema(reviewSchema)
+      },
+    },
     post: {
       method: 'POST',
       path: '/',

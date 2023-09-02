@@ -1,7 +1,7 @@
-import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema } from "../shared";
+import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema, metaPaginatedSchema } from "../shared";
 import { z } from "../zodWithOpenapi";
 
-const commonQuerySchema = z.object({
+export const commonQuerySchema = z.object({
 	query: z.string().optional(),
 	page: positiveInt.default(0),
 	limit: positiveInt.default(10),
@@ -70,17 +70,14 @@ export const bookInfoSchema = z.object({
 	lendingCnt: positiveInt,
 });
 
-export const searchBookInfosResponseSchema = z.object({
-	items: z.array(
-		bookInfoSchema,
-	),
-	categories: z.array(
-		z.object({
-			name: z.string(),
-			count: positiveInt,
-		}),
-	),
-	meta: metaSchema,
+export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
+  .extend({
+	  categories: z.array(
+		  z.object({
+		  	name: z.string(),
+		  	count: positiveInt,
+		  }),
+	  ),
 });
 
 export const searchBookInfosSortedResponseSchema = z.object({
@@ -104,8 +101,8 @@ export const searchBookInfoByIdResponseSchema = z.object({
 	),
 });
 
-export const searchAllBooksResponseSchema = z.object({
-	items: z.array(
+export const searchAllBooksResponseSchema =
+	metaPaginatedSchema(
 		z.object({
 			bookId: positiveInt.openapi({ example: 1 }),
 			bookInfoId: positiveInt.openapi({ example: 1 }),
@@ -121,10 +118,8 @@ export const searchAllBooksResponseSchema = z.object({
 			callSign: z.string().openapi({ example: 'K23.17.v1.c1' }),
 			category: z.string().openapi({ example: '데이터 분석/AI/ML' }),
 			isLendable: positiveInt.openapi({ example: 0 }),
-		})
-	),
-	meta: metaSchema,
-});
+    })
+);
 
 export const searchBookInfoCreateResponseSchema = z.object({
 	bookInfo: z.object({

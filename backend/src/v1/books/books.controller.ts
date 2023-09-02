@@ -96,7 +96,8 @@ export const searchBookInfo = async (
   next: NextFunction,
 ) => {
   // URI에 있는 파라미터/쿼리 변수에 저장
-  const query = req.query?.query ?? '';
+  let query = req.query?.query ?? '';
+  query = query.trim();
   const {
     page, limit, sort, category,
   } = req.query;
