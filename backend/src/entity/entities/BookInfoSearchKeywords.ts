@@ -3,7 +3,7 @@ import {
 } from 'typeorm';
 import { BookInfo } from './BookInfo';
 
-@Index('bookInfoId', ['bookInfoId'], {})
+@Index('FK_bookInfoId', ['bookInfoId'], {})
 @Entity('book_info_search_keywords')
 export class BookInfoSearchKeywords {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })

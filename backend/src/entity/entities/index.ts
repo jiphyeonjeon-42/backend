@@ -6,6 +6,8 @@ export * from './Lending.ts';
 export * from './Likes.ts';
 export * from './Reservation.ts';
 export * from './Reviews.ts';
+export * from './SearchKeywords.ts';
+export * from './SearchLogs.ts';
 export * from './SubTag.ts';
 export * from './SuperTag.ts';
 export * from './User.ts';
