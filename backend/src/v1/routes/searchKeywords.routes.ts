@@ -48,7 +48,7 @@ router
   .get('/popular', getPopularSearchKeywords);
 
 router
-   /**
+  /**
    * @openapi
    * /api/search-keywords/autocomplete:
    *    get:
@@ -56,7 +56,7 @@ router
    *      tags:
    *      - search-keywords
    *      parameters:
-   *      - name: keyword 
+   *      - name: keyword
    *        in: query
    *        description: 검색어(초성검색 가능)
    *        schema:
@@ -134,8 +134,9 @@ router
    *                    items:
    *                      type: object
    *                      properties:
-   *        import rateLimit from 'express-rate-limit';
-                       type: string
+   *                        title:
+   *                          description: 책 이름
+   *                          type: string
    *                        author:
    *                          description: 저자 이름
    *                          type: string
@@ -157,4 +158,3 @@ router
    *                        example: 7
    */
   .get('/autocomplete', searchKeywordsAutocomplete);
-
