@@ -7,7 +7,6 @@ import { getAccessToken } from '~/v1/auth/auth.service';
 import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as CursusService from './cursus.service';
-import { boolean } from 'zod';
 
 let accessToken: string;
 
@@ -17,21 +16,19 @@ export const recommendBook = async (
   next: NextFunction,
 ) => {
   const { nickname: login } = req.user as any;
-  const limit = Number(req.query.limit);
+  const limit = req.query.limit ? Number(req.query.limit) : 4;
   const project = req.query.project as string;
   let shuffle: boolean = false;
   let bookInfoIds: number[] = [];
-  let bookList: RecommendedBook[] = [];
-  let meta: string[] = [];
+
   CursusService.readFiles();
-  if (login === null || login === undefined) {
+  if (project !== undefined) {
+    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+  } else if (login === null || login === undefined) {
     bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
     shuffle = true;
-  } else if (project !== undefined) {
-    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
   } else {
     let userProject: UserProject[] = [];
-    let userProjectIds: number[] = [];
     const userId: string = await CursusService.getIntraId(login);
     try {
       userProject = await CursusService.getUserProjectFrom42API(accessToken, userId);
@@ -42,12 +39,16 @@ export const recommendBook = async (
       } else {
         next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
       }
-      userProjectIds = await CursusService.getRecommendedProject(userProject);
     }
+    const userProjectIds: number[] = await CursusService.getRecommendedProject(userProject);
     bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
   }
-  bookList = await CursusService.getBookListByIds(bookInfoIds, limit, shuffle);
-  meta = await CursusService.getRecommendMeta();
+  const bookList: RecommendedBook[] = await CursusService.getBookListByIds(
+    bookInfoIds,
+    limit,
+    shuffle,
+  );
+  const meta: string[] = await CursusService.getRecommendMeta();
   return res.status(status.OK).json({ items: bookList, meta });
 };
 
