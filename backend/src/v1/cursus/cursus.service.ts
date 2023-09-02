@@ -214,6 +214,28 @@ export const getRecommendedBookInfoIds = async (
 };
 
 /**
+ * 추천 도서의 book_info_id를 받아서 추천 도서에 달린 프로젝트 이름 배열을 반환하는 함수.
+ * @param bookInfoId 추천 도서의 book_info_id
+ * @returns 추천 도서의 프로젝트 이름 배열
+ */
+const findProjectNamesWithBookInfoId = (
+  bookInfoId: number,
+) => {
+  const projectNames: string[] = [];
+  const bookWithProjectInfo = booksWithProjectInfo.find((book) => book.book_info_id === bookInfoId);
+  if (bookWithProjectInfo) {
+    const { projects } = bookWithProjectInfo;
+    for (let j = 0; j < projects.length; j += 1) {
+      const projectName = projectsInfo.find((project) => project.id === projects[j].id)?.name;
+      if (projectName) {
+        projectNames.push(projectName);
+      }
+    }
+  }
+  return projectNames;
+};
+
+/**
  * 추천 도서의 기존 book_info 정보에 프로젝트 정보를 추가하여 반환하는 함수.
  * @param bookInfoIds 추천 도서의 id 배열
  * @param limit 추천 도서의 개수
@@ -231,19 +253,8 @@ export const getBookListByIds = async (
   const bookList = await booksRepository.findBooksByIds(bookInfoIds);
   const bookListWithSubject: RecommendedBook[] = [];
   for (let i = 0; i < bookList.length; i += 1) {
-    const { id } = bookList[i];
-    const bookWithProjectInfo = booksWithProjectInfo.find((book) => book.book_info_id === id);
-    if (bookWithProjectInfo) {
-      const { projects } = bookWithProjectInfo;
-      const projectNames: string[] = [];
-      for (let j = 0; j < projects.length; j += 1) {
-        const projectName = projectsInfo.find((project) => project.id === projects[j].id)?.name;
-        if (projectName) {
-          projectNames.push(projectName);
-        }
-      }
-      bookListWithSubject.push({ ...bookList[i], project: projectNames });
-    }
+    const projectNames = findProjectNamesWithBookInfoId(bookList[i].id);
+    bookListWithSubject.push({ ...bookList[i], project: projectNames });
   }
   if (shuffle) {
     bookListWithSubject.sort(() => Math.random() - 0.5);
