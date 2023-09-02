@@ -29,6 +29,7 @@ router
    *        schema:
    *          type: integer
    *        example: 4
+   *        default: 4
    *      - name: project
    *        in: query
    *        description: 과제 명을 받아온다. 과제 명이 없으면, 사용자가 진행 중인 과제 중 가장 최근에 진행한 과제를 가져온다.
