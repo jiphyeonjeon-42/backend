@@ -1,5 +1,12 @@
 import {
-  Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Book } from './Book';
 import { Category } from './Category';
@@ -7,6 +14,7 @@ import { Likes } from './Likes';
 import { Reservation } from './Reservation';
 import { Reviews } from './Reviews';
 import { SuperTag } from './SuperTag';
+import { BookInfoSearchKeywords } from '.';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')
@@ -68,4 +76,10 @@ export class BookInfo {
 
   @OneToMany(() => SuperTag, (superTags) => superTags.userId)
     superTags?: SuperTag[];
+
+  @OneToOne(
+    () => BookInfoSearchKeywords,
+    (bookInfoSearchKeyword) => bookInfoSearchKeyword.bookInfo,
+  )
+    bookInfoSearchKeyword?: BookInfoSearchKeywords;
 }
