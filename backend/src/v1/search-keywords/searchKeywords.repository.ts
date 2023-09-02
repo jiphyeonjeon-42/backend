@@ -15,11 +15,8 @@ class SearchKeywordsRepository extends Repository<SearchKeywords> {
     return searchKeyword;
   }
 
-  async createSearchKeyword(target: CreateSearchKeyword): Promise<SearchKeywords> {
-    const searchLog: SearchKeywords = {
-      ...target,
-    };
-    return this.save(searchLog);
+  async createSearchKeyword(searchKeyword: CreateSearchKeyword): Promise<SearchKeywords> {
+    return this.save(searchKeyword);
   }
 }
 

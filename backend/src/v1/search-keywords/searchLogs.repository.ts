@@ -10,10 +10,7 @@ class SearchLogsRepository extends Repository<SearchLogs> {
     super(SearchLogs, entityManager);
   }
 
-  async createSearchLog(target: CreateSearchLog): Promise<SearchLogs> {
-    const searchLog: SearchLogs = {
-      ...target,
-    };
+  async createSearchLog(searchLog: CreateSearchLog): Promise<SearchLogs> {
     return this.save(searchLog);
   }
 }
