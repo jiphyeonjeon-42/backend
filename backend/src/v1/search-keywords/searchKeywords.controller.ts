@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
@@ -32,3 +33,27 @@ export const getPopularSearchKeywords = async (
     );
   }
 };
+
+export const searchKeywordsAutocomplete: any = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const {
+    keyword
+  } = req.query;
+
+  if (!keyword) {
+    return res.status(status.OK).send({
+      items: [],
+      meta: 
+        0
+    });
+  }
+  try {
+    const items = await searchKeywordsService.getSearchAutocompletePreviewResult(keyword as string);
+    return res.status(status.OK).send( items );
+  } catch (error) {
+    return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+  }
+}
