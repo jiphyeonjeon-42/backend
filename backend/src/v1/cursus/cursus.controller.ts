@@ -7,6 +7,7 @@ import { getAccessToken } from '~/v1/auth/auth.service';
 import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as CursusService from './cursus.service';
+import { boolean } from 'zod';
 
 let accessToken: string;
 
@@ -18,12 +19,14 @@ export const recommendBook = async (
   const { nickname: login } = req.user as any;
   const limit = Number(req.query.limit);
   const project = req.query.project as string;
+  let shuffle: boolean = false;
   let bookInfoIds: number[] = [];
   let bookList: RecommendedBook[] = [];
   let meta: string[] = [];
   CursusService.readFiles();
   if (login === null || login === undefined) {
     bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+    shuffle = true;
   } else if (project !== undefined) {
     bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
   } else {
@@ -43,7 +46,7 @@ export const recommendBook = async (
     }
     bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
   }
-  bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
+  bookList = await CursusService.getBookListByIds(bookInfoIds, limit, shuffle);
   meta = await CursusService.getRecommendMeta();
   return res.status(status.OK).json({ items: bookList, meta });
 };

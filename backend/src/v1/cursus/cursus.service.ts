@@ -218,6 +218,7 @@ export const getRecommendedBookInfoIds = async (
 export const getBookListByIds = async (
   bookInfoIds: number[],
   limit: number,
+  shuffle: boolean = false,
 ) => {
   const booksRepository = new BooksRepository();
   const bookList = await booksRepository.findBooksByIds(bookInfoIds);
@@ -232,6 +233,9 @@ export const getBookListByIds = async (
         bookListWithSubject.push({ ...bookList[i], project: [name] });
       }
     }
+  }
+  if (shuffle) {
+    bookListWithSubject.sort(() => Math.random() - 0.5);
   }
   return bookListWithSubject.slice(0, limit);
 };
