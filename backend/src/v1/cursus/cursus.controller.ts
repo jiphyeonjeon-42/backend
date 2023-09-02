@@ -22,15 +22,11 @@ export const recommendBook = async (
   let bookList: RecommendedBook[] = [];
   let meta: string[] = [];
   CursusService.readFiles();
-  if (project !== null && project !== undefined) {
-    try {
-      bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
-    } catch (error) {
-      return next(error);
-    }
-    bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
-    meta = await CursusService.getRecommendMeta();
-  } else if (login !== null && login !== undefined) {
+  if (login === null || login === undefined) {
+    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+  } else if (project !== undefined) {
+    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+  } else {
     let userProject: UserProject[] = [];
     let userProjectIds: number[] = [];
     const userId: string = await CursusService.getIntraId(login);
@@ -46,9 +42,9 @@ export const recommendBook = async (
       userProjectIds = await CursusService.getRecommendedProject(userProject);
     }
     bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
-    bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
-    meta = await CursusService.getRecommendMeta();
   }
+  bookList = await CursusService.getBookListByIds(bookInfoIds, limit);
+  meta = await CursusService.getRecommendMeta();
   return res.status(status.OK).json({ items: bookList, meta });
 };
 

@@ -339,7 +339,10 @@ export const saveProjects = async (
  * @param projectName 추천 도서를 필터링할 프로젝트 이름
  * @returns 추천 도서의 bookInfoId 배열
  */
-export function getBookInfoIdsByProjectName(projectName: string) {
+export function getBookInfoIdsByProjectName(projectName: string | null) {
+  if (projectName === null || projectName === undefined) {
+    return booksWithProjectInfo.map((book) => book.book_info_id);
+  }
   const projectInfo = projectsInfo.find((project) => project.name === projectName);
   if (projectInfo === undefined) {
     throw new ErrorResponse('404', 404, 'Not Found');
