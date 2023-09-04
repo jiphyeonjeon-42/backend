@@ -19,7 +19,8 @@ export const contract = c.router(
     histories: historiesContract,
 
     stock: stockContract,
-    tags: tagContract,
+    // TODO(@nyj001012): 태그 서비스 작성
+    // tags: tagContract,
     // TODO(@scarf005): 유저 서비스 작성
 //     users: usersContract,
   },
