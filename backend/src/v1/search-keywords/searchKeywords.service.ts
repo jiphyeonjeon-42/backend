@@ -170,6 +170,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     keywordInitials = disassembleHangul(keyword as string);
     isCho = false;
   }
+  const removeBrackets = keywordInitials.replaceAll('(', '').replaceAll(')', '');
 
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
@@ -200,7 +201,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
       `,
-      [keywordInitials],
+      [removeBrackets],
     );
     totalCount = await executeQuery(
       `
@@ -228,7 +229,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           )
         )
       ) AS COUNT_SET`,
-      [keywordInitials],
+      [removeBrackets],
     ).then((result) => result[0]);
   } else {
     queryResult = await executeQuery(
@@ -256,7 +257,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
       `,
-      [keywordInitials],
+      [removeBrackets],
     );
     totalCount = await executeQuery(
       `SELECT COUNT(*) AS totalCount FROM (
@@ -283,7 +284,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           )
         )
       ) AS COUNT_SET`,
-      [keywordInitials],
+      [removeBrackets],
     ).then((result) => result[0]);
   }
   return {
