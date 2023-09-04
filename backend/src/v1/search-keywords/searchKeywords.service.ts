@@ -170,7 +170,8 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     keywordInitials = disassembleHangul(keyword as string);
     isCho = false;
   }
-  const removeBrackets = keywordInitials.replaceAll('(', '').replaceAll(')', '');
+  const fullTextSearch = keywordInitials.replaceAll('(', '').replaceAll(')', '');
+  const likeSearch = keywordInitials.replaceAll(' ', '%').replaceAll(' ', '%');
 
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
@@ -194,14 +195,14 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE title_initials LIKE ('%${keywordInitials}%')
-            OR author_initials LIKE ('%${keywordInitials}%')
-            OR publisher_initials LIKE ('%${keywordInitials}%')
+          WHERE title_initials LIKE ('%${likeSearch}%')
+            OR author_initials LIKE ('%${likeSearch}%')
+            OR publisher_initials LIKE ('%${likeSearch}%')
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
       `,
-      [removeBrackets],
+      [fullTextSearch],
     );
     totalCount = await executeQuery(
       `
@@ -223,13 +224,13 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE title_initials LIKE ('%${keywordInitials}%')
-              OR author_initials LIKE ('%${keywordInitials}%')
-              OR publisher_initials LIKE ('%${keywordInitials}%')
+            WHERE title_initials LIKE ('%${likeSearch}%')
+              OR author_initials LIKE ('%${likeSearch}%')
+              OR publisher_initials LIKE ('%${likeSearch}%')
           )
         )
       ) AS COUNT_SET`,
-      [removeBrackets],
+      [fullTextSearch],
     ).then((result) => result[0]);
   } else {
     queryResult = await executeQuery(
@@ -250,14 +251,14 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE disassembled_title LIKE ('%${keywordInitials}%')
-            OR disassembled_author LIKE ('%${keywordInitials}%')
-            OR disassembled_publisher LIKE ('%${keywordInitials}%')
+          WHERE disassembled_title LIKE ('%${likeSearch}%')
+            OR disassembled_author LIKE ('%${likeSearch}%')
+            OR disassembled_publisher LIKE ('%${likeSearch}%')
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
       `,
-      [removeBrackets],
+      [fullTextSearch],
     );
     totalCount = await executeQuery(
       `SELECT COUNT(*) AS totalCount FROM (
@@ -278,13 +279,13 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE disassembled_title LIKE ('%${keywordInitials}%')
-              OR disassembled_author LIKE ('%${keywordInitials}%')
-              OR disassembled_publisher LIKE ('%${keywordInitials}%')
+            WHERE disassembled_title LIKE ('%${likeSearch}%')
+              OR disassembled_author LIKE ('%${likeSearch}%')
+              OR disassembled_publisher LIKE ('%${likeSearch}%')
           )
         )
       ) AS COUNT_SET`,
-      [removeBrackets],
+      [fullTextSearch],
     ).then((result) => result[0]);
   }
   return {

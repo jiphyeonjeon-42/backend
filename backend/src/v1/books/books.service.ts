@@ -166,7 +166,8 @@ export const searchInfo = async (
 ) => {
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
-  const removeBrackets = disassemble.replaceAll('(', '').replaceAll(')', '');
+  const fullTextSearch = disassemble.replaceAll('(', '').replaceAll(')', '');
+  const likeSearch = disassemble.replaceAll(' ', '%').replaceAll(' ', '%');
 
   let matchScore: string;
   let searchCondition: string;
@@ -177,20 +178,20 @@ export const searchInfo = async (
     matchScore = `MATCH(book_info_search_keywords.title_initials,
       book_info_search_keywords.author_initials,
       book_info_search_keywords.publisher_initials)
-      AGAINST ('${removeBrackets}' IN BOOLEAN MODE)`;
+      AGAINST ('${fullTextSearch}' IN BOOLEAN MODE)`;
     searchCondition = `${matchScore}
-      OR book_info_search_keywords.title_initials LIKE '%${initials}%'
-      OR book_info_search_keywords.author_initials LIKE '%${initials}%'
-      OR book_info_search_keywords.publisher_initials LIKE '%${initials}%'`;
+      OR book_info_search_keywords.title_initials LIKE '%${likeSearch}%'
+      OR book_info_search_keywords.author_initials LIKE '%${likeSearch}%'
+      OR book_info_search_keywords.publisher_initials LIKE '%${likeSearch}%'`;
   } else {
     matchScore = `MATCH(book_info_search_keywords.disassembled_title,
       book_info_search_keywords.disassembled_author,
       book_info_search_keywords.disassembled_publisher)
-      AGAINST ('${removeBrackets}' IN BOOLEAN MODE)`;
+      AGAINST ('${fullTextSearch}' IN BOOLEAN MODE)`;
     searchCondition = `${matchScore}
-      OR book_info_search_keywords.disassembled_title LIKE '%${disassemble}%'
-      OR book_info_search_keywords.disassembled_author LIKE '%${disassemble}%'
-      OR book_info_search_keywords.disassembled_publisher LIKE '%${disassemble}%'`;
+      OR book_info_search_keywords.disassembled_title LIKE '%${likeSearch}%'
+      OR book_info_search_keywords.disassembled_author LIKE '%${likeSearch}%'
+      OR book_info_search_keywords.disassembled_publisher LIKE '%${likeSearch}%'`;
   }
 
   let ordering: string;
