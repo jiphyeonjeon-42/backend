@@ -8,8 +8,6 @@ import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as CursusService from './cursus.service';
 
-let accessToken: string;
-
 export const recommendBook = async (
   req: Request,
   res: Response,
@@ -31,14 +29,10 @@ export const recommendBook = async (
     let userProject: UserProject[] = [];
     const userId: string = await CursusService.getIntraId(login);
     try {
+      const accessToken: string = await getAccessToken();
       userProject = await CursusService.getUserProjectFrom42API(accessToken, userId);
     } catch (error: any) {
-      if (error.status === 401) {
-        accessToken = await getAccessToken();
-        userProject = await CursusService.getUserProjectFrom42API(accessToken, userId);
-      } else {
-        next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
-      }
+      return next(error);
     }
     const userProjectIds: number[] = await CursusService.getRecommendedProject(userProject);
     bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
@@ -60,7 +54,7 @@ export const getProjects = async (
   const page = req.query.page as string;
   const mode = req.query.mode as string;
 
-  accessToken = await getAccessToken();
+  const accessToken:string = await getAccessToken();
   let projects: ProjectInfo[] = [];
   try {
     projects = await CursusService.getProjectsInfo(accessToken, page);
