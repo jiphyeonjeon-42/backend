@@ -12,7 +12,6 @@ import {
   disassembleHangul,
   extractHangulInitials,
 } from '~/v1/utils/disassembleKeywords';
-import { replaceAll } from '~/v1/utils/replace';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -167,7 +166,7 @@ export const searchInfo = async (
 ) => {
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
-  const removeBrackets = replaceAll(replaceAll(disassemble, '\\(', ''), '\\)', '');
+  const removeBrackets = disassemble.replaceAll('(', '').replaceAll(')', '');
 
   let matchScore: string;
   let searchCondition: string;

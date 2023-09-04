@@ -6,7 +6,6 @@ import {
   extractHangulInitials,
   disassembleHangul,
 } from '~/v1/utils/disassembleKeywords';
-import { replaceAll } from '~/v1/utils/replace';
 import {
   AutocompleteKeyword,
   PopularSearchKeyword,
@@ -171,7 +170,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     keywordInitials = disassembleHangul(keyword as string);
     isCho = false;
   }
-  const removeBrackets = replaceAll(replaceAll(keywordInitials, '\\(', ''), '\\)', '');
+  const removeBrackets = keywordInitials.replaceAll('(', '').replaceAll(')', '');
 
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
