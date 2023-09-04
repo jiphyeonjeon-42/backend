@@ -1,4 +1,4 @@
-import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema, metaPaginatedSchema } from "../shared";
+import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema, metaPaginatedSchema, dateLike } from "../shared";
 import { z } from "../zodWithOpenapi";
 
 export const commonQuerySchema = z.object({
@@ -14,7 +14,7 @@ export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
 
 export const searchBookInfosByTagQuerySchema = commonQuerySchema.extend({
 	query: z.string(),
-	sort: z.enum(["new", "popular", "title"]).optional(),
+	sort: z.enum(["new", "popular", "title"]).default('new'),
 	category: z.string().optional(),
 });
 
@@ -79,7 +79,15 @@ export const bookInfoSchema = z.object({
 	updatedAt: dateLike,
 });
 
-export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
+export const searchBookInfosResponseSchema = metaPaginatedSchema(
+    bookInfoSchema
+      .extend({
+        publishedAt: dateLike,
+      })
+      .omit({
+        publisher: true
+      })
+  )
   .extend({
 	  categories: z.array(
 		  z.object({

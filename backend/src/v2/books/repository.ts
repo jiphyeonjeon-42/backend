@@ -11,6 +11,29 @@ export const bookRepo = jipDataSource.getRepository(Book);
 export const bookInfoRepo = jipDataSource.getRepository(BookInfo);
 export const vSearchBookByTagRepo = jipDataSource.getRepository(VSearchBookByTag);
 
+export const getBookInfosByTag = async (whereQuery: object, sortQuery: object, page: number, limit: number) => {
+	return await vSearchBookByTagRepo.findAndCount({
+		select: [
+			'id',
+			'title',
+			'author',
+			'isbn',
+			'image',
+			'publishedAt',
+			'createdAt',
+			'updatedAt',
+			'category',
+			'superTagContent',
+			'subTagContent',
+			'lendingCnt'
+		],
+		where: whereQuery,
+		take: limit,
+		skip: page * limit,
+		order: sortQuery
+	});
+}
+
 export const getBookInfosSorted = (limit: number) =>
 	db
 		.selectFrom('book_info')

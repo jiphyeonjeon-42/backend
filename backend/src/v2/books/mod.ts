@@ -1,6 +1,6 @@
 import { contract } from "@jiphyeonjeon-42/contracts";
 import { initServer } from "@ts-rest/express";
-import { searchAllBooks, searchBookById, searchBookInfoById, searchBookInfosSorted, updateBookOrBookInfo } from "./service";
+import { searchAllBooks, searchBookById, searchBookInfoById, searchBookInfosByTag, searchBookInfosSorted, updateBookOrBookInfo } from "./service";
 import { BookInfoNotFoundError, BookNotFoundError, bookInfoNotFound, bookNotFound, pubdateFormatError } from "../shared";
 import { PubdateFormatError } from "./errors";
 import authValidate from "~/v1/auth/auth.validate";
@@ -13,7 +13,11 @@ export const books = s.router(contract.books, {
 
 	// 	return { status: 200, body: result } as const;
 	// },
-	// searchBookInfosByTag: ,
+	searchBookInfosByTag: async ({ query }) => {
+		const result = await searchBookInfosByTag(query);
+
+		return { status: 200, body: result } as const;
+	},
 	searchBookInfosSorted: async ({ query }) => {
 		const result = await searchBookInfosSorted(query);
 

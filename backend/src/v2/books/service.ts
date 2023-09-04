@@ -12,7 +12,8 @@ import {
 	getIsLendable,
 	getIsReserved,
 	getDuedate,
-	getBookInfosSorted} from "./repository";
+	getBookInfosSorted,
+	getBookInfosByTag} from "./repository";
 import { BookInfoNotFoundError, Meta, BookNotFoundError } from "../shared";
 import { PubdateFormatError } from "./errors";
 import { dateNow, dateSubDays } from "~/kysely/sqlDates";
@@ -88,6 +89,62 @@ import { dateNow, dateSubDays } from "~/kysely/sqlDates";
 
 	
 // }
+
+type CategoryList = {name: string, count: number};
+type SearchBookInfosByTag = { query: string, sort: string, page: number, limit: number, category?: string | undefined };
+export const searchBookInfosByTag = async ({
+	query,
+	sort,
+	page,
+	limit,
+	category
+}: SearchBookInfosByTag ) => {
+	let sortQuery = {};
+	switch(sort)
+	{
+		case 'title':
+			sortQuery = { title: 'ASC' };
+			break;
+		case 'popular':
+			sortQuery = { lendingCnt: 'DESC' };
+			break;
+		default:
+			sortQuery = { createdAt: 'DESC' };
+	}
+
+	let whereQuery: Array<object> = [
+		{ superTagContent: query },
+		{ subTagContent: query }
+	];
+
+	if (category)
+	{
+		whereQuery.push({ category });
+	}
+
+	const [bookInfoList, totalItems] = await getBookInfosByTag(whereQuery, sortQuery, page, limit);
+	let categoryList = new Array<CategoryList> ;
+	bookInfoList.forEach((bookInfo) => {
+		const index = categoryList.findIndex((item) => bookInfo.category === item.name);
+		if (index === -1)
+			categoryList.push({name: bookInfo.category, count: 1});
+		else
+			categoryList[index].count += 1;
+	});
+	const meta = {
+		totalItems,
+		itemCount: bookInfoList.length,
+		itemsPerPage: limit,
+		totalPages: Math.ceil(bookInfoList.length / limit),
+		currentPage: page + 1
+	}
+
+	return {
+		items: bookInfoList,
+		categories: categoryList,
+		meta
+	};
+}
 
 type SearchBookInfosSortedArgs = { sort: string, limit: number };
 export const searchBookInfosSorted = async ({
