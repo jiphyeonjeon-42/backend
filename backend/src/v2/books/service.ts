@@ -12,7 +12,7 @@ import {
 	getIsLendable,
 	getIsReserved,
 	getDuedate} from "./repository";
-import { BookInfoNotFoundError, Meta, bookNotFound } from "../shared";
+import { BookInfoNotFoundError, Meta, BookNotFoundError } from "../shared";
 import { PubdateFormatError } from "./errors";
 
 // const querySearchCategoryByName = (category: string) =>
