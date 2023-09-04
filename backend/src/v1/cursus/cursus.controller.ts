@@ -2,16 +2,14 @@ import {
   NextFunction, Request, Response,
 } from 'express';
 import * as status from 'http-status';
-import * as errorCode from '~/v1/utils/error/errorCode';
 import { getAccessToken } from '~/v1/auth/auth.service';
 import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model';
-import ErrorResponse from '~/v1/utils/error/errorResponse';
+import { logger } from '~/logger';
 import * as CursusService from './cursus.service';
 
 export const recommendBook = async (
   req: Request,
   res: Response,
-  next: NextFunction,
 ) => {
   const { nickname: login } = req.user as any;
   const limit = req.query.limit ? Number(req.query.limit) : 4;
@@ -23,7 +21,7 @@ export const recommendBook = async (
   if (project !== undefined) {
     bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
   } else if (login === null || login === undefined) {
-    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(project);
+    bookInfoIds = await CursusService.getBookInfoIdsByProjectName(null);
     shuffle = true;
   } else {
     let userProject: UserProject[] = [];
@@ -31,11 +29,13 @@ export const recommendBook = async (
     try {
       const accessToken: string = await getAccessToken();
       userProject = await CursusService.getUserProjectFrom42API(accessToken, userId);
+      const userProjectIds: number[] = await CursusService.getRecommendedProject(userProject);
+      bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
     } catch (error: any) {
-      return next(error);
+      logger.error(error);
+      bookInfoIds = await CursusService.getBookInfoIdsByProjectName(null);
+      shuffle = true;
     }
-    const userProjectIds: number[] = await CursusService.getRecommendedProject(userProject);
-    bookInfoIds = await CursusService.getRecommendedBookInfoIds(userProjectIds);
   }
   const bookList: RecommendedBook[] = await CursusService.getBookListByIds(
     bookInfoIds,
