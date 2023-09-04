@@ -91,7 +91,10 @@ export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
 
 export const searchBookInfosSortedResponseSchema = z.object({
 	items: z.array(
-		bookInfoSchema,
+		bookInfoSchema.extend({
+			publishedAt: dateLike,
+			lendingCnt: positiveInt,
+		}),
 	)
 });
 

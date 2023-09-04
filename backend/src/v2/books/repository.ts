@@ -2,14 +2,36 @@ import { db } from "~/kysely/mod.ts";
 import { sql } from "kysely";
 
 import jipDataSource from "~/app-data-source";
-import { VSearchBook, Book, BookInfo } from "~/entity/entities";
+import { VSearchBook, Book, BookInfo, VSearchBookByTag } from "~/entity/entities";
 import { Like } from "typeorm";
 import { dateAddDays, dateFormat } from "~/kysely/sqlDates";
 
 export const vSearchBookRepo = jipDataSource.getRepository(VSearchBook)
 export const bookRepo = jipDataSource.getRepository(Book);
 export const bookInfoRepo = jipDataSource.getRepository(BookInfo);
+export const vSearchBookByTagRepo = jipDataSource.getRepository(VSearchBookByTag);
 
+export const getBookInfosSorted = (limit: number) =>
+	db
+		.selectFrom('book_info')
+		.leftJoin('book', 'book_info.id', 'book.infoId')
+		.leftJoin('category', 'book_info.categoryId', 'category.id')
+		.leftJoin('lending', 'book.id', 'lending.bookId')
+		.select([
+			'book_info.id as id',
+			'book_info.title as title',
+			'book_info.author as author',
+			'book_info.publisher as publisher',
+			'book_info.isbn as isbn',
+			'book_info.image as image',
+			'category.name as category',
+			'book_info.publishedAt as publishedAt',
+			'book_info.createdAt as createdAt',
+			'book_info.updatedAt as updatedAt',
+		])
+		.select(({ eb }) => eb.fn.count('lending.id').as('lendingCnt'))
+		.limit(limit)
+		.groupBy('id')
 
 export const searchBookInfoSpecById = async ( id: number ) =>
 	db

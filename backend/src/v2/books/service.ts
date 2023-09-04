@@ -11,9 +11,11 @@ import {
 	searchBooksByInfoId, 
 	getIsLendable,
 	getIsReserved,
-	getDuedate} from "./repository";
+	getDuedate,
+	getBookInfosSorted} from "./repository";
 import { BookInfoNotFoundError, Meta, BookNotFoundError } from "../shared";
 import { PubdateFormatError } from "./errors";
+import { dateNow, dateSubDays } from "~/kysely/sqlDates";
 
 // const querySearchCategoryByName = (category: string) =>
 // 	db
@@ -86,6 +88,30 @@ import { PubdateFormatError } from "./errors";
 
 	
 // }
+
+type SearchBookInfosSortedArgs = { sort: string, limit: number };
+export const searchBookInfosSorted = async ({
+	sort,
+	limit,
+}: SearchBookInfosSortedArgs ) => {
+	let items;
+	if (sort === 'popular')
+	{
+		items = await getBookInfosSorted(limit)
+							.where('lending.createdAt', '>=', dateSubDays(dateNow(), 42))
+							.orderBy('lendingCnt', 'desc')
+							.orderBy('title', 'asc')
+							.execute();
+	}
+	else {
+		items = await getBookInfosSorted(limit)
+							.orderBy('createdAt', 'desc')
+							.orderBy('title', 'asc')
+							.execute();
+	}
+
+	return { items } as const
+}
 
 export const searchBookInfoById = async (id: number) => {
 	let bookSpec = await searchBookInfoSpecById(id);
@@ -259,4 +285,12 @@ export const updateBookOrBookInfo = async ( book: UpdateBookOrBookInfoArgs ) => 
 			image: book.image,
 			categoryId: book.categoryId
 		});
+}
+
+type UpdateBookDonatorArgs = {bookId: number, nickname: string };
+export const updateBookDonator = async ({
+	bookId,
+	nickname
+}: UpdateBookDonatorArgs ) => {
+
 }

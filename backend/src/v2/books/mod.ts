@@ -1,6 +1,6 @@
 import { contract } from "@jiphyeonjeon-42/contracts";
 import { initServer } from "@ts-rest/express";
-import { searchAllBooks, searchBookById, searchBookInfoById, updateBookOrBookInfo } from "./service";
+import { searchAllBooks, searchBookById, searchBookInfoById, searchBookInfosSorted, updateBookOrBookInfo } from "./service";
 import { BookInfoNotFoundError, BookNotFoundError, bookInfoNotFound, bookNotFound, pubdateFormatError } from "../shared";
 import { PubdateFormatError } from "./errors";
 import authValidate from "~/v1/auth/auth.validate";
@@ -14,7 +14,11 @@ export const books = s.router(contract.books, {
 	// 	return { status: 200, body: result } as const;
 	// },
 	// searchBookInfosByTag: ,
-	// searchBookInfosSorted: ,
+	searchBookInfosSorted: async ({ query }) => {
+		const result = await searchBookInfosSorted(query);
+
+		return { status: 200, body: result} as const;
+	},
 	searchBookInfoById: async ({ params: { id } }) => {
 		const result = await searchBookInfoById( id );
 
@@ -58,5 +62,10 @@ export const books = s.router(contract.books, {
 			return {status: 200, body: '책 정보가 수정되었습니다.'} as const;
 		}
 	},
-	// updateDonator: ,
+	// updateDonator: {
+	// 	// middleware: [authValidate(roleSet.librarian)],
+	// 	handler: async ({ body }) => {
+
+	// 	}
+	// },
 });
