@@ -78,9 +78,9 @@ export const getUserProjectFrom42API = async (
     });
   }).catch((error) => {
     if (error.response.status === 401) {
-      throw new ErrorResponse('401', 401);
+      throw new ErrorResponse('401', 401, '권한이 없습니다.');
     } else {
-      throw new ErrorResponse('500', 500);
+      throw new ErrorResponse('500', 500, '42 API로부터 프로젝트 정보를 받아오는데 실패했습니다.');
     }
   });
   return userProject;
