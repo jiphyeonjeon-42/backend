@@ -67,5 +67,12 @@ export const offsetPaginatedSchema = <T extends z.ZodType<any>>(itemSchema: T) =
     rows: z.array(itemSchema),
     hasNextPage: z.boolean().optional().describe('다음 페이지가 존재하는지 여부'),
     hasPrevPage: z.boolean().optional().describe('이전 페이지가 존재하는지 여부'),
-  });export const visibility = z.enum([ 'all', 'public', 'hidden' ]).default('public').describe('공개 상태')
+  });
 
+export const visibility = z.enum([ 'all', 'public', 'hidden' ]).default('public').describe('공개 상태');
+
+
+export const paginationQuerySchema = z.object({
+  page: positiveInt.default(1).optional().openapi({ example: 1 }),
+  limit: positiveInt.default(10).optional().openapi({ example: 10 }),
+});
