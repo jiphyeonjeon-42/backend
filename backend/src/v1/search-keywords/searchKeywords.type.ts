@@ -31,3 +31,8 @@ export type FindSearchKeyword = {
   id?: number;
   keyword?: string;
 };
+
+export type FindBookInfoSearchKeyword = {
+  id?: number;
+  bookInfoId?: number;
+};
