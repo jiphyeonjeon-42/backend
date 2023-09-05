@@ -393,8 +393,7 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (book.id) { await BooksService.updateBook(book); }
-    if (bookInfo.id) { await BooksService.updateBookInfo(bookInfo); }
+    if (book.id) { await BooksService.updateBook(book, bookInfo); }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);

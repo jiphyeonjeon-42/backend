@@ -478,9 +478,33 @@ export const updateBookInfo = async (bookInfo: UpdateBookInfo) => {
   await booksRepository.updateBookInfo(bookInfo);
 };
 
-export const updateBook = async (book: UpdateBook) => {
-  const booksRepository = new BooksRepository();
-  await booksRepository.updateBook(book);
+export const updateBook = async (book: UpdateBook, bookInfo: UpdateBookInfo) => {
+  const transactionQueryRunner = jipDataSource.createQueryRunner();
+  const booksRepository = new BooksRepository(transactionQueryRunner);
+  const bookInfoSearchKeywordRepository = new BookInfoSearchKeywordRepository(
+    transactionQueryRunner,
+  );
+  await transactionQueryRunner.startTransaction();
+  try {
+    await booksRepository.updateBook(book);
+    if (bookInfo.id) {
+      await booksRepository.updateBookInfo(bookInfo);
+      const keyword = await bookInfoSearchKeywordRepository.getBookInfoSearchKeyword(
+        { bookInfoId: bookInfo.id },
+      );
+      if (keyword?.id) {
+        await bookInfoSearchKeywordRepository.updateBookInfoSearchKeyword(keyword.id, bookInfo);
+      }
+    }
+    await transactionQueryRunner.commitTransaction();
+  } catch (error) {
+    await transactionQueryRunner.rollbackTransaction();
+    if (error instanceof Error) {
+      throw error;
+    }
+  } finally {
+    await transactionQueryRunner.release();
+  }
 };
 
 export const updateBookDonator = async (bookDonator: UpdateBookDonator) => {
