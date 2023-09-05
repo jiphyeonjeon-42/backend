@@ -48,7 +48,7 @@ export const searchKeywordsAutocomplete = async (
   if (!keyword) {
     return res.status(status.OK).send({
       items: [],
-      meta: 0,
+      meta: {totalCount: 0},
     });
   }
   try {
