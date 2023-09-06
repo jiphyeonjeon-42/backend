@@ -2,3 +2,7 @@ docs/*
 node_modules
 src
 tsconfig.json
+.eslintrc.json
+*.tgz
+*.tar
+*.tar.gz

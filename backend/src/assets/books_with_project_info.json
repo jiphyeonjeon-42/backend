@@ -1,0 +1,204 @@
+[
+  {
+    "book_info_id": 6,
+    "projects": [
+      {
+        "id": 1314,
+        "circle": 0
+      }
+    ]
+  },
+  {
+    "book_info_id": 220,
+    "projects": [
+      {
+        "id": 1471,
+        "circle": 2
+      }
+    ]
+  },
+  {
+    "book_info_id": 945,
+    "projects": [
+      {
+        "id": 1471,
+        "circle": 2
+      }
+    ]
+  },
+  {
+    "book_info_id": 383,
+    "projects": [
+      {
+        "id": 2005,
+        "circle": 2
+      },
+      {
+        "id": 1332,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 503,
+    "projects": [
+      {
+        "id": 2005,
+        "circle": 2
+      },
+      {
+        "id": 1332,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 2,
+    "projects": [
+      {
+        "id": 2005,
+        "circle": 2
+      }
+    ]
+  },
+  {
+    "book_info_id": 789,
+    "projects": [
+      {
+        "id": 1315,
+        "circle": 4
+      }
+    ]
+  },
+  {
+    "book_info_id": 672,
+    "projects": [
+      {
+        "id": 1315,
+        "circle": 4
+      }
+    ]
+  },
+  {
+    "book_info_id": 721,
+    "projects": [
+      {
+        "id": 1338,
+        "circle": 4
+      },
+      {
+        "id": 1339,
+        "circle": 4
+      },
+      {
+        "id": 1340,
+        "circle": 4
+      },
+      {
+        "id": 1341,
+        "circle": 4
+      },
+      {
+        "id": 1342,
+        "circle": 4
+      }
+    ]
+  },
+  {
+    "book_info_id": 910,
+    "projects": [
+      {
+        "id": 1338,
+        "circle": 4
+      },
+      {
+        "id": 1339,
+        "circle": 4
+      },
+      {
+        "id": 1340,
+        "circle": 4
+      },
+      {
+        "id": 1341,
+        "circle": 4
+      },
+      {
+        "id": 1342,
+        "circle": 4
+      }
+    ]
+  },
+  {
+    "book_info_id": 536,
+    "projects": [
+      {
+        "id": 2007,
+        "circle": 4
+      }
+    ]
+  },
+  {
+    "book_info_id": 919,
+    "projects": [
+      {
+        "id": 2309,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 899,
+    "projects": [
+      {
+        "id": 2309,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 936,
+    "projects": [
+      {
+        "id": 2309,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 1013,
+    "projects": [
+      {
+        "id": 1983,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 896,
+    "projects": [
+      {
+        "id": 1983,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 314,
+    "projects": [
+      {
+        "id": 1332,
+        "circle": 5
+      }
+    ]
+  },
+  {
+    "book_info_id": 198,
+    "projects": [
+      {
+        "id": 1332,
+        "circle": 5
+      }
+    ]
+  }
+]

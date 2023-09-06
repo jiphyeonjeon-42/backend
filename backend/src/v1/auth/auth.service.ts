@@ -2,6 +2,8 @@ import { ResultSetHeader } from 'mysql2';
 import { executeQuery } from '~/mysql';
 import axios from 'axios';
 import { role } from './auth.type';
+import ErrorResponse from '../utils/error/errorResponse';
+import httpStatus from 'http-status';
 
 // eslint-disable-next-line import/prefer-default-export
 export const updateAuthenticationUser = async (
@@ -35,7 +37,7 @@ export const getAccessToken = async (): Promise<string> => {
   }).then((response) => {
     accessToken = response.data.access_token;
   }).catch((error) => {
-    console.log(error.message);
+    throw new ErrorResponse(httpStatus[500], httpStatus.INTERNAL_SERVER_ERROR, '42 API로부터 토큰을 받아오는데 실패했습니다.');
   });
   return accessToken;
 };

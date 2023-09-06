@@ -1,8 +1,10 @@
 import { match } from 'ts-pattern';
 import { db } from '~/kysely/mod.ts';
-import { executeWithOffsetPagination } from 'kysely-paginate';
 import { Visibility } from '~/kysely/shared.js';
 import { SqlBool } from 'kysely';
+import { Simplify } from 'kysely';
+import { executeWithOffsetPagination } from 'kysely-paginate';
+import { metaPaginated } from '~/kysely/paginated';
 
 export const bookInfoExistsById = (id: number) =>
   db.selectFrom('book_info').where('id', '=', id).executeTakeFirst();
@@ -15,7 +17,7 @@ export const getReviewById = (id: number) =>
     .executeTakeFirst();
 
 type SearchOption = {
-  query: string;
+  search?: string;
   page: number;
   perPage: number;
   visibility: Visibility;
@@ -28,34 +30,41 @@ const queryReviews = () =>
     .leftJoin('user', 'user.id', 'reviews.userId')
     .leftJoin('book_info', 'book_info.id', 'reviews.bookInfoId')
     .select([
-      'id',
-      'userId',
-      'bookInfoId',
-      'content',
-      'createdAt',
+      'reviews.id',
+      'reviews.userId',
+      'reviews.disabled',
+      'reviews.bookInfoId',
+      'reviews.content',
+      'reviews.createdAt',
       'book_info.title',
       'user.nickname',
-      'user.intraId',
     ]);
 
-export const searchReviews = ({
-  query,
+export const searchReviews = async ({
+  search,
   sort,
   visibility,
   page,
   perPage,
 }: SearchOption) => {
   const searchQuery = queryReviews()
-    .where('content', 'like', `%${query}%`)
-    .orderBy('updatedAt', sort);
+    .$if(search !== undefined, qb =>
+      qb.where(eb =>
+        eb.or([
+          eb('user.nickname', 'like', `%${search}%`),
+          eb('book_info.title', 'like', `%${search}%`),
+        ]),
+      ),
+    )
+    .orderBy('reviews.createdAt', sort);
 
   const withVisibility = match(visibility)
     .with('public', () => searchQuery.where('disabled', '=', false))
-    .with('private', () => searchQuery.where('disabled', '=', true))
+    .with('hidden', () => searchQuery.where('disabled', '=', true))
     .with('all', () => searchQuery)
     .exhaustive();
 
-  return executeWithOffsetPagination(withVisibility, { page, perPage });
+  return metaPaginated(withVisibility, { page, perPage });
 };
 
 type InsertOption = {

@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -63,6 +63,9 @@ importers:
       express-rate-limit:
         specifier: ^6.9.0
         version: 6.9.0(express@4.17.2)
+      hangul-js:
+        specifier: ^0.2.6
+        version: 0.2.6
       http-errors:
         specifier: ^2.0.0
         version: 2.0.0
@@ -124,8 +127,8 @@ importers:
         specifier: ^4.4.7
         version: 4.4.7(@types/node@18.16.1)
       vite-node:
-        specifier: https://github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz
-        version: '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz(@types/node@18.16.1)'
+        specifier: ^0.34.1
+        version: 0.34.1(@types/node@18.16.1)
       vite-tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0(typescript@5.1.6)(vite@4.4.7)
@@ -3753,6 +3756,10 @@ packages:
       uglify-js: 3.17.4
     dev: true
 
+  /hangul-js@0.2.6:
+    resolution: {integrity: sha512-48axU8LgjCD30FEs66Xc04/8knxMwCMQw0f67l67rlttW7VXT3qRJgQeHmhiuGwWXGvSbk6YM0fhQlcjE1JFQA==}
+    dev: false
+
   /has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
     dev: true
@@ -6961,6 +6968,7 @@ packages:
   /typescript@5.1.6:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
     engines: {node: '>=14.17'}
+    hasBin: true
 
   /ufo@1.2.0:
     resolution: {integrity: sha512-RsPyTbqORDNDxqAdQPQBpgqhWle1VcTSou/FraClYlHf6TZnQcGslpLcAphNR+sQW4q5lLWLbOsRlh9j24baQg==}
@@ -7094,6 +7102,28 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /vite-node@0.34.1(@types/node@18.16.1):
+    resolution: {integrity: sha512-odAZAL9xFMuAg8aWd7nSPT+hU8u2r9gU3LRm9QKjxBEF2rRdWpMuqkrkjvyVQEdNFiBctqr2Gg4uJYizm5Le6w==}
+    engines: {node: '>=v14.18.0'}
+    hasBin: true
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.4
+      mlly: 1.4.0
+      pathe: 1.1.1
+      picocolors: 1.0.0
+      vite: 4.4.7(@types/node@18.16.1)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
     dev: false
 
   /vite-tsconfig-paths@4.2.0(typescript@5.1.6)(vite@4.4.7):
@@ -7415,28 +7445,3 @@ packages:
 
   /zod@3.22.2:
     resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
-
-  '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz(@types/node@18.16.1)':
-    resolution: {tarball: https://github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz}
-    id: '@github.com/scarf005/vitest/releases/download/v0.33.0-2023-07-30/vite-node-0.33.0.tgz'
-    name: vite-node
-    version: 0.33.0
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.4
-      mlly: 1.4.0
-      pathe: 1.1.1
-      picocolors: 1.0.0
-      vite: 4.4.7(@types/node@18.16.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: false

@@ -1,6 +1,6 @@
 {
   "name": "@jiphyeonjeon-42/contracts",
-  "version": "0.0.4-alpha",
+  "version": "0.0.11-alpha",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "release": "pnpm pack && mv jiphyeonjeon-42-contracts-$npm_package_version.tgz contracts.tgz && gh release create v$npm_package_version --title v$npm_package_version --generate-notes contracts.tgz"
   },
   "dependencies": {
     "@anatine/zod-openapi": "^2.2.0",

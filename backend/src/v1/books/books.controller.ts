@@ -8,18 +8,15 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import isNullish from '~/v1/utils/isNullish';
 import * as parseCheck from '~/v1/utils/parseCheck';
-import { getAccessToken } from '~/v1/auth/auth.service';
 import * as BooksService from './books.service';
 import * as types from './books.type';
 import LikesService from './likes.service';
 import { searchSchema } from '../users/users.types';
 import { User } from '../DTO/users.model';
 import UsersService from '../users/users.service';
-import { Project } from '../DTO/cursus.model';
 
 const likesService = new LikesService();
 const usersService = new UsersService();
-let accessToken: string;
 
 const pubdateFormatValidator = (pubdate: string | Date) => {
   const regexConditon = /^[0-9]{8}$/;
@@ -99,7 +96,8 @@ export const searchBookInfo = async (
   next: NextFunction,
 ) => {
   // URI에 있는 파라미터/쿼리 변수에 저장
-  const query = req.query?.query ?? '';
+  let query = req.query?.query ?? '';
+  query = query.trim();
   const {
     page, limit, sort, category,
   } = req.query;
@@ -395,8 +393,7 @@ export const updateBookInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (book.id) { await BooksService.updateBook(book); }
-    if (bookInfo.id) { await BooksService.updateBookInfo(bookInfo); }
+    if (book.id) { await BooksService.updateBook(book, bookInfo); }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -464,28 +461,4 @@ export const updateBookDonator = async (
     next(new ErrorResponse(errorCode.FAIL_PATCH_BOOK_BY_UNEXPECTED, status.INTERNAL_SERVER_ERROR));
   }
   return 0;
-};
-
-export const recommandBook = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const { nickname: login } = req.user as any;
-  let userProject: Project[];
-  let userId: string;
-  if (login !== null && login !== undefined) {
-    userId = await BooksService.getIntraId(login);
-    try {
-      userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
-    } catch (error: any) {
-      if (error.status === 401) {
-        accessToken = await getAccessToken();
-        userProject = await BooksService.getUserProjectFrom42API(accessToken, userId);
-      } else {
-        next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
-      }
-    }
-  }
-  res.status(status.OK).send();
 };

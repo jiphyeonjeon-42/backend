@@ -1,4 +1,4 @@
-export type RawProject = {
+export type UserProjectFrom42 = {
   id: number;
   occurrence: number;
   final_mark: number;
@@ -47,14 +47,15 @@ export type RawProject = {
   teams: object[];
 }
 
-export type Project = {
-  id: RawProject['id'];
-  status: RawProject['status'];
-  validated: RawProject['validated?'];
-  project: RawProject['project'];
-  cursus_ids: RawProject['cursus_ids'];
-  marked: RawProject['marked'];
-  marked_at: RawProject['marked_at'];
+export type UserProject = {
+  id: UserProjectFrom42['id'];
+  status: UserProjectFrom42['status'];
+  validated: UserProjectFrom42['validated?'];
+  project: UserProjectFrom42['project'];
+  cursus_ids: UserProjectFrom42['cursus_ids'];
+  marked: UserProjectFrom42['marked'];
+  marked_at: UserProjectFrom42['marked_at'];
+  updated_at: UserProjectFrom42['updated_at'];
 }
 
 export type ProjectFrom42 = {
@@ -74,6 +75,18 @@ export type ProjectFrom42 = {
   campus: Campus[];
   videos: [],
   project_sessions: object[];
+}
+
+export type ProjectInfo = {
+  id: number;
+  name: string;
+  slug: string;
+  parent: [];
+  cursus: {
+    id: number;
+    name: string;
+    slug: string;
+  }[];
 }
 
 export type Campus = {
@@ -108,4 +121,28 @@ export type Cursus = {
   name: string;
   slug: string;
   kind: string;
+}
+
+export type ProjectWithCircle = {
+  [key: string]: {
+    project_ids: number[];
+  }
+}
+
+export type BooksWithProjectInfo = {
+  book_info_id: number;
+  projects: {
+    id: number;
+    circle: number;
+  }[];
+}
+
+export type RecommendedBook = {
+  id: number;
+  title: string;
+  author: string;
+  publisher: string;
+  image: string;
+  publishedAt: string;
+  subjects: string[];
 }

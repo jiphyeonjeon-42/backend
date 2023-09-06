@@ -122,4 +122,5 @@ package-lock.json
 .idea
 
 # nginx
-.htpasswd
+nginx.dev/certbot
+**/*.htpasswd
