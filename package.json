@@ -3,11 +3,11 @@
     "dev": "pnpm -r --parallel dev"
   },
   "dependencies": {
+    "typescript": "5.1.6",
     "zod": "^3.22.2",
     "@ts-rest/core": "^3.28.0"
   },
   "devDependencies": {
-    "typescript": "5.1.6",
     "@types/node": "18.16.1",
     "rome": "^12.1.3"
   }
