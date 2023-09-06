@@ -11,7 +11,8 @@ import { VSearchBookByTag } from '~/entity/entities';
 import {
   disassembleHangul,
   extractHangulInitials,
-} from '~/v1/utils/disassembleKeywords';
+  removeSpecialCharacters,
+} from '~/v1/utils/processKeywords';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
@@ -166,7 +167,7 @@ export const searchInfo = async (
 ) => {
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
-  const fullTextSearch = disassemble.replaceAll('(', '').replaceAll(')', '');
+  const fullTextSearch = removeSpecialCharacters(disassemble);
   const likeSearch = disassemble.replaceAll(' ', '%').replaceAll(' ', '%');
 
   let matchScore: string;
