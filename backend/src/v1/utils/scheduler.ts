@@ -1,4 +1,5 @@
 import * as schedule from 'node-schedule';
+import { logger } from '~/logger';
 import * as slack from '../slack/slack.service';
 import * as notifications from '../notifications/notifications.service';
 import * as searchKeywords from '../search-keywords/searchKeywords.service';
@@ -30,8 +31,12 @@ const morningScheduler = () => {
 };
 
 export const scheduler = () => {
-  midnightScheduler();
-  morningScheduler();
+  try {
+    midnightScheduler();
+    morningScheduler();
+  } catch (error) {
+    logger.error('[scheduler error]', error);
+  }
 };
 
 export default scheduler;
