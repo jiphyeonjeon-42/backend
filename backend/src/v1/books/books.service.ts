@@ -11,7 +11,7 @@ import { VSearchBookByTag } from '~/entity/entities';
 import {
   disassembleHangul,
   extractHangulInitials,
-} from '~/v1/utils/disassembleKeywords';
+} from '~/v1/utils/processKeywords';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {

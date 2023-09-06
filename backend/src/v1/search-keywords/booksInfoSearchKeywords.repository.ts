@@ -4,7 +4,7 @@ import { BookInfo, BookInfoSearchKeywords } from '~/entity/entities';
 import {
   disassembleHangul,
   extractHangulInitials,
-} from '../utils/disassembleKeywords';
+} from '../utils/processKeywords';
 import { UpdateBookInfo } from '../books/books.type';
 import { FindBookInfoSearchKeyword } from './searchKeywords.type';
 

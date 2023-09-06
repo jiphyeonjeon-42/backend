@@ -5,7 +5,7 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import {
   extractHangulInitials,
   disassembleHangul,
-} from '~/v1/utils/disassembleKeywords';
+} from '~/v1/utils/processKeywords';
 import {
   AutocompleteKeyword,
   PopularSearchKeyword,
