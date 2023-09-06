@@ -5,6 +5,7 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import {
   extractHangulInitials,
   disassembleHangul,
+  removeSpecialCharacters,
 } from '~/v1/utils/processKeywords';
 import {
   AutocompleteKeyword,
@@ -170,7 +171,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     keywordInitials = disassembleHangul(keyword as string);
     isCho = false;
   }
-  const fullTextSearch = keywordInitials.replaceAll('(', '').replaceAll(')', '');
+  const fullTextSearch = removeSpecialCharacters(keywordInitials);
   const likeSearch = keywordInitials.replaceAll(' ', '%').replaceAll(' ', '%');
 
   let queryResult: AutocompleteKeyword[] = [];

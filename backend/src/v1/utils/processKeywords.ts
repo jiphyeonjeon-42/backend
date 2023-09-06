@@ -15,6 +15,5 @@ export const extractHangulInitials = (original: string | undefined) => {
 
 export const removeSpecialCharacters = (input: string) => {
   const regex = /[^a-zA-Z0-9가-힣\s]/g;
-  // 문자열에서 특수 문자를 공백으로 대체합니다.
   return input.replace(regex, '');
 };
