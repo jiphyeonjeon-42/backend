@@ -164,7 +164,6 @@ export const createSearchKeywordLog = async (
 
 export const getSearchAutocompletePreviewResult = async (keyword: string) => {
   const LIMIT_OF_SEARCH_KEYWORD_PREVIEW = 12;
-  const processKeyword = keyword ? removeSpecialCharacters(keyword) : '';
   let disassembledKeyword = extractHangulInitials(keyword as string);
   let isCho = true;
 
@@ -172,7 +171,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     disassembledKeyword = disassembleHangul(keyword as string);
     isCho = false;
   }
-  const fullTextSearch = disassembleHangul(processKeyword);
+  const fullTextSearch = removeSpecialCharacters(disassembledKeyword);
   const likeSearch = disassembledKeyword.replaceAll(' ', '%').replaceAll(' ', '%');
 
   let queryResult: AutocompleteKeyword[] = [];
