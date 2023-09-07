@@ -40,3 +40,19 @@ export const pubdateFormatError = {
     description: '입력한 pubdate가 알맞은 형식이 아님.'
   }
 } as const;
+
+export const isbnNotFound = {
+  status: 303,
+  body: {
+    code: 'ISBN_NOT_FOUND',
+    description: '국립중앙도서관 API에서 ISBN 검색이 실패하였습니다.'
+  }
+} as const;
+
+export const naverBookNotFound = {
+  status: 310,
+  body: {
+    code: 'NAVER_BOOK_NOT_FOUND',
+    description: '네이버 책검색 API에서 ISBN 검색이 실패'
+  }
+} as const;

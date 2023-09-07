@@ -1,8 +1,5 @@
 import { match } from "ts-pattern";
 import { 
-	// bookExists,
-	// createBookInfo,
-	// getNewCallsignPrimaryNum,
 	searchBookListAndCount,
 	vSearchBookRepo,
 	updateBookById,
@@ -17,8 +14,10 @@ import {
 	userRepo,
 	updateBookDonatorName} from "./repository";
 import { BookInfoNotFoundError, Meta, BookNotFoundError } from "../shared";
-import { PubdateFormatError } from "./errors";
+import { IsbnNotFoundError, NaverBookNotFound, PubdateFormatError } from "./errors";
 import { dateNow, dateSubDays } from "~/kysely/sqlDates";
+import axios from "axios";
+import { nationalIsbnApiKey, naverBookApiOption } from '~/config';
 
 type CategoryList = {name: string, count: number};
 type SearchBookInfosByTag = { query: string, sort: string, page: number, limit: number, category?: string | undefined };
@@ -161,6 +160,71 @@ export const searchAllBooks = async ({
 	return {items: BookList, meta};
 }
 
+type BookInfoForCreate = {
+	title: string,
+	author?: string | undefined 
+	isbn: string,
+	category: string,
+	publisher: string,
+	pubdate: string,
+	image: string,
+}
+const getInfoInNationalLibrary = async (isbn: string) => {
+	let bookInfo : BookInfoForCreate;
+	let searchResult;
+
+	await axios
+		.get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
+		.then((res) => {
+			searchResult = res.data.docs[0];
+			const {
+				TITLE: title, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
+			} = searchResult;
+			const image = `https://image.kyobobook.co.kr/images/book/xlarge/${isbn.slice(-3)}/x${isbn}.jpg`;
+			bookInfo = {
+				title, image, category, isbn, publisher, pubdate,
+			};
+		})
+		.catch(() => {
+			console.log('Error');
+		})
+	return (bookInfo);
+}
+
+const getAuthorInNaver = async (isbn: string) => {
+	let author;
+
+	await axios
+		.get(
+			`https://openapi.naver.com/v1/search/book_adv?d_isbn=${isbn}`,
+			{
+				headers: {
+				  'X-Naver-Client-Id': `${naverBookApiOption.client}`,
+				  'X-Naver-Client-Secret': `${naverBookApiOption.secret}`,
+				},
+			  },
+		)
+		.then((res) => {
+			author = res.data.items[0].author;
+		})
+		.catch(() => {
+			console.log('ERROR');
+		})
+		return (author);
+}
+
+export const searchBookInfoForCreate = async (isbn: string) => {
+	let bookInfo = await getInfoInNationalLibrary(isbn);
+	if (bookInfo === undefined)
+		return new IsbnNotFoundError(isbn);
+
+	bookInfo.author = await getAuthorInNaver(isbn);
+	if (bookInfo.author === undefined)
+		return new NaverBookNotFound(isbn);
+
+	return {bookInfo};
+}
+
 type SearchBookByIdArgs = { id: number };
 export const searchBookById = async ({ 
 	id, 
@@ -176,7 +240,6 @@ export const searchBookById = async ({
 			};
 		});
 }
-
 
 type UpdateBookArgs = {
 	bookId: number,
