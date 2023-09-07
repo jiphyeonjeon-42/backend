@@ -39,6 +39,10 @@ export function dateAddDays(expr: Expression<Date | null>, days: number) {
   return sql<Date | null>`DATE_ADD(${expr}, INTERVAL ${days} DAY)`;
 }
 
+export function dateSubDays(expr: Expression<Date | null>, days: number) {
+  return sql<Date | null>`DATE_SUB(${expr}, INTERVAL ${days} DAY)`;
+}
+
 /**
  * {@link left} - {@link right}일 수를 반환합니다.
  *

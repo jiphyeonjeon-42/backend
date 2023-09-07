@@ -37,6 +37,9 @@ export class VSearchBookByTag {
     title: string;
 
   @ViewColumn()
+    author: string;
+
+  @ViewColumn()
     isbn: number;
 
   @ViewColumn()

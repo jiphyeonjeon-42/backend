@@ -1,30 +1,36 @@
-import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema, metaPaginatedSchema } from "../shared";
+import { metaSchema, positiveInt, mkErrorMessageSchema, statusSchema, metaPaginatedSchema, dateLike } from "../shared";
 import { z } from "../zodWithOpenapi";
 
 export const commonQuerySchema = z.object({
 	query: z.string().optional(),
-	page: positiveInt.default(0),
-	limit: positiveInt.default(10),
+	page: positiveInt.default(0).openapi({ example: 0 }),
+	limit: positiveInt.default(10).openapi({ example: 10 }),
 });
 
-export const searchBookInfosQuerySchema = commonQuerySchema.extend({
-	sort: z.string(),
-	category: z.string(),
+export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
+	sort: z.enum(["new", "popular", "title"]).default('new'),
+	category: z.string().optional(),
+});
+
+export const searchBookInfosByTagQuerySchema = commonQuerySchema.extend({
+	query: z.string(),
+	sort: z.enum(["new", "popular", "title"]).default('new'),
+	category: z.string().optional(),
 });
 
 export const searchBookInfosSortedQuerySchema = z.object({
-	sort: z.string(),
-	limit: positiveInt.default(10),
+	sort: z.enum(["new", "popular"]),
+	limit: positiveInt.default(10).openapi({ example: 10 }),
 });
 
-export const searchBookInfoByIdQuerySchema = z.object({
+export const searchBookInfoByIdPathSchema = z.object({
 	id: positiveInt,
 });
 
 export const searchAllBooksQuerySchema = commonQuerySchema;
 
 export const searchBookInfoCreateQuerySchema = z.object({
-	isbnQuery: z.string(),
+	isbnQuery: z.string().openapi({ example: '9791191114225' }),
 });
 
 export const createBookBodySchema = z.object({
@@ -38,17 +44,21 @@ export const createBookBodySchema = z.object({
 	donator: z.string(),
 });
 
+export const searchBookByIdParamSchema = z.object({
+	id: positiveInt,
+});
+
 export const updateBookBodySchema = z.object({
-	bookInfoId: positiveInt,
-	categoryId: positiveInt,
-	title: z.string(),
-	author: z.string(),
-	publisher: z.string(),
-	publishedAt: z.string(),
-	image: z.string(),
-	bookId: positiveInt,
-	callSign: z.string(),
-	status: statusSchema,
+	bookInfoId: positiveInt.optional(),
+	title: z.string().optional(),
+	author: z.string().optional(),
+	publisher: z.string().optional(),
+	publishedAt: z.string().optional(),
+	image: z.string().optional(),
+	categoryId: positiveInt.optional(),
+	bookId: positiveInt.optional(),
+	callSign: z.string().optional(),
+	status: statusSchema.optional(),
 });
 
 export const updateDonatorBodySchema = z.object({
@@ -65,12 +75,19 @@ export const bookInfoSchema = z.object({
 	image: z.string(),
 	category: z.string(),
 	publishedAt: z.string(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
-	lendingCnt: positiveInt,
+	createdAt: dateLike,
+	updatedAt: dateLike,
 });
 
-export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
+export const searchBookInfosResponseSchema = metaPaginatedSchema(
+    bookInfoSchema
+      .extend({
+        publishedAt: dateLike,
+      })
+      .omit({
+        publisher: true
+      })
+  )
   .extend({
 	  categories: z.array(
 		  z.object({
@@ -82,19 +99,21 @@ export const searchBookInfosResponseSchema = metaPaginatedSchema(bookInfoSchema)
 
 export const searchBookInfosSortedResponseSchema = z.object({
 	items: z.array(
-		bookInfoSchema,
+		bookInfoSchema.extend({
+			publishedAt: dateLike,
+			lendingCnt: positiveInt,
+		}),
 	)
 });
 
-export const searchBookInfoByIdResponseSchema = z.object({
-	bookInfoSchema,
+export const searchBookInfoByIdResponseSchema = bookInfoSchema.extend({
 	books: z.array(
 		z.object({
 			id: positiveInt,
 			callSign: z.string(),
 			donator: z.string(),
 			status: statusSchema,
-			dueDate: z.string(),
+			dueDate: dateLike,
 			isLendable: positiveInt,
 			isReserved: positiveInt,
 		}),
@@ -146,7 +165,7 @@ export const searchBookByIdResponseSchema = z.object({
 	image: z.string().openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg' }),
 	status: statusSchema.openapi({ example: 0 }),
 	categoryId: positiveInt.openapi({ example: 2}),
-	callsign: z.string().openapi({ example: 'C5.13.v1.c2' }),
+	callSign: z.string().openapi({ example: 'C5.13.v1.c2' }),
 	category: z.string().openapi({ example: '네트워크' }),
 	isLendable: positiveInt.openapi({ example: 1 }),
 });
@@ -167,7 +186,7 @@ export const insertionFailureSchema = mkErrorMessageSchema('INSERT_FAILURE').des
 
 export const categoryNotFoundSchema = mkErrorMessageSchema('CATEGORY_NOT_FOUND').describe('보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음');
 
-export const formatErrorSchema = mkErrorMessageSchema('FORMAT_ERROR').describe('입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"');
+export const pubdateFormatErrorSchema = mkErrorMessageSchema('PUBDATE_FORMAT_ERROR').describe('입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"');
 
 export const unknownPatchErrorSchema = mkErrorMessageSchema('PATCH_ERROR').describe('예상치 못한 에러로 patch에 실패.');
 

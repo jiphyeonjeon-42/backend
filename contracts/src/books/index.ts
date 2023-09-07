@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { 
+import {
 	searchAllBooksQuerySchema,
 	searchAllBooksResponseSchema,
 	searchBookByIdResponseSchema,
@@ -8,7 +8,7 @@ import {
 	createBookBodySchema,
 	createBookResponseSchema,
 	categoryNotFoundSchema,
-	formatErrorSchema,
+	pubdateFormatErrorSchema,
 	insertionFailureSchema,
 	isbnNotFoundSchema,
 	naverBookNotFoundSchema,
@@ -16,14 +16,16 @@ import {
 	updateBookResponseSchema,
 	unknownPatchErrorSchema,
 	nonDataErrorSchema,
-	searchBookInfosQuerySchema,
+	searchAllBookInfosQuerySchema,
+	searchBookInfosByTagQuerySchema,
 	searchBookInfosResponseSchema,
 	searchBookInfosSortedQuerySchema,
 	searchBookInfosSortedResponseSchema,
-	searchBookInfoByIdQuerySchema,
 	searchBookInfoByIdResponseSchema,
 	updateDonatorBodySchema,
-	updateDonatorResponseSchema
+	updateDonatorResponseSchema,
+	searchBookInfoByIdPathSchema,
+	searchBookByIdParamSchema
 } from "./schema";
 import { badRequestSchema, bookInfoNotFoundSchema, bookNotFoundSchema, serverErrorSchema } from "../shared";
 
@@ -31,22 +33,22 @@ const c = initContract();
 
 export const booksContract = c.router(
 	{
-		searchAllBookInfos: {
-			method: 'GET',
-			path: '/info/search',
-			description: '책 정보(book_info)를 검색하여 가져온다.',
-			query: searchBookInfosQuerySchema,
-			responses: {
-				200: searchBookInfosResponseSchema,
-				400: badRequestSchema,
-				500: serverErrorSchema,
-			},
-		},
+		// searchAllBookInfos: {
+		// 	method: 'GET',
+		// 	path: '/info/search',
+		// 	description: '책 정보(book_info)를 검색하여 가져온다.',
+		// 	query: searchAllBookInfosQuerySchema,
+		// 	responses: {
+		// 		200: searchBookInfosResponseSchema,
+		// 		400: badRequestSchema,
+		// 		500: serverErrorSchema,
+		// 	},
+		// },
 		searchBookInfosByTag: {
 			method: 'GET',
 			path: '/info/tag',
 			description: '똑같은 내용의 태그가 달린 책의 정보를 검색하여 가져온다.',
-			query: searchBookInfosQuerySchema,
+			query: searchBookInfosByTagQuerySchema,
 			responses: {
 				200: searchBookInfosResponseSchema,
 				400: badRequestSchema,
@@ -67,8 +69,8 @@ export const booksContract = c.router(
 		searchBookInfoById: {
 			method: 'GET',
 			path: '/info/:id',
+			pathParams: searchBookInfoByIdPathSchema,
 			description: 'book_info테이블의 ID기준으로 책 한 종류의 정보를 가져온다.',
-			query: searchBookInfoByIdQuerySchema,
 			responses: {
 				200: searchBookInfoByIdResponseSchema,
 				404: bookInfoNotFoundSchema,
@@ -100,27 +102,28 @@ export const booksContract = c.router(
 		},
 		searchBookById: {
 			method: 'GET',
-			path: '/:bookId',
+			path: '/:id',
 			description: 'book테이블의 ID기준으로 책 한 종류의 정보를 가져온다.',
+			pathParams: searchBookByIdParamSchema,
 			responses: {
 				200: searchBookByIdResponseSchema,
 				404: bookNotFoundSchema,
 				500: serverErrorSchema,
 			}
 		},
-		createBook: {
-			method: 'POST',
-			path: '/create',
-			description: '책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.',
-			body: createBookBodySchema,
-			responses: {
-				200: createBookResponseSchema,
-				308: insertionFailureSchema,
-				309: categoryNotFoundSchema,
-				311: formatErrorSchema,
-				500: serverErrorSchema,
-			},
-		},
+		// createBook: {
+		// 	method: 'POST',
+		// 	path: '/create',
+		// 	description: '책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.',
+		// 	body: createBookBodySchema,
+		// 	responses: {
+		// 		200: createBookResponseSchema,
+		// 		308: insertionFailureSchema,
+		// 		309: categoryNotFoundSchema,
+		// 		311: pubdateFormatErrorSchema,
+		// 		500: serverErrorSchema,
+		// 	},
+		// },
 		updateBook: {
 			method: 'PATCH',
 			path: '/update',
@@ -130,7 +133,7 @@ export const booksContract = c.router(
 				204: updateBookResponseSchema,
 				312: unknownPatchErrorSchema,
 				313: nonDataErrorSchema,
-				311: formatErrorSchema,
+				311: pubdateFormatErrorSchema,
 				500: serverErrorSchema,
 			},
 		},

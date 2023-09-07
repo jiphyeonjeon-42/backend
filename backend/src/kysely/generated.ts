@@ -22,7 +22,7 @@ export interface BookInfo {
   publisher: string;
   isbn: Generated<string | null>;
   image: Generated<string | null>;
-  publishedAt: Generated<Date | null>;
+  publishedAt: Generated<Date | string | null>;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
   categoryId: number;
