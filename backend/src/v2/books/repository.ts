@@ -2,7 +2,7 @@ import { db } from "~/kysely/mod.ts";
 import { sql } from "kysely";
 
 import jipDataSource from "~/app-data-source";
-import { VSearchBook, Book, BookInfo, VSearchBookByTag } from "~/entity/entities";
+import { VSearchBook, Book, BookInfo, VSearchBookByTag, User } from "~/entity/entities";
 import { Like } from "typeorm";
 import { dateAddDays, dateFormat } from "~/kysely/sqlDates";
 
@@ -10,6 +10,7 @@ export const vSearchBookRepo = jipDataSource.getRepository(VSearchBook)
 export const bookRepo = jipDataSource.getRepository(Book);
 export const bookInfoRepo = jipDataSource.getRepository(BookInfo);
 export const vSearchBookByTagRepo = jipDataSource.getRepository(VSearchBookByTag);
+export const userRepo = jipDataSource.getRepository(User);
 
 export const getBookInfosByTag = async (whereQuery: object, sortQuery: object, page: number, limit: number) => {
 	return await vSearchBookByTagRepo.findAndCount({
@@ -103,12 +104,6 @@ export const getIsLendable = async (id: number) =>
 					.executeTakeFirst();
 
 	return book && !isLended && isReserved;
-
-	if (count1?.count1 === 0 && count2?.count2 === 1 && count3?.count3 === 0)
-		return 1;
-	else
-		return 0;
-
 }
 
 export const getIsReserved = async (id: number) =>
@@ -156,32 +151,6 @@ export const searchBookListAndCount = async ({
 	});
 }
 
-// export const bookExists = async (isbn: string) => {
-// 	return bookInfoRepo.count({ where: { isbn } });
-// }
-
-// export const createBookInfo = async (target : CreateBookArgs) => {
-// 	const bookInfo: BookInfo = {
-// 		title: target.title,
-// 		author: target.author,
-// 		publisher: target.publisher,
-// 		publishedAt: target.pubdate,
-// 		categoryId: Number(target.categoryId),
-// 		isbn: target.isbn,
-// 		image: target.image
-// 	};
-// 	return bookInfoRepo.save(bookInfo);
-// }
-
-// export const getNewCallsignPrimaryNum = async (categoryId: string) => {
-// 	return (await bookInfoRepo.countBy({ categoryId: Number(categoryId) })) + 1;
-// }
-
-// export const getOldCallsignNums = async (categoryAlphabet: string) =>
-// 	db
-// 		.selectFrom(books)
-// 		.
-
 type UpdateBookArgs = {
 	id: number,
 	callSign?: string | undefined,
@@ -213,5 +182,14 @@ export const updateBookInfoById = async ({
 	image,
 	categoryId
 }: UpdateBookInfoArgs ) => {
-	await bookInfoRepo.update(id, {title, author, publisher, publishedAt, image, categoryId})
+	await bookInfoRepo.update(id, {title, author, publisher, publishedAt, image, categoryId});
+}
+
+type UpdateBookDonatorNameArgs = {bookId: number, donator: string, donatorId?: number | null};
+export const updateBookDonatorName = async ({
+	bookId,
+	donator,
+	donatorId
+}: UpdateBookDonatorNameArgs ) => {
+	await bookRepo.update(bookId, {donator, donatorId});
 }

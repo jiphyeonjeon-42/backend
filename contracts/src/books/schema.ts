@@ -63,7 +63,7 @@ export const updateBookBodySchema = z.object({
 
 export const updateDonatorBodySchema = z.object({
 	bookId: positiveInt,
-	nicknameOrEmail: z.string(),
+	nickname: z.string(),
 });
 
 export const bookInfoSchema = z.object({
