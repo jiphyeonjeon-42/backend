@@ -172,7 +172,7 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     isCho = false;
   }
   const fullTextSearch = removeSpecialCharacters(disassembledKeyword);
-  const likeSearch = disassembledKeyword.replaceAll(' ', '%').replaceAll(' ', '%');
+  const likeSearch = disassembledKeyword.replaceAll("'", '').replaceAll(' ', '%');
 
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
