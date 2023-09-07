@@ -34,50 +34,41 @@ export const getBookInfosByTag = async (whereQuery: object, sortQuery: object, p
 	});
 }
 
+const bookInfoBy = () =>
+    db
+      .selectFrom('book_info')
+      .select([
+        'book_info.id',
+        'book_info.title',
+        'book_info.author',
+        'book_info.publisher',
+        'book_info.isbn',
+        'book_info.image',
+        'book_info.publishedAt',
+        'book_info.createdAt',
+        'book_info.updatedAt'
+      ])
+
 export const getBookInfosSorted = (limit: number) =>
-	db
-		.selectFrom('book_info')
-		.leftJoin('book', 'book_info.id', 'book.infoId')
-		.leftJoin('category', 'book_info.categoryId', 'category.id')
-		.leftJoin('lending', 'book.id', 'lending.bookId')
-		.select([
-			'book_info.id as id',
-			'book_info.title as title',
-			'book_info.author as author',
-			'book_info.publisher as publisher',
-			'book_info.isbn as isbn',
-			'book_info.image as image',
-			'category.name as category',
-			'book_info.publishedAt as publishedAt',
-			'book_info.createdAt as createdAt',
-			'book_info.updatedAt as updatedAt',
-		])
-		.select(({ eb }) => eb.fn.count('lending.id').as('lendingCnt'))
-		.limit(limit)
-		.groupBy('id')
+  bookInfoBy()
+    .leftJoin('book', 'book_info.id', 'book.infoId')
+    .leftJoin('category', 'book_info.categoryId', 'category.id')
+    .leftJoin('lending', 'book.id', 'lending.bookId')
+    .select('category.name as category')
+    .select(({ eb }) => eb.fn.count('lending.id').as('lendingCnt'))
+    .limit(limit)
+    .groupBy('id')
 
 export const searchBookInfoSpecById = async ( id: number ) =>
-	db
-		.selectFrom('book_info')
-		.select([
-			'id',
-			'title',
-			'author',
-			'publisher',
-			'isbn',
-			'image',
-			'publishedAt',
-			'createdAt',
-			'updatedAt'
-		])
-		.select(({ selectFrom }) => [
-			selectFrom('category')
-			.select('name')
-			.whereRef('category.id', '=', 'book_info.categoryId')
-			.as('category'),
-		])
-		.where('id', '=', id)
-		.executeTakeFirst();
+  bookInfoBy()
+    .select(({ selectFrom }) => [
+      selectFrom('category')
+      .select('name')
+      .whereRef('category.id', '=', 'book_info.categoryId')
+      .as('category'),
+    ])
+    .where('id', '=', id)
+    .executeTakeFirst();
 
 export const searchBooksByInfoId = async ( id: number ) =>
 	db
