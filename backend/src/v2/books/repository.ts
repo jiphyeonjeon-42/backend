@@ -93,26 +93,25 @@ export const searchBooksByInfoId = async ( id: number ) =>
 
 export const getIsLendable = async (id: number) =>
 {
-	const count1 = await db
+	const isLended = await db
 					.selectFrom('lending')
 					.where('bookId', '=', id)
 					.where('returnedAt', 'is', null)
-					.select(({ eb }) => eb.fn.countAll().as('count1'))
 					.executeTakeFirst();
 
-	const count2 = await db
+	const book = await db
 					.selectFrom('book')
 					.where('id', '=', id)
 					.where('status', '=', 0)
-					.select(({ eb }) => eb.fn.countAll().as('count2'))
 					.executeTakeFirst();
 
-	const count3 = await db
+	const isReserved = await db
 					.selectFrom('reservation')
 					.where('bookId', '=', id)
 					.where('status', '=', 0)
-					.select(({ eb }) => eb.fn.countAll().as('count3'))
 					.executeTakeFirst();
+
+	return book && !isLended && isReserved;
 
 	if (count1?.count1 === 0 && count2?.count2 === 1 && count3?.count3 === 0)
 		return 1;
