@@ -1,13 +1,20 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { bookInfoIdSchema, bookInfoNotFoundSchema, metaPaginatedSchema, offsetPaginatedSchema, paginatedSearchSchema, visibility } from '../shared';
+import {
+  bookInfoIdSchema,
+  bookInfoNotFoundSchema,
+  metaPaginatedSchema,
+  offsetPaginatedSchema,
+  paginatedSearchSchema,
+  visibility,
+} from '../shared';
 import {
   contentSchema,
   mutationDescription,
   reviewIdPathSchema,
   reviewNotFoundSchema,
 } from './schema';
-import { reviewSchema } from './schema'
+import { reviewSchema } from './schema';
 
 export * from './schema';
 
@@ -25,7 +32,7 @@ export const reviewsContract = c.router(
       }),
       description: '전체 도서 리뷰 목록을 조회합니다.',
       responses: {
-        200: metaPaginatedSchema(reviewSchema)
+        200: metaPaginatedSchema(reviewSchema),
       },
     },
     post: {

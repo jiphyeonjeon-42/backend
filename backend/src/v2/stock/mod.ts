@@ -18,5 +18,5 @@ export const stock = s.router(contract.stock, {
       return bookNotFound;
     }
     return { status: 200, body: '재고 상태가 업데이트되었습니다.' } as const;
-  }
+  },
 });

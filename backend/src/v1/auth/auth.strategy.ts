@@ -40,9 +40,7 @@ export const FtAuthentication = new FortyTwoStrategy(
 
 export const JwtStrategy = new JWTStrategy(
   {
-    jwtFromRequest: ExtractJwt.fromExtractors([
-      (req: Request) => req?.cookies?.access_token,
-    ]),
+    jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => req?.cookies?.access_token]),
     secretOrKey: jwtOption.secret,
     ignoreExpiration: false,
     issuer: jwtOption.issuer,

@@ -38,12 +38,7 @@ type Args = {
   type?: 'title' | 'user' | 'callsign' | undefined;
 };
 
-export const getHistoriesByQuery = ({
-  query,
-  type,
-  page,
-  limit,
-}: Args & Offset) =>
+export const getHistoriesByQuery = ({ query, type, page, limit }: Args & Offset) =>
   historiesRepo.findAndCount({
     where: getSearchCondition({ query, type }),
     take: limit,
@@ -56,11 +51,7 @@ type MyPageArgs = {
   type?: 'title' | 'callsign' | undefined;
 };
 
-export const getHistoriesByUser = ({
-  login,
-  page,
-  limit,
-}: MyPageArgs & Offset) =>
+export const getHistoriesByUser = ({ login, page, limit }: MyPageArgs & Offset) =>
   historiesRepo.findAndCount({
     where: { login },
     take: limit,

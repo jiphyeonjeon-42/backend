@@ -1,7 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import {
-  NextFunction, Request, RequestHandler, Response,
-} from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import * as status from 'http-status';
 import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
@@ -26,21 +24,15 @@ const pubdateFormatValidator = (pubdate: string | Date) => {
   return true;
 };
 
-const bookStatusFormatValidator = (bookStatus : number) => {
+const bookStatusFormatValidator = (bookStatus: number) => {
   if (bookStatus < 0 || bookStatus > 3) {
     return false;
   }
   return true;
 };
 
-export const createBook = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const {
-    title, author, categoryId, pubdate,
-  } = req.body;
+export const createBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, author, categoryId, pubdate } = req.body;
   if (!(title && author && categoryId && pubdate)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
@@ -48,9 +40,7 @@ export const createBook = async (
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
   try {
-    return res
-      .status(status.OK)
-      .send(await BooksService.createBook(req.body));
+    return res.status(status.OK).send(await BooksService.createBook(req.body));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -64,19 +54,13 @@ export const createBook = async (
   return 0;
 };
 
-export const createBookInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const isbn = req.query.isbnQuery ? req.query.isbnQuery as string : '';
+export const createBookInfo = async (req: Request, res: Response, next: NextFunction) => {
+  const isbn = req.query.isbnQuery ? (req.query.isbnQuery as string) : '';
   if (isbn === '') {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    return res
-      .status(status.OK)
-      .send(await BooksService.createBookInfo(isbn));
+    return res.status(status.OK).send(await BooksService.createBookInfo(isbn));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -98,9 +82,7 @@ export const searchBookInfo = async (
   // URI에 있는 파라미터/쿼리 변수에 저장
   let query = req.query?.query ?? '';
   query = query.trim();
-  const {
-    page, limit, sort, category,
-  } = req.query;
+  const { page, limit, sort, category } = req.query;
 
   // 유효한 인자인지 파악
   if (Number.isNaN(page) || Number.isNaN(limit)) {
@@ -117,9 +99,7 @@ export const searchBookInfo = async (
       category,
     );
     logger.info(`[ES_S] : ${JSON.stringify(searchBookInfoResult.items)}`);
-    return res
-      .status(status.OK)
-      .json(searchBookInfoResult);
+    return res.status(status.OK).json(searchBookInfoResult);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -146,9 +126,9 @@ export const searchBookInfoByTag = async (
   const category = parseCheck.stringQueryParse(rawData.category);
 
   try {
-    return res.status(status.OK).json(
-      await BooksService.searchInfoByTag(query, page, limit, sort, category),
-    );
+    return res
+      .status(status.OK)
+      .json(await BooksService.searchInfoByTag(query, page, limit, sort, category));
   } catch (error: any) {
     return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
@@ -165,9 +145,7 @@ export const getBookById: RequestHandler = async (
   }
   try {
     const bookInfo = await BooksService.getBookById(req.params.id);
-    return res
-      .status(status.OK)
-      .json(bookInfo);
+    return res.status(status.OK).json(bookInfo);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -193,9 +171,7 @@ export const getInfoId: RequestHandler = async (
   try {
     const bookInfo = await BooksService.getInfo(req.params.id);
     logger.info(`[ES_C] : ${JSON.stringify(bookInfo)}`);
-    return res
-      .status(status.OK)
-      .json(bookInfo);
+    return res.status(status.OK).json(bookInfo);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -220,9 +196,7 @@ export const sortInfo = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    return res
-      .status(status.OK)
-      .json(await BooksService.sortInfo(limit, sort));
+    return res.status(status.OK).json(await BooksService.sortInfo(limit, sort));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -236,11 +210,7 @@ export const sortInfo = async (
   return 0;
 };
 
-export const search = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const search = async (req: Request, res: Response, next: NextFunction) => {
   const query = String(req.query.query) === 'undefined' ? ' ' : String(req.query.query);
   const page = parseInt(String(req.query.page), 10);
   const limit = parseInt(String(req.query.limit), 10);
@@ -249,9 +219,7 @@ export const search = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    return res
-      .status(status.OK)
-      .json(await BooksService.search(query, page, limit));
+    return res.status(status.OK).json(await BooksService.search(query, page, limit));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 300 && errorNumber < 400) {
@@ -265,11 +233,7 @@ export const search = async (
   return 0;
 };
 
-export const createLike = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createLike = async (req: Request, res: Response, next: NextFunction) => {
   // parameters
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
   const { id } = req.user as any;
@@ -295,17 +259,15 @@ export const createLike = async (
   return 0;
 };
 
-export const deleteLike = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const deleteLike = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
 
   // 로직수행 및 에러처리
   try {
@@ -324,18 +286,16 @@ export const deleteLike = async (
   return 0;
 };
 
-export const getLikeInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getLikeInfo = async (req: Request, res: Response, next: NextFunction) => {
   // parameters
   const { id } = req.user as any;
   const parameter = String(req?.params);
   const bookInfoId = parseInt(String(req?.params?.bookInfoId), 10);
 
   // parameter 검증
-  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) { return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST)); }
+  if (parameter === 'undefined' || Number.isNaN(bookInfoId)) {
+    return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
+  }
 
   // 로직수행 및 에러처리
   try {
@@ -353,11 +313,7 @@ export const getLikeInfo = async (
   return 0;
 };
 
-export const updateBookInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateBookInfo = async (req: Request, res: Response, next: NextFunction) => {
   const bookInfo: types.UpdateBookInfo = {
     id: req.body.bookInfoId,
     title: req.body.title,
@@ -376,24 +332,51 @@ export const updateBookInfo = async (
   if (book.id <= 0 || Number.isNaN(book.id) || bookInfo.id <= 0 || Number.isNaN(bookInfo.id)) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
-  if (!(bookInfo.title || bookInfo.author || bookInfo.publisher || bookInfo.image
-          || bookInfo.categoryId || bookInfo.publishedAt || book.callSign || book.status !== undefined)) { return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST)); }
+  if (
+    !(
+      bookInfo.title ||
+      bookInfo.author ||
+      bookInfo.publisher ||
+      bookInfo.image ||
+      bookInfo.categoryId ||
+      bookInfo.publishedAt ||
+      book.callSign ||
+      book.status !== undefined
+    )
+  ) {
+    return next(new ErrorResponse(errorCode.NO_BOOK_INFO_DATA, status.BAD_REQUEST));
+  }
 
-  if (!isNullish(bookInfo.title)) { bookInfo.title.trim(); }
-  if (!isNullish(bookInfo.author)) { bookInfo.author.trim(); }
-  if (!isNullish(bookInfo.publisher)) { bookInfo.publisher.trim(); }
-  if (!isNullish(bookInfo.image)) { bookInfo.image.trim(); }
+  if (!isNullish(bookInfo.title)) {
+    bookInfo.title.trim();
+  }
+  if (!isNullish(bookInfo.author)) {
+    bookInfo.author.trim();
+  }
+  if (!isNullish(bookInfo.publisher)) {
+    bookInfo.publisher.trim();
+  }
+  if (!isNullish(bookInfo.image)) {
+    bookInfo.image.trim();
+  }
   if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt)) {
     String(bookInfo.publishedAt).trim();
-  } else if (!isNullish(bookInfo.publishedAt) && pubdateFormatValidator(bookInfo.publishedAt) === false) {
+  } else if (
+    !isNullish(bookInfo.publishedAt) &&
+    pubdateFormatValidator(bookInfo.publishedAt) === false
+  ) {
     return next(new ErrorResponse(errorCode.INVALID_PUBDATE_FORNAT, status.BAD_REQUEST));
   }
-  if (isNullish(book.callSign) === false) { book.callSign.trim(); }
+  if (isNullish(book.callSign) === false) {
+    book.callSign.trim();
+  }
   if (bookStatusFormatValidator(book.status) === false) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    if (book.id) { await BooksService.updateBook(book, bookInfo); }
+    if (book.id) {
+      await BooksService.updateBook(book, bookInfo);
+    }
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
@@ -408,30 +391,28 @@ export const updateBookInfo = async (
   return 0;
 };
 
-export const updateBookDonator = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateBookDonator = async (req: Request, res: Response, next: NextFunction) => {
   const parsed = searchSchema.safeParse(req.body);
   if (!parsed.success) {
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
-  const {
-    nicknameOrEmail, page, limit,
-  } = parsed.data;
+  const { nicknameOrEmail, page, limit } = parsed.data;
   let items;
   let user;
   try {
     if (nicknameOrEmail) {
-      items = JSON.parse(JSON.stringify(
-        await usersService.searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
-      ));
+      items = JSON.parse(
+        JSON.stringify(
+          await usersService.searchUserBynicknameOrEmail(nicknameOrEmail, limit, page),
+        ),
+      );
     }
     if (items) {
-      items.items = await Promise.all(items.items.map(async (data: User) => ({
-        ...data,
-      })));
+      items.items = await Promise.all(
+        items.items.map(async (data: User) => ({
+          ...data,
+        })),
+      );
     }
     if (items.items[0]) {
       user = items.items[0];
@@ -447,7 +428,9 @@ export const updateBookDonator = async (
     if (bookDonator.id <= 0 || Number.isNaN(bookDonator.id)) {
       return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
     }
-    if (bookDonator.id) { await BooksService.updateBookDonator(bookDonator); }
+    if (bookDonator.id) {
+      await BooksService.updateBookDonator(bookDonator);
+    }
 
     return res.status(status.NO_CONTENT).send();
   } catch (error: any) {

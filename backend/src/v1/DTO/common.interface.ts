@@ -1,23 +1,23 @@
 export type Meta = {
-  totalItems: number,
-  itemCount: number,
-  itemsPerPage: number,
-  totalPages: number,
-  currentPage: number
-}
+  totalItems: number;
+  itemCount: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+};
 
 export type searchQuery = {
-  nickname: string,
-  page?: string,
-  limit?: string,
-}
+  nickname: string;
+  page?: string;
+  limit?: string;
+};
 
 export type createQuery = {
-  email: string,
-  password: string,
-}
+  email: string;
+  password: string;
+};
 
 export type categoryWithBookCount = {
-  name: string,
-  bookCount: number,
-}
+  name: string;
+  bookCount: number;
+};

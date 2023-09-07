@@ -9,7 +9,7 @@ export const updateSlackList = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) : Promise<void> => {
+): Promise<void> => {
   try {
     await slack.updateSlackId();
     res.status(204).send();

@@ -7,11 +7,11 @@ import { SubTagRepository, SuperTagRepository } from './tags.repository';
 import { superDefaultTag } from '../DTO/tags.model';
 
 export class TagsService {
-  private readonly subTagRepository : SubTagRepository;
+  private readonly subTagRepository: SubTagRepository;
 
-  private readonly superTagRepository : SuperTagRepository;
+  private readonly superTagRepository: SuperTagRepository;
 
-  private readonly queryRunner : QueryRunner;
+  private readonly queryRunner: QueryRunner;
 
   constructor() {
     this.queryRunner = jipDataSource.createQueryRunner();
@@ -58,8 +58,12 @@ export class TagsService {
     return defaultTagsInsertion;
   }
 
-  async searchSubDefaultTags(page: number, limit: number, visibility: string, query: string)
-  : Promise<Object> {
+  async searchSubDefaultTags(
+    page: number,
+    limit: number,
+    visibility: string,
+    query: string,
+  ): Promise<Object> {
     const conditions: Array<Object> = [];
     const deleteAndVisibility: any = { isDeleted: 0, isPublic: null };
 
@@ -81,12 +85,14 @@ export class TagsService {
       limit,
       conditions,
     );
-    const itemPerPage = (Number.isNaN(limit)) ? 10 : limit;
+    const itemPerPage = Number.isNaN(limit) ? 10 : limit;
     const meta = {
       totalItems: count,
       itemPerPage,
-      totalPages: parseInt(String(count / itemPerPage
-        + Number((count % itemPerPage !== 0) || !count)), 10),
+      totalPages: parseInt(
+        String(count / itemPerPage + Number(count % itemPerPage !== 0 || !count)),
+        10,
+      ),
       firstPage: page === 0,
       finalPage: page === parseInt(String(count / itemPerPage), 10),
       currentPage: page,
@@ -113,13 +119,11 @@ export class TagsService {
     }));
     const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
     if (defaultTag) {
-      const defaultTags = await this.subTagRepository.getSubTags(
-        {
-          superTagId: defaultTag.id,
-          isPublic: 1,
-          isDeleted: 0,
-        },
-      );
+      const defaultTags = await this.subTagRepository.getSubTags({
+        superTagId: defaultTag.id,
+        isPublic: 1,
+        isDeleted: 0,
+      });
       defaultTags.forEach((dt) => {
         superDefaultTags.push({
           id: dt.id,
@@ -186,12 +190,7 @@ export class TagsService {
     return subTagCount > 0;
   }
 
-  async mergeTags(
-    bookInfoId: number,
-    subTagIds: number[],
-    rawSuperTagId: number,
-    userId: number,
-  ) {
+  async mergeTags(bookInfoId: number, subTagIds: number[], rawSuperTagId: number, userId: number) {
     let superTagId = 0;
 
     try {
@@ -200,8 +199,12 @@ export class TagsService {
         const defaultTag = await this.superTagRepository.getDefaultTag(bookInfoId);
         if (defaultTag === null) {
           superTagId = await this.superTagRepository.createSuperTag('default', bookInfoId, userId);
-        } else { superTagId = defaultTag.id; }
-      } else { superTagId = rawSuperTagId; }
+        } else {
+          superTagId = defaultTag.id;
+        }
+      } else {
+        superTagId = rawSuperTagId;
+      }
       await this.subTagRepository.mergeTags(subTagIds, superTagId, userId);
       await this.queryRunner.commitTransaction();
     } catch (e) {
@@ -216,9 +219,7 @@ export class TagsService {
   async isExistingSuperTag(superTagId: number, content: string): Promise<boolean> {
     const superTag: SuperTag[] = await this.superTagRepository.getSuperTags({ id: superTagId });
     const { bookInfoId } = superTag[0];
-    const duplicates: number = await this.superTagRepository.countSuperTag(
-      { content, bookInfoId },
-    );
+    const duplicates: number = await this.superTagRepository.countSuperTag({ content, bookInfoId });
     if (duplicates === 0) {
       return false;
     }
@@ -265,7 +266,7 @@ export class TagsService {
   }
 
   async updateSubTags(userId: number, subTagId: number, visibility: string): Promise<void> {
-    const isPublic = (visibility === 'public') ? 1 : 0;
+    const isPublic = visibility === 'public' ? 1 : 0;
     try {
       await this.queryRunner.startTransaction();
       await this.subTagRepository.updateSubTags(userId, subTagId, isPublic);

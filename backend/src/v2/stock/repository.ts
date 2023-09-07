@@ -8,11 +8,7 @@ export const bookRepo = jipDataSource.getRepository(Book);
 
 type SearchStockArgs = { page: number; limit: number; days: number };
 
-export const searchStockByUpdatedOlderThan = ({
-  limit,
-  page,
-  days,
-}: SearchStockArgs) => {
+export const searchStockByUpdatedOlderThan = ({ limit, page, days }: SearchStockArgs) => {
   const today = startOfDay(new Date());
   return stockRepo.findAndCount({
     where: { updatedAt: LessThan(addDays(today, days * -1)) },

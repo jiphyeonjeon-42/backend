@@ -1,12 +1,19 @@
 import { executeQuery } from '~/mysql';
 
-export const getBookinfoReviewsPageNoOffset = async (bookInfoId: number, reviewsId: number, sort: 'asc' | 'desc', limit: number) => {
-  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
+export const getBookinfoReviewsPageNoOffset = async (
+  bookInfoId: number,
+  reviewsId: number,
+  sort: 'asc' | 'desc',
+  limit: number,
+) => {
+  const bookInfoIdQuery = Number.isNaN(bookInfoId) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
   const sign = sort === 'asc' ? '>' : '<';
-  const reviewIdQuery = (Number.isNaN(reviewsId)) ? '' : `AND reviews.id ${sign} ${reviewsId}`;
+  const reviewIdQuery = Number.isNaN(reviewsId) ? '' : `AND reviews.id ${sign} ${reviewsId}`;
   const sortQuery = `ORDER BY reviews.id ${sort}`;
-  if (bookInfoIdQuery === '') { return []; }
-  const limitQuery = (Number.isNaN(limit)) ? 'LIMIT 10' : `LIMIT ${limit}`;
+  if (bookInfoIdQuery === '') {
+    return [];
+  }
+  const limitQuery = Number.isNaN(limit) ? 'LIMIT 10' : `LIMIT ${limit}`;
 
   const reviews = await executeQuery(`
   SELECT
@@ -27,13 +34,17 @@ export const getBookinfoReviewsPageNoOffset = async (bookInfoId: number, reviews
     ${sortQuery}
   ${limitQuery}
   `);
-  return (reviews);
+  return reviews;
 };
 
-export const getBookInfoReviewsCounts = async (bookInfoId: number, reviewsId: number, sort: 'asc' | 'desc') => {
-  const bookInfoIdQuery = (Number.isNaN(bookInfoId)) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
+export const getBookInfoReviewsCounts = async (
+  bookInfoId: number,
+  reviewsId: number,
+  sort: 'asc' | 'desc',
+) => {
+  const bookInfoIdQuery = Number.isNaN(bookInfoId) ? '' : `AND reviews.bookInfoId = ${bookInfoId}`;
   const sign = sort === 'asc' ? '>' : '<';
-  const reviewIdQuery = (Number.isNaN(reviewsId)) ? '' : `AND reviews.id ${sign} ${reviewsId}`;
+  const reviewIdQuery = Number.isNaN(reviewsId) ? '' : `AND reviews.id ${sign} ${reviewsId}`;
   const counts = await executeQuery(`
   SELECT
     COUNT(*) as counts
@@ -43,5 +54,5 @@ export const getBookInfoReviewsCounts = async (bookInfoId: number, reviewsId: nu
     ${bookInfoIdQuery}
     ${reviewIdQuery}
   `);
-  return (counts[0].counts);
+  return counts[0].counts;
 };

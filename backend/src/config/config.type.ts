@@ -19,7 +19,7 @@ export type NaverBookApiOption = {
 
   /** 네이버 도서 검색 API 시크릿 */
   secret: string;
-}
+};
 
 /** DB 연결 옵션 */
 export type ConnectOption = {
@@ -34,7 +34,7 @@ export type ConnectOption = {
 
   /** DB 이름 */
   database: string;
-}
+};
 
 /** OAuth URL 옵션 */
 export type OauthUrlOption = {
@@ -43,7 +43,7 @@ export type OauthUrlOption = {
 
   /** 집현전 프론트엔드 URL */
   clientURL: string;
-}
+};
 
 /** 42 API OAuth 클라이언트 인증 정보 */
 export type Oauth42ApiOption = {
@@ -52,7 +52,7 @@ export type Oauth42ApiOption = {
 
   /** 42 API OAuth 클라이언트 시크릿 */
   secret: string;
-}
+};
 
 /** npm 로깅 레벨 */
 export type LogLevel = keyof typeof levels;
@@ -64,4 +64,4 @@ export type LogLevelOption = {
 
   /** 콘솔 로깅 레벨 */
   readonly consoleLogLevel: 'error' | 'debug';
-}
+};

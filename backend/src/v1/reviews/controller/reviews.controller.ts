@@ -1,6 +1,4 @@
-import {
-  Request, RequestHandler, Response,
-} from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import * as status from 'http-status';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as errorCode from '~/v1/utils/error/errorCode';
@@ -47,21 +45,21 @@ export const getReviews: RequestHandler = async (req, res, next) => {
   }
 
   const { id } = parsedId.data;
-  const {
-    isMyReview, titleOrNickname, disabled, page, sort, limit,
-  } = parsedQuery.data;
+  const { isMyReview, titleOrNickname, disabled, page, sort, limit } = parsedQuery.data;
 
   return res
     .status(status.OK)
-    .json(await reviewsService.getReviewsPage(
-      id,
-      isMyReview,
-      titleOrNickname ?? '',
-      disabled,
-      page,
-      sort,
-      limit,
-    ));
+    .json(
+      await reviewsService.getReviewsPage(
+        id,
+        isMyReview,
+        titleOrNickname ?? '',
+        disabled,
+        page,
+        sort,
+        limit,
+      ),
+    );
 };
 
 export const updateReviews: RequestHandler = async (req, res, next) => {

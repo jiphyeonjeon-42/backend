@@ -8,7 +8,7 @@ class LikesRepository extends Repository<Likes> {
     super(Likes, entityManager);
   }
 
-  async getLikesByBookInfoId(bookInfoId: number) : Promise<Likes[]> {
+  async getLikesByBookInfoId(bookInfoId: number): Promise<Likes[]> {
     const likes = this.find({
       where: {
         bookInfoId,
@@ -17,7 +17,7 @@ class LikesRepository extends Repository<Likes> {
     return likes;
   }
 
-  async getLikesByUserId(userId: number) : Promise<Likes[]> {
+  async getLikesByUserId(userId: number): Promise<Likes[]> {
     const likes = await this.find({
       where: {
         userId,

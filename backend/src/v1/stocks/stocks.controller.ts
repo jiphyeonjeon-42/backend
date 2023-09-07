@@ -1,6 +1,4 @@
-import {
-  NextFunction, Request, RequestHandler, Response,
-} from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import * as status from 'http-status';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';

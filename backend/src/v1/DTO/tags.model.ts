@@ -7,7 +7,7 @@ export type subDefaultTag = {
   content: string;
   superContent: string;
   visibility: 'public' | 'private';
-}
+};
 
 export type superDefaultTag = {
   id: number;
@@ -15,4 +15,4 @@ export type superDefaultTag = {
   login: string;
   count: number;
   type: 'super' | 'default';
-}
+};

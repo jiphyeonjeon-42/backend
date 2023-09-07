@@ -8,29 +8,53 @@ export const searchUserSchema = z.object({
   id: positiveInt.optional().describe('검색할 유저의 id'),
 });
 
-const reservationSchema = z.object({
-  reservationId: positiveInt.describe('예약 번호').openapi({ example: 17 }),
-  reservedBookInfoId: positiveInt.describe('예약된 도서 번호').openapi({ example: 34 }),
-  endAt: z.coerce.string().nullable().describe('예약 만료 날짜').openapi({ example: '2023-08-16' }),
-  ranking: z.coerce.string().nullable().describe('예약 순위').openapi({ example: '1' }),
-  title: z.string().describe('예약된 도서 제목').openapi({ example: '생활코딩! Node.js 노드제이에스 프로그래밍(위키북스 러닝스쿨 시리즈)' }),
-  author: z.string().describe('예약된 도서 저자').openapi({ example: '이고잉' }),
-  image: z.string().describe('예약된 도서 이미지').openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/383/x9791158392383.jpg' }),
-  userId: positiveInt.describe('예약한 유저 번호').openapi({ example: 1547 }),
-}).optional();
+const reservationSchema = z
+  .object({
+    reservationId: positiveInt.describe('예약 번호').openapi({ example: 17 }),
+    reservedBookInfoId: positiveInt.describe('예약된 도서 번호').openapi({ example: 34 }),
+    endAt: z.coerce
+      .string()
+      .nullable()
+      .describe('예약 만료 날짜')
+      .openapi({ example: '2023-08-16' }),
+    ranking: z.coerce.string().nullable().describe('예약 순위').openapi({ example: '1' }),
+    title: z
+      .string()
+      .describe('예약된 도서 제목')
+      .openapi({ example: '생활코딩! Node.js 노드제이에스 프로그래밍(위키북스 러닝스쿨 시리즈)' }),
+    author: z.string().describe('예약된 도서 저자').openapi({ example: '이고잉' }),
+    image: z.string().describe('예약된 도서 이미지').openapi({
+      example: 'https://image.kyobobook.co.kr/images/book/xlarge/383/x9791158392383.jpg',
+    }),
+    userId: positiveInt.describe('예약한 유저 번호').openapi({ example: 1547 }),
+  })
+  .optional();
 
-const lendingSchema = z.object({
-  userId: positiveInt.describe('대출한 유저 번호').openapi({ example: 1547 }),
-  bookInfoId: positiveInt.describe('대출한 도서 info id').openapi({ example: 20 }),
-  lendDate: z.coerce.string().describe('대출 날짜').openapi({ example: '2023-08-08T20:20:55.000Z' }),
-  lendingCondition: z.string().describe('대출 상태').openapi({ example: '이상 없음' }),
-  image: z.string().describe('대출한 도서 이미지').openapi({ example: 'https://image.kyobobook.co.kr/images/book/xlarge/642/x9791185585642.jpg' }),
-  author: z.string().describe('대출한 도서 저자').openapi({ example: '어제이 애그러월, 조슈아 갠스, 아비 골드파브' }),
-  title: z.string().describe('대출한 도서 제목').openapi({ example: '예측 기계' }),
-  duedate: z.coerce.string().describe('반납 예정 날짜').openapi({ example: '2023-08-22T20:20:55.000Z' }),
-  overDueDay: positiveInt.describe('연체된 날 수').openapi({ example: 0 }),
-  reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
-}).optional();
+const lendingSchema = z
+  .object({
+    userId: positiveInt.describe('대출한 유저 번호').openapi({ example: 1547 }),
+    bookInfoId: positiveInt.describe('대출한 도서 info id').openapi({ example: 20 }),
+    lendDate: z.coerce
+      .string()
+      .describe('대출 날짜')
+      .openapi({ example: '2023-08-08T20:20:55.000Z' }),
+    lendingCondition: z.string().describe('대출 상태').openapi({ example: '이상 없음' }),
+    image: z.string().describe('대출한 도서 이미지').openapi({
+      example: 'https://image.kyobobook.co.kr/images/book/xlarge/642/x9791185585642.jpg',
+    }),
+    author: z
+      .string()
+      .describe('대출한 도서 저자')
+      .openapi({ example: '어제이 애그러월, 조슈아 갠스, 아비 골드파브' }),
+    title: z.string().describe('대출한 도서 제목').openapi({ example: '예측 기계' }),
+    duedate: z.coerce
+      .string()
+      .describe('반납 예정 날짜')
+      .openapi({ example: '2023-08-22T20:20:55.000Z' }),
+    overDueDay: positiveInt.describe('연체된 날 수').openapi({ example: 0 }),
+    reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
+  })
+  .optional();
 
 const searchUserResponseItemSchema = z.object({
   id: positiveInt.describe('유저 번호').openapi({ example: 1 }),
@@ -38,8 +62,16 @@ const searchUserResponseItemSchema = z.object({
   nickname: z.string().describe('닉네임').openapi({ example: 'kyungsle' }),
   intraId: positiveInt.describe('인트라 고유 번호').openapi({ example: '10068' }),
   slack: z.string().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
-  penaltyEndDate: z.coerce.string().optional().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
-  overDueDay: z.coerce.string().default('0').describe('현재 연체된 날 수').openapi({ example: '0' }),
+  penaltyEndDate: z.coerce
+    .string()
+    .optional()
+    .describe('연체 패널티 끝나는 날짜')
+    .openapi({ example: '2022-05-22' }),
+  overDueDay: z.coerce
+    .string()
+    .default('0')
+    .describe('현재 연체된 날 수')
+    .openapi({ example: '0' }),
   role: positiveInt.describe('유저 권한').openapi({ example: 2 }),
   reservations: z.array(reservationSchema).describe('해당 유저의 예약 정보'),
   lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
@@ -66,11 +98,20 @@ export const updateUserSchema = z.object({
   intraId: positiveInt.optional().describe('인트라 고유 번호').openapi({ example: '10068' }),
   slack: z.string().optional().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
   role: positiveInt.optional().describe('유저 권한').openapi({ example: 2 }),
-  penaltyEndDate: z.coerce.string().optional().describe('연체 패널티 끝나는 날짜').openapi({ example: '2022-05-22' }),
+  penaltyEndDate: z.coerce
+    .string()
+    .optional()
+    .describe('연체 패널티 끝나는 날짜')
+    .openapi({ example: '2022-05-22' }),
 });
 
 export const updatePrivateInfoSchema = z.object({
-  email: z.string().email().optional().describe('이메일').openapi({ example: 'yena@student.42seoul.kr' }),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .describe('이메일')
+    .openapi({ example: 'yena@student.42seoul.kr' }),
   password: z.string().optional().describe('패스워드').openapi({ example: 'KingGodMajesty42' }),
 });
 

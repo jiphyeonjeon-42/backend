@@ -86,4 +86,5 @@ export const DUPLICATED_SUPER_TAGS = '908';
 export const DUPLICATED_SUB_DEFAULT_TAGS = '909';
 export const INVALID_TAG_ID = '910';
 
-export const CLIENT_AUTH_FAILED_ERROR_MESSAGE = 'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';
+export const CLIENT_AUTH_FAILED_ERROR_MESSAGE =
+  'Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.';

@@ -2,7 +2,7 @@ import * as errorCheck from './utils/errorCheck';
 import ReviewsRepository from '../repository/reviews.repository';
 
 export default class ReviewsService {
-  private readonly reviewsRepository : ReviewsRepository;
+  private readonly reviewsRepository: ReviewsRepository;
 
   constructor() {
     this.reviewsRepository = new ReviewsRepository();
@@ -37,12 +37,14 @@ export default class ReviewsService {
       titleOrNickname,
       disabled,
     );
-    const itemsPerPage = (Number.isNaN(limit)) ? 10 : limit;
+    const itemsPerPage = Number.isNaN(limit) ? 10 : limit;
     const meta = {
       totalItems: counts,
       itemsPerPage,
-      totalPages: parseInt(String(counts / itemsPerPage
-        + Number((counts % itemsPerPage !== 0) || !counts)), 10),
+      totalPages: parseInt(
+        String(counts / itemsPerPage + Number(counts % itemsPerPage !== 0 || !counts)),
+        10,
+      ),
       firstPage: page === 0,
       finalPage: page === parseInt(String(counts / itemsPerPage), 10),
       currentPage: page,
@@ -50,18 +52,12 @@ export default class ReviewsService {
     return { items, meta };
   }
 
-  async getReviewsUserId(
-    reviewsId: number,
-  ) {
+  async getReviewsUserId(reviewsId: number) {
     const reviewsUserId = await this.reviewsRepository.getReviewsUserId(reviewsId);
     return reviewsUserId;
   }
 
-  async updateReviews(
-    reviewsId: number,
-    userId: number,
-    content: string,
-  ) {
+  async updateReviews(reviewsId: number, userId: number, content: string) {
     const reviewsUserId = await errorCheck.updatePossibleCheck(reviewsId);
     errorCheck.idAndTokenIdSameCheck(reviewsUserId, userId);
     await this.reviewsRepository.updateReviews(reviewsId, userId, content);
@@ -71,10 +67,7 @@ export default class ReviewsService {
     await this.reviewsRepository.deleteReviews(reviewId, deleteUser);
   }
 
-  async patchReviews(
-    reviewsId: number,
-    userId: number,
-  ) {
+  async patchReviews(reviewsId: number, userId: number) {
     await this.reviewsRepository.patchReviews(reviewsId, userId);
   }
 }

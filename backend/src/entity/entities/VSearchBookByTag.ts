@@ -5,66 +5,71 @@ import { SubTag } from './SubTag';
 import { SuperTag } from './SuperTag';
 
 @ViewEntity('v_search_book_by_tag', {
-  expression: (Data: DataSource) => Data.createQueryBuilder()
-    .distinctOn(['bi.id'])
-    .select('bi.id', 'id')
-    .addSelect('bi.title', 'title')
-    .addSelect('bi.author', 'author')
-    .addSelect('bi.isbn', 'isbn')
-    .addSelect('bi.image', 'image')
-    .addSelect('bi.publishedAt', 'publishedAt')
-    .addSelect('bi.createdAt', 'createdAt')
-    .addSelect('bi.updatedAt', 'updatedAt')
-    .addSelect('c.name', 'category')
-    .addSelect('sp.content', 'superTagContent')
-    .addSelect('sb.content', 'subTagContent')
-    .addSelect((subQuery) => subQuery
-      .select('COUNT(l.id)')
-      .from('book', 'b')
-      .leftJoin('lending', 'l', 'l.bookId = b.id')
-      .innerJoin('book_info', 'bi2', 'bi2.id = b.infoId')
-      .where('bi.id = bi.id'), 'lendingCnt')
-    .from(BookInfo, 'bi')
-    .innerJoin(Category, 'c', 'c.id = bi.categoryId')
-    .innerJoin(SuperTag, 'sp', 'sp.bookInfoId = bi.id')
-    .leftJoin(SubTag, 'sb', 'sb.superTagId = sp.id'),
+  expression: (Data: DataSource) =>
+    Data.createQueryBuilder()
+      .distinctOn(['bi.id'])
+      .select('bi.id', 'id')
+      .addSelect('bi.title', 'title')
+      .addSelect('bi.author', 'author')
+      .addSelect('bi.isbn', 'isbn')
+      .addSelect('bi.image', 'image')
+      .addSelect('bi.publishedAt', 'publishedAt')
+      .addSelect('bi.createdAt', 'createdAt')
+      .addSelect('bi.updatedAt', 'updatedAt')
+      .addSelect('c.name', 'category')
+      .addSelect('sp.content', 'superTagContent')
+      .addSelect('sb.content', 'subTagContent')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(l.id)')
+            .from('book', 'b')
+            .leftJoin('lending', 'l', 'l.bookId = b.id')
+            .innerJoin('book_info', 'bi2', 'bi2.id = b.infoId')
+            .where('bi.id = bi.id'),
+        'lendingCnt',
+      )
+      .from(BookInfo, 'bi')
+      .innerJoin(Category, 'c', 'c.id = bi.categoryId')
+      .innerJoin(SuperTag, 'sp', 'sp.bookInfoId = bi.id')
+      .leftJoin(SubTag, 'sb', 'sb.superTagId = sp.id'),
 })
 export class VSearchBookByTag {
   @ViewColumn()
-    id: number;
+  id: number;
 
   @ViewColumn()
-    title: string;
+  title: string;
 
   @ViewColumn()
-    author: string;
+  author: string;
 
   @ViewColumn()
-    isbn: number;
+  isbn: number;
 
   @ViewColumn()
-    image: string;
+  image: string;
 
   @ViewColumn()
-    publishedAt: string;
+  publishedAt: string;
 
   @ViewColumn()
-    createdAt: string;
+  createdAt: string;
 
   @ViewColumn()
-    updatedAt: string;
+  updatedAt: string;
 
   @ViewColumn()
-    category: string;
+  category: string;
 
   @ViewColumn()
-    superTagContent: string;
+  superTagContent: string;
 
   @ViewColumn()
-    subTagContent: string;
+  subTagContent: string;
 
   @ViewColumn()
-    lendingCnt: number;
+  lendingCnt: number;
 }
 
 export default VSearchBookByTag;

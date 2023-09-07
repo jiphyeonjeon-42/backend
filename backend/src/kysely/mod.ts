@@ -18,7 +18,7 @@ const dialect = new MysqlDialect({
 
 export const db = new Kysely<DB>({
   dialect,
-  log: event => console.log('kysely:', event.query.sql, event.query.parameters),
+  log: (event) => console.log('kysely:', event.query.sql, event.query.parameters),
 });
 
 export type Database = typeof db;
