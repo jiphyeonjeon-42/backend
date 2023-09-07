@@ -164,15 +164,15 @@ export const createSearchKeywordLog = async (
 
 export const getSearchAutocompletePreviewResult = async (keyword: string) => {
   const LIMIT_OF_SEARCH_KEYWORD_PREVIEW = 12;
-  let keywordInitials = extractHangulInitials(keyword as string);
+  let disassembledKeyword = extractHangulInitials(keyword as string);
   let isCho = true;
 
-  if (keyword !== keywordInitials) {
-    keywordInitials = disassembleHangul(keyword as string);
+  if (keyword !== disassembledKeyword) {
+    disassembledKeyword = disassembleHangul(keyword as string);
     isCho = false;
   }
-  const fullTextSearch = removeSpecialCharacters(keywordInitials);
-  const likeSearch = keywordInitials.replaceAll(' ', '%').replaceAll(' ', '%');
+  const fullTextSearch = removeSpecialCharacters(disassembledKeyword);
+  const likeSearch = disassembledKeyword.replaceAll("'", '').replaceAll(' ', '%');
 
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;

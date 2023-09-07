@@ -14,6 +14,6 @@ export const extractHangulInitials = (original: string | undefined) => {
 };
 
 export const removeSpecialCharacters = (input: string) => {
-  const regex = /[^a-zA-Z0-9가-힣\s]/g;
+  const regex = /[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s]/g;
   return input.replace(regex, '');
 };
