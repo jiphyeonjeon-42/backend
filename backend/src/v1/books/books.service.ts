@@ -168,7 +168,7 @@ export const searchInfo = async (
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
   const fullTextSearch = removeSpecialCharacters(disassemble);
-  const likeSearch = disassemble.replaceAll(' ', '%').replaceAll(' ', '%');
+  const likeSearch = disassemble.replaceAll("'", '').replaceAll(' ', '%');
 
   let matchScore: string;
   let searchCondition: string;
