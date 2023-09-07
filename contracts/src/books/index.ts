@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { 
+import {
 	searchAllBooksQuerySchema,
 	searchAllBooksResponseSchema,
 	searchBookByIdResponseSchema,
@@ -33,17 +33,17 @@ const c = initContract();
 
 export const booksContract = c.router(
 	{
-		searchAllBookInfos: {
-			method: 'GET',
-			path: '/info/search',
-			description: '책 정보(book_info)를 검색하여 가져온다.',
-			query: searchAllBookInfosQuerySchema,
-			responses: {
-				200: searchBookInfosResponseSchema,
-				400: badRequestSchema,
-				500: serverErrorSchema,
-			},
-		},
+		// searchAllBookInfos: {
+		// 	method: 'GET',
+		// 	path: '/info/search',
+		// 	description: '책 정보(book_info)를 검색하여 가져온다.',
+		// 	query: searchAllBookInfosQuerySchema,
+		// 	responses: {
+		// 		200: searchBookInfosResponseSchema,
+		// 		400: badRequestSchema,
+		// 		500: serverErrorSchema,
+		// 	},
+		// },
 		searchBookInfosByTag: {
 			method: 'GET',
 			path: '/info/tag',
@@ -111,19 +111,19 @@ export const booksContract = c.router(
 				500: serverErrorSchema,
 			}
 		},
-		createBook: {
-			method: 'POST',
-			path: '/create',
-			description: '책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.',
-			body: createBookBodySchema,
-			responses: {
-				200: createBookResponseSchema,
-				308: insertionFailureSchema,
-				309: categoryNotFoundSchema,
-				311: pubdateFormatErrorSchema,
-				500: serverErrorSchema,
-			},
-		},
+		// createBook: {
+		// 	method: 'POST',
+		// 	path: '/create',
+		// 	description: '책 정보를 생성한다. bookInfo가 있으면 book에만 insert한다.',
+		// 	body: createBookBodySchema,
+		// 	responses: {
+		// 		200: createBookResponseSchema,
+		// 		308: insertionFailureSchema,
+		// 		309: categoryNotFoundSchema,
+		// 		311: pubdateFormatErrorSchema,
+		// 		500: serverErrorSchema,
+		// 	},
+		// },
 		updateBook: {
 			method: 'PATCH',
 			path: '/update',

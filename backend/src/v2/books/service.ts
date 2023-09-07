@@ -1,11 +1,11 @@
 import { match } from "ts-pattern";
-import { 
+import {
 	searchBookListAndCount,
 	vSearchBookRepo,
 	updateBookById,
 	updateBookInfoById,
 	searchBookInfoSpecById,
-	searchBooksByInfoId, 
+	searchBooksByInfoId,
 	getIsLendable,
 	getIsReserved,
 	getDuedate,
@@ -118,7 +118,7 @@ export const searchBookInfoById = async (id: number) => {
 			const isLendable = await getIsLendable(eachBook.id);
 			const isReserved = await getIsReserved(eachBook.id);
 			let dueDate;
-			
+
 			if (eachBook.status === 0 && isLendable === false)
 			{
 				dueDate = await getDuedate(eachBook.id);
@@ -162,7 +162,7 @@ export const searchAllBooks = async ({
 
 type BookInfoForCreate = {
 	title: string,
-	author?: string | undefined 
+	author?: string | undefined
 	isbn: string,
 	category: string,
 	publisher: string,
@@ -170,7 +170,7 @@ type BookInfoForCreate = {
 	image: string,
 }
 const getInfoInNationalLibrary = async (isbn: string) => {
-	let bookInfo : BookInfoForCreate;
+	let bookInfo : BookInfoForCreate | undefined;
 	let searchResult;
 
 	await axios
@@ -226,11 +226,11 @@ export const searchBookInfoForCreate = async (isbn: string) => {
 }
 
 type SearchBookByIdArgs = { id: number };
-export const searchBookById = async ({ 
-	id, 
+export const searchBookById = async ({
+	id,
 }: SearchBookByIdArgs) => {
 	const book = await vSearchBookRepo.findOneBy({bookId: id});
-	
+
 	return match(book)
 		.with(null, () => new BookNotFoundError(id))
 		.otherwise(() => {
@@ -277,9 +277,9 @@ const updateBookInfo = async (book: UpdateBookInfoArgs) => {
 	});
 }
 
-type UpdateBookOrBookInfoArgs = 
+type UpdateBookOrBookInfoArgs =
 	Omit<UpdateBookArgs, 'bookId'>
-	& Omit<UpdateBookInfoArgs, 'bookInfoId'> 
+	& Omit<UpdateBookInfoArgs, 'bookInfoId'>
 	& {
 	bookId?: number | undefined,
 	bookInfoId?: number | undefined,
