@@ -119,8 +119,8 @@ export const searchBookInfoById = async (id: number) => {
 			const isLendable = await getIsLendable(eachBook.id);
 			const isReserved = await getIsReserved(eachBook.id);
 			let dueDate;
-
-			if (eachBook.status === 0 && isLendable === 0)
+			
+			if (eachBook.status === 0 && isLendable === false)
 			{
 				dueDate = await getDuedate(eachBook.id);
 				dueDate = dueDate?.dueDate;
@@ -139,7 +139,7 @@ export const searchBookInfoById = async (id: number) => {
 
 	return {
 		...bookSpec,
-		books: books
+		books
 	}
 }
 

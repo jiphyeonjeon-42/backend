@@ -89,21 +89,24 @@ export const getIsLendable = async (id: number) =>
 					.selectFrom('lending')
 					.where('bookId', '=', id)
 					.where('returnedAt', 'is', null)
+					.select('id')
 					.executeTakeFirst();
 
 	const book = await db
 					.selectFrom('book')
 					.where('id', '=', id)
 					.where('status', '=', 0)
+					.select('id')
 					.executeTakeFirst();
 
 	const isReserved = await db
 					.selectFrom('reservation')
 					.where('bookId', '=', id)
 					.where('status', '=', 0)
+					.select('id')
 					.executeTakeFirst();
 
-	return book && !isLended && isReserved;
+	return book !== undefined && isLended === undefined && isReserved !== undefined;
 }
 
 export const getIsReserved = async (id: number) =>
@@ -116,9 +119,9 @@ export const getIsReserved = async (id: number) =>
 				.executeTakeFirst();
 
 	if (Number(count?.count) > 0)
-		return 1;
+		return true;
 	else
-		return 0;
+		return false;
 }
 
 export const getDuedate = async (id: number, interval = 14) =>
