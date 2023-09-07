@@ -21,7 +21,10 @@ export default function errorHandler(
     );
   } else error = err as ErrorResponse;
   if (parseInt(error.errorCode, 10) === 42) {
-    res.status(error.status).json({ errorCode: parseInt(error.errorCode, 10), message: '42키값 업데이트가 필요합니다. 키값 업데이트까지는 일반 로그인을 이용해주세요.' });
+    res.status(error.status).json({
+      errorCode: parseInt(error.errorCode, 10),
+      message: '42키값 업데이트가 필요합니다. 키값 업데이트까지는 일반 로그인을 이용해주세요.',
+    });
   }
   res.status(error.status).json({ errorCode: parseInt(error.errorCode, 10) });
 }

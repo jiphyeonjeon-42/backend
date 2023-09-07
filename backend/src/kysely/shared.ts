@@ -8,15 +8,12 @@ const throwIf = <T>(value: T, ok: (v: T) => boolean) => {
   throw new Error(`값이 예상과 달리 ${value}입니다`);
 };
 
-export type Visibility = 'public' | 'hidden' | 'all'
+export type Visibility = 'public' | 'hidden' | 'all';
 const roles = ['user', 'cadet', 'librarian', 'staff'] as const;
-export type Role = typeof roles[number]
+export type Role = (typeof roles)[number];
 
-const fromEnum = (role: number): Role =>
-  throwIf(roles[role], (v) => v === undefined);
+const fromEnum = (role: number): Role => throwIf(roles[role], (v) => v === undefined);
 
-export const toRole = (role: Role): number =>
-  throwIf(roles.indexOf(role), (v) => v === -1);
+export const toRole = (role: Role): number => throwIf(roles.indexOf(role), (v) => v === -1);
 
-export const roleSchema = z.number().int().min(0).max(3)
-  .transform(fromEnum);
+export const roleSchema = z.number().int().min(0).max(3).transform(fromEnum);

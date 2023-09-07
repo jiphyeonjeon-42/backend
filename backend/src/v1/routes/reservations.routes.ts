@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import {
-  cancel, create, search, count, userReservations,
+  cancel,
+  create,
+  search,
+  count,
+  userReservations,
 } from '~/v1/reservations/reservations.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
@@ -88,7 +92,7 @@ export const router = Router();
  *                    description:
  *                    type: integer
  *                    example: 2
-*        '400_case2':
+ *        '400_case2':
  *          description:  예약에 실패한 경우
  *          content:
  *            application/json:

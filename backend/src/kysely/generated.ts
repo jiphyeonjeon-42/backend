@@ -1,4 +1,4 @@
-import type { ColumnType, SqlBool } from "kysely";
+import type { ColumnType, SqlBool } from 'kysely';
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>

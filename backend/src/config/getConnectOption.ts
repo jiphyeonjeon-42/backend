@@ -13,8 +13,10 @@ const getConnectOptionSchema = (mode: Mode) => {
 /**
  * 환경변수에서 DB 연결 옵션을 파싱하는 함수
  */
-export const getConnectOption = (mode: Mode) => (processEnv: NodeJS.ProcessEnv): ConnectOption => {
-  const connectOptionSchema = getConnectOptionSchema(mode);
+export const getConnectOption =
+  (mode: Mode) =>
+  (processEnv: NodeJS.ProcessEnv): ConnectOption => {
+    const connectOptionSchema = getConnectOptionSchema(mode);
 
-  return connectOptionSchema.parse(processEnv);
-};
+    return connectOptionSchema.parse(processEnv);
+  };

@@ -1,6 +1,4 @@
-import {
-  NextFunction, Request, RequestHandler, Response,
-} from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import * as status from 'http-status';
 import { logger } from '~/logger';
 import * as userUtils from '~/v1/users/users.utils';
@@ -8,11 +6,7 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as reservationsService from './reservations.service';
 
-export const create: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const create: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.user as any;
   const bookInfoId = Number.parseInt(req.body.bookInfoId, 10);
   if (Number.isNaN(bookInfoId)) {
@@ -21,9 +15,7 @@ export const create: RequestHandler = async (
   try {
     const createdReservation = await reservationsService.create(id, req.body.bookInfoId);
     logger.info(`[ES_R] : userId: ${id} bookInfoId: ${bookInfoId}`);
-    return res
-      .status(status.OK)
-      .json(createdReservation);
+    return res.status(status.OK).json(createdReservation);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {
@@ -52,7 +44,7 @@ const filterCheck = (argument: string) => {
 
 export const search: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const info = req.query;
-  const query = info.query as string ? info.query as string : '';
+  const query = (info.query as string) ? (info.query as string) : '';
   const page = parseInt(info.page as string, 10) ? parseInt(info.page as string, 10) : 0;
   const limit = parseInt(info.limit as string, 10) ? parseInt(info.limit as string, 10) : 5;
   const filter = info.filter as string;
@@ -61,9 +53,7 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
   }
   try {
     const searchResult = await reservationsService.search(query, page, limit, filter);
-    return res
-      .status(status.OK)
-      .json(searchResult);
+    return res.status(status.OK).json(searchResult);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {
@@ -74,7 +64,8 @@ export const search: RequestHandler = async (req: Request, res: Response, next: 
       logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
-  } return 0;
+  }
+  return 0;
 };
 
 export const cancel: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -98,7 +89,8 @@ export const cancel: RequestHandler = async (req: Request, res: Response, next: 
       logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
-  } return 0;
+  }
+  return 0;
 };
 
 export const count: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
@@ -119,7 +111,8 @@ export const count: RequestHandler = async (req: Request, res: Response, next: N
       logger.error(error);
       next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
     }
-  } return 0;
+  }
+  return 0;
 };
 
 export const userReservations: RequestHandler = async (
@@ -133,9 +126,7 @@ export const userReservations: RequestHandler = async (
     return next(new ErrorResponse(errorCode.INVALID_INPUT, status.BAD_REQUEST));
   }
   try {
-    return res
-      .status(status.OK)
-      .json(await reservationsService.userReservations(userId));
+    return res.status(status.OK).json(await reservationsService.userReservations(userId));
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 500 && errorNumber < 600) {

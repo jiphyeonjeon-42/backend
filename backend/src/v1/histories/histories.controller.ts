@@ -1,6 +1,4 @@
-import {
-  NextFunction, Request, Response,
-} from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
 import { logger } from '~/logger';
 import * as errorCode from '~/v1/utils/error/errorCode';
@@ -8,16 +6,14 @@ import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as historiesService from './histories.service';
 
 // eslint-disable-next-line import/prefer-default-export
-export const histories = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const histories = async (req: Request, res: Response, next: NextFunction) => {
   const query = String(req.query.query) !== 'undefined' ? String(req.query.query) : '';
   const who = String(req.query.who) !== 'undefined' ? String(req.query.who) : '';
   const page = parseInt(req.query.page as string, 10) ? parseInt(req.query.page as string, 10) : 0;
   // eslint-disable-next-line max-len
-  const limit = parseInt(req.query.limit as string, 10) ? parseInt(req.query.limit as string, 10) : 5;
+  const limit = parseInt(req.query.limit as string, 10)
+    ? parseInt(req.query.limit as string, 10)
+    : 5;
   const type = String(req.query.type) !== 'undefined' ? String(req.query.type) : 'all';
   const { id: userId, role: userRole } = req.user as any;
 

@@ -16,15 +16,21 @@ export const reviewNotFoundSchema =
 export const mutationDescription = (action: '수정' | '삭제') =>
   `리뷰를 ${action}합니다. 작성자 또는 관리자만 ${action} 가능합니다.`;
 
-export const sqlBool = z.number().int().gte(0).lte(1).transform(x => Boolean(x)).or(z.boolean());
+export const sqlBool = z
+  .number()
+  .int()
+  .gte(0)
+  .lte(1)
+  .transform((x) => Boolean(x))
+  .or(z.boolean());
 
 export const reviewSchema = z.object({
   id: z.number().int(),
   userId: z.number().int(),
   nickname: z.string().nullable(),
   bookInfoId: z.number().int(),
-  createdAt: z.date().transform(x => x.toISOString()),
+  createdAt: z.date().transform((x) => x.toISOString()),
   title: z.string().nullable(),
   content: z.string(),
   disabled: sqlBool,
-})
+});

@@ -20,11 +20,7 @@ import {
   duplicateTagSchema,
   tagIdSchema,
 } from './schema';
-import {
-  bookInfoIdSchema,
-  bookInfoNotFoundSchema,
-  paginationQuerySchema,
-} from '../shared';
+import { bookInfoIdSchema, bookInfoNotFoundSchema, paginationQuerySchema } from '../shared';
 
 const c = initContract();
 
@@ -44,7 +40,8 @@ export const tagContract = c.router(
       method: 'GET',
       path: '/main',
       summary: '메인 페이지에서 사용할 태그 목록을 가져온다.',
-      description: '슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 랜덤한 순서로 가져온다. 이는 메인 페이지에서 사용된다.',
+      description:
+        '슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 랜덤한 순서로 가져온다. 이는 메인 페이지에서 사용된다.',
       query: paginationQuerySchema.omit({ page: true }),
       responses: {
         200: superDefaultTagResponseSchema,
@@ -54,7 +51,8 @@ export const tagContract = c.router(
       method: 'GET',
       path: '/{superTagId}/sub',
       summary: '슈퍼 태그에 속한 서브 태그 목록을 가져온다.',
-      description: 'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
+      description:
+        'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 병합 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
       pathParams: superTagIdQuerySchema,
       responses: {
         200: subTagResponseSchema,
@@ -64,7 +62,8 @@ export const tagContract = c.router(
       method: 'GET',
       path: '/manage/{superTagId}/sub',
       summary: '슈퍼 태그에 속한 서브 태그 목록을 가져온다.',
-      description: 'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 관리 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
+      description:
+        'superTagId에 해당하는 슈퍼 태그에 속한 서브 태그 목록을 가져온다. 태그 관리 페이지에서 슈퍼 태그의 서브 태그를 가져올 때 사용한다.',
       pathParams: superTagIdQuerySchema,
       responses: {
         200: subTagResponseSchema,
@@ -74,7 +73,8 @@ export const tagContract = c.router(
       method: 'GET',
       path: '/{bookInfoId}',
       summary: '도서에 등록된 슈퍼 태그, 디폴트 태그 목록을 가져온다.',
-      description: '슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다. 이는 도서 상세 페이지 및 태그 병합 페이지에서 사용된다.',
+      description:
+        '슈퍼 태그(노출되는 태그), 디폴트 태그(노출되지 않고 분류되지 않은 태그)를 가져온다. 이는 도서 상세 페이지 및 태그 병합 페이지에서 사용된다.',
       pathParams: bookInfoIdSchema,
       responses: {
         200: tagsOfBookResponseSchema,

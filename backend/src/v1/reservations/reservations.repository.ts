@@ -1,15 +1,6 @@
-import {
-  Brackets,
-  IsNull, MoreThan, Not, QueryRunner, Repository,
-} from 'typeorm';
+import { Brackets, IsNull, MoreThan, Not, QueryRunner, Repository } from 'typeorm';
 
-import {
-  BookInfo,
-  User,
-  Lending,
-  Book,
-  Reservation,
-} from '~/entity/entities';
+import { BookInfo, User, Lending, Book, Reservation } from '~/entity/entities';
 import jipDataSource from '~/app-data-source';
 import { Meta } from '../DTO/common.interface';
 
@@ -27,18 +18,9 @@ class ReservationsRepository extends Repository<Reservation> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(Reservation, entityManager);
 
-    this.bookInfo = new Repository<BookInfo>(
-      BookInfo,
-      entityManager,
-    );
-    this.user = new Repository<User>(
-      User,
-      entityManager,
-    );
-    this.lending = new Repository<Lending>(
-      Lending,
-      entityManager,
-    );
+    this.bookInfo = new Repository<BookInfo>(BookInfo, entityManager);
+    this.user = new Repository<User>(User, entityManager);
+    this.lending = new Repository<Lending>(Lending, entityManager);
   }
 
   // 유저가 대출 패널티 중인지 확인
@@ -59,7 +41,11 @@ class ReservationsRepository extends Repository<Reservation> {
       .createQueryBuilder('u')
       .select('u.id')
       .addSelect('count(u.id)', 'overdueLendingCnt')
-      .innerJoin('lending', 'l', 'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) > 0')
+      .innerJoin(
+        'lending',
+        'l',
+        'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY)) > 0',
+      )
       .where('u.id = :userId', { userId })
       .groupBy('u.id')
       .getExists();
@@ -67,15 +53,19 @@ class ReservationsRepository extends Repository<Reservation> {
 
   // 유저가 2권 이상 예약 중인지 확인
   async isAllRenderUser(userId: number): Promise<boolean> {
-    const [rendUser] = await Promise.all([this.user
-      .createQueryBuilder('u')
-      .select('u.id', 'id')
-      .addSelect('COUNT(r.id)', 'count')
-      .innerJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
-      .where(`u.id = ${userId}`)
-      .groupBy('u.id')
-      .getRawOne()]);
-    if (rendUser?.count >= 2) { return true; }
+    const [rendUser] = await Promise.all([
+      this.user
+        .createQueryBuilder('u')
+        .select('u.id', 'id')
+        .addSelect('COUNT(r.id)', 'count')
+        .innerJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
+        .where(`u.id = ${userId}`)
+        .groupBy('u.id')
+        .getRawOne(),
+    ]);
+    if (rendUser?.count >= 2) {
+      return true;
+    }
     return false;
   }
 
@@ -85,7 +75,11 @@ class ReservationsRepository extends Repository<Reservation> {
       .createQueryBuilder('u')
       .select('u.id')
       .addSelect('u.nickname')
-      .leftJoin('lending', 'l', 'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY) > 0')
+      .leftJoin(
+        'lending',
+        'l',
+        'l.userId = u.id AND l.returnedAt IS NULL AND DATEDIFF(now(), DATE_ADD(l.createdAt, INTERVAL 14 DAY) > 0',
+      )
       .leftJoin('reservation', 'r', 'r.userId = u.id AND r.status = 0')
       .groupBy('u.id')
       .having('count(l.id) = 0 AND count(DISTINCT r.id) < 2')
@@ -123,8 +117,7 @@ class ReservationsRepository extends Repository<Reservation> {
 
   // Todo: return 값 수정할 것
   async getReservedBooks(userId: number, bookInfoId: number) {
-    const reservedBooks = this
-      .createQueryBuilder('r')
+    const reservedBooks = this.createQueryBuilder('r')
       .select('r.id', 'id')
       .where('r.bookInfoId = :bookInfoId', { bookInfoId })
       .andWhere('r.userId = :userId', { userId })
@@ -132,7 +125,7 @@ class ReservationsRepository extends Repository<Reservation> {
     return reservedBooks;
   }
 
-  async createReservation(userId: number, bookInfoId:number): Promise<void> {
+  async createReservation(userId: number, bookInfoId: number): Promise<void> {
     await this.createQueryBuilder()
       .insert()
       .into(Reservation)
@@ -140,10 +133,13 @@ class ReservationsRepository extends Repository<Reservation> {
       .execute();
   }
 
-  async searchReservations(query: string, filter: string, page: number, limit: number):
-    Promise<{ meta: Meta; items: Reservation[] }> {
-    const searchAll = this
-      .createQueryBuilder('r')
+  async searchReservations(
+    query: string,
+    filter: string,
+    page: number,
+    limit: number,
+  ): Promise<{ meta: Meta; items: Reservation[] }> {
+    const searchAll = this.createQueryBuilder('r')
       .select('r.id', 'reservationsId')
       .addSelect('r.endAt', 'endAt')
       .addSelect('r.createdAt', 'createdAt')
@@ -151,7 +147,10 @@ class ReservationsRepository extends Repository<Reservation> {
       .addSelect('r.userId', 'userId')
       .addSelect('r.bookId', 'bookId')
       .addSelect('u.nickname', 'login')
-      .addSelect('CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END', 'penaltyDays')
+      .addSelect(
+        'CASE WHEN NOW() > u.penaltyEndDate THEN 0 ELSE DATEDIFF(u.penaltyEndDate, NOW()) END',
+        'penaltyDays',
+      )
       .addSelect('bi.title', 'title')
       .addSelect('bi.image', 'image')
       .addSelect('(SELECT COUNT(*) FROM reservation)', 'count')
@@ -159,11 +158,13 @@ class ReservationsRepository extends Repository<Reservation> {
       .leftJoin('user', 'u', 'r.userId = u.id')
       .leftJoin('book_info', 'bi', 'r.bookInfoId = bi.id')
       .leftJoin('book', 'b', 'r.bookId = b.id')
-      .where(new Brackets((qb) => {
-        qb.where('bi.title like :query', { query: `%${query}%` })
-          .orWhere('u.nickname like :query', { query: `%${query}%` })
-          .orWhere('b.callSign like :query', { query: `%${query}%` });
-      }));
+      .where(
+        new Brackets((qb) => {
+          qb.where('bi.title like :query', { query: `%${query}%` })
+            .orWhere('u.nickname like :query', { query: `%${query}%` })
+            .orWhere('b.callSign like :query', { query: `%${query}%` });
+        }),
+      );
     switch (filter) {
       case 'waiting':
         searchAll.andWhere({ status: 0, bookId: IsNull() });
@@ -179,9 +180,12 @@ class ReservationsRepository extends Repository<Reservation> {
       default:
         searchAll.andWhere({ status: 0, bookId: IsNull() });
     }
-    const items = await searchAll.offset(limit * page).limit(limit).getRawMany<Reservation>();
+    const items = await searchAll
+      .offset(limit * page)
+      .limit(limit)
+      .getRawMany<Reservation>();
     const totalItems = await searchAll.getCount();
-    const meta : Meta = {
+    const meta: Meta = {
       totalItems,
       itemCount: items.length,
       itemsPerPage: limit,

@@ -1,7 +1,5 @@
 import { Router } from 'express';
-import {
-  histories,
-} from '~/v1/histories/histories.controller';
+import { histories } from '~/v1/histories/histories.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
 

@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
 import { SuperTag } from './SuperTag';
 
@@ -14,52 +7,52 @@ import { SuperTag } from './SuperTag';
 @Entity('sub_tag', { schema: 'jip_dev' })
 export class SubTag {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-    id: number;
+  id: number;
 
   @Column('int', { name: 'userId' })
-    userId: number;
+  userId: number;
 
   @Column('int', { name: 'superTagId' })
-    superTagId: number;
+  superTagId: number;
 
   @Column('datetime', {
     name: 'createdAt',
     default: () => 'current_timestamp(6)',
   })
-    createdAt: Date;
+  createdAt: Date;
 
   @Column('datetime', {
     name: 'updatedAt',
     default: () => 'current_timestamp(6)',
   })
-    updatedAt: Date;
+  updatedAt: Date;
 
   @Column('tinyint', { name: 'isDeleted', default: () => '0' })
-    isDeleted: number;
+  isDeleted: number;
 
   @Column('int', { name: 'updateUserId' })
-    updateUserId: number;
+  updateUserId: number;
 
   @Column('varchar', { name: 'content', length: 42 })
-    content: string;
+  content: string;
 
   @Column('tinyint', { name: 'isPublic' })
-    isPublic: number;
+  isPublic: number;
 
   @ManyToOne(() => User, (user) => user.subTag, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-    user: User;
+  user: User;
 
   @ManyToOne(() => SuperTag, (superTag) => superTag.subTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'superTagId', referencedColumnName: 'id' }])
-    superTag: SuperTag;
+  superTag: SuperTag;
 
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-    bookInfoId: number;
+  bookInfoId: number;
 }

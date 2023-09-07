@@ -15,7 +15,7 @@ export const url = z.string().trim().url();
  * @param keys 환경변수 키 목록
  */
 export const envObject = <T extends readonly string[]>(...keys: T) => {
-  type Keys = T[ number ];
+  type Keys = T[number];
   const env = Object.fromEntries(keys.map((key) => [key, nonempty]));
 
   return z.object(env as Record<Keys, typeof nonempty>);

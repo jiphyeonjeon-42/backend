@@ -22,10 +22,7 @@ export const getHistories = async (
   } else if (type === 'title') {
     filterQuery.title = Like(`%${query}%`);
   } else {
-    filterQuery = [
-      { login: Like(`%${query}%`) },
-      { title: Like(`%${query}%`) },
-    ];
+    filterQuery = [{ login: Like(`%${query}%`) }, { title: Like(`%${query}%`) }];
   }
   const historiesRepo = new HistoriesRepository();
   const [items, count] = await historiesRepo.getHistoriesItems(filterQuery, limit, page);

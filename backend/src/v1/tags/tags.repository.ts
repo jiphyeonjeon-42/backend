@@ -3,7 +3,12 @@ import { In, QueryRunner, Repository } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import jipDataSource from '~/app-data-source';
 import {
-  BookInfo, SubTag, SuperTag, User, VTagsSubDefault, VTagsSuperDefault,
+  BookInfo,
+  SubTag,
+  SuperTag,
+  User,
+  VTagsSubDefault,
+  VTagsSuperDefault,
 } from '~/entity/entities';
 import { subDefaultTag, superDefaultTag } from '../DTO/tags.model';
 
@@ -17,14 +22,15 @@ export class SubTagRepository extends Repository<SubTag> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SubTag, entityManager);
     this.entityManager = entityManager;
-    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
-      VTagsSubDefault,
-      entityManager,
-    );
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(VTagsSubDefault, entityManager);
   }
 
-  async createDefaultTags(userId: number, bookInfoId: number, content: string, superTagId: number)
-  : Promise<number> {
+  async createDefaultTags(
+    userId: number,
+    bookInfoId: number,
+    content: string,
+    superTagId: number,
+  ): Promise<number> {
     const insertObject: QueryDeepPartialEntity<SubTag> = {
       superTagId,
       userId,
@@ -42,11 +48,7 @@ export class SubTagRepository extends Repository<SubTag> {
 
   async getSubTags(conditions: object) {
     const subTags = await this.vSubDefaultRepo.find({
-      select: [
-        'id',
-        'content',
-        'login',
-      ],
+      select: ['id', 'content', 'login'],
       where: conditions,
     });
     return subTags;
@@ -66,8 +68,7 @@ export class SubTagRepository extends Repository<SubTag> {
     );
   }
 
-  async countSubTag(conditions: object)
-  : Promise<number> {
+  async countSubTag(conditions: object): Promise<number> {
     const count = await this.count({
       where: conditions,
     });
@@ -75,10 +76,7 @@ export class SubTagRepository extends Repository<SubTag> {
   }
 
   async updateSubTags(userId: number, subTagId: number, isPublic: number) {
-    await this.update(
-      { id: subTagId },
-      { isPublic, updateUserId: userId, updatedAt: new Date() },
-    );
+    await this.update({ id: subTagId }, { isPublic, updateUserId: userId, updatedAt: new Date() });
   }
 }
 
@@ -98,18 +96,9 @@ export class SuperTagRepository extends Repository<SuperTag> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(SuperTag, entityManager);
     this.entityManager = entityManager;
-    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(
-      VTagsSubDefault,
-      this.entityManager,
-    );
-    this.userRepo = new Repository<User>(
-      User,
-      this.entityManager,
-    );
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
-      this.entityManager,
-    );
+    this.vSubDefaultRepo = new Repository<VTagsSubDefault>(VTagsSubDefault, this.entityManager);
+    this.userRepo = new Repository<User>(User, this.entityManager);
+    this.bookInfoRepo = new Repository<BookInfo>(BookInfo, this.entityManager);
     this.vSuperDefaultRepo = new Repository<VTagsSuperDefault>(
       VTagsSuperDefault,
       this.entityManager,
@@ -126,22 +115,15 @@ export class SuperTagRepository extends Repository<SuperTag> {
 
   async getSuperTags(conditions: object) {
     const superTags = await this.find({
-      select: [
-        'id',
-        'content',
-        'bookInfoId',
-      ],
+      select: ['id', 'content', 'bookInfoId'],
       where: conditions,
     });
     return superTags;
   }
 
-  async getDefaultTag(bookInfoId: number)
-  : Promise<SuperTag | null> {
+  async getDefaultTag(bookInfoId: number): Promise<SuperTag | null> {
     const defaultTag = await this.findOne({
-      select: [
-        'id',
-      ],
+      select: ['id'],
       where: {
         bookInfoId,
         content: 'default',
@@ -150,8 +132,7 @@ export class SuperTagRepository extends Repository<SuperTag> {
     return defaultTag;
   }
 
-  async createSuperTag(content: string, bookInfoId: number, userId: number)
-  : Promise<number> {
+  async createSuperTag(content: string, bookInfoId: number, userId: number): Promise<number> {
     const insertObject: QueryDeepPartialEntity<SuperTag> = {
       userId,
       bookInfoId,
@@ -166,8 +147,11 @@ export class SuperTagRepository extends Repository<SuperTag> {
     await this.update(superTagsId, { isDeleted: 1, updateUserId: deleteUser });
   }
 
-  async getSubAndSuperTags(page: number, limit: number, conditions: Object)
-    : Promise<[subDefaultTag[], number]> {
+  async getSubAndSuperTags(
+    page: number,
+    limit: number,
+    conditions: Object,
+  ): Promise<[subDefaultTag[], number]> {
     const [items, count] = await this.vSubDefaultRepo.findAndCount({
       select: [
         'bookInfoId',
@@ -188,35 +172,35 @@ export class SuperTagRepository extends Repository<SuperTag> {
     return [convertedItems, count];
   }
 
-  async getSuperTagsWithSubCount(bookInfoId: number)
-    : Promise<superDefaultTag[]> {
+  async getSuperTagsWithSubCount(bookInfoId: number): Promise<superDefaultTag[]> {
     const superTags = await this.createQueryBuilder('sp')
       .select('sp.id', 'id')
       .addSelect('sp.content', 'content')
       .addSelect('NULL', 'login')
-      .addSelect((subQuery) => subQuery
-        .select('COUNT(sb.id)', 'count')
-        .from(SubTag, 'sb')
-        .where('sb.superTagId = sp.id AND sb.isDeleted IS FALSE AND sb.isPublic IS TRUE'), 'count')
-      .where('sp.bookInfoId = :bookInfoId AND sp.content != \'default\' AND sp.isDeleted IS FALSE', { bookInfoId })
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(sb.id)', 'count')
+            .from(SubTag, 'sb')
+            .where('sb.superTagId = sp.id AND sb.isDeleted IS FALSE AND sb.isPublic IS TRUE'),
+        'count',
+      )
+      .where("sp.bookInfoId = :bookInfoId AND sp.content != 'default' AND sp.isDeleted IS FALSE", {
+        bookInfoId,
+      })
       .getRawMany();
     return superTags as superDefaultTag[];
   }
 
-  async countSuperTag(conditions: object)
-  : Promise<number> {
+  async countSuperTag(conditions: object): Promise<number> {
     const count = await this.count({
       where: conditions,
     });
     return count;
   }
 
-  async updateSuperTags(updateUserId: number, superTagId: number, content: string)
-  : Promise<void> {
-    await this.update(
-      { id: superTagId },
-      { content, updateUserId, updatedAt: new Date() },
-    );
+  async updateSuperTags(updateUserId: number, superTagId: number, content: string): Promise<void> {
+    await this.update({ id: superTagId }, { content, updateUserId, updatedAt: new Date() });
   }
 
   async countBookInfoId(bookInfoId: number): Promise<number> {

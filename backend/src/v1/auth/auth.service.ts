@@ -10,12 +10,15 @@ export const updateAuthenticationUser = async (
   id: number,
   intraId: number,
   nickname: string,
-) : Promise<number> => {
-  const result : ResultSetHeader = await executeQuery(`
+): Promise<number> => {
+  const result: ResultSetHeader = await executeQuery(
+    `
     UPDATE user
     SET intraId = ?, nickname = ?, role = ?
     WHERE id = ?
-  `, [intraId, nickname, role.cadet, id]);
+  `,
+    [intraId, nickname, role.cadet, id],
+  );
   return result.affectedRows;
 };
 
@@ -34,10 +37,16 @@ export const getAccessToken = async (): Promise<string> => {
       'Content-Type': 'application/json',
     },
     data: queryString,
-  }).then((response) => {
-    accessToken = response.data.access_token;
-  }).catch((error) => {
-    throw new ErrorResponse(httpStatus[500], httpStatus.INTERNAL_SERVER_ERROR, '42 API로부터 토큰을 받아오는데 실패했습니다.');
-  });
+  })
+    .then((response) => {
+      accessToken = response.data.access_token;
+    })
+    .catch((error) => {
+      throw new ErrorResponse(
+        httpStatus[500],
+        httpStatus.INTERNAL_SERVER_ERROR,
+        '42 API로부터 토큰을 받아오는데 실패했습니다.',
+      );
+    });
   return accessToken;
 };

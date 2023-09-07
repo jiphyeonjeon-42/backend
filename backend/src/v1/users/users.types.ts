@@ -7,6 +7,4 @@ export const searchSchema = z.object({
   limit: z.coerce.number().min(1).default(5),
 });
 
-export const createSchema = z.object({
-
-});
+export const createSchema = z.object({});

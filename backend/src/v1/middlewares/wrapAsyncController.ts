@@ -1,8 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import {
-  NextFunction,
-  Request, Response,
-} from 'express';
+import { NextFunction, Request, Response } from 'express';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as errorCode from '~/v1/utils/error/errorCode';
 

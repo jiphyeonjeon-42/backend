@@ -40,16 +40,10 @@ const queryReviews = () =>
       'user.nickname',
     ]);
 
-export const searchReviews = async ({
-  search,
-  sort,
-  visibility,
-  page,
-  perPage,
-}: SearchOption) => {
+export const searchReviews = async ({ search, sort, visibility, page, perPage }: SearchOption) => {
   const searchQuery = queryReviews()
-    .$if(search !== undefined, qb =>
-      qb.where(eb =>
+    .$if(search !== undefined, (qb) =>
+      qb.where((eb) =>
         eb.or([
           eb('user.nickname', 'like', `%${search}%`),
           eb('book_info.title', 'like', `%${search}%`),
@@ -102,11 +96,7 @@ type ToggleVisibilityOption = {
   userId: number;
   disabled: SqlBool;
 };
-export const toggleVisibilityById = ({
-  reviewsId,
-  userId,
-  disabled,
-}: ToggleVisibilityOption) =>
+export const toggleVisibilityById = ({ reviewsId, userId, disabled }: ToggleVisibilityOption) =>
   db
     .updateTable('reviews')
     .where('id', '=', reviewsId)
@@ -119,11 +109,7 @@ type UpdateOption = {
   content: string;
 };
 
-export const updateReviewById = ({
-  reviewsId,
-  userId,
-  content,
-}: UpdateOption) =>
+export const updateReviewById = ({ reviewsId, userId, content }: UpdateOption) =>
   db
     .updateTable('reviews')
     .where('id', '=', reviewsId)

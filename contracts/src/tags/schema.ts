@@ -1,6 +1,4 @@
-import {
-  dateLike, metaSchema, mkErrorMessageSchema, positiveInt,
-} from '../shared';
+import { dateLike, metaSchema, mkErrorMessageSchema, positiveInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const subDefaultTagQuerySchema = z.object({
@@ -135,14 +133,15 @@ export const modifySuperTagBodySchema = z.object({
 
 export const modifyTagResponseSchema = z.literal('success');
 
-export const incorrectTagFormatSchema = mkErrorMessageSchema('INCORRECT_TAG_FORMAT')
-  .describe('태그 형식이 올바르지 않습니다.');
+export const incorrectTagFormatSchema =
+  mkErrorMessageSchema('INCORRECT_TAG_FORMAT').describe('태그 형식이 올바르지 않습니다.');
 
-export const alreadyExistTagSchema = mkErrorMessageSchema('ALREADY_EXIST_TAG')
-  .describe('이미 존재하는 태그입니다.');
+export const alreadyExistTagSchema =
+  mkErrorMessageSchema('ALREADY_EXIST_TAG').describe('이미 존재하는 태그입니다.');
 
-export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema('DEFAULT_TAG_CANNOT_BE_MODIFIED')
-  .describe('디폴트 태그는 수정할 수 없습니다.');
+export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema(
+  'DEFAULT_TAG_CANNOT_BE_MODIFIED',
+).describe('디폴트 태그는 수정할 수 없습니다.');
 
 export const modifySubTagBodySchema = z.object({
   id: positiveInt.openapi({
@@ -159,8 +158,9 @@ export const modifySubTagBodySchema = z.object({
   }),
 });
 
-export const NoAuthorityToModifyTagSchema = mkErrorMessageSchema('NO_AUTHORITY_TO_MODIFY_TAG')
-  .describe('태그를 수정할 권한이 없습니다.');
+export const NoAuthorityToModifyTagSchema = mkErrorMessageSchema(
+  'NO_AUTHORITY_TO_MODIFY_TAG',
+).describe('태그를 수정할 권한이 없습니다.');
 
 export const mergeTagsBodySchema = z.object({
   superTagId: positiveInt.nullable().openapi({
@@ -173,8 +173,8 @@ export const mergeTagsBodySchema = z.object({
   }),
 });
 
-export const invalidTagIdSchema = mkErrorMessageSchema('INVALID_TAG_ID')
-  .describe('태그 id가 올바르지 않습니다.');
+export const invalidTagIdSchema =
+  mkErrorMessageSchema('INVALID_TAG_ID').describe('태그 id가 올바르지 않습니다.');
 
 export const createTagBodySchema = z.object({
   bookInfoId: positiveInt.openapi({
@@ -187,8 +187,8 @@ export const createTagBodySchema = z.object({
   }),
 });
 
-export const duplicateTagSchema = mkErrorMessageSchema('DUPLICATE_TAG')
-  .describe('이미 존재하는 태그입니다.');
+export const duplicateTagSchema =
+  mkErrorMessageSchema('DUPLICATE_TAG').describe('이미 존재하는 태그입니다.');
 
 export const tagIdSchema = z.object({
   tagId: positiveInt.openapi({

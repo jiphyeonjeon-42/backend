@@ -12,5 +12,5 @@ export default s.router(contract, {
   reviews,
   histories,
   stock,
-  books
+  books,
 });
