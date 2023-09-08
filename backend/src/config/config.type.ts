@@ -38,19 +38,19 @@ export type ConnectOption = {
 
 /** OAuth URL 옵션 */
 export type OauthUrlOption = {
-  /** 42 API OAuth 리다이렉트 URL */
+  /** OAuth 리다이렉트 URL */
   redirectURL: string;
 
-  /** 집현전 프론트엔드 URL */
+  /** 프론트엔드 URL */
   clientURL: string;
 };
 
-/** 42 API OAuth 클라이언트 인증 정보 */
+/** OAuth 클라이언트 인증 정보 */
 export type Oauth42ApiOption = {
-  /** 42 API OAuth 클라이언트 아이디 */
+  /** OAuth 클라이언트 아이디 */
   id: string;
 
-  /** 42 API OAuth 클라이언트 시크릿 */
+  /** OAuth 클라이언트 시크릿 */
   secret: string;
 };
 

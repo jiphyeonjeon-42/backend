@@ -35,6 +35,15 @@ export declare global {
       /** 42 API OAuth 리다이렉트 URL */
       REDIRECT_URL: string;
 
+      // Google API
+      /** Google API OAuth 클라이언트 아이디 */
+      GOOGLE_CLIENT_ID: string;
+
+      /** Google API OAuth 클라이언트 시크릿 */
+      GOOGLE_CLIENT_SECRET: string;
+
+      /** Google API OAuth 리다이렉트 URL */
+      GOOGLE_REDIRECT_URL: string;
       /**
        * 레포지토리 선택 모드
        *
