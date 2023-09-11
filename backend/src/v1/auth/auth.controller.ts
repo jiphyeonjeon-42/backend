@@ -23,18 +23,21 @@ export const getOAuth = (req: Request, res: Response) => {
   res.status(302).redirect(oauthUrl);
 };
 
-export const getGoogleOAuth = async (req: Request, res: Response) => {
+export const getGoogleOAuth = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.query.access_token;
-  console.log(req)
   const userInfo: AxiosResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo',{
      headers: { Authorization: `Bearer ${token}` }
-  })
-  const usersService = new UsersService();
-  usersService.searchUserByEmail(userInfo.data.email).then((user) => {
-    if (!user.items.length)
-      usersService.createUser(userInfo.data.email, userInfo.data.email);
+  }).catch((err) => {
+    return {} as AxiosResponse;
   });
-  await authJwt.saveJwt(req, res, userInfo.data.name);
+  if (userInfo.data) {
+    const usersService = new UsersService();
+    usersService.searchUserByEmail(userInfo.data.email).then((user) => {
+      if (!user.items.length)
+        usersService.createUser(userInfo.data.email, userInfo.data.email);
+    });
+    await authJwt.saveJwt(req, res, userInfo.data.name);
+  }
   res.status(302).redirect(oauthUrlOption.clientURL);
 }
 

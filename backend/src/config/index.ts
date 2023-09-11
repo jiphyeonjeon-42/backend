@@ -5,7 +5,7 @@ import { getLogLevelOption } from './logOption';
 import { getModeOption } from './modeOption';
 import { getNationalIsbnApiOption } from './nationalIsbnApiOption';
 import { getNaverBookApiOption } from './naverBookApiOption';
-import { getOauth42ApiOption, getOauthUrlOption, getGoogleOauthUrlOption, getGoogleOauthApiOption } from './oauthOption';
+import { getOauth42ApiOption, getOauthUrlOption } from './oauthOption';
 import { getRuntimeMode } from './runtimeOption';
 import { getSlackbotOAuthToken } from './slackbotOAuthTokenOption';
 import type { CookieOptions } from 'express';
@@ -24,8 +24,6 @@ export const connectMode = getModeOption(process.env);
 export const connectOption = getConnectOption(connectMode)(process.env);
 export const oauthUrlOption = getOauthUrlOption(process.env);
 export const oauth42ApiOption = getOauth42ApiOption(process.env);
-export const googleOauthApiOption = getGoogleOauthApiOption(process.env);
-export const googleOauthUrlOption = getGoogleOauthUrlOption(process.env);
 export const naverBookApiOption = getNaverBookApiOption(process.env);
 
 /** 국립중앙도서관 ISBN 서지정보 API 키 */
