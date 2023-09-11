@@ -1,6 +1,6 @@
 import {
   metaSchema,
-  positiveInt,
+  nonNegativeInt,
   mkErrorMessageSchema,
   statusSchema,
   metaPaginatedSchema,
@@ -10,8 +10,8 @@ import { z } from '../zodWithOpenapi';
 
 export const commonQuerySchema = z.object({
   query: z.string().optional(),
-  page: positiveInt.default(0).openapi({ example: 0 }),
-  limit: positiveInt.default(10).openapi({ example: 10 }),
+  page: nonNegativeInt.default(0).openapi({ example: 0 }),
+  limit: nonNegativeInt.default(10).openapi({ example: 10 }),
 });
 
 export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
@@ -27,11 +27,11 @@ export const searchBookInfosByTagQuerySchema = commonQuerySchema.extend({
 
 export const searchBookInfosSortedQuerySchema = z.object({
   sort: z.enum(['new', 'popular']),
-  limit: positiveInt.default(10).openapi({ example: 10 }),
+  limit: nonNegativeInt.default(10).openapi({ example: 10 }),
 });
 
 export const searchBookInfoByIdPathSchema = z.object({
-  id: positiveInt,
+  id: nonNegativeInt,
 });
 
 export const searchAllBooksQuerySchema = commonQuerySchema;
@@ -52,29 +52,29 @@ export const createBookBodySchema = z.object({
 });
 
 export const searchBookByIdParamSchema = z.object({
-  id: positiveInt,
+  id: nonNegativeInt,
 });
 
 export const updateBookBodySchema = z.object({
-  bookInfoId: positiveInt.optional(),
+  bookInfoId: nonNegativeInt.optional(),
   title: z.string().optional(),
   author: z.string().optional(),
   publisher: z.string().optional(),
   publishedAt: z.string().optional(),
   image: z.string().optional(),
-  categoryId: positiveInt.optional(),
-  bookId: positiveInt.optional(),
+  categoryId: nonNegativeInt.optional(),
+  bookId: nonNegativeInt.optional(),
   callSign: z.string().optional(),
   status: statusSchema.optional(),
 });
 
 export const updateDonatorBodySchema = z.object({
-  bookId: positiveInt,
+  bookId: nonNegativeInt,
   nickname: z.string(),
 });
 
 export const bookInfoSchema = z.object({
-  id: positiveInt,
+  id: nonNegativeInt,
   title: z.string(),
   author: z.string(),
   publisher: z.string(),
@@ -98,7 +98,7 @@ export const searchBookInfosResponseSchema = metaPaginatedSchema(
   categories: z.array(
     z.object({
       name: z.string(),
-      count: positiveInt,
+      count: nonNegativeInt,
     }),
   ),
 });
@@ -107,7 +107,7 @@ export const searchBookInfosSortedResponseSchema = z.object({
   items: z.array(
     bookInfoSchema.extend({
       publishedAt: dateLike,
-      lendingCnt: positiveInt,
+      lendingCnt: nonNegativeInt,
     }),
   ),
 });
@@ -115,21 +115,21 @@ export const searchBookInfosSortedResponseSchema = z.object({
 export const searchBookInfoByIdResponseSchema = bookInfoSchema.extend({
   books: z.array(
     z.object({
-      id: positiveInt,
+      id: nonNegativeInt,
       callSign: z.string(),
       donator: z.string(),
       status: statusSchema,
       dueDate: dateLike,
-      isLendable: positiveInt,
-      isReserved: positiveInt,
+      isLendable: nonNegativeInt,
+      isReserved: nonNegativeInt,
     }),
   ),
 });
 
 export const searchAllBooksResponseSchema = metaPaginatedSchema(
   z.object({
-    bookId: positiveInt.openapi({ example: 1 }),
-    bookInfoId: positiveInt.openapi({ example: 1 }),
+    bookId: nonNegativeInt.openapi({ example: 1 }),
+    bookInfoId: nonNegativeInt.openapi({ example: 1 }),
     title: z.string().openapi({ example: '모두의 데이터 과학 with 파이썬' }),
     author: z.string().openapi({ example: '드미트리 지노비에프' }),
     donator: z.string().openapi({ example: 'mingkang' }),
@@ -140,10 +140,10 @@ export const searchAllBooksResponseSchema = metaPaginatedSchema(
       example: 'https://image.kyobobook.co.kr/images/book/xlarge/152/x9791160502152.jpg',
     }),
     status: statusSchema.openapi({ example: 3 }),
-    categoryId: positiveInt.openapi({ example: 8 }),
+    categoryId: nonNegativeInt.openapi({ example: 8 }),
     callSign: z.string().openapi({ example: 'K23.17.v1.c1' }),
     category: z.string().openapi({ example: '데이터 분석/AI/ML' }),
-    isLendable: positiveInt.openapi({ example: 0 }),
+    isLendable: nonNegativeInt.openapi({ example: 0 }),
   }),
 );
 
@@ -162,9 +162,9 @@ export const searchBookInfoCreateResponseSchema = z.object({
 });
 
 export const searchBookByIdResponseSchema = z.object({
-  id: positiveInt.openapi({ example: 3 }),
-  bookId: positiveInt.openapi({ example: 3 }),
-  bookInfoId: positiveInt.openapi({ example: 2 }),
+  id: nonNegativeInt.openapi({ example: 3 }),
+  bookId: nonNegativeInt.openapi({ example: 3 }),
+  bookInfoId: nonNegativeInt.openapi({ example: 2 }),
   title: z
     .string()
     .openapi({ example: 'TCP IP 윈도우 소켓 프로그래밍(IT Cookbook 한빛 교재 시리즈 124)' }),
@@ -177,10 +177,10 @@ export const searchBookByIdResponseSchema = z.object({
     example: 'https://image.kyobobook.co.kr/images/book/xlarge/444/x9788998756444.jpg',
   }),
   status: statusSchema.openapi({ example: 0 }),
-  categoryId: positiveInt.openapi({ example: 2 }),
+  categoryId: nonNegativeInt.openapi({ example: 2 }),
   callSign: z.string().openapi({ example: 'C5.13.v1.c2' }),
   category: z.string().openapi({ example: '네트워크' }),
-  isLendable: positiveInt.openapi({ example: 1 }),
+  isLendable: nonNegativeInt.openapi({ example: 1 }),
 });
 
 export const updateBookResponseSchema = z.literal('책 정보가 수정되었습니다.');

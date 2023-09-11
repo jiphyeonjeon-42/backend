@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { bookInfoIdSchema, bookInfoNotFoundSchema, positiveInt } from '../shared';
+import { bookInfoIdSchema, bookInfoNotFoundSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 import { likeNotFoundSchema, likeResponseSchema } from './schema';
 
@@ -15,7 +15,7 @@ export const likesContract = c.router(
       body: null,
       responses: {
         200: z.object({
-          userId: positiveInt,
+          userId: nonNegativeInt,
           bookInfoId: bookInfoIdSchema,
         }),
       },
