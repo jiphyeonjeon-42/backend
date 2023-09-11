@@ -8,6 +8,7 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import {
   getIntraAuthentication,
   getMe,
+  getGoogleOAuth,
   getOAuth,
   getToken,
   intraAuthentication,
@@ -18,6 +19,30 @@ import {
 export const path = '/auth';
 export const router = Router();
 
+/**
+ * @openapi
+ * /api/auth/google:
+ *    get:
+ *      description: google login 진행 이후 access token을 생성해서 redirect
+ *      tags:
+ *      - auth
+ *      parameters:
+ *      - name: access_token
+ *        in: query
+ *        description: google에서 받은 access_token 서버로 전달.
+ *        schema:
+ *          type: string
+ *      responses:
+ *        '302':
+ *          description: 정상적으로 google 로그인 진행
+ *          headers:
+ *             Location:
+ *               description: 42library main으로 이동
+ *               schema:
+ *                 type: string
+ *                 format: uri
+ */
+router.get('/google', getGoogleOAuth);
 /**
  * @openapi
  * /api/auth/oauth:

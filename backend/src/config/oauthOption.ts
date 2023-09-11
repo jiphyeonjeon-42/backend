@@ -23,27 +23,11 @@ export const getOauthUrlOption = (processEnv: NodeJS.ProcessEnv): OauthUrlOption
     }))
     .parse(processEnv);
 
-export const getGoogleOauthUrlOption = (processEnv: NodeJS.ProcessEnv): OauthUrlOption =>
-  oauthUrlSchema
-    .transform((v) => ({
-      redirectURL: v.GOOGLE_REDIRECT_URL,
-      clientURL: v.CLIENT_URL,
-    }))
-    .parse(processEnv);
-
 // eslint-disable-next-line max-len
 export const getOauth42ApiOption = (processEnv: NodeJS.ProcessEnv): Oauth42ApiOption =>
   oauth42Schema
     .transform((v) => ({
       id: v.CLIENT_ID,
       secret: v.CLIENT_SECRET,
-    }))
-    .parse(processEnv);
-
-export const getGoogleOauthApiOption = (processEnv: NodeJS.ProcessEnv): Oauth42ApiOption =>
-  oauth42Schema
-    .transform((v) => ({
-      id: v.GOOGLE_CLIENT_ID,
-      secret: v.GOOGLE_CLIENT_SECRET,
     }))
     .parse(processEnv);

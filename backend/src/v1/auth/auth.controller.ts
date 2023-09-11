@@ -12,6 +12,7 @@ import { updateSlackIdByUserId } from '../slack/slack.service';
 import * as authJwt from './auth.jwt';
 import * as authService from './auth.service';
 import { role } from './auth.type';
+import axios, { AxiosResponse } from 'axios';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = oauth42ApiOption.id;
@@ -21,6 +22,21 @@ export const getOAuth = (req: Request, res: Response) => {
   )}&response_type=code&`;
   res.status(302).redirect(oauthUrl);
 };
+
+export const getGoogleOAuth = async (req: Request, res: Response) => {
+  const token = req.query.access_token;
+  console.log(req)
+  const userInfo: AxiosResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo',{
+     headers: { Authorization: `Bearer ${token}` }
+  })
+  const usersService = new UsersService();
+  usersService.searchUserByEmail(userInfo.data.email).then((user) => {
+    if (!user.items.length)
+      usersService.createUser(userInfo.data.email, userInfo.data.email);
+  });
+  await authJwt.saveJwt(req, res, userInfo.data.name);
+  res.status(302).redirect(oauthUrlOption.clientURL);
+}
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
