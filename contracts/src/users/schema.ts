@@ -1,17 +1,17 @@
-import { metaSchema, mkErrorMessageSchema, positiveInt } from '../shared';
+import { metaSchema, mkErrorMessageSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const searchUserSchema = z.object({
   nicknameOrEmail: z.string().optional().describe('검색할 유저의 nickname or email'),
-  page: positiveInt.optional().default(0).describe('페이지'),
-  limit: positiveInt.optional().default(10).describe('한 페이지에 들어올 검색결과 수'),
-  id: positiveInt.optional().describe('검색할 유저의 id'),
+  page: nonNegativeInt.optional().default(0).describe('페이지'),
+  limit: nonNegativeInt.optional().default(10).describe('한 페이지에 들어올 검색결과 수'),
+  id: nonNegativeInt.optional().describe('검색할 유저의 id'),
 });
 
 const reservationSchema = z
   .object({
-    reservationId: positiveInt.describe('예약 번호').openapi({ example: 17 }),
-    reservedBookInfoId: positiveInt.describe('예약된 도서 번호').openapi({ example: 34 }),
+    reservationId: nonNegativeInt.describe('예약 번호').openapi({ example: 17 }),
+    reservedBookInfoId: nonNegativeInt.describe('예약된 도서 번호').openapi({ example: 34 }),
     endAt: z.coerce
       .string()
       .nullable()
@@ -26,14 +26,14 @@ const reservationSchema = z
     image: z.string().describe('예약된 도서 이미지').openapi({
       example: 'https://image.kyobobook.co.kr/images/book/xlarge/383/x9791158392383.jpg',
     }),
-    userId: positiveInt.describe('예약한 유저 번호').openapi({ example: 1547 }),
+    userId: nonNegativeInt.describe('예약한 유저 번호').openapi({ example: 1547 }),
   })
   .optional();
 
 const lendingSchema = z
   .object({
-    userId: positiveInt.describe('대출한 유저 번호').openapi({ example: 1547 }),
-    bookInfoId: positiveInt.describe('대출한 도서 info id').openapi({ example: 20 }),
+    userId: nonNegativeInt.describe('대출한 유저 번호').openapi({ example: 1547 }),
+    bookInfoId: nonNegativeInt.describe('대출한 도서 info id').openapi({ example: 20 }),
     lendDate: z.coerce
       .string()
       .describe('대출 날짜')
@@ -51,16 +51,16 @@ const lendingSchema = z
       .string()
       .describe('반납 예정 날짜')
       .openapi({ example: '2023-08-22T20:20:55.000Z' }),
-    overDueDay: positiveInt.describe('연체된 날 수').openapi({ example: 0 }),
+    overDueDay: nonNegativeInt.describe('연체된 날 수').openapi({ example: 0 }),
     reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
   })
   .optional();
 
 const searchUserResponseItemSchema = z.object({
-  id: positiveInt.describe('유저 번호').openapi({ example: 1 }),
+  id: nonNegativeInt.describe('유저 번호').openapi({ example: 1 }),
   email: z.string().email().describe('이메일').openapi({ example: 'kyungsle@gmail.com' }),
   nickname: z.string().describe('닉네임').openapi({ example: 'kyungsle' }),
-  intraId: positiveInt.describe('인트라 고유 번호').openapi({ example: '10068' }),
+  intraId: nonNegativeInt.describe('인트라 고유 번호').openapi({ example: '10068' }),
   slack: z.string().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
   penaltyEndDate: z.coerce
     .string()
@@ -72,7 +72,7 @@ const searchUserResponseItemSchema = z.object({
     .default('0')
     .describe('현재 연체된 날 수')
     .openapi({ example: '0' }),
-  role: positiveInt.describe('유저 권한').openapi({ example: 2 }),
+  role: nonNegativeInt.describe('유저 권한').openapi({ example: 2 }),
   reservations: z.array(reservationSchema).describe('해당 유저의 예약 정보'),
   lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
 });
@@ -90,14 +90,14 @@ export const createUserSchema = z.object({
 export const createUserResponseSchema = z.literal('유저 생성 성공!');
 
 export const userIdSchema = z.object({
-  id: positiveInt.describe('유저 id 값').openapi({ example: 1 }),
+  id: nonNegativeInt.describe('유저 id 값').openapi({ example: 1 }),
 });
 
 export const updateUserSchema = z.object({
   nickname: z.string().optional().describe('닉네임').openapi({ example: 'kyungsle' }),
-  intraId: positiveInt.optional().describe('인트라 고유 번호').openapi({ example: '10068' }),
+  intraId: nonNegativeInt.optional().describe('인트라 고유 번호').openapi({ example: '10068' }),
   slack: z.string().optional().describe('slack 멤버 Id').openapi({ example: 'U035MUEUGKW' }),
-  role: positiveInt.optional().describe('유저 권한').openapi({ example: 2 }),
+  role: nonNegativeInt.optional().describe('유저 권한').openapi({ example: 2 }),
   penaltyEndDate: z.coerce
     .string()
     .optional()

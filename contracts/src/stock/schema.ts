@@ -1,7 +1,7 @@
-import { dateLike, metaSchema, positiveInt } from '../shared';
+import { dateLike, metaSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
-export const bookIdSchema = positiveInt.describe('업데이트 할 도서 ID');
+export const bookIdSchema = nonNegativeInt.describe('업데이트 할 도서 ID');
 
 export const stockPatchBodySchema = z.object({
   id: bookIdSchema.openapi({ example: 0 }),
@@ -10,15 +10,15 @@ export const stockPatchBodySchema = z.object({
 export const stockPatchResponseSchema = z.literal('재고 상태가 업데이트되었습니다.');
 
 export const stockGetQuerySchema = z.object({
-  page: positiveInt.default(0),
-  limit: positiveInt.default(10),
+  page: nonNegativeInt.default(0),
+  limit: nonNegativeInt.default(10),
 });
 
 export const stockGetResponseSchema = z.object({
   items: z.array(
     z.object({
-      bookId: positiveInt,
-      bookInfoId: positiveInt,
+      bookId: nonNegativeInt,
+      bookInfoId: nonNegativeInt,
       title: z.string(),
       author: z.string(),
       donator: z.string(),
@@ -26,8 +26,8 @@ export const stockGetResponseSchema = z.object({
       publishedAt: dateLike,
       isbn: z.string(),
       image: z.string(),
-      status: positiveInt,
-      categoryId: positiveInt,
+      status: nonNegativeInt,
+      categoryId: nonNegativeInt,
       callSign: z.string(),
       category: z.string(),
       updatedAt: dateLike,

@@ -1,9 +1,9 @@
-import { dateLike, metaSchema, mkErrorMessageSchema, positiveInt } from '../shared';
+import { dateLike, metaSchema, mkErrorMessageSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const subDefaultTagQuerySchema = z.object({
-  page: positiveInt.optional().default(0),
-  limit: positiveInt.optional().default(10),
+  page: nonNegativeInt.optional().default(0),
+  limit: nonNegativeInt.optional().default(10),
   visibility: z.enum(['public', 'private']).optional(),
   query: z.string().optional().openapi({ example: '개발자의 코드' }),
 });
@@ -11,7 +11,7 @@ export const subDefaultTagQuerySchema = z.object({
 export const subDefaultTagResponseSchema = z.object({
   items: z.array(
     z.object({
-      bookInfoId: positiveInt.openapi({
+      bookInfoId: nonNegativeInt.openapi({
         description: '태그가 등록된 도서의 info id',
         example: 1,
       }),
@@ -19,7 +19,7 @@ export const subDefaultTagResponseSchema = z.object({
         description: '태그가 등록된 도서의 제목',
         example: '개발자의 코드',
       }),
-      id: positiveInt.openapi({
+      id: nonNegativeInt.openapi({
         description: '태그 고유 id',
         example: 1,
       }),
@@ -59,7 +59,7 @@ export const superDefaultTagResponseSchema = z.object({
         description: '태그 내용',
         example: '1서클_추천_책',
       }),
-      count: positiveInt.openapi({
+      count: nonNegativeInt.openapi({
         description: '슈퍼 태그에 속한 서브 태그의 개수. 디폴트 태그는 0',
         example: 1,
       }),
@@ -72,14 +72,14 @@ export const superDefaultTagResponseSchema = z.object({
 });
 
 export const superTagIdQuerySchema = z.object({
-  superTagId: positiveInt.openapi({
+  superTagId: nonNegativeInt.openapi({
     description: '슈퍼 태그의 id',
     example: 1,
   }),
 });
 
 export const subTagResponseSchema = z.object({
-  id: positiveInt.openapi({
+  id: nonNegativeInt.openapi({
     description: '태그 고유 id',
     example: 1,
   }),
@@ -96,7 +96,7 @@ export const subTagResponseSchema = z.object({
 export const tagsOfBookResponseSchema = z.object({
   items: z.array(
     z.object({
-      id: positiveInt.openapi({
+      id: nonNegativeInt.openapi({
         description: '태그 고유 id',
         example: 1,
       }),
@@ -112,7 +112,7 @@ export const tagsOfBookResponseSchema = z.object({
         description: '태그의 타입. 슈퍼 태그는 super, 디폴트 태그는 default',
         example: 'super',
       }),
-      count: positiveInt.openapi({
+      count: nonNegativeInt.openapi({
         description: '슈퍼 태그에 속한 서브 태그의 개수. 디폴트 태그는 0',
         example: 1,
       }),
@@ -121,7 +121,7 @@ export const tagsOfBookResponseSchema = z.object({
 });
 
 export const modifySuperTagBodySchema = z.object({
-  id: positiveInt.openapi({
+  id: nonNegativeInt.openapi({
     description: '수정할 슈퍼 태그의 id',
     example: 1,
   }),
@@ -144,7 +144,7 @@ export const defaultTagCannotBeModifiedSchema = mkErrorMessageSchema(
 ).describe('디폴트 태그는 수정할 수 없습니다.');
 
 export const modifySubTagBodySchema = z.object({
-  id: positiveInt.openapi({
+  id: nonNegativeInt.openapi({
     description: '수정할 서브 태그의 id',
     example: 1,
   }),
@@ -163,11 +163,11 @@ export const NoAuthorityToModifyTagSchema = mkErrorMessageSchema(
 ).describe('태그를 수정할 권한이 없습니다.');
 
 export const mergeTagsBodySchema = z.object({
-  superTagId: positiveInt.nullable().openapi({
+  superTagId: nonNegativeInt.nullable().openapi({
     description: '병합할 슈퍼 태그의 id. null이면 디폴트 태그로 병합됨을 의미한다.',
     example: 1,
   }),
-  subTagIds: z.array(positiveInt).openapi({
+  subTagIds: z.array(nonNegativeInt).openapi({
     description: '병합할 서브 태그의 id 목록',
     example: [1, 2, 3],
   }),
@@ -177,7 +177,7 @@ export const invalidTagIdSchema =
   mkErrorMessageSchema('INVALID_TAG_ID').describe('태그 id가 올바르지 않습니다.');
 
 export const createTagBodySchema = z.object({
-  bookInfoId: positiveInt.openapi({
+  bookInfoId: nonNegativeInt.openapi({
     description: '태그를 등록할 도서의 info id',
     example: 1,
   }),
@@ -191,7 +191,7 @@ export const duplicateTagSchema =
   mkErrorMessageSchema('DUPLICATE_TAG').describe('이미 존재하는 태그입니다.');
 
 export const tagIdSchema = z.object({
-  tagId: positiveInt.openapi({
+  tagId: nonNegativeInt.openapi({
     description: '태그의 id',
     example: 1,
   }),

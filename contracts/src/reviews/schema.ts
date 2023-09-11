@@ -1,7 +1,7 @@
-import { mkErrorMessageSchema, positiveInt } from '../shared';
+import { mkErrorMessageSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
-export const reviewsIdSchema = positiveInt.describe('도서 리뷰 ID');
+export const reviewsIdSchema = nonNegativeInt.describe('도서 리뷰 ID');
 
 export const contentSchema = z.object({
   content: z.string().min(10).max(420).openapi({ example: '책 정말 재미있어요 10글자 넘었다' }),
