@@ -16,7 +16,7 @@ export const contract = c.router(
     // likes: likesContract,
     reviews: reviewsContract,
     lendings: lendingsContract,
-    books: booksContract,
+    // books: booksContract,
     // TODO(@scarf005): 유저 서비스 작성
     //     users: usersContract,
   },

@@ -19,26 +19,11 @@ export const searchAllBookInfosQuerySchema = commonQuerySchema.extend({
   category: z.string().optional(),
 });
 
-export const searchBookInfosByTagQuerySchema = commonQuerySchema.extend({
-  query: z.string(),
-  sort: z.enum(['new', 'popular', 'title']).default('new'),
-  category: z.string().optional(),
-});
-
-export const searchBookInfosSortedQuerySchema = z.object({
-  sort: z.enum(['new', 'popular']),
-  limit: nonNegativeInt.default(10).openapi({ example: 10 }),
-});
-
 export const searchBookInfoByIdPathSchema = z.object({
   id: nonNegativeInt,
 });
 
 export const searchAllBooksQuerySchema = commonQuerySchema;
-
-export const searchBookInfoCreateQuerySchema = z.object({
-  isbnQuery: z.string().openapi({ example: '9791191114225' }),
-});
 
 export const createBookBodySchema = z.object({
   title: z.string(),
@@ -68,10 +53,6 @@ export const updateBookBodySchema = z.object({
   status: statusSchema.optional(),
 });
 
-export const updateDonatorBodySchema = z.object({
-  bookId: nonNegativeInt,
-  nickname: z.string(),
-});
 
 export const bookInfoSchema = z.object({
   id: nonNegativeInt,
@@ -86,31 +67,6 @@ export const bookInfoSchema = z.object({
   updatedAt: dateLike,
 });
 
-export const searchBookInfosResponseSchema = metaPaginatedSchema(
-  bookInfoSchema
-    .extend({
-      publishedAt: dateLike,
-    })
-    .omit({
-      publisher: true,
-    }),
-).extend({
-  categories: z.array(
-    z.object({
-      name: z.string(),
-      count: nonNegativeInt,
-    }),
-  ),
-});
-
-export const searchBookInfosSortedResponseSchema = z.object({
-  items: z.array(
-    bookInfoSchema.extend({
-      publishedAt: dateLike,
-      lendingCnt: nonNegativeInt,
-    }),
-  ),
-});
 
 export const searchBookInfoByIdResponseSchema = bookInfoSchema.extend({
   books: z.array(
@@ -147,20 +103,6 @@ export const searchAllBooksResponseSchema = metaPaginatedSchema(
   }),
 );
 
-export const searchBookInfoCreateResponseSchema = z.object({
-  bookInfo: z.object({
-    title: z.string().openapi({ example: '작별인사' }),
-    image: z.string().openapi({
-      example: 'http://image.kyobobook.co.kr/images/book/xlarge/225/x9791191114225.jpg',
-    }),
-    author: z.string().openapi({ example: '지은이: 김영하' }),
-    category: z.string().openapi({ example: '8' }),
-    isbn: z.string().openapi({ example: '9791191114225' }),
-    publisher: z.string().openapi({ example: '복복서가' }),
-    pubdate: z.string().openapi({ example: '20220502' }),
-  }),
-});
-
 export const searchBookByIdResponseSchema = z.object({
   id: nonNegativeInt.openapi({ example: 3 }),
   bookId: nonNegativeInt.openapi({ example: 3 }),
@@ -185,19 +127,9 @@ export const searchBookByIdResponseSchema = z.object({
 
 export const updateBookResponseSchema = z.literal('책 정보가 수정되었습니다.');
 
-export const updateDonatorResponseSchema = z.literal('기부자 정보가 수정되었습니다.');
-
 export const createBookResponseSchema = z.object({
   callSign: z.string().openapi({ example: 'K23.17.v1.c1' }),
 });
-
-export const isbnNotFoundSchema = mkErrorMessageSchema('ISBN_NOT_FOUND').describe(
-  '국립중앙도서관 API에서 ISBN 검색이 실패하였습니다.',
-);
-
-export const naverBookNotFoundSchema = mkErrorMessageSchema('NAVER_BOOK_NOT_FOUND').describe(
-  '네이버 책검색 API에서 ISBN 검색이 실패',
-);
 
 export const insertionFailureSchema = mkErrorMessageSchema('INSERT_FAILURE').describe(
   '예상치 못한 에러로 책 정보 insert에 실패함.',
