@@ -18,7 +18,7 @@ export const usersContract = c.router(
     get: {
       method: 'GET',
       path: '/',
-      description: '유저 정보를 검색해 온다. query가 null이면 모든 유저를 검색한다.',
+      summary: '유저 정보를 검색해 온다. query가 null이면 모든 유저를 검색한다.',
       query: searchUserSchema,
       responses: {
         200: searchUserResponseSchema,
@@ -28,7 +28,7 @@ export const usersContract = c.router(
     post: {
       method: 'POST',
       path: '/',
-      description: '유저를 생성한다.',
+      summary: '유저를 생성한다.',
       body: createUserSchema,
       responses: {
         201: createUserResponseSchema,
@@ -38,7 +38,7 @@ export const usersContract = c.router(
     patch: {
       method: 'PATCH',
       path: '/:id',
-      description: '유저 정보를 변경한다.',
+      summary: '유저 정보를 변경한다.',
       pathParams: userIdSchema,
       body: updateUserSchema,
       responses: {

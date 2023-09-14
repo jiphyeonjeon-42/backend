@@ -10,7 +10,7 @@ export const likesContract = c.router(
     post: {
       method: 'POST',
       path: '/:bookInfoId/like',
-      description: '책에 좋아요를 누릅니다.',
+      summary: '책에 좋아요를 누릅니다.',
       pathParams: z.object({ bookInfoId: bookInfoIdSchema }),
       body: null,
       responses: {
@@ -23,8 +23,7 @@ export const likesContract = c.router(
     get: {
       method: 'GET',
       path: '/:bookInfoId/like',
-      summary: 'Like 정보를 가져온다.',
-      description: '사용자가 좋아요 버튼을 누르면 좋아요 개수를 가져온다.',
+      summary: '좋아요 개수를 가져옵니다.',
       pathParams: z.object({ bookInfoId: bookInfoIdSchema }),
       responses: {
         200: likeResponseSchema,
@@ -34,7 +33,7 @@ export const likesContract = c.router(
     delete: {
       method: 'DELETE',
       path: '/:bookInfoId/like',
-      description: 'delete a like',
+      summary: '좋아요를 취소합니다',
       pathParams: z.object({ bookInfoId: bookInfoIdSchema }),
       body: null,
       responses: {

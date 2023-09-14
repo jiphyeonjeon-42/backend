@@ -15,7 +15,7 @@ export const lendingsContract = c.router({
   getMine: {
     method: 'GET',
     path: '/mypage/lendings',
-    description: '내 대출 기록을 가져옵니다.',
+    summary: '내 대출 기록을 가져옵니다.',
     query: historiesGetMyQuerySchema,
     responses: {
       200: historiesGetResponseSchema,
@@ -25,7 +25,7 @@ export const lendingsContract = c.router({
   get: {
     method: 'GET',
     path: '/lendings',
-    description: '사서가 전체 대출 기록을 가져옵니다.',
+    summary: '사서가 전체 대출 기록을 가져옵니다.',
     query: historiesGetQuerySchema,
     responses: {
       200: historiesGetResponseSchema,
