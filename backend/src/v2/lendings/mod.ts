@@ -8,8 +8,8 @@ import { getHistoriesByQuery, getHistoriesByUser } from './repository';
 import { getUser } from '../shared';
 
 const s = initServer();
-export const histories = s.router(contract.histories, {
-  getMyHistories: {
+export const lendings = s.router(contract.lendings, {
+  getMine: {
     middleware: [authValidate(roleSet.all)],
     handler: async ({ query, req: { user } }) => {
       const { nickname: login } = getUser.parse(user);
@@ -27,7 +27,7 @@ export const histories = s.router(contract.histories, {
     },
   },
 
-  getAllHistories: {
+  get: {
     middleware: [authValidate(roleSet.librarian)],
     handler: async ({ query }) => {
       const [items, count] = await getHistoriesByQuery(query);
