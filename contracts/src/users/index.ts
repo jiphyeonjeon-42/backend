@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { badRequestSchema, forbiddenSchema } from '../shared';
+import { badRequestSchema } from '../shared';
 import {
   searchUserSchema,
   searchUserResponseSchema,
@@ -7,8 +7,6 @@ import {
   createUserResponseSchema,
   userIdSchema,
   updateUserSchema,
-  updatePrivateInfoSchema,
-  updateUserResponseSchema,
 } from './schema';
 
 export * from './schema';
@@ -17,9 +15,9 @@ const c = initContract();
 
 export const usersContract = c.router(
   {
-    searchUser: {
+    get: {
       method: 'GET',
-      path: '/search',
+      path: '/',
       description: '유저 정보를 검색해 온다. query가 null이면 모든 유저를 검색한다.',
       query: searchUserSchema,
       responses: {
@@ -27,9 +25,9 @@ export const usersContract = c.router(
         400: badRequestSchema,
       },
     },
-    createUser: {
+    post: {
       method: 'POST',
-      path: '/create',
+      path: '/',
       description: '유저를 생성한다.',
       body: createUserSchema,
       responses: {
@@ -37,26 +35,15 @@ export const usersContract = c.router(
         400: badRequestSchema,
       },
     },
-    updateUser: {
+    patch: {
       method: 'PATCH',
-      path: '/update/:id',
+      path: '/:id',
       description: '유저 정보를 변경한다.',
       pathParams: userIdSchema,
       body: updateUserSchema,
       responses: {
         200: updateUserSchema,
         400: badRequestSchema,
-      },
-    },
-    updatePrivateInfo: {
-      method: 'PATCH',
-      path: '/myupdate',
-      description: '유저의 정보를 변경한다.',
-      body: updatePrivateInfoSchema,
-      responses: {
-        200: updateUserResponseSchema,
-        400: badRequestSchema,
-        403: forbiddenSchema,
       },
     },
   },
