@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { badRequestSchema, serverErrorSchema, forbiddenSchema } from '../shared';
+import { badRequestSchema, forbiddenSchema } from '../shared';
 import {
   searchUserSchema,
   searchUserResponseSchema,
@@ -25,7 +25,6 @@ export const usersContract = c.router(
       responses: {
         200: searchUserResponseSchema,
         400: badRequestSchema,
-        500: serverErrorSchema,
       },
     },
     createUser: {
@@ -36,7 +35,6 @@ export const usersContract = c.router(
       responses: {
         201: createUserResponseSchema,
         400: badRequestSchema,
-        500: serverErrorSchema,
       },
     },
     updateUser: {
@@ -48,7 +46,6 @@ export const usersContract = c.router(
       responses: {
         200: updateUserSchema,
         400: badRequestSchema,
-        500: serverErrorSchema,
       },
     },
     updatePrivateInfo: {
@@ -60,7 +57,6 @@ export const usersContract = c.router(
         200: updateUserResponseSchema,
         400: badRequestSchema,
         403: forbiddenSchema,
-        500: serverErrorSchema,
       },
     },
   },
