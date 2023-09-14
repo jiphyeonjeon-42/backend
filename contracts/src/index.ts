@@ -3,7 +3,6 @@ import { reviewsContract } from './reviews';
 import { lendingsContract } from './lendings/mod';
 import { usersContract } from './users';
 import { likesContract } from './likes';
-import { tagContract } from './tags';
 import { booksContract } from './books';
 
 export * from './reviews';
@@ -18,8 +17,6 @@ export const contract = c.router(
     reviews: reviewsContract,
     lendings: lendingsContract,
     books: booksContract,
-    // TODO(@nyj001012): 태그 서비스 작성
-    // tags: tagContract,
     // TODO(@scarf005): 유저 서비스 작성
     //     users: usersContract,
   },
