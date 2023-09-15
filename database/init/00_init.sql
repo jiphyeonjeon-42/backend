@@ -2775,19 +2775,19 @@ CREATE TABLE `typeorm_metadata` (
 -- Dumping data for table `typeorm_metadata`
 --
 
-LOCK TABLES `typeorm_metadata` WRITE;
-/*!40000 ALTER TABLE `typeorm_metadata` DISABLE KEYS */;
-INSERT INTO `typeorm_metadata` VALUES
-('VIEW',NULL,'jip_dev',NULL,'user_reservation','SELECT `r`.`id` AS `reservationId`, `r`.`endAt` AS `endAt`, `r`.`createdAt` AS `reservationDate`, `r`.`bookInfoId` AS `reservedBookInfoId`, `r`.`userId` AS `userId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, (SELECT COUNT(*)\n       FROM reservation\n       WHERE (status = 0) \n        AND (bookInfoId = reservedBookInfoId) \n        AND (createdAt <= reservationDate)) AS `ranking` FROM `reservation` `r` LEFT JOIN `book_info` `bi` ON `r`.`bookInfoId` = `bi`.`id` WHERE `r`.`status` = 0'),
-('VIEW',NULL,'jip_dev',NULL,'v_lending','SELECT `l`.`id` AS `id`, `l`.`lendingCondition` AS `lendingCondition`, `u`.`nickname` AS `login`, `b`.`id` AS `bookId`, `b`.`callSign` AS `callSign`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, CASE WHEN NOW() > `u`.`penaltyEndDate` THEN 0 ELSE DATEDIFF(`u`.`penaltyEndDate`, now()) END AS `penaltyDays`, date_format(`l`.`createdAt`, \'%Y-%m-%d\') AS `createdAt`, date_format(`l`.`returnedAt`, \'%Y-%m-%d\') AS `returnedAt`, date_format(DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY), \'%Y-%m-%d\') AS `dueDate` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id`'),
-('VIEW',NULL,'jip_dev',NULL,'v_histories','SELECT `l`.`id` AS `id`, `l`.`returningCondition` AS `returningCondition`, `u`.`nickname` AS `login`, `b`.`callSign` AS `callSign`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, lendingCondition AS `lendingCondition`, \n      CASE WHEN NOW() > `u`.`penaltyEndDate` THEN 0\n        ELSE DATEDIFF(`u`.`penaltyEndDate`, NOW()) END\n     AS `penaltyDays`, DATE_FORMAT(`l`.`createdAt`, \"%Y-%m-%d\") AS `createdAt`, DATE_FORMAT(`l`.`returnedAt`, \"%Y-%m-%d\") AS `returnedAt`, DATE_FORMAT(DATE_ADD(`l`.`createdAt`, interval 14 day), \'%Y-%m-%d\') AS `dueDate`, (SELECT nickname FROM user WHERE user.id = lendingLibrarianId) AS `lendingLibrarianNickName`, (SELECT nickname FROM user WHERE user.id = returningLibrarianId) AS `returningLibrarianNickname` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  INNER JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON `b`.`infoId` = `bi`.`id`'),
-('VIEW',NULL,'jip_dev',NULL,'v_user_lending','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`userId` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, date_format(`l`.`createdAt`, \'%Y-%m-%d\') AS `lendDate`, date_format(DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY), \'%Y-%m-%d\') AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay` FROM `lending` `l` LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` IS NULL'),
-('VIEW',NULL,'jip_dev',NULL,'v_search_book','SELECT `book`.`id` AS `bookId`, `book`.`donator` AS `donator`, `book`.`callSign` AS `callSign`, `book`.`status` AS `status`, `book`.`infoId` AS `bookInfoId`, `book_info`.`title` AS `title`, `book_info`.`author` AS `author`, `book_info`.`publisher` AS `publisher`, `book_info`.`isbn` AS `isbn`, `book_info`.`image` AS `image`, `book_info`.`categoryId` AS `categoryId`, `category`.`name` AS `category`, DATE_FORMAT(`book_info`.`publishedAt`, \'%Y%m%d\') AS `publishedAt`,        IF((\n  IF((select COUNT(*) from lending as l where l.bookId = `book`.`id` and l.returnedAt is NULL) = 0, TRUE, FALSE)\n  AND\n  IF((select COUNT(*) from book as b where (b.id = `book`.`id` and b.status = 0)) = 1, TRUE, FALSE)\n  AND\n  IF((select COUNT(*) from reservation as r where (r.bookId = `book`.`id` and status = 0)) = 0, TRUE, FALSE)\n  ), TRUE, FALSE) AS `isLendable` FROM `book` `book` LEFT JOIN `book_info` `book_info` ON `book_info`.`id` = `book`.`infoId`  LEFT JOIN `category` `category` ON `book_info`.`categoryId` = `category`.`id`'),
-('VIEW',NULL,'jip_dev',NULL,'v_stock','SELECT `book`.`id` AS `bookId`, `book`.`donator` AS `donator`, `book`.`callSign` AS `callSign`, `book`.`status` AS `status`, `book`.`infoId` AS `bookInfoId`, `book_info`.`title` AS `title`, `book_info`.`author` AS `author`, `book_info`.`publisher` AS `publisher`, `book_info`.`isbn` AS `isbn`, `book_info`.`image` AS `image`, `book_info`.`categoryId` AS `categoryId`, `category`.`name` AS `category`, DATE_FORMAT(`book_info`.`publishedAt`, \'%Y%m%d\') AS `publishedAt`, date_format(`book`.`updatedAt`, \'%Y-%m-%d-%T\') AS `updatedAt` FROM `book` `book` LEFT JOIN `book_info` `book_info` ON `book_info`.`id` = `book`.`infoId`  LEFT JOIN `category` `category` ON `book_info`.`categoryId` = `category`.`id`  LEFT JOIN `lending` `l` ON `book`.`id` = `l`.`bookId`  LEFT JOIN `reservation` `r` ON `r`.`bookId` = `book`.`id` AND `r`.`status` = 0 WHERE `book`.`status` = 0 GROUP BY `book`.`id` HAVING COUNT(`l`.`id`) = COUNT(`l`.`returnedAt`) AND COUNT(`r`.`id`) = 0'),
-('VIEW',NULL,'jip_dev',NULL,'v_lending_for_search_user','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`createdAt` AS `lendDate`, `u`.`id` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY) AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay`, (SELECT COUNT(r.id) FROM reservation r WHERE r.bookInfoId = `bi`.`id` AND r.status = 0) AS `reservedNum` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` is NULL'),
-('VIEW',NULL,'jip_dev',NULL,'v_lending_for_search_user','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`createdAt` AS `lendDate`, `u`.`id` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY) AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay`, (SELECT COUNT(r.id) FROM reservation r WHERE r.bookInfoId = `bi`.`id` AND r.status = 0) AS `reservedNum` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` is NULL');
-/*!40000 ALTER TABLE `typeorm_metadata` ENABLE KEYS */;
-UNLOCK TABLES;
+-- LOCK TABLES `typeorm_metadata` WRITE;
+-- /*!40000 ALTER TABLE `typeorm_metadata` DISABLE KEYS */;
+-- INSERT INTO `typeorm_metadata` VALUES
+-- ('VIEW',NULL,'jip_dev',NULL,'user_reservation','SELECT `r`.`id` AS `reservationId`, `r`.`endAt` AS `endAt`, `r`.`createdAt` AS `reservationDate`, `r`.`bookInfoId` AS `reservedBookInfoId`, `r`.`userId` AS `userId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, (SELECT COUNT(*)\n       FROM reservation\n       WHERE (status = 0) \n        AND (bookInfoId = reservedBookInfoId) \n        AND (createdAt <= reservationDate)) AS `ranking` FROM `reservation` `r` LEFT JOIN `book_info` `bi` ON `r`.`bookInfoId` = `bi`.`id` WHERE `r`.`status` = 0'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_lending','SELECT `l`.`id` AS `id`, `l`.`lendingCondition` AS `lendingCondition`, `u`.`nickname` AS `login`, `b`.`id` AS `bookId`, `b`.`callSign` AS `callSign`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, CASE WHEN NOW() > `u`.`penaltyEndDate` THEN 0 ELSE DATEDIFF(`u`.`penaltyEndDate`, now()) END AS `penaltyDays`, date_format(`l`.`createdAt`, \'%Y-%m-%d\') AS `createdAt`, date_format(`l`.`returnedAt`, \'%Y-%m-%d\') AS `returnedAt`, date_format(DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY), \'%Y-%m-%d\') AS `dueDate` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id`'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_histories','SELECT `l`.`id` AS `id`, `l`.`returningCondition` AS `returningCondition`, `u`.`nickname` AS `login`, `b`.`callSign` AS `callSign`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, lendingCondition AS `lendingCondition`, \n      CASE WHEN NOW() > `u`.`penaltyEndDate` THEN 0\n        ELSE DATEDIFF(`u`.`penaltyEndDate`, NOW()) END\n     AS `penaltyDays`, DATE_FORMAT(`l`.`createdAt`, \"%Y-%m-%d\") AS `createdAt`, DATE_FORMAT(`l`.`returnedAt`, \"%Y-%m-%d\") AS `returnedAt`, DATE_FORMAT(DATE_ADD(`l`.`createdAt`, interval 14 day), \'%Y-%m-%d\') AS `dueDate`, (SELECT nickname FROM user WHERE user.id = lendingLibrarianId) AS `lendingLibrarianNickName`, (SELECT nickname FROM user WHERE user.id = returningLibrarianId) AS `returningLibrarianNickname` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  INNER JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON `b`.`infoId` = `bi`.`id`'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_user_lending','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`userId` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`image` AS `image`, date_format(`l`.`createdAt`, \'%Y-%m-%d\') AS `lendDate`, date_format(DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY), \'%Y-%m-%d\') AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay` FROM `lending` `l` LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` IS NULL'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_search_book','SELECT `book`.`id` AS `bookId`, `book`.`donator` AS `donator`, `book`.`callSign` AS `callSign`, `book`.`status` AS `status`, `book`.`infoId` AS `bookInfoId`, `book_info`.`title` AS `title`, `book_info`.`author` AS `author`, `book_info`.`publisher` AS `publisher`, `book_info`.`isbn` AS `isbn`, `book_info`.`image` AS `image`, `book_info`.`categoryId` AS `categoryId`, `category`.`name` AS `category`, DATE_FORMAT(`book_info`.`publishedAt`, \'%Y%m%d\') AS `publishedAt`,        IF((\n  IF((select COUNT(*) from lending as l where l.bookId = `book`.`id` and l.returnedAt is NULL) = 0, TRUE, FALSE)\n  AND\n  IF((select COUNT(*) from book as b where (b.id = `book`.`id` and b.status = 0)) = 1, TRUE, FALSE)\n  AND\n  IF((select COUNT(*) from reservation as r where (r.bookId = `book`.`id` and status = 0)) = 0, TRUE, FALSE)\n  ), TRUE, FALSE) AS `isLendable` FROM `book` `book` LEFT JOIN `book_info` `book_info` ON `book_info`.`id` = `book`.`infoId`  LEFT JOIN `category` `category` ON `book_info`.`categoryId` = `category`.`id`'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_stock','SELECT `book`.`id` AS `bookId`, `book`.`donator` AS `donator`, `book`.`callSign` AS `callSign`, `book`.`status` AS `status`, `book`.`infoId` AS `bookInfoId`, `book_info`.`title` AS `title`, `book_info`.`author` AS `author`, `book_info`.`publisher` AS `publisher`, `book_info`.`isbn` AS `isbn`, `book_info`.`image` AS `image`, `book_info`.`categoryId` AS `categoryId`, `category`.`name` AS `category`, DATE_FORMAT(`book_info`.`publishedAt`, \'%Y%m%d\') AS `publishedAt`, date_format(`book`.`updatedAt`, \'%Y-%m-%d-%T\') AS `updatedAt` FROM `book` `book` LEFT JOIN `book_info` `book_info` ON `book_info`.`id` = `book`.`infoId`  LEFT JOIN `category` `category` ON `book_info`.`categoryId` = `category`.`id`  LEFT JOIN `lending` `l` ON `book`.`id` = `l`.`bookId`  LEFT JOIN `reservation` `r` ON `r`.`bookId` = `book`.`id` AND `r`.`status` = 0 WHERE `book`.`status` = 0 GROUP BY `book`.`id` HAVING COUNT(`l`.`id`) = COUNT(`l`.`returnedAt`) AND COUNT(`r`.`id`) = 0'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_lending_for_search_user','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`createdAt` AS `lendDate`, `u`.`id` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY) AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay`, (SELECT COUNT(r.id) FROM reservation r WHERE r.bookInfoId = `bi`.`id` AND r.status = 0) AS `reservedNum` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` is NULL'),
+-- ('VIEW',NULL,'jip_dev',NULL,'v_lending_for_search_user','SELECT `l`.`lendingCondition` AS `lendingCondition`, `l`.`createdAt` AS `lendDate`, `u`.`id` AS `userId`, `bi`.`id` AS `bookInfoId`, `bi`.`title` AS `title`, `bi`.`author` AS `author`, `bi`.`image` AS `image`, DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY) AS `duedate`, CASE WHEN DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) < 0 THEN 0 ELSE DATEDIFF(now(), DATE_ADD(`l`.`createdAt`, INTERVAL 14 DAY)) END AS `overDueDay`, (SELECT COUNT(r.id) FROM reservation r WHERE r.bookInfoId = `bi`.`id` AND r.status = 0) AS `reservedNum` FROM `lending` `l` INNER JOIN `user` `u` ON `l`.`userId` = `u`.`id`  LEFT JOIN `book` `b` ON `l`.`bookId` = `b`.`id`  LEFT JOIN `book_info` `bi` ON b.infoid = `bi`.`id` WHERE `l`.`returnedAt` is NULL');
+-- /*!40000 ALTER TABLE `typeorm_metadata` ENABLE KEYS */;
+-- UNLOCK TABLES;
 
 --
 -- Table structure for table `user`
@@ -2860,233 +2860,234 @@ CREATE TABLE `search_keywords` (
   FULLTEXT KEY `fx_search_keywords` (`disassembled_keyword`,`initial_consonants`) /*!50100 WITH PARSER `ngram` */ 
 ) ENGINE=InnoDB AUTO_INCREMENT=405 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-DROP TABLE IF EXISTS `user_reservation`;
-/*!50001 DROP VIEW IF EXISTS `user_reservation`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `user_reservation` AS SELECT
- 1 AS `reservationId`,
-  1 AS `endAt`,
-  1 AS `reservationDate`,
-  1 AS `reservedBookInfoId`,
-  1 AS `userId`,
-  1 AS `title`,
-  1 AS `author`,
-  1 AS `image`,
-  1 AS `ranking` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `user_reservation`;
+-- /*!50001 DROP VIEW IF EXISTS `user_reservation`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `user_reservation` AS SELECT
+--  1 AS `reservationId`,
+--   1 AS `endAt`,
+--   1 AS `reservationDate`,
+--   1 AS `reservedBookInfoId`,
+--   1 AS `userId`,
+--   1 AS `title`,
+--   1 AS `author`,
+--   1 AS `image`,
+--   1 AS `ranking` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_histories`
---
+-- --
+-- -- Temporary table structure for view `v_histories`
+-- --
 
-DROP TABLE IF EXISTS `v_histories`;
-/*!50001 DROP VIEW IF EXISTS `v_histories`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_histories` AS SELECT
- 1 AS `id`,
-  1 AS `returningCondition`,
-  1 AS `login`,
-  1 AS `callSign`,
-  1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `image`,
-  1 AS `lendingCondition`,
-  1 AS `updatedAt`,
-  1 AS `penaltyDays`,
-  1 AS `createdAt`,
-  1 AS `returnedAt`,
-  1 AS `dueDate`,
-  1 AS `lendingLibrarianNickName`,
-  1 AS `returningLibrarianNickname` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_histories`;
+-- /*!50001 DROP VIEW IF EXISTS `v_histories`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_histories` AS SELECT
+--  1 AS `id`,
+--   1 AS `returningCondition`,
+--   1 AS `login`,
+--   1 AS `callSign`,
+--   1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `image`,
+--   1 AS `lendingCondition`,
+--   1 AS `updatedAt`,
+--   1 AS `penaltyDays`,
+--   1 AS `createdAt`,
+--   1 AS `returnedAt`,
+--   1 AS `dueDate`,
+--   1 AS `lendingLibrarianNickName`,
+--   1 AS `returningLibrarianNickname` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_lending`
---
+-- --
+-- -- Temporary table structure for view `v_lending`
+-- --
 
-DROP TABLE IF EXISTS `v_lending`;
-/*!50001 DROP VIEW IF EXISTS `v_lending`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_lending` AS SELECT
- 1 AS `id`,
-  1 AS `lendingCondition`,
-  1 AS `login`,
-  1 AS `bookId`,
-  1 AS `callSign`,
-  1 AS `title`,
-  1 AS `image`,
-  1 AS `penaltyDays`,
-  1 AS `createdAt`,
-  1 AS `returnedAt`,
-  1 AS `dueDate` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_lending`;
+-- /*!50001 DROP VIEW IF EXISTS `v_lending`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_lending` AS SELECT
+--  1 AS `id`,
+--   1 AS `lendingCondition`,
+--   1 AS `login`,
+--   1 AS `bookId`,
+--   1 AS `callSign`,
+--   1 AS `title`,
+--   1 AS `image`,
+--   1 AS `penaltyDays`,
+--   1 AS `createdAt`,
+--   1 AS `returnedAt`,
+--   1 AS `dueDate` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_lending_for_search_user`
---
+-- --
+-- -- Temporary table structure for view `v_lending_for_search_user`
+-- --
 
-DROP TABLE IF EXISTS `v_lending_for_search_user`;
-/*!50001 DROP VIEW IF EXISTS `v_lending_for_search_user`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_lending_for_search_user` AS SELECT
- 1 AS `lendingCondition`,
-  1 AS `lendDate`,
-  1 AS `userId`,
-  1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `author`,
-  1 AS `image`,
-  1 AS `duedate`,
-  1 AS `overDueDay`,
-  1 AS `reservedNum` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_lending_for_search_user`;
+-- /*!50001 DROP VIEW IF EXISTS `v_lending_for_search_user`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_lending_for_search_user` AS SELECT
+--  1 AS `lendingCondition`,
+--   1 AS `lendDate`,
+--   1 AS `userId`,
+--   1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `author`,
+--   1 AS `image`,
+--   1 AS `duedate`,
+--   1 AS `overDueDay`,
+--   1 AS `reservedNum` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_search_book`
---
+-- --
+-- -- Temporary table structure for view `v_search_book`
+-- --
 
-DROP TABLE IF EXISTS `v_search_book`;
-/*!50001 DROP VIEW IF EXISTS `v_search_book`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_search_book` AS SELECT
- 1 AS `bookId`,
-  1 AS `donator`,
-  1 AS `callSign`,
-  1 AS `status`,
-  1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `author`,
-  1 AS `publisher`,
-  1 AS `isbn`,
-  1 AS `image`,
-  1 AS `categoryId`,
-  1 AS `category`,
-  1 AS `publishedAt`,
-  1 AS `isLendable` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_search_book`;
+-- /*!50001 DROP VIEW IF EXISTS `v_search_book`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_search_book` AS SELECT
+--  1 AS `bookId`,
+--   1 AS `donator`,
+--   1 AS `callSign`,
+--   1 AS `status`,
+--   1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `author`,
+--   1 AS `publisher`,
+--   1 AS `isbn`,
+--   1 AS `image`,
+--   1 AS `categoryId`,
+--   1 AS `category`,
+--   1 AS `publishedAt`,
+--   1 AS `isLendable` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_search_book_by_tag`
---
+-- --
+-- -- Temporary table structure for view `v_search_book_by_tag`
+-- --
 
-DROP TABLE IF EXISTS `v_search_book_by_tag`;
-/*!50001 DROP VIEW IF EXISTS `v_search_book_by_tag`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_search_book_by_tag` AS SELECT
- 1 AS `id`,
-  1 AS `title`,
-  1 AS `author`,
-  1 AS `isbn`,
-  1 AS `image`,
-  1 AS `publishedAt`,
-  1 AS `createdAt`,
-  1 AS `updatedAt`,
-  1 AS `category`,
-  1 AS `superTagContent`,
-  1 AS `subTagContent`,
-  1 AS `lendingCnt` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_search_book_by_tag`;
+-- /*!50001 DROP VIEW IF EXISTS `v_search_book_by_tag`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_search_book_by_tag` AS SELECT
+--  1 AS `id`,
+--   1 AS `title`,
+--   1 AS `author`,
+--   1 AS `isbn`,
+--   1 AS `image`,
+--   1 AS `publishedAt`,
+--   1 AS `createdAt`,
+--   1 AS `updatedAt`,
+--   1 AS `category`,
+--   1 AS `superTagContent`,
+--   1 AS `subTagContent`,
+--   1 AS `lendingCnt` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_stock`
---
+-- --
+-- -- Temporary table structure for view `v_stock`
+-- --
 
-DROP TABLE IF EXISTS `v_stock`;
-/*!50001 DROP VIEW IF EXISTS `v_stock`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_stock` AS SELECT
- 1 AS `bookId`,
-  1 AS `donator`,
-  1 AS `callSign`,
-  1 AS `status`,
-  1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `author`,
-  1 AS `publisher`,
-  1 AS `isbn`,
-  1 AS `image`,
-  1 AS `categoryId`,
-  1 AS `category`,
-  1 AS `publishedAt`,
-  1 AS `updatedAt` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_stock`;
+-- /*!50001 DROP VIEW IF EXISTS `v_stock`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_stock` AS SELECT
+--  1 AS `bookId`,
+--   1 AS `donator`,
+--   1 AS `callSign`,
+--   1 AS `status`,
+--   1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `author`,
+--   1 AS `publisher`,
+--   1 AS `isbn`,
+--   1 AS `image`,
+--   1 AS `categoryId`,
+--   1 AS `category`,
+--   1 AS `publishedAt`,
+--   1 AS `updatedAt` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_tags_sub_default`
---
+-- --
+-- -- Temporary table structure for view `v_tags_sub_default`
+-- --
 
-DROP TABLE IF EXISTS `v_tags_sub_default`;
-/*!50001 DROP VIEW IF EXISTS `v_tags_sub_default`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_tags_sub_default` AS SELECT
- 1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `id`,
-  1 AS `createdAt`,
-  1 AS `login`,
-  1 AS `content`,
-  1 AS `superTagId`,
-  1 AS `superContent`,
-  1 AS `isPublic`,
-  1 AS `isDeleted`,
-  1 AS `visibility` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_tags_sub_default`;
+-- /*!50001 DROP VIEW IF EXISTS `v_tags_sub_default`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_tags_sub_default` AS SELECT
+--  1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `id`,
+--   1 AS `createdAt`,
+--   1 AS `login`,
+--   1 AS `content`,
+--   1 AS `superTagId`,
+--   1 AS `superContent`,
+--   1 AS `isPublic`,
+--   1 AS `isDeleted`,
+--   1 AS `visibility` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_tags_super_default`
---
+-- --
+-- -- Temporary table structure for view `v_tags_super_default`
+-- --
 
-DROP TABLE IF EXISTS `v_tags_super_default`;
-/*!50001 DROP VIEW IF EXISTS `v_tags_super_default`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_tags_super_default` AS SELECT
- 1 AS `content`,
-  1 AS `count`,
-  1 AS `type`,
-  1 AS `createdAt` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_tags_super_default`;
+-- /*!50001 DROP VIEW IF EXISTS `v_tags_super_default`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_tags_super_default` AS SELECT
+--  1 AS `content`,
+--   1 AS `count`,
+--   1 AS `type`,
+--   1 AS `createdAt` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Temporary table structure for view `v_user_lending`
---
+-- --
+-- -- Temporary table structure for view `v_user_lending`
+-- --
 
-DROP TABLE IF EXISTS `v_user_lending`;
-/*!50001 DROP VIEW IF EXISTS `v_user_lending`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_user_lending` AS SELECT
- 1 AS `lendingCondition`,
-  1 AS `userId`,
-  1 AS `bookInfoId`,
-  1 AS `title`,
-  1 AS `image`,
-  1 AS `lendDate`,
-  1 AS `duedate`,
-  1 AS `overDueDay` */;
-SET character_set_client = @saved_cs_client;
+-- DROP TABLE IF EXISTS `v_user_lending`;
+-- /*!50001 DROP VIEW IF EXISTS `v_user_lending`*/;
+-- SET @saved_cs_client     = @@character_set_client;
+-- SET character_set_client = utf8;
+-- /*!50001 CREATE VIEW `v_user_lending` AS SELECT
+--  1 AS `lendingCondition`,
+--   1 AS `userId`,
+--   1 AS `bookInfoId`,
+--   1 AS `title`,
+--   1 AS `image`,
+--   1 AS `lendDate`,
+--   1 AS `duedate`,
+--   1 AS `overDueDay` */;
+-- SET character_set_client = @saved_cs_client;
 
---
--- Current Database: `jip_dev`
---
-GRANT SELECT ON v_user_lending TO 'saseo'@'%';
-GRANT SELECT ON v_tags_super_default TO 'saseo'@'%';
-GRANT SELECT ON v_tags_sub_default TO 'saseo'@'%';
-GRANT SELECT ON v_stock TO 'saseo'@'%';
-GRANT SELECT ON v_search_book_by_tag TO 'saseo'@'%';
-GRANT SELECT ON v_search_book TO 'saseo'@'%';
-GRANT SELECT ON v_lending_for_search_user TO 'saseo'@'%';
-GRANT SELECT ON v_lending TO 'saseo'@'%';
-GRANT SELECT ON v_histories TO 'saseo'@'%';
-GRANT SELECT ON user_reservation TO 'saseo'@'%';
+-- --
+-- -- Current Database: `jip_dev`
+-- --
+-- GRANT SELECT ON v_user_lending TO 'saseo'@'%';
+-- GRANT SELECT ON v_tags_super_default TO 'saseo'@'%';
+-- GRANT SELECT ON v_tags_sub_default TO 'saseo'@'%';
+-- GRANT SELECT ON v_stock TO 'saseo'@'%';
+-- GRANT SELECT ON v_search_book_by_tag TO 'saseo'@'%';
+-- GRANT SELECT ON v_search_book TO 'saseo'@'%';
+-- GRANT SELECT ON v_lending_for_search_user TO 'saseo'@'%';
+-- GRANT SELECT ON v_lending TO 'saseo'@'%';
+-- GRANT SELECT ON v_histories TO 'saseo'@'%';
+-- GRANT SELECT ON user_reservation TO 'saseo'@'%';
+-- FLUSH PRIVILEGES;
 USE `jip_dev`;
 
 --
