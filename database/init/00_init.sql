@@ -2826,9 +2826,39 @@ LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Temporary table structure for view `user_reservation`
---
+CREATE TABLE `book_info_search_keywords` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `book_info_id` int DEFAULT NULL,
+  `disassembled_title` varchar(255) DEFAULT NULL,
+  `title_initials` varchar(255) DEFAULT NULL,
+  `disassembled_author` varchar(255) DEFAULT NULL,
+  `author_initials` varchar(255) DEFAULT NULL,
+  `disassembled_publisher` varchar(255) DEFAULT NULL,
+  `publisher_initials` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `book_info_id` (`book_info_id`),
+  FULLTEXT KEY `fx_disassembled` (`disassembled_title`,`disassembled_author`,`disassembled_publisher`),
+  FULLTEXT KEY `fx_initials` (`title_initials`,`author_initials`,`publisher_initials`),
+  CONSTRAINT `book_info_search_keywords_ibfk_1` FOREIGN KEY (`book_info_id`) REFERENCES `book_info` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1017 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `search_logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `search_keyword_id` int DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `search_keyword_id` (`search_keyword_id`),
+  CONSTRAINT `search_logs_ibfk_1` FOREIGN KEY (`search_keyword_id`) REFERENCES `search_keywords` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1747 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `search_keywords` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `keyword` varchar(255) DEFAULT NULL,
+  `disassembled_keyword` varchar(255) DEFAULT NULL,
+  `initial_consonants` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `fx_search_keywords` (`disassembled_keyword`,`initial_consonants`) /*!50100 WITH PARSER `ngram` */ 
+) ENGINE=InnoDB AUTO_INCREMENT=405 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `user_reservation`;
 /*!50001 DROP VIEW IF EXISTS `user_reservation`*/;
