@@ -28,7 +28,7 @@ export const issueJwt = (user: User) => {
  * 설정값 설명
  *      expires: 밀리세컨드 값으로 설정해야하고, 1000 * 60 * 480 = 8시간으로 설정
  */
-export const saveJwt = async (req: Request, res: Response, user: User) : Promise<void> => {
+export const saveJwt = async (req: Request, res: Response, user: User): Promise<void> => {
   const token = issueJwt(user);
   res.cookie('access_token', token, {
     ...cookieOptions,

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BookInfo } from './BookInfo';
 
 @Index('id', ['id'], { unique: true })
@@ -12,11 +6,11 @@ import { BookInfo } from './BookInfo';
 @Entity('category', { schema: '42library' })
 export class Category {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-    id: number;
+  id: number;
 
   @Column('varchar', { name: 'name', unique: true, length: 255 })
-    name: string;
+  name: string;
 
   @OneToMany(() => BookInfo, (bookInfo) => bookInfo.category)
-    bookInfos: BookInfo[];
+  bookInfos: BookInfo[];
 }

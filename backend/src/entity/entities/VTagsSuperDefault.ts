@@ -50,14 +50,14 @@ import { ObjectLiteral, SelectQueryBuilder } from 'typeorm/browser';
 })
 export class VTagsSuperDefault {
   @ViewColumn()
-    content: string;
+  content: string;
 
   @ViewColumn()
-    count: number;
+  count: number;
 
   @ViewColumn()
-    type: string;
+  type: string;
 
   @ViewColumn()
-    createdAt: string;
+  createdAt: string;
 }

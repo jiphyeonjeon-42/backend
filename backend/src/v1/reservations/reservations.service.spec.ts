@@ -128,14 +128,12 @@ describe('ReservationsServices', () => {
 
   it('reservation count (INVALID_INFO_ID)', async () => {
     bookInfoId = 4242;
-    expect(await reservationsService.count(bookInfoId))
-      .toBe(reservationsService.INVALID_INFO_ID);
+    expect(await reservationsService.count(bookInfoId)).toBe(reservationsService.INVALID_INFO_ID);
   });
 
   it('reservation count (NOT_LENDED)', async () => {
     bookInfoId = 1;
-    expect(await reservationsService.count(bookInfoId))
-      .toBe(reservationsService.NOT_LENDED);
+    expect(await reservationsService.count(bookInfoId)).toBe(reservationsService.NOT_LENDED);
   });
 
   it('get user reservation', async () => {

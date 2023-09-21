@@ -6,6 +6,8 @@ function leftPad(value: number) {
 }
 
 export const formatDate = (date: Date) => {
-  const formatted_date = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(date.getDate())}`;
+  const formatted_date = `${date.getFullYear()}-${leftPad(date.getMonth() + 1)}-${leftPad(
+    date.getDate(),
+  )}`;
   return formatted_date;
 };

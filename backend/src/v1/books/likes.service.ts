@@ -3,7 +3,7 @@ import jipDataSource from '~/app-data-source';
 import LikesRepository from './Likes.repository';
 
 export default class LikesService {
-  private readonly likesRepository : LikesRepository;
+  private readonly likesRepository: LikesRepository;
 
   constructor() {
     this.likesRepository = new LikesRepository();
@@ -22,7 +22,9 @@ export default class LikesService {
     const LikeArray = await this.likesRepository.find({
       where: { userId, bookInfoId, isDeleted: false },
     });
-    if (LikeArray.length === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+    if (LikeArray.length === 0) {
+      throw new Error(errorCode.NONEXISTENT_LIKES);
+    }
   }
 
   async createLike(userId: number, bookInfoId: number) {
@@ -33,9 +35,12 @@ export default class LikesService {
     await likesRepo.manager.queryRunner?.connect();
     await likesRepo.manager.queryRunner?.startTransaction();
     try {
-      const ret = await likesRepo.update({ userId, bookInfoId }, {
-        isDeleted: false,
-      });
+      const ret = await likesRepo.update(
+        { userId, bookInfoId },
+        {
+          isDeleted: false,
+        },
+      );
       if (ret.affected === 0) {
         const like = likesRepo.create({ userId, bookInfoId });
         await likesRepo.save(like);
@@ -54,18 +59,25 @@ export default class LikesService {
   async deleteLike(userId: number, bookInfoId: number) {
     // update를 할때 이미 해당 데이터가 존재하는지 검사하지 말라는 이유는??
     //  UpdateResult { generatedMaps: [], raw: [], affected: 0 }
-    const { affected } = await this.likesRepository.update({ userId, bookInfoId }, {
-      isDeleted: true,
-    });
-    if (affected === 0) { throw new Error(errorCode.NONEXISTENT_LIKES); }
+    const { affected } = await this.likesRepository.update(
+      { userId, bookInfoId },
+      {
+        isDeleted: true,
+      },
+    );
+    if (affected === 0) {
+      throw new Error(errorCode.NONEXISTENT_LIKES);
+    }
   }
 
   async getLikeInfo(userId: number, bookInfoId: number) {
     const LikeArray = await this.likesRepository.find({ where: { bookInfoId, isDeleted: false } });
     let isLiked = false;
     LikeArray.forEach((like: any) => {
-      if (like.userId === userId && like.isDeleted === 0) { isLiked = true; }
+      if (like.userId === userId && like.isDeleted === 0) {
+        isLiked = true;
+      }
     });
-    return ({ bookInfoId, isLiked, likeNum: LikeArray.length });
+    return { bookInfoId, isLiked, likeNum: LikeArray.length };
   }
 }

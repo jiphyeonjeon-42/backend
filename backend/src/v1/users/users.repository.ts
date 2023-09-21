@@ -3,7 +3,11 @@ import { Repository } from 'typeorm';
 import { formatDate } from '~/v1/utils/dateFormat';
 import jipDataSource from '~/app-data-source';
 import {
-  VUserLending, VLendingForSearchUser, Reservation, UserReservation, User,
+  VUserLending,
+  VLendingForSearchUser,
+  Reservation,
+  UserReservation,
+  User,
 } from '~/entity/entities';
 import * as models from '../DTO/users.model';
 
@@ -16,42 +20,26 @@ export default class UsersRepository extends Repository<User> {
 
   private readonly userReservRepo: Repository<UserReservation>;
 
-  constructor(
-    queryRunner?: QueryRunner,
-  ) {
+  constructor(queryRunner?: QueryRunner) {
     const qr = queryRunner;
     const manager = jipDataSource.createEntityManager(qr);
     super(User, manager);
-    this.userLendingRepo = new Repository<VUserLending>(
-      VUserLending,
-      manager,
-    );
+    this.userLendingRepo = new Repository<VUserLending>(VUserLending, manager);
     this.lendingForSearchUserRepo = new Repository<VLendingForSearchUser>(
       VLendingForSearchUser,
       manager,
     );
-    this.reservationsRepo = new Repository<Reservation>(
-      Reservation,
-      manager,
-    );
-    this.userReservRepo = new Repository<UserReservation>(
-      UserReservation,
-      manager,
-    );
+    this.reservationsRepo = new Repository<Reservation>(Reservation, manager);
+    this.userReservRepo = new Repository<UserReservation>(UserReservation, manager);
   }
 
-  async searchUserBy(conditions: {}, limit: number, page: number)
-  : Promise<[models.User[], number]> {
+  async searchUserBy(
+    conditions: {},
+    limit: number,
+    page: number,
+  ): Promise<[models.User[], number]> {
     const [users, count] = await this.findAndCount({
-      select: [
-        'id',
-        'email',
-        'nickname',
-        'intraId',
-        'slack',
-        'penaltyEndDate',
-        'role',
-      ],
+      select: ['id', 'email', 'nickname', 'intraId', 'slack', 'penaltyEndDate', 'role'],
       where: conditions,
       take: limit,
       skip: page * limit,
@@ -68,19 +56,13 @@ export default class UsersRepository extends Repository<User> {
   /**
    * @warning : use only password needed
    */
-  async searchUserWithPasswordBy(conditions: {}, limit: number, page: number)
-  : Promise<[models.PrivateUser[], number]> {
+  async searchUserWithPasswordBy(
+    conditions: {},
+    limit: number,
+    page: number,
+  ): Promise<[models.PrivateUser[], number]> {
     const [users, count] = await this.findAndCount({
-      select: [
-        'id',
-        'email',
-        'nickname',
-        'intraId',
-        'slack',
-        'penaltyEndDate',
-        'role',
-        'password',
-      ],
+      select: ['id', 'email', 'nickname', 'intraId', 'slack', 'penaltyEndDate', 'role', 'password'],
       where: conditions,
       take: limit,
       skip: page * limit,
@@ -94,7 +76,7 @@ export default class UsersRepository extends Repository<User> {
     return [customUsers, count];
   }
 
-  async getLending(users: { userId: number; }[]) {
+  async getLending(users: { userId: number }[]) {
     if (users.length !== 0) return this.userLendingRepo.find({ where: users });
     return this.userLendingRepo.find();
   }
@@ -109,11 +91,11 @@ export default class UsersRepository extends Repository<User> {
   }
 
   async getUserLendings(userId: number) {
-    const userLendingList = await this.lendingForSearchUserRepo.find({
+    const userLendingList = (await this.lendingForSearchUserRepo.find({
       where: {
         userId,
       },
-    }) as unknown as models.Lending[];
+    })) as unknown as models.Lending[];
     return userLendingList;
   }
 
@@ -136,12 +118,8 @@ export default class UsersRepository extends Repository<User> {
     });
   }
 
-  async updateUser(id: number, values: {})
-  : Promise<models.User> {
-    const updatedUser = await this.update(
-      id,
-      values,
-    ) as unknown as models.User;
+  async updateUser(id: number, values: {}): Promise<models.User> {
+    const updatedUser = (await this.update(id, values)) as unknown as models.User;
     return updatedUser;
   }
 }

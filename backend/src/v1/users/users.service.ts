@@ -5,7 +5,7 @@ import * as types from '../DTO/common.interface';
 import UsersRepository from './users.repository';
 
 export default class UsersService {
-  private readonly usersRepository : UsersRepository;
+  private readonly usersRepository: UsersRepository;
 
   constructor() {
     this.usersRepository = new UsersRepository();
@@ -19,8 +19,9 @@ export default class UsersService {
    */
   async withLendingInfo(users: models.User[]): Promise<models.User[]> {
     const usersIdList = users.map((user) => ({ userId: user.id }));
-    const lending = await this.usersRepository
-      .getLending(usersIdList) as unknown as models.Lending[];
+    const lending = (await this.usersRepository.getLending(
+      usersIdList,
+    )) as unknown as models.Lending[];
 
     return users.map((user) => {
       const lendings = lending.filter((lend) => lend.userId === user.id);
@@ -40,10 +41,11 @@ export default class UsersService {
   }
 
   async searchUserBynicknameOrEmail(nicknameOrEmail: string, limit: number, page: number) {
-    const [items, count] = await this.usersRepository.searchUserBy([
-      { nickname: Like(`%${nicknameOrEmail}%`) },
-      { email: Like(`%${nicknameOrEmail}`) },
-    ], limit, page);
+    const [items, count] = await this.usersRepository.searchUserBy(
+      [{ nickname: Like(`%${nicknameOrEmail}%`) }, { email: Like(`%${nicknameOrEmail}`) }],
+      limit,
+      page,
+    );
     const setItems = await this.withLendingInfo(items);
     const meta: types.Meta = {
       totalItems: count,
@@ -68,7 +70,9 @@ export default class UsersService {
   }
 
   async searchUserWithPasswordByEmail(email: string) {
-    const items = (await this.usersRepository.searchUserWithPasswordBy({ email: Like(`%${email}%`) }, 0, 0))[0];
+    const items = (
+      await this.usersRepository.searchUserWithPasswordBy({ email: Like(`%${email}%`) }, 0, 0)
+    )[0];
     return { items };
   }
 
@@ -99,7 +103,7 @@ export default class UsersService {
     return null;
   }
 
-  async updateUserEmail(id: number, email:string) {
+  async updateUserEmail(id: number, email: string) {
     const emailCount = (await this.usersRepository.searchUserBy({ email }, 0, 0))[1];
     if (emailCount > 0) {
       throw new Error(errorCode.EMAIL_OVERLAP);
@@ -119,16 +123,18 @@ export default class UsersService {
     role: number,
     penaltyEndDate: string,
   ) {
-    const nicknameCount = (await this.usersRepository
-      .searchUserBy({ nickname, id: Not(id) }, 0, 0))[1];
+    const nicknameCount = (
+      await this.usersRepository.searchUserBy({ nickname, id: Not(id) }, 0, 0)
+    )[1];
     if (nicknameCount > 0) {
       throw new Error(errorCode.NICKNAME_OVERLAP);
     }
     if (!(role >= 0 && role <= 3)) {
       throw new Error(errorCode.INVALID_ROLE);
     }
-    const slackCount = (await this.usersRepository
-      .searchUserBy({ nickname, slack: Not(slack) }, 0, 0))[1];
+    const slackCount = (
+      await this.usersRepository.searchUserBy({ nickname, slack: Not(slack) }, 0, 0)
+    )[1];
     if (slackCount > 0) {
       throw new Error(errorCode.SLACK_OVERLAP);
     }
@@ -142,6 +148,6 @@ export default class UsersService {
       updateParam.penaltyEndDate = penaltyEndDate;
     }
     const updatedUser = this.usersRepository.updateUser(id, updateParam);
-    return (updatedUser);
+    return updatedUser;
   }
 }

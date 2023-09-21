@@ -5,7 +5,7 @@ const swaggerOptions = {
       title: '42-jiphyoenjeon web service API',
       version: '0.1.0',
       description:
-          "42-jiphyeonjeon web service, that is, 42library's APIs with Express and documented with Swagger",
+        "42-jiphyeonjeon web service, that is, 42library's APIs with Express and documented with Swagger",
       license: {
         name: 'MIT',
         url: 'https://spdx.org/licenses/MIT.html',

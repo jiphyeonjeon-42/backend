@@ -1,5 +1,5 @@
 import z from 'zod';
-import { bookInfoIdSchema, positiveInt } from '../shared';
+import { bookInfoIdSchema, nonNegativeInt } from '../shared';
 
 export const likeNotFoundSchema = z.object({
   code: z.literal('LIKE_NOT_FOUND'),
@@ -10,7 +10,7 @@ export const likeResponseSchema = z
   .object({
     bookInfoId: bookInfoIdSchema,
     isLiked: z.boolean(),
-    likeNum: positiveInt,
+    likeNum: nonNegativeInt,
   })
   .openapi({
     examples: [

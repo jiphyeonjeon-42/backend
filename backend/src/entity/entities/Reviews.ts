@@ -1,69 +1,61 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
 import { BookInfo } from './BookInfo';
 
- @Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
- @Index('FK_bookInfo2', ['bookInfoId'], {})
+@Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
+@Index('FK_bookInfo2', ['bookInfoId'], {})
 @Entity('reviews')
-
 export class Reviews {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
-    id: number;
+  id: number;
 
   @Column('int', { name: 'userId' })
-    userId: number;
+  userId: number;
 
   @Column('int', { name: 'bookInfoId' })
-    bookInfoId: number;
+  bookInfoId: number;
 
   @Column('datetime', {
     name: 'createdAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-    createdAt: Date;
+  createdAt: Date;
 
   @Column('datetime', {
     name: 'updatedAt',
     default: () => "'CURRENT_TIMESTAMP(6)'",
   })
-    updatedAt: Date;
+  updatedAt: Date;
 
   @Column('int', { name: 'updateUserId' })
-    updateUserId: number;
+  updateUserId: number;
 
   @Column('tinyint', { name: 'isDeleted', width: 1, default: () => "'0'" })
-    isDeleted: boolean;
+  isDeleted: boolean;
 
   @Column('int', { name: 'deleteUserId', nullable: true })
-    deleteUserId: number | null;
+  deleteUserId: number | null;
 
   @Column('text', { name: 'content' })
-    content: string;
+  content: string;
 
   @Column('tinyint', { name: 'disabled', width: 1, default: () => "'0'" })
-    disabled: boolean;
+  disabled: boolean;
 
   @Column('int', { name: 'disabledUserId', nullable: true })
-    disabledUserId: number | null;
+  disabledUserId: number | null;
 
   @ManyToOne(() => User, (user) => user.reviews, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-    user: User;
+  user: User;
 
   @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.reviews, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
-    bookInfo: BookInfo;
+  bookInfo: BookInfo;
 }
