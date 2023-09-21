@@ -406,7 +406,7 @@ export const router = Router();
  *                    example: []
  */
 router
-  .get('/search', search)
+  .get('/search', authValidate(roleSet.librarian), search)
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
   .patch('/myupdate', authValidate(roleSet.all), myupdate)
