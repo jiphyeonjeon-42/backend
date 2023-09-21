@@ -4,15 +4,13 @@ import ReviewsRepository from '../../repository/reviews.repository';
 
 const reviewsRepository = new ReviewsRepository();
 
-export const updatePossibleCheck = async (
-  reviewsId : number,
-) => {
-  let result : any;
-  let resultId : number;
+export const updatePossibleCheck = async (reviewsId: number) => {
+  let result: any;
+  let resultId: number;
   try {
     result = await reviewsRepository.getReviews(reviewsId);
     resultId = result[0].userId;
-  } catch (error : any) {
+  } catch (error: any) {
     throw new ErrorResponse(errorCode.NOT_FOUND_REVIEWS, 404);
   }
   if (result[0].disabled === 1) {
@@ -21,10 +19,7 @@ export const updatePossibleCheck = async (
   return resultId;
 };
 
-export const idAndTokenIdSameCheck = (
-  id : number,
-  tokenId : number,
-) => {
+export const idAndTokenIdSameCheck = (id: number, tokenId: number) => {
   if (id !== tokenId) {
     throw new ErrorResponse(errorCode.UNAUTHORIZED_REVIEWS, 401);
   }

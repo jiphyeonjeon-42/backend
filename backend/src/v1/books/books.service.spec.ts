@@ -4,7 +4,10 @@ import { CreateBookInfo } from './books.type';
 
 describe('BooksService', () => {
   beforeAll(async () => {
-    await jipDataSource.initialize().then(() => console.log('good!')).catch((err) => console.log(err));
+    await jipDataSource
+      .initialize()
+      .then(() => console.log('good!'))
+      .catch((err) => console.log(err));
   });
   afterAll(() => {
     jipDataSource.destroy();

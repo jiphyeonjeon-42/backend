@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
-import {
-  create, getVersion, myupdate, search, update, mydata,
-} from '~/v1/users/users.controller';
+import { create, getVersion, myupdate, search, update, mydata } from '~/v1/users/users.controller';
+
 
 export const path = '/users';
 export const router = Router();
@@ -31,7 +30,7 @@ export const router = Router();
  *          description: 한 페이지에 들어올 검색결과 수
  *          schema:
  *            type: integer
-  *        - in: query
+ *        - in: query
  *          name: id
  *          description: 검색할 유저의 id
  *          schema:
@@ -406,8 +405,8 @@ export const router = Router();
  *                    type: array
  *                    example: []
  */
-// TODO: search 에 authValildate(roleSet.librarian) 추가
-router.get('/search', search)
+router
+  .get('/search', search)
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
   .patch('/myupdate', authValidate(roleSet.all), myupdate)

@@ -1,17 +1,11 @@
-import {
-  NextFunction, Request, Response,
-} from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import * as parseCheck from '~/v1/utils/parseCheck';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import TagsService from './tags.service';
 
-export const createDefaultTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createDefaultTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
@@ -21,7 +15,7 @@ export const createDefaultTags = async (
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
-  if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
+  if ((await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10))) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
@@ -29,30 +23,27 @@ export const createDefaultTags = async (
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DUPLICATED_SUB_DEFAULT_TAGS, 400));
   }
-  const defaultTagInsertion = await tagsService.createDefaultTags(
-    tokenId,
-    bookInfoId,
-    content,
-  );
+  const defaultTagInsertion = await tagsService.createDefaultTags(tokenId, bookInfoId, content);
   await tagsService.releaseConnection();
   return res.status(status.CREATED).send(defaultTagInsertion);
 };
 
-export const createSuperTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createSuperTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const bookInfoId = req?.body?.bookInfoId;
   const content = req?.body?.content.trim();
   const tagsService = new TagsService();
   const regex = /[^가-힣a-zA-Z0-9_]/g;
-  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
+  if (
+    content === '' ||
+    content === 'default' ||
+    content.length > 42 ||
+    regex.test(content) === true
+  ) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
-  if (await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10)) === false) {
+  if ((await tagsService.isValidBookInfoId(parseInt(bookInfoId, 10))) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
@@ -65,11 +56,7 @@ export const createSuperTags = async (
   return res.status(status.CREATED).send(superTagInsertion);
 };
 
-export const deleteSuperTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const deleteSuperTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const superTagId = Number(req?.params?.tagId);
   const tagsService = new TagsService();
@@ -82,11 +69,7 @@ export const deleteSuperTags = async (
   return res.status(status.OK).send();
 };
 
-export const deleteSubTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const deleteSubTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const subTagId = Number(req?.params?.tagId);
   const tagsService = new TagsService();
@@ -99,10 +82,7 @@ export const deleteSubTags = async (
   return res.status(status.OK).send();
 };
 
-export const searchSubDefaultTags = async (
-  req: Request,
-  res: Response,
-) => {
+export const searchSubDefaultTags = async (req: Request, res: Response) => {
   const page: number = parseCheck.pageParse(parseInt(String(req?.query?.page), 10));
   const limit: number = parseCheck.limitParse(parseInt(String(req?.query?.limit), 10));
   const visibility: string = parseCheck.stringQueryParse(req?.query?.visibility);
@@ -118,10 +98,7 @@ export const searchSubDefaultTags = async (
   return res.status(status.OK).json(subDefaultTags);
 };
 
-export const searchSubTags = async (
-  req: Request,
-  res: Response,
-) => {
+export const searchSubTags = async (req: Request, res: Response) => {
   const superTagId: number = parseInt(req.params.superTagId, 10);
   const tagsService = new TagsService();
   const subTags = await tagsService.searchSubTags(superTagId);
@@ -129,10 +106,7 @@ export const searchSubTags = async (
   return res.status(status.OK).json(subTags);
 };
 
-export const searchSuperDefaultTags = async (
-  req: Request,
-  res: Response,
-) => {
+export const searchSuperDefaultTags = async (req: Request, res: Response) => {
   const bookInfoId: number = parseInt(req.params.bookInfoId, 10);
   const tagsService = new TagsService();
   const superDefaultTags = await tagsService.searchSuperDefaultTags(bookInfoId);
@@ -140,11 +114,7 @@ export const searchSuperDefaultTags = async (
   return res.status(status.OK).json(superDefaultTags);
 };
 
-export const mergeTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const mergeTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const bookInfoId = Number(req?.params?.bookInfoId);
   const superTagId = Number(req?.body?.superTagId);
@@ -152,16 +122,15 @@ export const mergeTags = async (
   const tagsService = new TagsService();
   let returnSuperTagId = 0;
 
-  if (await tagsService.isValidBookInfoId(bookInfoId) === false) {
+  if ((await tagsService.isValidBookInfoId(bookInfoId)) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_BOOKINFO_ID, 400));
   }
-  if (superTagId !== 0
-      && await tagsService.isValidSuperTagId(superTagId, bookInfoId) === false) {
+  if (superTagId !== 0 && (await tagsService.isValidSuperTagId(superTagId, bookInfoId)) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
-  if (await tagsService.isValidSubTagId(subTagIds) === false) {
+  if ((await tagsService.isValidSubTagId(subTagIds)) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
@@ -180,25 +149,26 @@ export const mergeTags = async (
   return res.status(status.OK).send({ id: returnSuperTagId });
 };
 
-export const updateSuperTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateSuperTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const superTagId = parseInt(req?.body?.id, 10);
   const content = req?.body?.content;
   const tagsService = new TagsService();
   const regex = /[^가-힣a-zA-Z0-9_]/g;
-  if (content === '' || content === 'default' || content.length > 42 || regex.test(content) === true) {
+  if (
+    content === '' ||
+    content === 'default' ||
+    content.length > 42 ||
+    regex.test(content) === true
+  ) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
-  if (await tagsService.isExistingSuperTag(superTagId, content) === true) {
+  if ((await tagsService.isExistingSuperTag(superTagId, content)) === true) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.ALREADY_EXISTING_TAGS, 400));
   }
-  if (await tagsService.isDefaultTag(superTagId) === true) {
+  if ((await tagsService.isDefaultTag(superTagId)) === true) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.DEFAULT_TAG_ID, 400));
   }
@@ -212,11 +182,7 @@ export const updateSuperTags = async (
   return res.status(status.OK).send({ id: superTagId });
 };
 
-export const updateSubTags = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const updateSubTags = async (req: Request, res: Response, next: NextFunction) => {
   const { id: tokenId } = req.user as any;
   const subTagId = parseInt(req?.body?.id, 10);
   const visibility = req?.body?.visibility;
@@ -225,7 +191,7 @@ export const updateSubTags = async (
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_INPUT_TAGS, 400));
   }
-  if (await tagsService.isExistingSubTag(subTagId) === false) {
+  if ((await tagsService.isExistingSubTag(subTagId)) === false) {
     await tagsService.releaseConnection();
     return next(new ErrorResponse(errorCode.INVALID_TAG_ID, 400));
   }
@@ -239,10 +205,7 @@ export const updateSubTags = async (
   return res.status(status.OK).send({ id: subTagId });
 };
 
-export const searchMainTags = async (
-  req: Request,
-  res: Response,
-) => {
+export const searchMainTags = async (req: Request, res: Response) => {
   const limit: number = req.query.limit === undefined || null ? 100 : Number(req.query.limit);
   const tagsService = new TagsService();
   const mainTags = await tagsService.searchMainTags(limit);

@@ -45,7 +45,7 @@ export type UserProjectFrom42 = {
     'active?': boolean;
   };
   teams: object[];
-}
+};
 
 export type UserProject = {
   id: UserProjectFrom42['id'];
@@ -56,7 +56,7 @@ export type UserProject = {
   marked: UserProjectFrom42['marked'];
   marked_at: UserProjectFrom42['marked_at'];
   updated_at: UserProjectFrom42['updated_at'];
-}
+};
 
 export type ProjectFrom42 = {
   id: number;
@@ -73,9 +73,9 @@ export type ProjectFrom42 = {
   repository: string;
   cursus: Cursus[];
   campus: Campus[];
-  videos: [],
+  videos: [];
   project_sessions: object[];
-}
+};
 
 export type ProjectInfo = {
   id: number;
@@ -87,7 +87,7 @@ export type ProjectInfo = {
     name: string;
     slug: string;
   }[];
-}
+};
 
 export type Campus = {
   id: number;
@@ -113,7 +113,7 @@ export type Campus = {
   public: boolean;
   email_extension: string;
   default_hidden_phone: boolean;
-}
+};
 
 export type Cursus = {
   id: number;
@@ -121,13 +121,13 @@ export type Cursus = {
   name: string;
   slug: string;
   kind: string;
-}
+};
 
 export type ProjectWithCircle = {
   [key: string]: {
     project_ids: number[];
-  }
-}
+  };
+};
 
 export type BooksWithProjectInfo = {
   book_info_id: number;
@@ -135,7 +135,7 @@ export type BooksWithProjectInfo = {
     id: number;
     circle: number;
   }[];
-}
+};
 
 export type RecommendedBook = {
   id: number;
@@ -145,4 +145,4 @@ export type RecommendedBook = {
   image: string;
   publishedAt: string;
   subjects: string[];
-}
+};

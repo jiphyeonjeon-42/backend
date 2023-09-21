@@ -12,16 +12,15 @@ describe('UsersService', () => {
   jest.setTimeout(10 * 1000);
   let queryRunner: QueryRunner;
   beforeAll(async () => {
-    await jipDataSource.initialize().then(
-      () => {
+    await jipDataSource
+      .initialize()
+      .then(() => {
         logger.info('typeORM INIT SUCCESS');
         logger.info(connectMode);
-      },
-    ).catch(
-      (e) => {
+      })
+      .catch((e) => {
         logger.error(`typeORM INIT FAILED : ${e.message}`);
-      },
-    );
+      });
     // 트랜잭션 사전작업
     queryRunner = jipDataSource.createQueryRunner();
     await queryRunner.connect();
@@ -64,30 +63,8 @@ describe('UsersService', () => {
 
   // searchUserById
   it('searchUserById()', async () => {
-    expect(await usersService.searchUserById(1414)).toStrictEqual(
-      {
-        items: [
-          {
-            id: 1414,
-            email: 'example_role1_7@gmail.com',
-            password: '4444',
-            nickname: 'hihi',
-            intraId: 44,
-            slack: 'dasdwqwe1132',
-            penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
-            role: 1,
-            createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
-            updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
-          },
-        ],
-      },
-    );
-  });
-
-  // searchUserByIntraId
-  it('searchUserByIntraId()', async () => {
-    expect(await usersService.searchUserByIntraId(44)).toStrictEqual(
-      [
+    expect(await usersService.searchUserById(1414)).toStrictEqual({
+      items: [
         {
           id: 1414,
           email: 'example_role1_7@gmail.com',
@@ -101,7 +78,25 @@ describe('UsersService', () => {
           updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
         },
       ],
-    );
+    });
+  });
+
+  // searchUserByIntraId
+  it('searchUserByIntraId()', async () => {
+    expect(await usersService.searchUserByIntraId(44)).toStrictEqual([
+      {
+        id: 1414,
+        email: 'example_role1_7@gmail.com',
+        password: '4444',
+        nickname: 'hihi',
+        intraId: 44,
+        slack: 'dasdwqwe1132',
+        penaltyEndDay: new Date(Date.parse('2022-05-20 07:02:34')),
+        role: 1,
+        createdAt: new Date(Date.parse('2022-05-20 07:02:34.973193')),
+        updatedAt: new Date(Date.parse('2022-05-20 16:13:39.314069')),
+      },
+    ]);
   });
 
   // searchAllUsers

@@ -21,16 +21,11 @@ export const getPopularSearchKeywords = async (
     }
     if (error.message === 'DB error') {
       return next(
-        new ErrorResponse(
-          errorCode.QUERY_EXECUTION_FAILED,
-          status.INTERNAL_SERVER_ERROR,
-        ),
+        new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR),
       );
     }
     logger.error(error);
-    return next(
-      new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR),
-    );
+    return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
 };
 
@@ -38,10 +33,8 @@ export const searchKeywordsAutocomplete = async (
   req: Request,
   res: Response,
   next: NextFunction,
-) : Promise<Response | void> => {
-  let {
-    keyword,
-  } = req.query;
+): Promise<Response | void> => {
+  let { keyword } = req.query;
   if (typeof keyword === 'string') {
     keyword = keyword.trim();
   }

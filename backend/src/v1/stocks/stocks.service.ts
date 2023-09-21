@@ -2,13 +2,10 @@ import jipDataSource from '~/app-data-source';
 import { Meta } from '../DTO/common.interface';
 import StocksRepository from './stocks.repository';
 
-export const getAllStocks = async (
-  page: number,
-  limit: number,
-) => {
+export const getAllStocks = async (page: number, limit: number) => {
   const stocksRepo = new StocksRepository();
   const [items, totalItems] = await stocksRepo.getAllStocksAndCount(limit, page);
-  const meta:Meta = {
+  const meta: Meta = {
     totalItems,
     itemCount: items.length,
     itemsPerPage: limit,
@@ -18,9 +15,7 @@ export const getAllStocks = async (
   return { items, meta };
 };
 
-export const updateBook = async (
-  bookId: number,
-) => {
+export const updateBook = async (bookId: number) => {
   const transaction = jipDataSource.createQueryRunner();
   const stocksRepo = new StocksRepository(transaction);
   try {
@@ -31,7 +26,7 @@ export const updateBook = async (
     return stock;
   } catch (error: any) {
     await transaction.rollbackTransaction();
-    throw (error);
+    throw error;
   } finally {
     await transaction.release();
   }

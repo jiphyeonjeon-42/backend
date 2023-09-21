@@ -1,16 +1,11 @@
-import {
-  NextFunction, Request, Response,
-} from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as status from 'http-status';
 import { getAccessToken } from '~/v1/auth/auth.service';
 import { RecommendedBook, UserProject, ProjectInfo } from '~/v1/DTO/cursus.model';
 import { logger } from '~/logger';
 import * as CursusService from './cursus.service';
 
-export const recommendBook = async (
-  req: Request,
-  res: Response,
-) => {
+export const recommendBook = async (req: Request, res: Response) => {
   const { nickname: login } = req.user as any;
   const limit = req.query.limit ? Number(req.query.limit) : 4;
   const project = req.query.project as string;
@@ -46,21 +41,19 @@ export const recommendBook = async (
   return res.status(status.OK).json({ items: bookList, meta });
 };
 
-export const getProjects = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getProjects = async (req: Request, res: Response, next: NextFunction) => {
   const page = req.query.page as string;
   const mode = req.query.mode as string;
 
-  const accessToken:string = await getAccessToken();
+  const accessToken: string = await getAccessToken();
   let projects: ProjectInfo[] = [];
   try {
     projects = await CursusService.getProjectsInfo(accessToken, page);
   } catch (error) {
     return next(error);
   }
-  if (projects.length !== 0) { CursusService.saveProjects(projects, mode); }
+  if (projects.length !== 0) {
+    CursusService.saveProjects(projects, mode);
+  }
   return res.status(200).send({ projects });
 };

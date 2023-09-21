@@ -1,11 +1,7 @@
-import {
-  IsNull, MoreThan, QueryRunner, Repository, UpdateResult,
-} from 'typeorm';
+import { IsNull, MoreThan, QueryRunner, Repository, UpdateResult } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.js';
 import jipDataSource from '~/app-data-source';
-import {
-  VUserLending, Reservation, VLending, Lending, User, Book,
-} from '~/entity/entities';
+import { VUserLending, Reservation, VLending, Lending, User, Book } from '~/entity/entities';
 import { formatDate } from '~/v1/utils/dateFormat';
 
 class LendingRepository extends Repository<Lending> {
@@ -24,30 +20,15 @@ class LendingRepository extends Repository<Lending> {
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(Lending, entityManager);
 
-    this.userRepo = new Repository<User>(
-      User,
-      entityManager,
-    );
+    this.userRepo = new Repository<User>(User, entityManager);
 
-    this.userLendingRepo = new Repository<VUserLending>(
-      VUserLending,
-      entityManager,
-    );
+    this.userLendingRepo = new Repository<VUserLending>(VUserLending, entityManager);
 
-    this.bookRepo = new Repository<Book>(
-      Book,
-      entityManager,
-    );
+    this.bookRepo = new Repository<Book>(Book, entityManager);
 
-    this.reserveRepo = new Repository<Reservation>(
-      Reservation,
-      entityManager,
-    );
+    this.reserveRepo = new Repository<Reservation>(Reservation, entityManager);
 
-    this.vlendingRepo = new Repository<VLending>(
-      VLending,
-      entityManager,
-    );
+    this.vlendingRepo = new Repository<VLending>(VLending, entityManager);
   }
 
   async searchLendingCount(conditions: {}, limit: number, page: number) {
@@ -59,8 +40,12 @@ class LendingRepository extends Repository<Lending> {
     return count;
   }
 
-  async searchLending(conditions: {}, limit: number, page: number, order: {})
-    : Promise<[VLending[], number]> {
+  async searchLending(
+    conditions: {},
+    limit: number,
+    page: number,
+    order: {},
+  ): Promise<[VLending[], number]> {
     const [lending, count] = await this.vlendingRepo.findAndCount({
       select: [
         'id',
@@ -165,25 +150,20 @@ class LendingRepository extends Repository<Lending> {
     const updateObject: QueryDeepPartialEntity<Lending> = {
       returningLibrarianId,
       returningCondition,
-      returnedAt: (new Date()),
-      updatedAt: (new Date()),
+      returnedAt: new Date(),
+      updatedAt: new Date(),
     };
     await this.update(lendingId, updateObject);
   }
 
-  async updateUserPenaltyEndDate(
-    penaltyEndDate: string,
-    id: number,
-  ): Promise<void> {
+  async updateUserPenaltyEndDate(penaltyEndDate: string, id: number): Promise<void> {
     const updateObject: QueryDeepPartialEntity<User> = {
       penaltyEndDate,
     };
     await this.userRepo.update(id, updateObject);
   }
 
-  async searchReservedBook(
-    bookInfoId: number,
-  ): Promise<Reservation | null> {
+  async searchReservedBook(bookInfoId: number): Promise<Reservation | null> {
     const reservation = await this.reserveRepo.findOne({
       relations: ['book', 'user', 'bookInfo'],
       where: {
@@ -208,9 +188,7 @@ class LendingRepository extends Repository<Lending> {
     return this.reserveRepo.update(reservationId, updateObject);
   }
 
-  async updateReservationToLended(
-    reservationId: number,
-  ): Promise<void> {
+  async updateReservationToLended(reservationId: number): Promise<void> {
     await this.reserveRepo.update(reservationId, { status: 1 });
   }
 }

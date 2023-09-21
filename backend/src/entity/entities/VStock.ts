@@ -6,72 +6,71 @@ import { Lending } from './Lending';
 import { Reservation } from './Reservation';
 
 @ViewEntity('v_stock', {
-  expression: (Data: DataSource) => Data.createQueryBuilder()
-    .select('book.infoId', 'bookInfoId')
-    .addSelect('book_info.title', 'title')
-    .addSelect('book_info.author', 'author')
-    .addSelect('book_info.publisher', 'publisher')
-    .addSelect("DATE_FORMAT(book_info.publishedAt, '%Y%m%d')", 'publishedAt')
-    .addSelect('book_info.isbn', 'isbn')
-    .addSelect('book_info.image', 'image')
-    .addSelect('book.callSign', 'callSign')
-    .addSelect('book.id', 'bookId')
-    .addSelect('book.status', 'status')
-    .addSelect('book.donator', 'donator')
-    .addSelect("date_format(book.updatedAt, '%Y-%m-%d %T')", 'updatedAt')
-    .addSelect('book_info.categoryId', 'categoryId')
-    .addSelect('category.name', 'category')
-    .from(Book, 'book')
-    .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
-    .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
-    .leftJoin(Lending, 'l', 'book.id = l.bookId')
-    .leftJoin(Reservation, 'r', 'r.bookId = book.id AND r.status = 0')
-    .groupBy('book.id')
-    .having('COUNT(l.id) = COUNT(l.returnedAt) AND COUNT(r.id) = 0')
-    .where('book.status = 0'),
+  expression: (Data: DataSource) =>
+    Data.createQueryBuilder()
+      .select('book.infoId', 'bookInfoId')
+      .addSelect('book_info.title', 'title')
+      .addSelect('book_info.author', 'author')
+      .addSelect('book_info.publisher', 'publisher')
+      .addSelect("DATE_FORMAT(book_info.publishedAt, '%Y%m%d')", 'publishedAt')
+      .addSelect('book_info.isbn', 'isbn')
+      .addSelect('book_info.image', 'image')
+      .addSelect('book.callSign', 'callSign')
+      .addSelect('book.id', 'bookId')
+      .addSelect('book.status', 'status')
+      .addSelect('book.donator', 'donator')
+      .addSelect("date_format(book.updatedAt, '%Y-%m-%d %T')", 'updatedAt')
+      .addSelect('book_info.categoryId', 'categoryId')
+      .addSelect('category.name', 'category')
+      .from(Book, 'book')
+      .leftJoin(BookInfo, 'book_info', 'book_info.id = book.infoId')
+      .leftJoin(Category, 'category', 'book_info.categoryId = category.id')
+      .leftJoin(Lending, 'l', 'book.id = l.bookId')
+      .leftJoin(Reservation, 'r', 'r.bookId = book.id AND r.status = 0')
+      .groupBy('book.id')
+      .having('COUNT(l.id) = COUNT(l.returnedAt) AND COUNT(r.id) = 0')
+      .where('book.status = 0'),
 })
 export class VStock {
   @ViewColumn()
-    bookId: number;
+  bookId: number;
 
   @ViewColumn()
-    bookInfoId: number;
+  bookInfoId: number;
 
   @ViewColumn()
-    title: string;
+  title: string;
 
   @ViewColumn()
-    author: string;
+  author: string;
 
   @ViewColumn()
-    donator: string;
+  donator: string;
 
   @ViewColumn()
-    publisher: string;
+  publisher: string;
 
   @ViewColumn()
-    publishedAt: string;
+  publishedAt: string;
 
   @ViewColumn()
-    isbn: string;
+  isbn: string;
 
   @ViewColumn()
-    image: string;
+  image: string;
 
   @ViewColumn()
-    status: number;
+  status: number;
 
   @ViewColumn()
-    categoryId: number;
+  categoryId: number;
 
   @ViewColumn()
-    callSign: string;
+  callSign: string;
 
   @ViewColumn()
-    category: string;
+  category: string;
 
   @ViewColumn()
-    updatedAt: Date;
+  updatedAt: Date;
 }
-
-

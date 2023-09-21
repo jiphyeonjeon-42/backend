@@ -9,8 +9,11 @@ class HistoriesRepository extends Repository<VHistories> {
     super(VHistories, entityManager);
   }
 
-  async getHistoriesItems(conditions: {}, limit: number, page: number)
-  : Promise<[VHistories[], number]> {
+  async getHistoriesItems(
+    conditions: {},
+    limit: number,
+    page: number,
+  ): Promise<[VHistories[], number]> {
     const [histories, count] = await this.findAndCount({
       where: conditions,
       take: limit,

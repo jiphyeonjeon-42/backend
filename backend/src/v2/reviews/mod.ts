@@ -9,14 +9,9 @@ import {
   getUser,
   reviewNotFound,
 } from '../shared/index.ts';
-import {
-  createReview,
-  removeReview,
-  toggleReviewVisibility,
-  updateReview,
-} from './service.ts';
+import { createReview, removeReview, toggleReviewVisibility, updateReview } from './service.ts';
 import { ReviewNotFoundError } from './errors.js';
-import { searchReviews } from './repository.ts'
+import { searchReviews } from './repository.ts';
 
 const s = initServer();
 export const reviews = s.router(contract.reviews, {
@@ -26,7 +21,7 @@ export const reviews = s.router(contract.reviews, {
       const body = await searchReviews(query);
 
       return { status: 200, body };
-    }
+    },
   },
   post: {
     middleware: [authValidate(roleSet.all)],

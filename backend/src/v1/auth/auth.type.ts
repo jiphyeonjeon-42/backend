@@ -2,10 +2,10 @@
 /* eslint-disable no-shadow */
 
 export const enum role {
-    user = 0,
-    cadet,
-    librarian,
-    staff,
+  user = 0,
+  cadet,
+  librarian,
+  staff,
 }
 
 export const roleSet = {

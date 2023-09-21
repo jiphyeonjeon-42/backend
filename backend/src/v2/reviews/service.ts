@@ -1,11 +1,7 @@
 import { match } from 'ts-pattern';
 
 import { BookInfoNotFoundError } from '~/v2/shared/errors';
-import {
-  ReviewDisabledError,
-  ReviewForbiddenAccessError,
-  ReviewNotFoundError,
-} from './errors';
+import { ReviewDisabledError, ReviewForbiddenAccessError, ReviewNotFoundError } from './errors';
 import { ParsedUser } from '~/v2/shared';
 import {
   bookInfoExistsById,
@@ -28,29 +24,18 @@ export const createReview = async (args: CreateArgs) => {
 type RemoveArgs = { reviewsId: number; deleter: ParsedUser };
 export const removeReview = async ({ reviewsId, deleter }: RemoveArgs) => {
   const isAdmin = () => deleter.role === 'librarian';
-  const doRemoveReview = () =>
-    deleteReviewById({ reviewsId, deleteUserId: deleter.id });
+  const doRemoveReview = () => deleteReviewById({ reviewsId, deleteUserId: deleter.id });
 
   const review = await getReviewById(reviewsId);
   return match(review)
-    .with(
-      undefined,
-      { isDeleted: true },
-      () => new ReviewNotFoundError(reviewsId),
-    )
+    .with(undefined, { isDeleted: true }, () => new ReviewNotFoundError(reviewsId))
     .when(isAdmin, doRemoveReview)
     .with({ userId: deleter.id }, doRemoveReview)
-    .otherwise(
-      () => new ReviewForbiddenAccessError({ userId: deleter.id, reviewsId }),
-    );
+    .otherwise(() => new ReviewForbiddenAccessError({ userId: deleter.id, reviewsId }));
 };
 
 type UpdateArgs = { reviewsId: number; userId: number; content: string };
-export const updateReview = async ({
-  reviewsId,
-  userId,
-  content,
-}: UpdateArgs) => {
+export const updateReview = async ({ reviewsId, userId, content }: UpdateArgs) => {
   const review = await getReviewById(reviewsId);
 
   return await match(review)
@@ -61,15 +46,10 @@ export const updateReview = async ({
 };
 
 type ToggleReviewArgs = { reviewsId: number; userId: number };
-export const toggleReviewVisibility = async ({
-  reviewsId,
-  userId,
-}: ToggleReviewArgs) => {
+export const toggleReviewVisibility = async ({ reviewsId, userId }: ToggleReviewArgs) => {
   const review = await getReviewById(reviewsId);
 
   return await match(review)
     .with(undefined, () => new ReviewNotFoundError(reviewsId))
-    .otherwise(({ disabled }) =>
-      toggleVisibilityById({ reviewsId, userId, disabled }),
-    );
+    .otherwise(({ disabled }) => toggleVisibilityById({ reviewsId, userId, disabled }));
 };

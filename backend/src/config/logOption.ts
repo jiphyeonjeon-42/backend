@@ -18,8 +18,8 @@ export const colors: Record<LogLevel, string> = {
 } as const;
 
 export const getLogLevelOption = (mode: RuntimeMode): LogLevelOption => {
-  const logLevel = (mode === 'production' ? 'http' : 'debug');
-  const consoleLogLevel = (mode === 'production' ? 'error' : 'debug');
+  const logLevel = mode === 'production' ? 'http' : 'debug';
+  const consoleLogLevel = mode === 'production' ? 'error' : 'debug';
 
   return { logLevel, consoleLogLevel } as const;
 };

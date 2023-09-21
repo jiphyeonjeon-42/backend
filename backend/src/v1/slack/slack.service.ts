@@ -8,17 +8,20 @@ import * as models from '../DTO/users.model';
 
 const usersService = new UsersService();
 
-export const updateSlackIdUser = async (id: number, slackId: string) : Promise<number> => {
-  const result : ResultSetHeader = await executeQuery(`
+export const updateSlackIdUser = async (id: number, slackId: string): Promise<number> => {
+  const result: ResultSetHeader = await executeQuery(
+    `
     UPDATE user
     SET slack = ?
     WHERE id = ?
-  `, [slackId, id]);
+  `,
+    [slackId, id],
+  );
   return result.affectedRows;
 };
 
-export const searchAuthenticatedUser = async () : Promise<models.User[]> => {
-  const result : models.User[] = await executeQuery(`
+export const searchAuthenticatedUser = async (): Promise<models.User[]> => {
+  const result: models.User[] = await executeQuery(`
     SELECT *
     FROM user
     WHERE intraId IS NOT NULL AND (slack IS NULL OR slack = '')
@@ -33,10 +36,10 @@ const userMap = new Map();
 export const updateSlackId = async (): Promise<void> => {
   let searchUsers: any[] = [];
   let cursor;
-  const authenticatedUser : models.User[] = await searchAuthenticatedUser();
+  const authenticatedUser: models.User[] = await searchAuthenticatedUser();
   if (authenticatedUser.length === 0) return;
   while (cursor === undefined || cursor !== '') {
-    const response = await web.users.list({ cursor, limit: 1000 }) as any;
+    const response = (await web.users.list({ cursor, limit: 1000 })) as any;
     searchUsers = searchUsers.concat(response.members);
     cursor = response.response_metadata.next_cursor;
   }
@@ -59,14 +62,16 @@ export const updateSlackIdByUserId = async (userId: number): Promise<void> => {
   }
 };
 
-export const findUser = (intraName: any) => (userMap.get(intraName));
+export const findUser = (intraName: any) => userMap.get(intraName);
 
 export const publishMessage = async (slackId: string, msg: string) => {
-  await web.chat.postMessage({
-    token,
-    channel: slackId,
-    text: msg,
-  }).catch((e) => {
-    logger.error(e);
-  });
+  await web.chat
+    .postMessage({
+      token,
+      channel: slackId,
+      text: msg,
+    })
+    .catch((e) => {
+      logger.error(e);
+    });
 };

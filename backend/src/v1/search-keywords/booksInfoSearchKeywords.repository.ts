@@ -1,10 +1,7 @@
 import { QueryRunner, Repository } from 'typeorm';
 import jipDataSource from '~/app-data-source';
 import { BookInfo, BookInfoSearchKeywords } from '~/entity/entities';
-import {
-  disassembleHangul,
-  extractHangulInitials,
-} from '../utils/processKeywords';
+import { disassembleHangul, extractHangulInitials } from '../utils/processKeywords';
 import { UpdateBookInfo } from '../books/books.type';
 import { FindBookInfoSearchKeyword } from './searchKeywords.type';
 
@@ -21,9 +18,7 @@ class BookInfoSearchKeywordRepository extends Repository<BookInfoSearchKeywords>
   }
 
   async createBookInfoSearchKeyword(bookInfo: BookInfo) {
-    const {
-      id, title, author, publisher,
-    } = bookInfo;
+    const { id, title, author, publisher } = bookInfo;
 
     const disassembledTitle = disassembleHangul(title);
     const titleInitials = extractHangulInitials(title);
@@ -45,9 +40,7 @@ class BookInfoSearchKeywordRepository extends Repository<BookInfoSearchKeywords>
   }
 
   async updateBookInfoSearchKeyword(targetId: number, bookInfo: UpdateBookInfo) {
-    const {
-      id, title, author, publisher,
-    } = bookInfo;
+    const { id, title, author, publisher } = bookInfo;
 
     const disassembledTitle = disassembleHangul(title);
     const titleInitials = extractHangulInitials(title);

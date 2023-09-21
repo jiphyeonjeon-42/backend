@@ -7,7 +7,12 @@ import { oauthUrlOption } from '~/config';
 import * as errorCode from '~/v1/utils/error/errorCode';
 import {
   getIntraAuthentication,
-  getMe, getOAuth, getToken, intraAuthentication, login, logout,
+  getMe,
+  getOAuth,
+  getToken,
+  intraAuthentication,
+  login,
+  logout,
 } from '~/v1/auth/auth.controller';
 
 export const path = '/auth';
@@ -71,7 +76,14 @@ router.get('/oauth', getOAuth);
  *                  message:
  *                    type: string
  */
-router.get('/token', passport.authenticate('42', { session: false, failureRedirect: `${oauthUrlOption.clientURL}/login?errorCode=${errorCode.ACCESS_DENIED}` }), getToken);
+router.get(
+  '/token',
+  passport.authenticate('42', {
+    session: false,
+    failureRedirect: `${oauthUrlOption.clientURL}/login?errorCode=${errorCode.ACCESS_DENIED}`,
+  }),
+  getToken,
+);
 
 /**
  * @openapi
@@ -312,4 +324,15 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  *                  message:
  *                    type: string
  */
-router.get('/intraAuthentication', passport.authenticate('42Auth', { session: false, failureRedirect: `${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ACCESS_DENIED}` }), passport.authenticate('jwt', { session: false, failureRedirect: `${oauthUrlOption.clientURL}/logout` }), intraAuthentication);
+router.get(
+  '/intraAuthentication',
+  passport.authenticate('42Auth', {
+    session: false,
+    failureRedirect: `${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ACCESS_DENIED}`,
+  }),
+  passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: `${oauthUrlOption.clientURL}/logout`,
+  }),
+  intraAuthentication,
+);
