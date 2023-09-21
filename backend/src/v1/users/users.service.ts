@@ -56,6 +56,7 @@ export default class UsersService {
   }
 
   async searchUserById(id: number) {
+    if (!id) return null;
     let items = (await this.usersRepository.searchUserBy({ id }, 0, 0))[0];
     items = await this.withLendingInfo(items);
     return { items };
