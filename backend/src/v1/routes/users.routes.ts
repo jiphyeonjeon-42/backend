@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
 import {
-  create, getVersion, myupdate, search, update,
+  create, getVersion, myupdate, search, update, mydata,
 } from '~/v1/users/users.controller';
 
 export const path = '/users';
@@ -358,10 +358,60 @@ export const router = Router();
  *                    type: string
  *                    example: gshim.v1
  */
+ /**
+  * @openapi
+  * /api/users/me:
+  *   get:
+  *     description: 내 정보를 가져온다.
+  *     tags:
+  *       - users
+  *     responses:
+  *       '200':
+  *         description: 내 정보를 반환한다.
+  *         content:
+  *           application/json:
+  *            schema:
+ *                properties:
+ *                  nickname:
+ *                    description: 에러코드
+ *                    type: string
+ *                    example: jimin
+ *                  intraId:
+ *                    description: 인트라 ID
+ *                    type: string
+ *                    example: 10035
+ *                  slack:
+ *                    description: slack 맴버 변수
+ *                    type: string
+ *                    example: "U02LNNDRC9F"
+ *                  role:
+ *                    description: 유저의 권한
+ *                    type: string
+ *                    example: 2
+ *                  penaltyEbdDate:
+ *                    description: 패널티가 끝나는 날
+ *                    type: string
+ *                    example: 2022-06-18
+ *                  overDueDay:
+ *                    description: 현재 연체된 날수
+ *                    type: string
+ *                    format: number
+ *                    example: 0
+ *                  reservations:
+ *                    description: 해당 유저의 예약 정보
+ *                    type: array
+ *                    example: []
+ *                  lendings:
+ *                    description: 해당 유저의 대출 정보
+ *                    type: array
+ *                    example: []
+ */
+// TODO: search 에 authValildate(roleSet.librarian) 추가
 router.get('/search', search)
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
   .patch('/myupdate', authValidate(roleSet.all), myupdate)
+  .get('/me', authValidate(roleSet.all), mydata)
   .get('/EasterEgg', getVersion);
 
 //  .delete('/delete/:id', authValidate(roleSet.librarian), deleteUser);
