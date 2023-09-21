@@ -193,7 +193,7 @@ export const mydata = async (
   try {
     const user = await usersService.searchUserById(parseInt(tokenId, 10));
     console.log(user);
-    if (!user || !user.items || !user.items[0]) return res.status(404).send('Not Found');
+    if (user.items.length === 0) return res.status(404).send('Not Found');
     return res.status(200).json(user.items[0]);
   } catch (error: any) {
     logger.error(error);
