@@ -177,7 +177,23 @@ export const myupdate = async (req: Request, res: Response, next: NextFunction) 
   return 0;
 };
 
+export const mydata = async (
+  req: Request,
+  res: Response,
+) => {
+  const { id: tokenId } = req.user as any;
+  try {
+    const user = await usersService.searchUserById(parseInt(tokenId, 10));
+    if (user.items.length === 0) return res.status(404).send('Not Found');
+    return res.status(200).json(user.items[0]);
+  } catch (error: any) {
+    logger.error(error);
+    return res.status(500).send('Internal Server Error');
+  }
+};
+
 export const getVersion = async (req: Request, res: Response) => {
+
   res.status(200).send({ version: 'gshim.v1' });
   return 0;
 };
