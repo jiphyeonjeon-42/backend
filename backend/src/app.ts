@@ -93,12 +93,12 @@ app.use(
 // dev route
 app.use('/api', router);
 
-// dev/v2 route
-createExpressEndpoints(contract, routerV2, app, {
-  logInitialization: true,
-  responseValidation: true,
-  jsonQuery: true,
-});
+// // dev/v2 route
+// createExpressEndpoints(contract, routerV2, app, {
+//   logInitialization: true,
+//   responseValidation: true,
+//   jsonQuery: true,
+// });
 
 // 에러 핸들러
 app.use(errorConverter);
