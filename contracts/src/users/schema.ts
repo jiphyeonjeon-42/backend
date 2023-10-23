@@ -51,7 +51,6 @@ const lendingSchema = z
       .string()
       .describe('반납 예정 날짜')
       .openapi({ example: '2023-08-22T20:20:55.000Z' }),
-    overDueDay: nonNegativeInt.describe('연체된 날 수').openapi({ example: 0 }),
     reservedNum: z.string().describe('예약된 수').openapi({ example: '0' }),
   })
   .optional();
@@ -67,11 +66,6 @@ const searchUserResponseItemSchema = z.object({
     .optional()
     .describe('연체 패널티 끝나는 날짜')
     .openapi({ example: '2022-05-22' }),
-  overDueDay: z.coerce
-    .string()
-    .default('0')
-    .describe('현재 연체된 날 수')
-    .openapi({ example: '0' }),
   role: nonNegativeInt.describe('유저 권한').openapi({ example: 2 }),
   reservations: z.array(reservationSchema).describe('해당 유저의 예약 정보'),
   lendings: z.array(lendingSchema).describe('해당 유저의 대출 정보'),
