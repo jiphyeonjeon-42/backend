@@ -59,6 +59,8 @@ export const getUserProjectFrom42API = async (
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
+      AccessControlAllowOrigin: 'https://42library.kr',
+      AccessControllAllowCredentials: 'true',
     },
   })
     .then((response) => {
@@ -323,6 +325,8 @@ export const getProjectsInfo = async (accessToken: string, pageNumber: string) =
     .get(`${uri}?${queryString}${pageQuery}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
+        AccessControlAllowOrigin: 'https://42library.kr',
+        AccessControllAllowCredentials: 'true',
       },
     })
     .catch((error) => {
