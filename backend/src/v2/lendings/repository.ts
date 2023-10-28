@@ -2,6 +2,8 @@ import { Like } from 'typeorm';
 import { match } from 'ts-pattern';
 import jipDataSource from '~/app-data-source';
 import { VHistories } from '~/entity/entities';
+import { db } from '~/kysely/mod.ts';
+import { ExpressionBuilder } from "kysely";
 
 const historiesRepo = jipDataSource.getRepository(VHistories);
 
@@ -51,9 +53,16 @@ type MyPageArgs = {
   type?: 'title' | 'callsign' | undefined;
 };
 
-export const getHistoriesByUser = ({ login, page, limit }: MyPageArgs & Offset) =>
-  historiesRepo.findAndCount({
-    where: { login },
-    take: limit,
-    skip: limit * page,
-  });
+export const getHistoriesByUser = async ({login, page, limit}: MyPageArgs & Offset) => {
+  const items = await db.selectFrom('v_histories')
+    .where('login', '=', login)
+    .selectAll()
+    .limit(limit)
+    .offset(limit * page)
+    .execute();
+  const {count} = (await db.selectFrom('v_histories')
+    .where('login', '=', login)
+    .select(({fn}) => [ fn.count<number>('id').as('count') ])
+    .execute())[0];
+  return Promise.all([ items, count ]);
+}
