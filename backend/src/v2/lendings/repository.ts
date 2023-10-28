@@ -52,8 +52,8 @@ export const getHistoriesByQuery = async ({ query, type, page, limit }: Args & O
   let countSql = db.selectFrom('v_histories')
     .select(({fn}) => [ fn.count<number>('id').as('count') ]);
   countSql = getSearchCondition(countSql, {query, type});
-  const {count} = (await countSql.execute())[0];
-  return [items, count];
+  const [{count}] = await countSql.execute();
+  return { items, count };
 }
 
 type MyPageArgs = {
@@ -69,9 +69,9 @@ export const getHistoriesByUser = async ({login, page, limit}: MyPageArgs & Offs
     .limit(limit)
     .offset(limit * page)
     .execute();
-  const {count} = (await db.selectFrom('v_histories')
+  const [{count}] = await db.selectFrom('v_histories')
     .where('login', '=', login)
     .select(({fn}) => [ fn.count<number>('id').as('count') ])
-    .execute())[0];
-  return [ items, count ];
+    .execute();
+  return { items, count };
 }

@@ -11,7 +11,7 @@ export const lendings = s.router(contract.lendings, {
     middleware: [authValidate(roleSet.all)],
     handler: async ({ query, req: { user } }) => {
       const { nickname: login } = getUser.parse(user);
-      const [items, count] = await getHistoriesByUser({ ...query, login });
+      const { items, count } = await getHistoriesByUser({ ...query, login });
       const meta = {
         totalItems: count,
         itemCount: items.length,
@@ -27,7 +27,7 @@ export const lendings = s.router(contract.lendings, {
   get: {
     middleware: [authValidate(roleSet.librarian)],
     handler: async ({ query }) => {
-      const [items, count] = await getHistoriesByQuery(query);
+      const { items, count } = await getHistoriesByQuery(query);
 
       const meta = {
         totalItems: count,
