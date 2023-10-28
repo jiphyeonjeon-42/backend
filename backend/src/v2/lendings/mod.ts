@@ -1,9 +1,7 @@
 import { contract } from '@jiphyeonjeon-42/contracts';
 import { initServer } from '@ts-rest/express';
-import jipDataSource from '~/app-data-source';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
-import { VHistories } from '~/entity/entities/VHistories';
 import { getHistoriesByQuery, getHistoriesByUser } from './repository';
 import { getUser } from '../shared';
 
@@ -14,7 +12,6 @@ export const lendings = s.router(contract.lendings, {
     handler: async ({ query, req: { user } }) => {
       const { nickname: login } = getUser.parse(user);
       const [items, count] = await getHistoriesByUser({ ...query, login });
-
       const meta = {
         totalItems: count,
         itemCount: items.length,
