@@ -38,10 +38,10 @@ importers:
         version: 6.7.1
       '@ts-rest/express':
         specifier: ^3.28.0
-        version: 3.28.0(@ts-rest/core@3.28.0)(express@4.17.2)(zod@3.22.4)
+        version: 3.28.0(@ts-rest/core@3.28.0)(express@4.17.2)(zod@3.22.2)
       '@ts-rest/open-api':
         specifier: ^3.28.0
-        version: 3.28.0(@ts-rest/core@3.28.0)(zod@3.22.4)
+        version: 3.28.0(@ts-rest/core@3.28.0)(zod@3.22.2)
       axios:
         specifier: ^0.27.2
         version: 0.27.2
@@ -225,16 +225,10 @@ importers:
     dependencies:
       '@anatine/zod-openapi':
         specifier: ^2.2.0
-        version: 2.2.0(openapi3-ts@4.1.2)(zod@3.22.4)
-      '@ts-rest/core':
-        specifier: ^3.30.4
-        version: 3.30.4(zod@3.22.4)
+        version: 2.2.0(openapi3-ts@4.1.2)(zod@3.22.2)
       openapi3-ts:
         specifier: ^4.1.2
         version: 4.1.2
-      zod:
-        specifier: ^3.22.4
-        version: 3.22.4
     devDependencies:
       '@apidevtools/swagger-cli':
         specifier: ^4.0.4
@@ -267,7 +261,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
-  /@anatine/zod-openapi@1.14.2(openapi3-ts@2.0.2)(zod@3.22.4):
+  /@anatine/zod-openapi@1.14.2(openapi3-ts@2.0.2)(zod@3.22.2):
     resolution: {integrity: sha512-q0qHfnuNYVKu0Swrnnvfj9971AEyW7c8v9jCOZGCl5ZbyGMNG4RPyJkRcMi/JC8CRfdOe0IDfNm1nNsi2avprg==}
     peerDependencies:
       openapi3-ts: ^2.0.0 || ^3.0.0
@@ -275,10 +269,10 @@ packages:
     dependencies:
       openapi3-ts: 2.0.2
       ts-deepmerge: 6.2.0
-      zod: 3.22.4
+      zod: 3.22.2
     dev: false
 
-  /@anatine/zod-openapi@2.2.0(openapi3-ts@4.1.2)(zod@3.22.4):
+  /@anatine/zod-openapi@2.2.0(openapi3-ts@4.1.2)(zod@3.22.2):
     resolution: {integrity: sha512-Ponwenf2NMIVbs9IuB3YoW7CQPkuRWxhYV/qxBu48DQhmRyipEw/YROVTWnvku7+lwhv1EyP4+h3J5SwrvmfHg==}
     peerDependencies:
       openapi3-ts: ^4.1.2
@@ -286,7 +280,7 @@ packages:
     dependencies:
       openapi3-ts: 4.1.2
       ts-deepmerge: 6.2.0
-      zod: 3.22.4
+      zod: 3.22.2
     dev: false
 
   /@apidevtools/json-schema-ref-parser@9.1.2:
@@ -1436,29 +1430,7 @@ packages:
       zod: 3.22.2
     dev: false
 
-  /@ts-rest/core@3.28.0(zod@3.22.4):
-    resolution: {integrity: sha512-m0Wn2DgO3O57dsGT5fqxvF/WNFPx/8/dxbqLMV9TYXwLBgaJG4vDgR7qXVIYss/c5vlHTQ0oB9X+PwxhI3ksMg==}
-    peerDependencies:
-      zod: ^3.21.0
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      zod: 3.22.4
-    dev: false
-
-  /@ts-rest/core@3.30.4(zod@3.22.4):
-    resolution: {integrity: sha512-wHI3OHnqpak8jmz2drjzMtgvFVLBrTMvxkkWIUIsGDkEpFwuF/9592RpawkCLIvlxbrxTzp0MzqqwwbzlG6BkA==}
-    peerDependencies:
-      zod: ^3.22.3
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      zod: 3.22.4
-    dev: false
-
-  /@ts-rest/express@3.28.0(@ts-rest/core@3.28.0)(express@4.17.2)(zod@3.22.4):
+  /@ts-rest/express@3.28.0(@ts-rest/core@3.28.0)(express@4.17.2)(zod@3.22.2):
     resolution: {integrity: sha512-kkFdgBCtSDGIRcnh+uJGK5BMiYo/bHMH0/zVhAA4T3Wb6PPixf80GtsT9KiOOciVrG4JtLWQbsdTh69KxjPe5g==}
     peerDependencies:
       '@ts-rest/core': 3.28.0
@@ -1468,21 +1440,21 @@ packages:
       zod:
         optional: true
     dependencies:
-      '@ts-rest/core': 3.28.0(zod@3.22.4)
+      '@ts-rest/core': 3.28.0(zod@3.22.2)
       express: 4.17.2
-      zod: 3.22.4
+      zod: 3.22.2
     dev: false
 
-  /@ts-rest/open-api@3.28.0(@ts-rest/core@3.28.0)(zod@3.22.4):
+  /@ts-rest/open-api@3.28.0(@ts-rest/core@3.28.0)(zod@3.22.2):
     resolution: {integrity: sha512-9EG1mWxzcTriWAQGLNLXvpRT5VLKIQGPcBfTndRDsHUQe9jor+GtjEP8ttuoTfo3GlhkND9V6Qrikda1/kM0tg==}
     peerDependencies:
       '@ts-rest/core': 3.28.0
       zod: ^3.21.0
     dependencies:
-      '@anatine/zod-openapi': 1.14.2(openapi3-ts@2.0.2)(zod@3.22.4)
-      '@ts-rest/core': 3.28.0(zod@3.22.4)
+      '@anatine/zod-openapi': 1.14.2(openapi3-ts@2.0.2)(zod@3.22.2)
+      '@ts-rest/core': 3.28.0(zod@3.22.2)
       openapi3-ts: 2.0.2
-      zod: 3.22.4
+      zod: 3.22.2
     dev: false
 
   /@types/babel__core@7.20.1:
@@ -5504,7 +5476,7 @@ packages:
       commander: 10.0.1
       js-yaml: 4.1.0
       undici: 5.22.1
-      zod: 3.22.4
+      zod: 3.22.2
     dev: true
 
   /openapi-types@12.1.3:
@@ -7485,7 +7457,3 @@ packages:
 
   /zod@3.22.2:
     resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
-    dev: false
-
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
