@@ -1,4 +1,4 @@
-import { dateLike, metaSchema, nonNegativeInt } from "..";
+import { dateLike, metaSchema, mkErrorMessageSchema, nonNegativeInt } from "..";
 import { z } from "../zodWithOpenapi";
 
 export const reservationsGetQuerySchema = z.object({
@@ -27,4 +27,24 @@ export const reservationsGetResponseSchema = z.object({
 
 export const reservationsGetCountResponseSchema = reservationsGetResponseSchema.extend({
 	count: nonNegativeInt
-})
+});
+
+export const reservationsPostRequestBodySchema = z.object({
+	bookInfoId: nonNegativeInt,
+});
+
+export const reservationsPostResponseSchema = z.object({
+	count: nonNegativeInt,
+});
+
+export const reservationsFailureReponseSchema = z.object({
+	code: z.enum(['PENALTY', 'LENDABLE', 'RESERVED', 'LENDING']),
+});
+
+export const reservationsCancelRequestBodySchema = z.object({
+	status: nonNegativeInt
+});
+
+export const reservationsCancelResponseSchema = z.literal("예약이 정상적으로 취소되었습니다.");
+
+export const reservationsNotFoundError = mkErrorMessageSchema('RESERVATION_NOT_FOUND').describe('해당 예약 정보가 존재하지 않습니다.');

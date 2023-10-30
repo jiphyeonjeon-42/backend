@@ -1,9 +1,15 @@
 import { initContract } from "@ts-rest/core"
-import { unauthorizedSchema } from "..";
+import { bookInfoNotFoundSchema, unauthorizedSchema } from "..";
 import { 
 	reservationsGetQuerySchema,
 	reservationsGetResponseSchema,
 	reservationsGetCountResponseSchema,
+	reservationsCancelResponseSchema,
+	reservationsPostRequestBodySchema,
+	reservationsPostResponseSchema,
+	reservationsFailureReponseSchema,
+	reservationsCancelRequestBodySchema,
+	reservationsNotFoundError
 } from "./schema";
 
 const c = initContract();
@@ -34,25 +40,28 @@ export const reservationsContract = c.router({
 		summary: 'bookInfo에 해당하는 예약 대기 수를 확인할 수 있다.',
 		responses: {
 			200: reservationsGetCountResponseSchema,
+			400: bookInfoNotFoundSchema,
 		},
 	},
 	post: {
 		method: 'POST',
 		path: '/reservations',
 		summary: 'jwt로 인증된 유저가 예약을 생성한다.',
-		body: ,
+		body: reservationsPostRequestBodySchema,
 		responses: {
-			200: ,
-			400: ,
+			200: reservationsPostResponseSchema,
+			400: reservationsFailureReponseSchema,
 		},
 	},
-	put: {
-		method: 'PUT',
+	patch: {
+		method: 'PATCH',
 		path: '/reservations/:reservationid',
 		summary: '예약 취소',
+		body: reservationsCancelRequestBodySchema,
 		responses: {
-			200: ,
+			200: reservationsCancelResponseSchema,
+			400: reservationsNotFoundError,
 			401: unauthorizedSchema,
 		},
 	},
-})
+});
