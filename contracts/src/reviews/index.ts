@@ -4,7 +4,6 @@ import {
   bookInfoIdSchema,
   bookInfoNotFoundSchema,
   metaPaginatedSchema,
-  offsetPaginatedSchema,
   paginatedSearchSchema,
   visibility,
 } from '../shared';
@@ -13,8 +12,8 @@ import {
   mutationDescription,
   reviewIdPathSchema,
   reviewNotFoundSchema,
+  reviewSchema
 } from './schema';
-import { reviewSchema } from './schema';
 
 export * from './schema';
 
