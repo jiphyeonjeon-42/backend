@@ -69,6 +69,7 @@
     "kysely-paginate": "^0.2.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
+    "node-pre-gyp": "^0.17.0",
     "node-schedule": "^2.1.0",
     "passport": "^0.5.2",
     "passport-42": "^1.2.6",
