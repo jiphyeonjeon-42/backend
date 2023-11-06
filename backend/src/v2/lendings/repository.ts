@@ -2,7 +2,7 @@ import { match } from 'ts-pattern';
 import { DB } from '~/kysely/generated.ts';
 import { db } from '~/kysely/mod.ts';
 import { ExpressionBuilder, SelectQueryBuilder } from "kysely";
-import { AllSelection } from 'kysely/dist/cjs/parser/select-parser';
+import { AllSelection } from "kysely/dist/esm/parser/select-parser";
 
 const queriesLike = (sql: SelectQueryBuilder<DB, 'v_histories', AllSelection<DB, 'v_histories'>>, query: string) => {
   const all = sql.where((eb: ExpressionBuilder<DB, 'v_histories'>) =>
