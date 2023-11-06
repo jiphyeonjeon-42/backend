@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@jiphyeonjeon-42/contracts": "workspace:*",
+    "@mapbox/node-pre-gyp": "^1.0.11",
     "@slack/web-api": "^6.7.1",
     "@ts-rest/express": "^3.28.0",
     "@ts-rest/open-api": "^3.28.0",
