@@ -55,7 +55,7 @@ export const reservationsContract = c.router({
 	},
 	patch: {
 		method: 'PATCH',
-		path: '/reservations/:reservationid',
+		path: '/reservations/cancel',
 		summary: '예약 취소',
 		body: reservationsCancelRequestBodySchema,
 		responses: {

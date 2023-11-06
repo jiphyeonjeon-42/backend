@@ -42,7 +42,7 @@ export const reservationsFailureReponseSchema = z.object({
 });
 
 export const reservationsCancelRequestBodySchema = z.object({
-	status: nonNegativeInt
+	reservationId: nonNegativeInt
 });
 
 export const reservationsCancelResponseSchema = z.literal("예약이 정상적으로 취소되었습니다.");
