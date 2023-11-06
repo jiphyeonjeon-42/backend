@@ -162,14 +162,8 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     isCho = false;
   }
   const fullTextSearch = removeSpecialCharacters(disassembledKeyword);
-  // const likeSearch = disassembledKeyword.replaceAll("'", '').replaceAll(' ', '%');
-  const likeSearch = addEscapeSignToSpecialCharacters(disassembledKeyword, "#");
-  /**
-   * #keyword : #%
-   * #likeSearch: #%
-   * #keyword : #%
-   * #likeSearch: ###%
-   */
+  const escapeSign = '#';
+  const likeSearch = addEscapeSignToSpecialCharacters(disassembledKeyword, escapeSign);
   console.log(`#likeSearch in searchKeywords: ${likeSearch}`)
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
@@ -193,9 +187,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '#'
-            OR author_initials LIKE ('%${likeSearch}%') ESCAPE '#'
-            OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+          WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+            OR author_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+            OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
@@ -222,9 +216,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '#'
-              OR author_initials LIKE ('%${likeSearch}%') ESCAPE '#'
-              OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+            WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+              OR author_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+              OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
           )
         )
       ) AS COUNT_SET`,
@@ -249,9 +243,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE disassembled_title LIKE ('%${likeSearch}%')
-            OR disassembled_author LIKE ('%${likeSearch}%')
-            OR disassembled_publisher LIKE ('%${likeSearch}%')
+          WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+            OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+            OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
@@ -277,9 +271,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE disassembled_title LIKE ('%${likeSearch}%')
-              OR disassembled_author LIKE ('%${likeSearch}%')
-              OR disassembled_publisher LIKE ('%${likeSearch}%')
+            WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+              OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+              OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
           )
         )
       ) AS COUNT_SET`,

@@ -24,11 +24,3 @@ export const addEscapeSignToSpecialCharacters = (input: string, esacpeSign: stri
   const modifiedText = input.replace(regex, (match) => `${esacpeSign}${match}`);
   return modifiedText;
 };
-
-// const regex = /[^가-힣a-zA-Z0-9_]/g;
-// const text = "안녕하세요! This is a test 123.";
-
-// const modifiedText = text.replace(regex, (match) => `#${match}`);
-
-// console.log(modifiedText);
-

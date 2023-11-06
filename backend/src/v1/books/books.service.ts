@@ -183,9 +183,6 @@ export const searchInfo = async (
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
   const fullTextSearch = removeSpecialCharacters(disassemble);
-  // const regex = ''
-  // const regex = /[^\?\%\\s]/g;
-  // const regex = /[^가-힣a-zA-Z0-9_]/g;
   const escapeSign = '#';
   const likeSearch = addEscapeSignToSpecialCharacters(disassemble, escapeSign); //.replaceAll("'", '');
   console.log(`\n#likeSearch  in books.service: ${likeSearch}\n\n`)
