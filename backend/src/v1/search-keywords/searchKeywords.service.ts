@@ -6,6 +6,7 @@ import {
   extractHangulInitials,
   disassembleHangul,
   removeSpecialCharacters,
+  addEscapeSignToSpecialCharacters,
 } from '~/v1/utils/processKeywords';
 import { AutocompleteKeyword, PopularSearchKeyword, SearchKeyword } from './searchKeywords.type';
 import SearchKeywordsRepository from './searchKeywords.repository';
@@ -161,8 +162,15 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
     isCho = false;
   }
   const fullTextSearch = removeSpecialCharacters(disassembledKeyword);
-  const likeSearch = disassembledKeyword.replaceAll("'", '').replaceAll(' ', '%');
-
+  // const likeSearch = disassembledKeyword.replaceAll("'", '').replaceAll(' ', '%');
+  const likeSearch = addEscapeSignToSpecialCharacters(disassembledKeyword, "#");
+  /**
+   * #keyword : #%
+   * #likeSearch: #%
+   * #keyword : #%
+   * #likeSearch: ###%
+   */
+  console.log(`#likeSearch in searchKeywords: ${likeSearch}`)
   let queryResult: AutocompleteKeyword[] = [];
   let totalCount: number;
   if (isCho) {
@@ -185,9 +193,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE title_initials LIKE ('%${likeSearch}%')
-            OR author_initials LIKE ('%${likeSearch}%')
-            OR publisher_initials LIKE ('%${likeSearch}%')
+          WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+            OR author_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+            OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '#'
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
@@ -214,9 +222,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE title_initials LIKE ('%${likeSearch}%')
-              OR author_initials LIKE ('%${likeSearch}%')
-              OR publisher_initials LIKE ('%${likeSearch}%')
+            WHERE title_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+              OR author_initials LIKE ('%${likeSearch}%') ESCAPE '#'
+              OR publisher_initials LIKE ('%${likeSearch}%') ESCAPE '#'
           )
         )
       ) AS COUNT_SET`,

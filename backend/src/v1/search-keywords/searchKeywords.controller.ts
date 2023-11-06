@@ -36,7 +36,8 @@ export const searchKeywordsAutocomplete = async (
 ): Promise<Response | void> => {
   let { keyword } = req.query;
   if (typeof keyword === 'string') {
-    keyword = keyword.trim();
+    keyword = keyword.trim().replaceAll('%', '#%');
+    console.log(`#keyword : ${keyword}`)
   }
   if (!keyword) {
     return res.status(status.OK).send({

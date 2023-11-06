@@ -12,6 +12,7 @@ import {
   disassembleHangul,
   extractHangulInitials,
   removeSpecialCharacters,
+  addEscapeSignToSpecialCharacters,
 } from '~/v1/utils/processKeywords';
 import * as models from './books.model';
 import BooksRepository from './books.repository';
@@ -26,6 +27,7 @@ import {
 import { categoryWithBookCount } from '../DTO/common.interface';
 import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
 import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
+import { escape } from 'node:querystring';
 
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
@@ -181,7 +183,15 @@ export const searchInfo = async (
   const disassemble = query ? disassembleHangul(query) : '';
   const initials = query ? extractHangulInitials(query) : '';
   const fullTextSearch = removeSpecialCharacters(disassemble);
-  const likeSearch = disassemble.replaceAll("'", '').replaceAll(' ', '%');
+  // const regex = ''
+  // const regex = /[^\?\%\\s]/g;
+  // const regex = /[^가-힣a-zA-Z0-9_]/g;
+  const escapeSign = '#';
+  const likeSearch = addEscapeSignToSpecialCharacters(disassemble, escapeSign); //.replaceAll("'", '');
+  console.log(`\n#likeSearch  in books.service: ${likeSearch}\n\n`)
+  // const likeSearch = disassemble.trim().replaceAll("'", '').replaceAll(' ', '%');
+  // #;
+  // const likeSearch = disassemble.replaceAll("'", '').replaceAll('%', '\%').replaceAll(' ', '%');
 
   let matchScore: string;
   let searchCondition: string;
@@ -194,18 +204,18 @@ export const searchInfo = async (
       book_info_search_keywords.publisher_initials)
       AGAINST ('${fullTextSearch}' IN BOOLEAN MODE)`;
     searchCondition = `${matchScore}
-      OR book_info_search_keywords.title_initials LIKE '%${likeSearch}%'
-      OR book_info_search_keywords.author_initials LIKE '%${likeSearch}%'
-      OR book_info_search_keywords.publisher_initials LIKE '%${likeSearch}%'`;
+      OR book_info_search_keywords.title_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+      OR book_info_search_keywords.author_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+      OR book_info_search_keywords.publisher_initials LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'`;
   } else {
     matchScore = `MATCH(book_info_search_keywords.disassembled_title,
       book_info_search_keywords.disassembled_author,
       book_info_search_keywords.disassembled_publisher)
       AGAINST ('${fullTextSearch}' IN BOOLEAN MODE)`;
     searchCondition = `${matchScore}
-      OR book_info_search_keywords.disassembled_title LIKE '%${likeSearch}%'
-      OR book_info_search_keywords.disassembled_author LIKE '%${likeSearch}%'
-      OR book_info_search_keywords.disassembled_publisher LIKE '%${likeSearch}%'`;
+      OR book_info_search_keywords.disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+      OR book_info_search_keywords.disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+      OR book_info_search_keywords.disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'`;
   }
 
   let ordering: string;
@@ -249,13 +259,14 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ?
+      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
       OR ${searchCondition}
     )
     GROUP BY category.name WITH ROLLUP) as a
     ORDER BY name ASC;
     `,
-    [`%${query}%`],
+    [`%${likeSearch}%`],
+    // [`%${query}%`],
   ) as Promise<models.categoryCount[]>;
 
   const bookListPromise = executeQuery(
@@ -282,7 +293,7 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ?
+      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
       OR ${searchCondition}
     )
     GROUP BY book_info.id
@@ -291,7 +302,7 @@ export const searchInfo = async (
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${query}%`, limit, page * limit],
+    [`%${likeSearch}%`, limit, page * limit],
   ) as Promise<models.BookInfo[]>;
 
   const totalItemsPromise = executeQuery(
@@ -303,13 +314,13 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ?
+      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
       OR ${searchCondition}
     ) AND (
       ${categoryWhere}
     )
   `,
-    [`%${query}%`],
+    [`%${likeSearch}%`],
   ).then((result) => result[0].count) as Promise<number>;
 
   const [categoryList, bookList, totalItems] = await Promise.all([
