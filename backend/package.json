@@ -49,9 +49,10 @@
   },
   "dependencies": {
     "@jiphyeonjeon-42/contracts": "workspace:*",
-    "@slack/web-api": "^6.9.0",
-    "@ts-rest/express": "^3.30.4",
-    "@ts-rest/open-api": "^3.30.4",
+    "@mapbox/node-pre-gyp": "^1.0.11",
+    "@slack/web-api": "^6.7.1",
+    "@ts-rest/express": "^3.28.0",
+    "@ts-rest/open-api": "^3.28.0",
     "axios": "^0.27.2",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
