@@ -7,4 +7,5 @@ module.exports = {
       tsconfig: './tsconfig.json',
     }],
   },
+    rootDir: './src',
 };
