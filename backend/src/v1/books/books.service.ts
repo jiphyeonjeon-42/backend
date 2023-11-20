@@ -245,7 +245,7 @@ export const searchInfo = async (
   const categoryWhere = categoryName ? `category.name = '${categoryName}'` : 'TRUE';
   const categoryHaving = categoryName ? `category = '${categoryName}'` : 'TRUE';
 
-  const categoryListPromise = executeQuery(
+  const categoryListPromise = await executeQuery(
     `
     SELECT name, count FROM (
     SELECT
@@ -256,14 +256,13 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
+      book_info.isbn LIKE '%${likeSearch}%' ESCAPE '${escapeSign}'
       OR ${searchCondition}
     )
     GROUP BY category.name WITH ROLLUP) as a
     ORDER BY name ASC;
     `,
-    [`%${likeSearch}%`],
-    // [`%${query}%`],
+    // [`'%${likeSearch}%'`],
   ) as Promise<models.categoryCount[]>;
 
   const bookListPromise = executeQuery(
@@ -290,7 +289,7 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
+      book_info.isbn LIKE '%${likeSearch}%' ESCAPE '${escapeSign}'
       OR ${searchCondition}
     )
     GROUP BY book_info.id
@@ -299,8 +298,9 @@ export const searchInfo = async (
     LIMIT ?
     OFFSET ?;
   `,
-    [`%${likeSearch}%`, limit, page * limit],
-  ) as Promise<models.BookInfo[]>;
+    // [`'%${likeSearch}%'`, limit, page * limit],
+    [limit, page * limit],
+    ) as Promise<models.BookInfo[]>;
 
   const totalItemsPromise = executeQuery(
     `
@@ -311,13 +311,13 @@ export const searchInfo = async (
     LEFT JOIN book_info_search_keywords
       ON book_info.id = book_info_search_keywords.book_info_id
     WHERE (
-      book_info.isbn LIKE ? ESCAPE '${escapeSign}'
+      book_info.isbn LIKE '%${likeSearch}%' ESCAPE '${escapeSign}'
       OR ${searchCondition}
     ) AND (
       ${categoryWhere}
     )
   `,
-    [`%${likeSearch}%`],
+    // [`'%${likeSearch}%'`],
   ).then((result) => result[0].count) as Promise<number>;
 
   const [categoryList, bookList, totalItems] = await Promise.all([

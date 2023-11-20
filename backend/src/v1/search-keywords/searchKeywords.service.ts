@@ -243,9 +243,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
         WHERE id IN (
           SELECT book_info_id
           FROM book_info_search_keywords
-          WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
-            OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
-            OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+          WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+            OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+            OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
         )
       )
       LIMIT ${LIMIT_OF_SEARCH_KEYWORD_PREVIEW}
@@ -271,9 +271,9 @@ export const getSearchAutocompletePreviewResult = async (keyword: string) => {
           WHERE id IN (
             SELECT book_info_id
             FROM book_info_search_keywords
-            WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
-              OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
-              OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}
+            WHERE disassembled_title LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+              OR disassembled_author LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
+              OR disassembled_publisher LIKE ('%${likeSearch}%') ESCAPE '${escapeSign}'
           )
         )
       ) AS COUNT_SET`,
