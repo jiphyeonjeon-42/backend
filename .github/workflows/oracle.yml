@@ -41,23 +41,25 @@ jobs:
           script: |
             cd /home/opc/backend
             git pull
-            export MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            export MYSQL_USER=${{ secrets.MYSQL_USER }}
-            export MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            export BACKUP_USER=${{ secrets.BACKUP_USER}}
-            export BACKUP_PASSWORD=${{ secrets.BACKUP_PASSWORD }}
-            export ADMIN_SLACK_ID=${{ secrets.ADMIN_SLACK_ID }}
-            export DB_SCHEMA=${{ secrets.DB_SCHEMA }}
-            export MODE=${{ secrets.MODE }}
-            export NODE_ENV=${{ secrets.NODE_ENV }}
-            export CLIENT_ID=${{ secrets.CLIENT_ID }}
-            export CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
-            export REDIRECT_URL=${{ secrets.REDIRECT_URL }}
-            export CLIENT_URL=${{ secrets.CLIENT_URL }}
-            export BOT_USER_OAUTH_ACCESS_TOKEN=${{ secrets.BOT_USER_OAUTH_ACCESS_TOKEN }}
-            export JWT_SECRET=${{ secrets.JWT_SECRET }}
-            export NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
-            export NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
-            export NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}
-            sudo docker compose up -d --build
+            
+            sudo docker compose \
+            -e MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
+            -e MYSQL_USER=${{ secrets.MYSQL_USER }} \
+            -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            -e BACKUP_USER=${{ secrets.BACKUP_USER}} \
+            -e BACKUP_PASSWORD=${{ secrets.BACKUP_PASSWORD }} \
+            -e ADMIN_SLACK_ID=${{ secrets.ADMIN_SLACK_ID }} \
+            -e DB_SCHEMA=${{ secrets.DB_SCHEMA }} \
+            -e MODE=${{ secrets.MODE }} \
+            -e NODE_ENV=${{ secrets.NODE_ENV }} \
+            -e CLIENT_ID=${{ secrets.CLIENT_ID }} \
+            -e CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
+            -e REDIRECT_URL=${{ secrets.REDIRECT_URL }} \
+            -e CLIENT_URL=${{ secrets.CLIENT_URL }} \
+            -e BOT_USER_OAUTH_ACCESS_TOKEN=${{ secrets.BOT_USER_OAUTH_ACCESS_TOKEN }} \
+            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -e NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }} \
+            -e NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }} \
+            -e NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }} \
+            -d --build
             sudo docker compose down
