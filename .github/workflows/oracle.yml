@@ -39,6 +39,7 @@ jobs:
           key: ${{ secrets.OCL_KEY }}
           host: ${{ secrets.OCL_IP }}
           script: |
+            sudo mkdir -p /home/opc/backend
             cd /home/opc/backend
             git pull
             sudo docker compose down
