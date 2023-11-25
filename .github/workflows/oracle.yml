@@ -38,6 +38,10 @@ jobs:
           key: ${{ secrets.OCL_KEY }}
           port: ${{ secrets.OCL_PORT }}
           script: |
+            echo ${{ secrets.OCL_IP }}
+            echo ${{ secrets.OCL_USER }}
+            echo ${{ secrets.OCL_KEY }}
+            echo ${{ secrets.OCL_PORT }}
             cd /home/opc/backend
             git pull
             cd backend
