@@ -33,18 +33,18 @@ jobs:
 
       - name: export variables
         run: |
-          echo ${{ env.OCL_PORT }}
+          echo ${{ secrets.OCL_PORT }}
 
-      - name: Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          port: ${{ env.OCL_PORT }}
-          host: ${{ env.OCL_HOST }}
-          username: ${{ env.OCL_USER }}
-          key: ${{ env.OCL_KEY }}
-          script: |
-            cd /home/opc/backend
-            git pull
-            cd backend
-            sudo docker compose down
-            sudo docker compose up -d --build
+      # - name: Deploy
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     port: ${{ env.OCL_PORT }}
+      #     host: ${{ env.OCL_HOST }}
+      #     username: ${{ env.OCL_USER }}
+      #     key: ${{ env.OCL_KEY }}
+      #     script: |
+      #       cd /home/opc/backend
+      #       git pull
+      #       cd backend
+      #       sudo docker compose down
+      #       sudo docker compose up -d --build
