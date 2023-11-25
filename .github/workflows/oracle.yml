@@ -31,6 +31,10 @@ jobs:
         working-directory: backend
         run: pnpm install
 
+      - name: export variables
+        run: |
+          echo ${{ env.OCL_PORT }}
+
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
