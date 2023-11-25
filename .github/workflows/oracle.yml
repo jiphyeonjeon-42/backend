@@ -31,17 +31,13 @@ jobs:
         working-directory: backend
         run: pnpm install
 
-      - name: export variables
-        run: |
-          echo ${{ secrets.OCL_PORT }}
-
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
           port: ${{ secrets.OCL_PORT }}
-          host: ${{ secrets.OCL_IP }}
           username: ${{ secrets.OCL_USER }}
           key: ${{ secrets.OCL_KEY }}
+          host: ${{ secrets.OCL_IP }}
           script: |
             cd /home/opc/backend
             git pull
