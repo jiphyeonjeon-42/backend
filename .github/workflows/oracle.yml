@@ -35,16 +35,16 @@ jobs:
         run: |
           echo ${{ secrets.OCL_PORT }}
 
-      # - name: Deploy
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     port: ${{ env.OCL_PORT }}
-      #     host: ${{ env.OCL_HOST }}
-      #     username: ${{ env.OCL_USER }}
-      #     key: ${{ env.OCL_KEY }}
-      #     script: |
-      #       cd /home/opc/backend
-      #       git pull
-      #       cd backend
-      #       sudo docker compose down
-      #       sudo docker compose up -d --build
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          port: ${{ secrets.OCL_PORT }}
+          host: ${{ secrets.OCL_HOST }}
+          username: ${{ secrets.OCL_USER }}
+          key: ${{ secrets:OCL_KEY }}
+          script: |
+            cd /home/opc/backend
+            git pull
+            cd backend
+            sudo docker compose down
+            sudo docker compose up -d --build
