@@ -26,10 +26,6 @@ jobs:
               corepack prepare pnpm@latest-8 --activate
               pnpm config set store-dir .pnpm-store
 
-      - name: Install dependencies
-        working-directory: backend
-        run: pnpm i
-
       - name: install dependencies
         working-directory: backend
         run: pnpm install
