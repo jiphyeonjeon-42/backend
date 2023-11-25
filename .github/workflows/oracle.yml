@@ -39,7 +39,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           port: ${{ secrets.OCL_PORT }}
-          host: ${{ secrets.OCL_HOST }}
+          host: ${{ secrets.OCL_IP }}
           username: ${{ secrets.OCL_USER }}
           key: ${{ secrets.OCL_KEY }}
           script: |
