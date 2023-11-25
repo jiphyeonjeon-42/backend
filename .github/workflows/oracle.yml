@@ -41,24 +41,24 @@ jobs:
           script: |
             cd /home/opc/backend
             git pull
-            echo MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
-            MYSQL_USER=${{ secrets.MYSQL_USER }} \
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-            BACKUP_USER=${{ secrets.BACKUP_USER}} \
-            BACKUP_PASSWORD=${{ secrets.BACKUP_PASSWORD }} \
-            ADMIN_SLACK_ID=${{ secrets.ADMIN_SLACK_ID }} \
-            DB_SCHEMA=${{ secrets.DB_SCHEMA }} \
-            MODE=${{ secrets.MODE }} \
-            NODE_ENV=${{ secrets.NODE_ENV }} \
-            CLIENT_ID=${{ secrets.CLIENT_ID }} \
-            CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
-            REDIRECT_URL=${{ secrets.REDIRECT_URL }} \
-            CLIENT_URL=${{ secrets.CLIENT_URL }} \
-            BOT_USER_OAUTH_ACCESS_TOKEN=${{ secrets.BOT_USER_OAUTH_ACCESS_TOKEN }} \
-            JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }} \
-            NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }} \
-            NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }} \
-            > .env
+            echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            BACKUP_USER=${{ secrets.BACKUP_USER}}
+            BACKUP_PASSWORD=${{ secrets.BACKUP_PASSWORD }}
+            ADMIN_SLACK_ID=${{ secrets.ADMIN_SLACK_ID }}
+            DB_SCHEMA=${{ secrets.DB_SCHEMA }}
+            MODE=${{ secrets.MODE }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            CLIENT_ID=${{ secrets.CLIENT_ID }}
+            CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
+            REDIRECT_URL=${{ secrets.REDIRECT_URL }}
+            CLIENT_URL=${{ secrets.CLIENT_URL }}
+            BOT_USER_OAUTH_ACCESS_TOKEN=${{ secrets.BOT_USER_OAUTH_ACCESS_TOKEN }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
+            NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
+            NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}
+            " > .env
             sudo docker compose down
             sudo docker compose up -d --build
