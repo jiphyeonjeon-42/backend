@@ -41,7 +41,7 @@ jobs:
           port: ${{ secrets.OCL_PORT }}
           host: ${{ secrets.OCL_HOST }}
           username: ${{ secrets.OCL_USER }}
-          key: ${{ secrets:OCL_KEY }}
+          key: ${{ secrets.OCL_KEY }}
           script: |
             cd /home/opc/backend
             git pull
