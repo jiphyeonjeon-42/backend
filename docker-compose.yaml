@@ -10,8 +10,8 @@ services:
       - 80:80
 
   database:
-    platform: linux/x86_64
     container_name: database
+    platform: linux/arm64/v8
     image: mysql:8.0
     environment:
       - TZ=Asia/Seoul
@@ -36,4 +36,3 @@ services:
       - ./backend/logs:/app/backend/logs
     ports:
       - 3000:3000
-    env_file: .env
