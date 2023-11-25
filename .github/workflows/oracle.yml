@@ -32,16 +32,17 @@ jobs:
 
       - name: Deploy
         uses: appleboy/ssh-action@master
+        env: 
+          OCL_IP: ${{ secrets.OCL_IP }}
+          OCL_USER: ${{ secrets.OCL_USER }}
+          OCL_KEY: ${{ secrets.OCL_KEY }}
+          OCL_PORT: ${{ secrets.OCL_PORT }}
         with:
-          host: ${{ secrets.OCL_IP }}
-          username: ${{ secrets.OCL_USER }}
-          key: ${{ secrets.OCL_KEY }}
-          port: ${{ secrets.OCL_PORT }}
+          host: ${{ env.OCL_IP }}
+          username: ${{ env.OCL_USER }}
+          key: ${{ env.OCL_KEY }}
+          port: ${{ env.OCL_PORT }}
           script: |
-            echo ${{ secrets.OCL_IP }}
-            echo ${{ secrets.OCL_USER }}
-            echo ${{ secrets.OCL_KEY }}
-            echo ${{ secrets.OCL_PORT }}
             cd /home/opc/backend
             git pull
             cd backend
