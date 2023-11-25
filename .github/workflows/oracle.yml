@@ -22,7 +22,7 @@ jobs:
 
       - name: setup pnpm
         run: |
-              corepck enable
+              corepack enable
               corepack prepare pnpm@latest-8 --activate
               pnpm config set store-dir .pnpm-store
 
