@@ -40,6 +40,7 @@ jobs:
           host: ${{ secrets.OCL_IP }}
           script: |
             cd /home/opc/backend
+            git checkout deploy-test
             git pull
             echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
@@ -64,3 +65,4 @@ jobs:
 
             sudo docker compose down
             sudo docker compose up -d --build
+            rm .env
