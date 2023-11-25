@@ -32,11 +32,6 @@ jobs:
 
       - name: Deploy
         uses: appleboy/ssh-action@master
-        env: 
-          OCL_IP: ${{ secrets.OCL_IP }}
-          OCL_USER: ${{ secrets.OCL_USER }}
-          OCL_KEY: ${{ secrets.OCL_KEY }}
-          OCL_PORT: ${{ secrets.OCL_PORT }}
         with:
           host: ${{ env.OCL_IP }}
           username: ${{ env.OCL_USER }}
