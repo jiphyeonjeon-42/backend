@@ -39,9 +39,8 @@ jobs:
           key: ${{ secrets.OCL_KEY }}
           host: ${{ secrets.OCL_IP }}
           script: |
-            cd /home/opc
+            cd /home/opc/backend
             git pull
-            cd backend
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
@@ -59,7 +58,7 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             NAVER_BOOK_SEARCH_CLIENT_ID=${{ secrets.NAVER_BOOK_SEARCH_CLIENT_ID }}
             NATION_LIBRARY_KEY=${{ secrets.NATION_LIBRARY_KEY }}
-            NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}" > .env
+            NAVER_BOOK_SEARCH_SECRET=${{ secrets.NAVER_BOOK_SEARCH_SECRET }}
             echo $MYSQL_DATABASE
             sudo docker compose up -d --build
             sudo docker compose down
