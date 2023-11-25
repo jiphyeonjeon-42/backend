@@ -41,7 +41,8 @@ jobs:
           script: |
             cd /home/opc/backend
             git pull
-            echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             BACKUP_USER=${{ secrets.BACKUP_USER}}
