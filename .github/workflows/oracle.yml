@@ -28,11 +28,11 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend
-        run: pnpm install
+        run: pnpm i
 
-      - name: Build
+      - name: install dependencies
         working-directory: backend
-        run: pnpm run build
+        run: pnpm install
 
       - name: Deploy
         uses: appleboy/ssh-action@master
@@ -47,5 +47,3 @@ jobs:
             cd backend
             sudo docker compose down
             sudo docker compose up -d --build
-
-          
