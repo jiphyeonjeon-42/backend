@@ -34,10 +34,10 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
-          port: ${{ secrets.OCL_PORT }}
-          username: ${{ secrets.OCL_USER }}
-          key: ${{ secrets.OCL_KEY }}
-          host: ${{ secrets.OCL_IP }}
+          port: ${{ secrets.OCI_PORT }}
+          username: ${{ secrets.OCI_USER }}
+          key: ${{ secrets.OCI_KEY }}
+          host: ${{ secrets.OCI_IP }}
           script: |
             cd /home/opc/backend
             git checkout deploy-test
