@@ -42,6 +42,7 @@ jobs:
             cd /home/opc/backend
             git checkout deploy-test
             git pull
+            
             echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
