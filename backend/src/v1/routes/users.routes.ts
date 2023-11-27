@@ -410,7 +410,7 @@ router
   .post('/create', create)
   .patch('/update/:id', authValidate(roleSet.librarian), update)
   .patch('/myupdate', authValidate(roleSet.all), myupdate)
-  .get('/me', authValidate(roleSet.service), mydata)
+  .get('/me', authValidate(roleSet.all), mydata)
   .get('/EasterEgg', getVersion);
 
 //  .delete('/delete/:id', authValidate(roleSet.librarian), deleteUser);
