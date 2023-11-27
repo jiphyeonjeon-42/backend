@@ -1,4 +1,3 @@
-import assert from "assert";
 import * as Repository from './repository.ts';
 
 // 나중에는 테스트 DB 이용
