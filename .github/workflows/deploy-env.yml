@@ -2,6 +2,9 @@ name: Deploy env file
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - deploy-test
 
 jobs:
   deploy:
