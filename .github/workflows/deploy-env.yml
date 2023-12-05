@@ -2,6 +2,11 @@ name: Deploy env file
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch'
+        required: true
+        default: 'deploy-test'
   push:
     branches:
       - deploy-test
