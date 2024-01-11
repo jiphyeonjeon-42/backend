@@ -12,7 +12,6 @@ const midnightScheduler = () => {
   rule.tz = 'Asia/Seoul';
   schedule.scheduleJob(rule, async () => {
     await slack.updateSlackId();
-    await notifications.notifyReservationOverdue();
     await searchKeywords.renewLastPopular();
   });
 };
@@ -24,7 +23,7 @@ const morningScheduler = () => {
   rule.minute = 42;
   rule.tz = 'Asia/Seoul';
   schedule.scheduleJob(rule, async () => {
-    await notifications.notifyReservation();
+    await notifications.notifyReservationOverdueAndNotifyReservation();
     await notifications.notifyReturningReminder();
     await notifications.notifyOverdueManager();
   });
