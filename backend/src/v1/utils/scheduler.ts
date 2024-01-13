@@ -25,8 +25,8 @@ const morningScheduler = () => {
   rule.tz = 'Asia/Seoul';
   schedule.scheduleJob(rule, async () => {
     await notifications.notifyReservation();
-    await notifications.notifyReturningReminder();
     await notifications.notifyOverdueManager();
+    await notifications.notifyOverdue();
   });
 };
 
