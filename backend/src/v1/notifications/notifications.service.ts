@@ -186,7 +186,6 @@ export const GetUserFromNDaysLeft = async (day: number): Promise<Lender[]> => {
       DATEDIFF(CURDATE(), lending.createdAt) = ${daysLeft} AND
       lending.returnedAt IS NULL
     `);
-  console.log(lendings);
   return lendings.map(({ ...args }) => ({ ...args, daysLeft: day }));
 };
 
