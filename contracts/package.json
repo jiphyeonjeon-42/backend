@@ -13,13 +13,15 @@
   },
   "dependencies": {
     "@anatine/zod-openapi": "^2.2.0",
-    "openapi3-ts": "^4.1.2"
+    "@ts-rest/core": "^3.30.4",
+    "openapi3-ts": "^4.1.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@apidevtools/swagger-cli": "^4.0.4",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
-    "@apidevtools/swagger-cli": "^4.0.4",
     "openapi-endpoint-trimmer": "^2.0.0"
   }
 }
