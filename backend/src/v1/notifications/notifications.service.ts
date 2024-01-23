@@ -17,8 +17,8 @@ const sendSlackMessage = async (slack: string, message: string) => {
  */
 export const notifyReservationOverdueAndNotifyReservation = async () => {
   const { overDueReservations, assignedReservations } = await handleReservationOverdueAndAssignReservationToNextWaitingUser();
-  await Promise.all(overDueReservations.map(({slack, title}) => sendSlackMessage(slack, `:jiphyeonjeon: 예약 만료 알림 :jiphyeonjeon:\n예약하신 도서 \`${title}\`의 예약이 만료되었습니다.`)));
-  await Promise.all(assignedReservations.map((data) => sendSlackMessage(data!.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${data!.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,)));
+  await Promise.allSettled(overDueReservations.map(({slack, title}) => sendSlackMessage(slack, `:jiphyeonjeon: 예약 만료 알림 :jiphyeonjeon:\n예약하신 도서 \`${title}\`의 예약이 만료되었습니다.`)));
+  await Promise.allSettled(assignedReservations.map((data) => sendSlackMessage(data!.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${data!.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,)));
 };
 
 export const notifyReturningReminder = async () => {
