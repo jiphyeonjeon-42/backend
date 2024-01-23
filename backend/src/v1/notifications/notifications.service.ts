@@ -21,6 +21,9 @@ export const notifyReservationOverdueAndNotifyReservation = async () => {
   await Promise.allSettled(assignedReservations.map((data) => sendSlackMessage(data!.slack, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${data!.title}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,)));
 };
 
+/**
+ * @deprecated notifyOverdueManager로 대체
+ */
 export const notifyReturningReminder = async () => {
   const lendings: [{ title: string; slack: string }] = await executeQuery(`
     SELECT
@@ -39,9 +42,9 @@ export const notifyReturningReminder = async () => {
       lending.returnedAt IS NULL
   `);
   lendings.forEach(async (lending) => {
-    publishMessage(
+    await publishMessage(
       lending.slack,
-      `:jiphyeonjeon: 반납 알림 :jiphyeonjeon:\n 대출하신 도서 \`${lending.title}\`의 반납 기한이 다가왔습니다. 3일 내로 반납해주시기 바랍니다.`,
+      `:jiphyeonjeon: 반납 알림 :jiphyeonjeon:\n 대출하신 도서 \`${ lending.title }\`의 반납 기한이 다가왔습니다. 3일 내로 반납해주시기 바랍니다.`,
     );
   });
 };
@@ -68,7 +71,7 @@ export const GetUserFromNDaysLeft = async (day: number): Promise<Lender[]> => {
     WHERE
       DATEDIFF(CURDATE(), lending.createdAt) = ${daysLeft} AND
       lending.returnedAt IS NULL
-  `);
+    `);
   return lendings.map(({ ...args }) => ({ ...args, daysLeft: day }));
 };
 

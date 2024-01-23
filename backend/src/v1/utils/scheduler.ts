@@ -26,6 +26,7 @@ const morningScheduler = () => {
     await notifications.notifyReservationOverdueAndNotifyReservation();
     await notifications.notifyReturningReminder();
     await notifications.notifyOverdueManager();
+    await notifications.notifyOverdue();
   });
 };
 
