@@ -17,6 +17,7 @@ import {
 import authValidate from '~/v1/auth/auth.validate';
 import authValidateDefaultNullUser from '~/v1/auth/auth.validateDefaultNullUser';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/books';
 export const router = Router();
@@ -714,7 +715,7 @@ router
    *                    type: json
    *                    example : { errorCode: 311 }
    */
-  .post('/create', authValidate(roleSet.librarian), createBook);
+  .post('/create', cudRateLimiter, authValidate(roleSet.librarian), createBook);
 
 router
   /**
@@ -795,7 +796,7 @@ router
    *                  type: json
    *                  example: { errorCode : 310 }
    */
-  .get('/create', authValidate(roleSet.librarian), createBookInfo);
+  .get('/create', getRateLimiter, authValidate(roleSet.librarian), createBookInfo);
 
 router
   /**
@@ -917,7 +918,7 @@ router
    *                   description: 좋아요할 bookInfo의 id
    *                example : { userId: 123, bookInfoId: 456 }
    */
-  .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
+  .post('/info/:bookInfoId/like', cudRateLimiter, authValidate(roleSet.service), createLike);
 
 router
   /**
@@ -958,7 +959,7 @@ router
    *                type: json
    *                example : { errorCode: 603}
    */
-  .delete('/info/:bookInfoId/like', authValidate(roleSet.service), deleteLike);
+  .delete('/info/:bookInfoId/like', cudRateLimiter, authValidate(roleSet.service), deleteLike);
 
 router
   /**
@@ -1100,5 +1101,5 @@ router
    *                    type: json
    *                    example : { errorCode: 311 }
    */
-  .patch('/update', authValidate(roleSet.librarian), updateBookInfo)
-  .patch('/donator', authValidate(roleSet.librarian), updateBookDonator);
+  .patch('/update', cudRateLimiter, authValidate(roleSet.librarian), updateBookInfo)
+  .patch('/donator', cudRateLimiter, authValidate(roleSet.librarian), updateBookDonator);
