@@ -15,22 +15,22 @@ import { role } from './auth.type';
 
 export const getOAuth = (req: Request, res: Response) => {
   const clientId = oauth42ApiOption.id;
-  const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/token`;
-  const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+  const redirectURL = `${ oauthUrlOption.redirectURL }/api/auth/token`;
+  const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${ clientId }&redirect_uri=${ encodeURIComponent(
     redirectURL,
-  )}&response_type=code&`;
+  ) }&response_type=code&`;
   res.status(302).redirect(oauthUrl);
 };
 
 export const getToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const usersService = new UsersService();
-    const { id, nickName } = req.user as any;
+    const {id, nickName} = req.user as any;
     const user: models.User[] = await usersService.searchUserByIntraId(id);
     if (user.length === 0) {
       // 회원가입
       try {
-        const email = `${nickName}@student.42seoul.kr`;
+        const email = `${ nickName }@student.42seoul.kr`;
         await usersService.createUser(String(email), await bcrypt.hash(randomUUID(), 10));
         const newUser: { items: models.User[] } = await usersService.searchUserByEmail(email);
         await authService.updateAuthenticationUser(newUser.items[0].id, id, nickName);
@@ -42,21 +42,21 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
           res
             .status(status.BAD_REQUEST)
             .send(
-              `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/register?errorCode=${errorCode.EMAIL_OVERLAP}"</script>`,
+              `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/register?errorCode=${ errorCode.EMAIL_OVERLAP }"</script>`,
             );
           return;
         }
         res
           .status(status.SERVICE_UNAVAILABLE)
           .send(
-            `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/register?errorCode=${errorCode.UNKNOWN_ERROR}"</script>`,
+            `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/register?errorCode=${ errorCode.UNKNOWN_ERROR }"</script>`,
           );
         return;
       }
     } else {
       await authJwt.saveJwt(req, res, user[0]);
     }
-    res.status(302).redirect(`${oauthUrlOption.clientURL}/auth`);
+    res.status(302).redirect(`${ oauthUrlOption.clientURL }/auth`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message ? error.message : error.errorCode, 10);
     if (errorNumber === 101) {
@@ -74,11 +74,14 @@ export const getToken = async (req: Request, res: Response, next: NextFunction):
 
 export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const {id} = req.user as any;
+    if (!id) {
+      return next(new ErrorResponse(errorCode.NO_USER, status.BAD_REQUEST));
+    }
     const usersService = new UsersService();
-    const { id } = req.user as any;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
-      throw new ErrorResponse(errorCode.NO_USER, 410);
+      return next(new ErrorResponse(errorCode.NO_USER, status.BAD_REQUEST));
     }
     const result = {
       id: user.items[0].id,
@@ -88,15 +91,11 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     };
     res.status(status.OK).json(result);
   } catch (error: any) {
-    const errorNumber = parseInt(error.message, 10);
-    if (errorNumber >= 100 && errorNumber < 300) {
-      next(new ErrorResponse(error.message, status.BAD_REQUEST));
-    } else if (error.message === 'DB error') {
-      next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
-    } else {
-      logger.error(error);
-      next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
+    if (error.message === 'DB error') {
+      return next(new ErrorResponse(errorCode.QUERY_EXECUTION_FAILED, status.INTERNAL_SERVER_ERROR));
     }
+    logger.error(error);
+    return next(new ErrorResponse(errorCode.UNKNOWN_ERROR, status.INTERNAL_SERVER_ERROR));
   }
 };
 
@@ -104,7 +103,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const usersService = new UsersService();
-    const { id, password } = req.body;
+    const {id, password} = req.body;
     if (!id || !password) {
       throw new ErrorResponse(errorCode.NO_INPUT, 400);
     }
@@ -146,11 +145,11 @@ export const logout = (req: Request, res: Response) => {
 
 export const getIntraAuthentication = (req: Request, res: Response) => {
   const clientId = oauth42ApiOption.id;
-  const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/intraAuthentication`;
+  const redirectURL = `${ oauthUrlOption.redirectURL }/api/auth/intraAuthentication`;
   // const redirectURL = `${oauthUrlOption.redirectURL}/api/auth/token`;
-  const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+  const oauthUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${ clientId }&redirect_uri=${ encodeURIComponent(
     redirectURL,
-  )}&response_type=code`;
+  ) }&response_type=code`;
   res.status(302).redirect(oauthUrl);
 };
 
@@ -161,14 +160,14 @@ export const intraAuthentication = async (
 ): Promise<void> => {
   try {
     const usersService = new UsersService();
-    const { intraProfile, id } = req.user as any;
-    const { intraId, nickName } = intraProfile;
+    const {intraProfile, id} = req.user as any;
+    const {intraId, nickName} = intraProfile;
     const user: { items: models.User[] } = await usersService.searchUserById(id);
     if (user.items.length === 0) {
       res
         .status(status.BAD_REQUEST)
         .send(
-          `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.NO_USER}"</script>`,
+          `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/mypage?errorCode=${ errorCode.NO_USER }"</script>`,
         );
       return;
       // return next(new ErrorResponse(errorCode.NO_USER, 410));
@@ -177,7 +176,7 @@ export const intraAuthentication = async (
       res
         .status(status.BAD_REQUEST)
         .send(
-          `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ALREADY_AUTHENTICATED}"</script>`,
+          `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/mypage?errorCode=${ errorCode.ALREADY_AUTHENTICATED }"</script>`,
         );
       // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
     }
@@ -186,7 +185,7 @@ export const intraAuthentication = async (
       res
         .status(status.BAD_REQUEST)
         .send(
-          `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ANOTHER_ACCOUNT_AUTHENTICATED}"</script>`,
+          `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/mypage?errorCode=${ errorCode.ANOTHER_ACCOUNT_AUTHENTICATED }"</script>`,
         );
       return;
       // return next(new ErrorResponse(errorCode.ALREADY_AUTHENTICATED, 401));
@@ -196,7 +195,7 @@ export const intraAuthentication = async (
       res
         .status(status.BAD_REQUEST)
         .send(
-          `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.NON_AFFECTED}"</script>`,
+          `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/mypage?errorCode=${ errorCode.NON_AFFECTED }"</script>`,
         );
       // return next(new ErrorResponse(errorCode.NON_AFFECTED, 401));
     }
@@ -205,7 +204,7 @@ export const intraAuthentication = async (
     res
       .status(status.OK)
       .send(
-        `<script type="text/javascript">window.location="${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.INTRA_AUTHENTICATE_SUCCESS}"</script>`,
+        `<script type="text/javascript">window.location="${ oauthUrlOption.clientURL }/mypage?errorCode=${ errorCode.INTRA_AUTHENTICATE_SUCCESS }"</script>`,
       );
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
