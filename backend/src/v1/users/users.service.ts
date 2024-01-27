@@ -98,8 +98,8 @@ export default class UsersService {
     if (emailCount > 0) {
       throw new Error(errorCode.EMAIL_OVERLAP);
     }
-    await this.usersRepository.insertUser(email, password);
-    return null;
+    const result = await this.usersRepository.insertUser(email, password);
+    return result;
   }
 
   async updateUserEmail(id: number, email: string) {
