@@ -162,7 +162,7 @@ router.get(
  *                  message:
  *                    type: string
  */
-router.get('/me', authValidate(roleSet.all), getMe);
+router.get('/me', getRateLimiter, authValidate(roleSet.all), getMe);
 
 /**
  * @openapi
