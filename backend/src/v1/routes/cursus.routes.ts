@@ -1,17 +1,11 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import { recommendBook, getProjects } from '~/v1/cursus/cursus.controller';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
+import { getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/cursus';
 export const router = Router();
-
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1분
-  max: 100, // 1분에 100번
-  message: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
-});
 
 router
   /**
@@ -94,7 +88,7 @@ router
    *                description: error decription
    *                example: { errorCode: 500 }
    */
-  .get('/recommend/books', limiter, authValidate(roleSet.all), recommendBook);
+  .get('/recommend/books', getRateLimiter, authValidate(roleSet.all), recommendBook);
 
 router
   /**
