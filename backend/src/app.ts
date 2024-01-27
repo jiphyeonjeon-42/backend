@@ -24,14 +24,17 @@ import * as crypto from "crypto";
 import { morganMiddleware } from './logger';
 
 const app: express.Application = express();
+const secret = crypto.randomBytes(42).toString('hex');
 
 app.use(session({
-  secret: crypto.randomBytes(42).toString('hex'),
+  secret,
   resave: false,
   saveUninitialized: true,
 }));
 app.use(morganMiddleware);
-app.use(cookieParser());
+app.use(cookieParser(
+  secret,
+));
 app.use(lusca.csrf(
   {
     cookie: {
