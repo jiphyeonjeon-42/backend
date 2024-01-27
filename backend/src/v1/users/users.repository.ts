@@ -9,6 +9,7 @@ import {
   UserReservation,
   User,
 } from '~/entity/entities';
+import { InsertResult } from "kysely";
 import * as models from '../DTO/users.model';
 
 export default class UsersRepository extends Repository<User> {
@@ -111,11 +112,12 @@ export default class UsersRepository extends Repository<User> {
   async insertUser(email: string, password: string) {
     const penaltyEndDate = new Date(0);
     penaltyEndDate.setDate(penaltyEndDate.getDate() - 1);
-    await this.insert({
+    const result = await this.save({
       email,
       password,
       penaltyEndDate: formatDate(penaltyEndDate),
     });
+    return result;
   }
 
   async updateUser(id: number, values: {}): Promise<models.User> {

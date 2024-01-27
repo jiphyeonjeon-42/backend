@@ -14,6 +14,7 @@ import {
   login,
   logout,
 } from '~/v1/auth/auth.controller';
+import { getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/auth';
 export const router = Router();
@@ -78,6 +79,7 @@ router.get('/oauth', getOAuth);
  */
 router.get(
   '/token',
+  getRateLimiter,
   passport.authenticate('42', {
     session: false,
     failureRedirect: `${oauthUrlOption.clientURL}/login?errorCode=${errorCode.ACCESS_DENIED}`,
@@ -160,7 +162,7 @@ router.get(
  *                  message:
  *                    type: string
  */
-router.get('/me', authValidate(roleSet.all), getMe);
+router.get('/me', getRateLimiter, authValidate(roleSet.all), getMe);
 
 /**
  * @openapi
@@ -326,6 +328,7 @@ router.get('/getIntraAuthentication', getIntraAuthentication);
  */
 router.get(
   '/intraAuthentication',
+  getRateLimiter,
   passport.authenticate('42Auth', {
     session: false,
     failureRedirect: `${oauthUrlOption.clientURL}/mypage?errorCode=${errorCode.ACCESS_DENIED}`,

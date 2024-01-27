@@ -8,6 +8,7 @@ import {
 } from '~/v1/reservations/reservations.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/reservations';
 export const router = Router();
@@ -274,8 +275,8 @@ export const router = Router();
  * */
 
 router
-  .post('/', authValidate(roleSet.service), create)
-  .get('/search', authValidate(roleSet.librarian), search)
-  .patch('/cancel/:reservationId', authValidate(roleSet.service), cancel)
-  .get('/count', authValidate(roleSet.all), count)
-  .get('/', authValidate(roleSet.service), userReservations);
+  .post('/', cudRateLimiter, authValidate(roleSet.service), create)
+  .get('/search', getRateLimiter, authValidate(roleSet.librarian), search)
+  .patch('/cancel/:reservationId', cudRateLimiter, authValidate(roleSet.service), cancel)
+  .get('/count', getRateLimiter, authValidate(roleSet.all), count)
+  .get('/', getRateLimiter, authValidate(roleSet.service), userReservations);

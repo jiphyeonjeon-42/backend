@@ -27,9 +27,23 @@ import { categoryWithBookCount } from '../DTO/common.interface';
 import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
 import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
 
+/**
+ * 유효한 ISBN인지 정규식을 통해 검사한다.
+ * @param isbn 검사할 ISBN
+ * @return 유효한 ISBN이면 true, 아니면 false
+ */
+const isValidISBN = (isbn: string) => {
+  const isbnPattern = /^(?:ISBN(?:-1[03])?:? )?(?=[-0-9 ]{17}$|[-0-9X ]{13}$|[0-9X]{10}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?(?:[0-9]+[- ]?){2}[0-9X]$/;
+  return isbnPattern.test(isbn);
+}
+
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
   let searchResult;
+
+  if (!isValidISBN(isbn)) {
+    throw new Error(errorCode.ISBN_SEARCH_FAILED);
+  }
   await axios
     .get(
       `https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`,
@@ -62,6 +76,9 @@ const getInfoInNationalLibrary = async (isbn: string) => {
 
 const getAuthorInNaver = async (isbn: string) => {
   let author;
+  if (!isValidISBN(isbn)) {
+    return author;
+  }
   await axios
     .get(
       `

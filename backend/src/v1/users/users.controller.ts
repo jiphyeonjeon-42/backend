@@ -76,8 +76,8 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     if (!pwSchema.validate(String(password))) {
       return next(new ErrorResponse(errorCode.INVALIDATE_PASSWORD, status.BAD_REQUEST));
     }
-    await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
-    return res.status(status.OK).send(`${email} created!`);
+    const result = await usersService.createUser(String(email), await bcrypt.hash(String(password), 10));
+    return res.status(status.OK).send(`${result.email} created!`);
   } catch (error: any) {
     const errorNumber = parseInt(error.message, 10);
     if (errorNumber >= 200 && errorNumber < 300) {

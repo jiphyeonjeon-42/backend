@@ -14,6 +14,7 @@ import {
 } from '~/v1/tags/tags.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/tags';
 export const router = Router();
@@ -95,7 +96,7 @@ router
    *                    type: number
    *                    example: 500
    */
-  .patch('/super', authValidate(roleSet.librarian), updateSuperTags);
+  .patch('/super', cudRateLimiter, authValidate(roleSet.librarian), updateSuperTags);
 
 router
   /**
@@ -164,7 +165,7 @@ router
    *                    type: number
    *                    example: 500
    */
-  .patch('/sub', authValidate(roleSet.librarian), updateSubTags);
+  .patch('/sub', cudRateLimiter, authValidate(roleSet.librarian), updateSubTags);
 
 router
   /**
@@ -260,7 +261,7 @@ router
    *                    type: number
    *                    example: 500
    */
-  .patch('/:bookInfoId/merge', authValidate(roleSet.librarian), mergeTags);
+  .patch('/:bookInfoId/merge', cudRateLimiter, authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
@@ -326,7 +327,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/default', authValidate(roleSet.all), createDefaultTags);
+  .post('/default', cudRateLimiter, authValidate(roleSet.all), createDefaultTags);
 
 router
   /**
@@ -392,7 +393,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/super', authValidate(roleSet.librarian), createSuperTags);
+  .post('/super', cudRateLimiter, authValidate(roleSet.librarian), createSuperTags);
 
 router
   /**
@@ -452,7 +453,7 @@ router
    *                    value:
    *                      errorCode: 903
    */
-  .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
+  .delete('/sub/:tagId', cudRateLimiter, authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -512,7 +513,7 @@ router
    *                    value:
    *                      errorCode: 903
    */
-  .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
+  .delete('/super/:tagId', cudRateLimiter, authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
@@ -755,7 +756,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub', authValidate(roleSet.all), searchSubTags);
+  .get('/:superTagId/sub', getRateLimiter, authValidate(roleSet.all), searchSubTags);
 
 router
   /**
@@ -812,7 +813,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/manage/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
+  .get('/manage/:superTagId/sub', getRateLimiter, authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**

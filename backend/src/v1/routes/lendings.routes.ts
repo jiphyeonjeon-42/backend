@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { create, search, lendingId, returnBook } from '~/v1/lendings/lendings.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/lendings';
 export const router = Router();
@@ -61,7 +62,7 @@ router
    *        '500':
    *          description: db 에러
    * */
-  .post('/', authValidate(roleSet.librarian), create)
+  .post('/', cudRateLimiter, authValidate(roleSet.librarian), create)
 
   /**
    * @openapi
@@ -190,7 +191,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/search', authValidate(roleSet.librarian), search)
+  .get('/search', cudRateLimiter, authValidate(roleSet.librarian), search)
 
   /**
    * @openapi
@@ -260,7 +261,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:id', authValidate(roleSet.librarian), lendingId)
+  .get('/:id', getRateLimiter, authValidate(roleSet.librarian), lendingId)
 
   /**
    * @openapi
@@ -316,4 +317,4 @@ router
    *                    type: integer
    * */
 
-  .patch('/return', authValidate(roleSet.librarian), returnBook);
+  .patch('/return', cudRateLimiter, authValidate(roleSet.librarian), returnBook);

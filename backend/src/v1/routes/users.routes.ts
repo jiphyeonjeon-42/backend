@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { roleSet } from '~/v1/auth/auth.type';
 import authValidate from '~/v1/auth/auth.validate';
 import { create, getVersion, myupdate, search, update, mydata } from '~/v1/users/users.controller';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 
 export const path = '/users';
@@ -406,11 +407,11 @@ export const router = Router();
  *                    example: []
  */
 router
-  .get('/search', authValidate(roleSet.librarian), search)
+  .get('/search', getRateLimiter, authValidate(roleSet.librarian), search)
   .post('/create', create)
-  .patch('/update/:id', authValidate(roleSet.librarian), update)
-  .patch('/myupdate', authValidate(roleSet.all), myupdate)
-  .get('/me', authValidate(roleSet.all), mydata)
+  .patch('/update/:id', cudRateLimiter, authValidate(roleSet.librarian), update)
+  .patch('/myupdate', cudRateLimiter, authValidate(roleSet.all), myupdate)
+  .get('/me', getRateLimiter, authValidate(roleSet.all), mydata)
   .get('/EasterEgg', getVersion);
 
 //  .delete('/delete/:id', authValidate(roleSet.librarian), deleteUser);

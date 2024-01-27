@@ -9,6 +9,7 @@ import {
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
 import wrapAsyncController from '~/v1/middlewares/wrapAsyncController';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/reviews';
 export const router = Router();
@@ -71,7 +72,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/', authValidate(roleSet.all), wrapAsyncController(createReviews));
+  .post('/', cudRateLimiter, authValidate(roleSet.all), wrapAsyncController(createReviews));
 
 router
   /**
@@ -272,7 +273,7 @@ router
    *                   value :
    *                     errorCode: 109
    */
-  .get('/', authValidate(roleSet.librarian), wrapAsyncController(getReviews));
+  .get('/', getRateLimiter, authValidate(roleSet.librarian), wrapAsyncController(getReviews));
 
 router
   /**
@@ -463,7 +464,7 @@ router
    *                   value :
    *                     errorCode: 109
    */
-  .get('/my-reviews', authValidate(roleSet.all), wrapAsyncController(getReviews));
+  .get('/my-reviews', getRateLimiter, authValidate(roleSet.all), wrapAsyncController(getReviews));
 
 router
   /**
@@ -540,7 +541,7 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .put('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(updateReviews));
+  .put('/:reviewsId', cudRateLimiter, authValidate(roleSet.all), wrapAsyncController(updateReviews));
 
 router
   /**
@@ -561,7 +562,7 @@ router
    *         '200':
    *            description: 리뷰가 DB에 정상적으로 fetch됨.
    */
-  .patch('/:reviewsId', authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
+  .patch('/:reviewsId', cudRateLimiter, authValidate(roleSet.librarian), wrapAsyncController(patchReviews));
 
 router
   /**
@@ -621,4 +622,4 @@ router
    *                    value:
    *                      errorCode: 804
    */
-  .delete('/:reviewsId', authValidate(roleSet.all), wrapAsyncController(deleteReviews));
+  .delete('/:reviewsId', cudRateLimiter, authValidate(roleSet.all), wrapAsyncController(deleteReviews));
