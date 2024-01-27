@@ -30,23 +30,17 @@ app.use(session({
   secret,
   resave: false,
   saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+  }
 }));
 app.use(morganMiddleware);
 app.use(cookieParser(
   secret,
 ));
-app.use(lusca.csrf(
-  {
-    cookie: {
-      name: 'CSRF-TOKEN',
-      options: {
-        httpOnly: true,
-        sameSite: 'strict',
-        secure: true,
-      }
-    },
-  },
-));
+app.use(lusca.csrf());
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
