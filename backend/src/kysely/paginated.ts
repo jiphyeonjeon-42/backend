@@ -1,12 +1,12 @@
 import { SelectQueryBuilder } from 'kysely';
 
 type Paginated<O> = {
-  items: O[],
+  items: O[];
   meta: {
     totalItems: number;
     totalPages: number;
   };
-}
+};
 
 export const metaPaginated = async <DB, TB extends keyof DB, O>(
   qb: SelectQueryBuilder<DB, TB, O>,

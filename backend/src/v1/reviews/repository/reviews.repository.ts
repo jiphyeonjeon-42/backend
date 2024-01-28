@@ -11,13 +11,10 @@ export default class ReviewsRepository extends Repository<Reviews> {
     const queryRunner: QueryRunner | undefined = transactionQueryRunner;
     const entityManager = jipDataSource.createEntityManager(queryRunner);
     super(Reviews, entityManager);
-    this.bookInfoRepo = new Repository<BookInfo>(
-      BookInfo,
-      entityManager,
-    );
+    this.bookInfoRepo = new Repository<BookInfo>(BookInfo, entityManager);
   }
 
-  async validateBookInfo(bookInfoId: number) : Promise<void> {
+  async validateBookInfo(bookInfoId: number): Promise<void> {
     const bookInfoCount = await this.bookInfoRepo.count({
       where: { id: bookInfoId },
     });
@@ -28,14 +25,17 @@ export default class ReviewsRepository extends Repository<Reviews> {
 
   async createReviews(userId: number, bookInfoId: number, content: string): Promise<void> {
     await this.insert({
-      userId, bookInfoId, content, updateUserId: userId,
+      userId,
+      bookInfoId,
+      content,
+      updateUserId: userId,
     });
   }
 
   async getReviewsPage(
     reviewerId: number,
     isMyReview: boolean,
-    titleOrNickname :string,
+    titleOrNickname: string,
     disabled: number,
     page: number,
     sort: 'ASC' | 'DESC' | undefined,
@@ -58,12 +58,15 @@ export default class ReviewsRepository extends Repository<Reviews> {
     if (isMyReview === true) {
       reviews.andWhere({ userId: reviewerId });
     } else if (!isMyReview && titleOrNickname !== '') {
-      reviews.andWhere(`(title LIKE '%${titleOrNickname}%' OR nickname LIKE '%${titleOrNickname}%')`);
+      reviews.andWhere(
+        `(title LIKE '%${titleOrNickname}%' OR nickname LIKE '%${titleOrNickname}%')`,
+      );
     }
     if (disabled !== -1) {
       reviews.andWhere({ disabled });
     }
-    const ret = await reviews.offset(page * limit)
+    const ret = await reviews
+      .offset(page * limit)
       .limit(limit)
       .getRawMany<Reviews>();
     return ret;
@@ -74,7 +77,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     isMyReview: boolean,
     titleOrNickname: string,
     disabled: number,
-  ) : Promise<number> {
+  ): Promise<number> {
     const reviews = this.createQueryBuilder('reviews')
       .select('COUNT(*)', 'counts')
       .leftJoin(User, 'user', 'user.id = reviews.userId')
@@ -83,7 +86,9 @@ export default class ReviewsRepository extends Repository<Reviews> {
     if (isMyReview === true) {
       reviews.andWhere({ userId: reviewerId });
     } else if (!isMyReview && titleOrNickname !== '') {
-      reviews.andWhere(`(title LIKE '%${titleOrNickname}%' OR nickname LIKE '%${titleOrNickname}%')`);
+      reviews.andWhere(
+        `(title LIKE '%${titleOrNickname}%' OR nickname LIKE '%${titleOrNickname}%')`,
+      );
     }
     if (disabled !== -1) {
       reviews.andWhere({ disabled });
@@ -92,7 +97,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     return ret.counts;
   }
 
-  async getReviewsUserId(reviewsId : number): Promise<number> {
+  async getReviewsUserId(reviewsId: number): Promise<number> {
     const ret = await this.findOneOrFail({
       select: {
         userId: true,
@@ -105,7 +110,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     return ret.userId;
   }
 
-  async getReviews(reviewsId : number): Promise<Reviews[]> {
+  async getReviews(reviewsId: number): Promise<Reviews[]> {
     const ret = await this.find({
       select: {
         userId: true,
@@ -119,7 +124,7 @@ export default class ReviewsRepository extends Repository<Reviews> {
     return ret;
   }
 
-  async updateReviews(reviewsId : number, userId : number, content : string): Promise<void> {
+  async updateReviews(reviewsId: number, userId: number, content: string): Promise<void> {
     await this.update(reviewsId, { content, updateUserId: userId });
   }
 
@@ -127,13 +132,10 @@ export default class ReviewsRepository extends Repository<Reviews> {
     await this.update(reviewId, { isDeleted: true, deleteUserId: deleteUser });
   }
 
-  async patchReviews(reviewsId : number, userId : number): Promise<void> {
-    await this.update(
-      reviewsId,
-      {
-        disabled: () => 'IF(disabled=TRUE, FALSE, TRUE)',
-        disabledUserId: () => `IF(disabled=FALSE, NULL, ${userId})`,
-      },
-    );
+  async patchReviews(reviewsId: number, userId: number): Promise<void> {
+    await this.update(reviewsId, {
+      disabled: () => 'IF(disabled=TRUE, FALSE, TRUE)',
+      disabledUserId: () => `IF(disabled=FALSE, NULL, ${userId})`,
+    });
   }
 }

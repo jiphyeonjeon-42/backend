@@ -1,13 +1,20 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { bookInfoIdSchema, bookInfoNotFoundSchema, metaPaginatedSchema, offsetPaginatedSchema, paginatedSearchSchema, visibility } from '../shared';
+import {
+  bookInfoIdSchema,
+  bookInfoNotFoundSchema,
+  metaPaginatedSchema,
+  offsetPaginatedSchema,
+  paginatedSearchSchema,
+  visibility,
+} from '../shared';
 import {
   contentSchema,
   mutationDescription,
   reviewIdPathSchema,
   reviewNotFoundSchema,
 } from './schema';
-import { reviewSchema } from './schema'
+import { reviewSchema } from './schema';
 
 export * from './schema';
 
@@ -23,16 +30,16 @@ export const reviewsContract = c.router(
         search: z.string().optional().describe('도서 제목 또는 리뷰 작성자 닉네임'),
         visibility,
       }),
-      description: '전체 도서 리뷰 목록을 조회합니다.',
+      summary: '전체 도서 리뷰 목록을 조회합니다.',
       responses: {
-        200: metaPaginatedSchema(reviewSchema)
+        200: metaPaginatedSchema(reviewSchema),
       },
     },
     post: {
       method: 'POST',
       path: '/',
       query: z.object({ bookInfoId: bookInfoIdSchema.openapi({ description: '도서 ID' }) }),
-      description: '책 리뷰를 작성합니다.',
+      summary: '책 리뷰를 작성합니다.',
       body: contentSchema,
       responses: {
         201: z.literal('리뷰가 작성되었습니다.'),
@@ -43,7 +50,7 @@ export const reviewsContract = c.router(
       method: 'PATCH',
       path: '/:reviewsId',
       pathParams: reviewIdPathSchema,
-      description: '책 리뷰의 비활성화 여부를 토글 방식으로 변환합니다.',
+      summary: '책 리뷰의 비활성화 여부를 토글 방식으로 변환합니다.',
       body: null,
       responses: {
         200: z.literal('리뷰 공개 여부가 업데이트되었습니다.'),

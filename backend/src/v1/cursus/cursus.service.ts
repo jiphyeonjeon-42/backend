@@ -36,9 +36,7 @@ export const readFiles = async () => {
  * @param login 사용자의 닉네임
  * @returns 사용자의 intra id
  */
-export const getIntraId = async (
-  login: string,
-): Promise<string> => {
+export const getIntraId = async (login: string): Promise<string> => {
   const usersRepo = new UsersRepository();
   const user = (await usersRepo.searchUserBy({ nickname: login }, 1, 0))[0];
   return user[0].intraId.toString();
@@ -61,28 +59,36 @@ export const getUserProjectFrom42API = async (
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
+      AccessControlAllowOrigin: 'https://42library.kr',
+      AccessControllAllowCredentials: 'true',
     },
-  }).then((response) => {
-    const rawData: UserProjectFrom42[] = response.data;
-    rawData.forEach((data: UserProjectFrom42) => {
-      userProject.push({
-        id: data.id,
-        status: data.status,
-        validated: data['validated?'],
-        project: data.project,
-        cursus_ids: data.cursus_ids,
-        marked: data.marked,
-        marked_at: data.marked_at,
-        updated_at: data.updated_at,
+  })
+    .then((response) => {
+      const rawData: UserProjectFrom42[] = response.data;
+      rawData.forEach((data: UserProjectFrom42) => {
+        userProject.push({
+          id: data.id,
+          status: data.status,
+          validated: data['validated?'],
+          project: data.project,
+          cursus_ids: data.cursus_ids,
+          marked: data.marked,
+          marked_at: data.marked_at,
+          updated_at: data.updated_at,
+        });
       });
+    })
+    .catch((error) => {
+      if (error.response.status === 401) {
+        throw new ErrorResponse('401', 401, '권한이 없습니다.');
+      } else {
+        throw new ErrorResponse(
+          '500',
+          500,
+          '42 API로부터 프로젝트 정보를 받아오는데 실패했습니다.',
+        );
+      }
     });
-  }).catch((error) => {
-    if (error.response.status === 401) {
-      throw new ErrorResponse('401', 401, '권한이 없습니다.');
-    } else {
-      throw new ErrorResponse('500', 500, '42 API로부터 프로젝트 정보를 받아오는데 실패했습니다.');
-    }
-  });
   return userProject;
 };
 
@@ -93,10 +99,7 @@ export const getUserProjectFrom42API = async (
  * @param projectId 프로젝트 id
  * @returns projectId가 포함된 서클 번호 문자열
  */
-const findCircle = (
-  cursus: ProjectWithCircle,
-  projectId: number,
-) => {
+const findCircle = (cursus: ProjectWithCircle, projectId: number) => {
   let circle: string | null = null;
   Object.keys(cursus).forEach((key) => {
     const projectIds = cursus[key].project_ids;
@@ -116,10 +119,7 @@ const findCircle = (
  * @param projectList 사용자가 진행한 프로젝트 목록
  * @returns 아우터 서클에 있는 프로젝트 id 배열
  */
-const getOuterProjectIds = (
-  cursus: ProjectWithCircle,
-  projectList: UserProject[] | null,
-) => {
+const getOuterProjectIds = (cursus: ProjectWithCircle, projectList: UserProject[] | null) => {
   let outerProjectIds: number[] = [];
   for (let i = 0; i < projectsInfo.length; i += 1) {
     const projectId = projectsInfo[i].id;
@@ -141,10 +141,7 @@ const getOuterProjectIds = (
  * @param circle 서클 번호
  * @returns 추천할 프로젝트 id 배열
  */
-const getNextProjectIds = (
-  cursus: ProjectWithCircle,
-  circle: string,
-) => {
+const getNextProjectIds = (cursus: ProjectWithCircle, circle: string) => {
   const projectIds = cursus[circle].project_ids;
   let innerProjectIds = projectIds.filter((id) => id !== 0);
   if (innerProjectIds.length === 0) {
@@ -162,14 +159,11 @@ const getNextProjectIds = (
  * @param userProject 사용자의 프로젝트 정보
  * @returns 사용자에게 추천할 프로젝트
  */
-export const getRecommendedProject = async (
-  userProject: UserProject[],
-) => {
-  const projectList = userProject.sort((prev, post) =>
-    new Date(post.updated_at).getTime() - new Date(prev.updated_at).getTime())
+export const getRecommendedProject = async (userProject: UserProject[]) => {
+  const projectList = userProject
+    .sort((prev, post) => new Date(post.updated_at).getTime() - new Date(prev.updated_at).getTime())
     .filter((item: UserProject) => !item.project.name.includes('Exam Rank'));
-  const recommendedProject = projectList.filter((project) =>
-    project.status === 'in_progress');
+  const recommendedProject = projectList.filter((project) => project.status === 'in_progress');
   if (recommendedProject.length > 0) {
     return recommendedProject.map((project) => project.project.id);
   }
@@ -177,9 +171,11 @@ export const getRecommendedProject = async (
   const userProjectId = userProject[0].project.id;
   const circle: string | null = findCircle(cursusInfo, userProjectId);
   let nextProjectIds: number[] = [];
-  if (circle) { // Inner Circle
+  if (circle) {
+    // Inner Circle
     nextProjectIds = getNextProjectIds(cursusInfo, circle);
-  } else { // Outer Circle
+  } else {
+    // Outer Circle
     nextProjectIds = getOuterProjectIds(cursusInfo, projectList);
   }
   return nextProjectIds;
@@ -191,11 +187,9 @@ export const getRecommendedProject = async (
  * @param projectIds 추천할 프로젝트 id 배열
  * @returns 추천할 책 id 배열
  */
-export const getRecommendedBookInfoIds = async (
-  userProjectIds: number[],
-) => {
+export const getRecommendedBookInfoIds = async (userProjectIds: number[]) => {
   if (userProjectIds.length === 0) {
-    return (booksWithProjectInfo.map((book) => book.book_info_id));
+    return booksWithProjectInfo.map((book) => book.book_info_id);
   }
   const recommendedBookIds: number[] = [];
   for (let i = 0; i < booksWithProjectInfo.length; i += 1) {
@@ -208,7 +202,7 @@ export const getRecommendedBookInfoIds = async (
     }
   }
   if (recommendedBookIds.length === 0) {
-    return (booksWithProjectInfo.map((book) => book.book_info_id));
+    return booksWithProjectInfo.map((book) => book.book_info_id);
   }
   return [...new Set(recommendedBookIds)];
 };
@@ -218,9 +212,7 @@ export const getRecommendedBookInfoIds = async (
  * @param bookInfoId 추천 도서의 book_info_id
  * @returns 추천 도서의 프로젝트 이름 배열
  */
-const findProjectNamesWithBookInfoId = (
-  bookInfoId: number,
-) => {
+const findProjectNamesWithBookInfoId = (bookInfoId: number) => {
   const bookWithProjectInfo = booksWithProjectInfo.find((book) => book.book_info_id === bookInfoId);
   const recommendedProjects: ProjectInfo[] = projectsInfo.filter((info) => {
     if (bookWithProjectInfo) {
@@ -276,7 +268,9 @@ export const getRecommendMeta = async () => {
         projectName = '기타';
       }
       let circle = projects[j].circle.toString();
-      if (circle === '-1') { circle = '아우터 '; }
+      if (circle === '-1') {
+        circle = '아우터 ';
+      }
       meta.push(`${circle}서클 | ${projectName}`);
     }
   }
@@ -290,20 +284,18 @@ export const getRecommendMeta = async () => {
  * @param data 42 API에서 받아온 프로젝트 정보
  * @returns
  */
-const processData = async (
-  data: ProjectFrom42[],
-) => {
+const processData = async (data: ProjectFrom42[]) => {
   const ftSeoulData = data.filter((project) => {
     for (let i = 0; i < project.campus.length; i += 1) {
       if (project.campus[i].id === 29) {
         for (let j = 0; j < project.cursus.length; j += 1) {
           if (project.cursus[j].id === 21) {
-            return (true);
+            return true;
           }
         }
       }
     }
-    return (false);
+    return false;
   });
   const processedData: ProjectInfo[] = ftSeoulData.map((project) => ({
     id: project.id,
@@ -316,7 +308,7 @@ const processData = async (
       slug: cursus.slug,
     })),
   }));
-  return (processedData);
+  return processedData;
 };
 
 /**
@@ -324,22 +316,28 @@ const processData = async (
  * @param accessToken 42 API에 접근하기 위한 access token
  * @param pageNumber 프로젝트 정보를 가져올 페이
  */
-export const getProjectsInfo = async (
-  accessToken: string,
-  pageNumber: string,
-) => {
+export const getProjectsInfo = async (accessToken: string, pageNumber: string) => {
   const uri: string = 'https://api.intra.42.fr/v2/projects';
-  const queryString: string = 'sort=id&filter[exam]=false&filter[visible]=true&filter[has_mark]=true&page[size]=100';
+  const queryString: string =
+    'sort=id&filter[exam]=false&filter[visible]=true&filter[has_mark]=true&page[size]=100';
   const pageQuery: string = `&page[number]=${pageNumber}`;
-  const response = await axios.get(`${uri}?${queryString}${pageQuery}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).catch((error) => {
-    if (error.status === 401) { throw new ErrorResponse(status[401], 401, 'Unauthorized'); } else { throw new ErrorResponse('500', 500, 'Internal Server Error'); }
-  });
+  const response = await axios
+    .get(`${uri}?${queryString}${pageQuery}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        AccessControlAllowOrigin: 'https://42library.kr',
+        AccessControllAllowCredentials: 'true',
+      },
+    })
+    .catch((error) => {
+      if (error.status === 401) {
+        throw new ErrorResponse(status[401], 401, 'Unauthorized');
+      } else {
+        throw new ErrorResponse('500', 500, 'Internal Server Error');
+      }
+    });
   const processedData = await processData(response.data);
-  return (processedData);
+  return processedData;
 };
 
 /**
@@ -347,10 +345,7 @@ export const getProjectsInfo = async (
  * @param projects 저장할 프로젝트 정보 배열
  * @param mode 저장할 모드. append면 기존에 저장된 정보에 추가로 저장하고, overwrite면 기존에 저장된 정보를 덮어쓴다.
  */
-export const saveProjects = async (
-  projects: ProjectInfo[],
-  mode: string,
-) => {
+export const saveProjects = async (projects: ProjectInfo[], mode: string) => {
   const filePath: string = path.join(__dirname, '../../assets', 'projects_info.json');
   const jsonString = JSON.stringify(projects, null, 2);
   if (mode === 'overwrite') {

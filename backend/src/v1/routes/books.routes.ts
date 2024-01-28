@@ -17,6 +17,7 @@ import {
 import authValidate from '~/v1/auth/auth.validate';
 import authValidateDefaultNullUser from '~/v1/auth/auth.validateDefaultNullUser';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/books';
 export const router = Router();
@@ -714,7 +715,7 @@ router
    *                    type: json
    *                    example : { errorCode: 311 }
    */
-  .post('/create', authValidate(roleSet.librarian), createBook);
+  .post('/create', cudRateLimiter, authValidate(roleSet.librarian), createBook);
 
 router
   /**
@@ -795,10 +796,10 @@ router
    *                  type: json
    *                  example: { errorCode : 310 }
    */
-  .get('/create', authValidate(roleSet.librarian), createBookInfo);
+  .get('/create', getRateLimiter, authValidate(roleSet.librarian), createBookInfo);
 
 router
-/**
+  /**
    * @openapi
    * /api/books/{id}:
    *    get:
@@ -871,7 +872,7 @@ router
   .get('/:id', getBookById);
 
 router
-/**
+  /**
    * @openapi
    * /api/books/info/{bookInfoId}/like:
    *    post:
@@ -917,10 +918,10 @@ router
    *                   description: 좋아요할 bookInfo의 id
    *                example : { userId: 123, bookInfoId: 456 }
    */
-  .post('/info/:bookInfoId/like', authValidate(roleSet.service), createLike);
+  .post('/info/:bookInfoId/like', cudRateLimiter, authValidate(roleSet.service), createLike);
 
 router
-/**
+  /**
    * @openapi
    * /api/books/info/{bookInfoId}/like:
    *    delete:
@@ -958,10 +959,10 @@ router
    *                type: json
    *                example : { errorCode: 603}
    */
-  .delete('/info/:bookInfoId/like', authValidate(roleSet.service), deleteLike);
+  .delete('/info/:bookInfoId/like', cudRateLimiter, authValidate(roleSet.service), deleteLike);
 
 router
-/**
+  /**
    * @openapi
    * /api/books/info/{bookInfoId}/like:
    *    get:
@@ -1007,98 +1008,98 @@ router
   .get('/info/:bookInfoId/like', authValidateDefaultNullUser(roleSet.all), getLikeInfo);
 
 router
-/**
- * @openapi
- * /api/books/update:
- *    patch:
- *      description: 책 정보를 수정합니다. book_info table or book table
- *      tags:
- *      - books
- *      requestBody:
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                bookInfoId:
- *                  description: bookInfoId
- *                  type: integer
- *                  nullable: false
- *                  example: 1
- *                categoryId:
- *                  description: categoryId
- *                  type: integer
- *                  nullable: false
- *                  example: 1
- *                title:
- *                  description: 제목
- *                  type: string
- *                  nullable: true
- *                  example: "작별인사 (김영하 장편소설)"
- *                author:
- *                  description: 저자
- *                  type: string
- *                  nullable: true
- *                  example: "김영하"
- *                publisher:
- *                  description: 출판사
- *                  type: string
- *                  nullable: true
- *                  example: "복복서가"
- *                publishedAt:
- *                  description: 출판연월
- *                  type: string
- *                  nullable: true
- *                  example: "20200505"
- *                image:
- *                  description: 표지이미지
- *                  type: string
- *                  nullable: true
- *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
- *                bookId:
- *                  description: bookId
- *                  type: integer
- *                  nullable: false
- *                  example: 1
- *                callSign:
- *                  description: 청구기호
- *                  type: string
- *                  nullable: true
- *                  example: h1.18.v1.c1
- *                status:
- *                  description: 도서 상태
- *                  type: integer
- *                  nullable: false
- *                  example: 0
- *      responses:
- *         '204':
- *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
- *            content:
- *             application:
- *               schema:
- *                 type:
- *                 description: 성공했을 때 http 상태코드 204 값을 반환.
- *         '실패 케이스 1':
- *              description: 예상치 못한 에러로 책 정보 patch에 실패.
- *              content:
- *                application/json:
- *                  schema:
- *                    type: json
- *                    example : { errorCode: 312 }
- *         '실패 케이스 2':
- *              description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
- *              content:
- *                application/json:
- *                  schema:
- *                    type: json
- *                    example : { errorCode: 313 }
- *         '실패 케이스 3':
- *              description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
- *              content:
- *                application/json:
- *                  schema:
- *                    type: json
- *                    example : { errorCode: 311 }
- */
-  .patch('/update', authValidate(roleSet.librarian), updateBookInfo)
-  .patch('/donator', authValidate(roleSet.librarian), updateBookDonator);
+  /**
+   * @openapi
+   * /api/books/update:
+   *    patch:
+   *      description: 책 정보를 수정합니다. book_info table or book table
+   *      tags:
+   *      - books
+   *      requestBody:
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                bookInfoId:
+   *                  description: bookInfoId
+   *                  type: integer
+   *                  nullable: false
+   *                  example: 1
+   *                categoryId:
+   *                  description: categoryId
+   *                  type: integer
+   *                  nullable: false
+   *                  example: 1
+   *                title:
+   *                  description: 제목
+   *                  type: string
+   *                  nullable: true
+   *                  example: "작별인사 (김영하 장편소설)"
+   *                author:
+   *                  description: 저자
+   *                  type: string
+   *                  nullable: true
+   *                  example: "김영하"
+   *                publisher:
+   *                  description: 출판사
+   *                  type: string
+   *                  nullable: true
+   *                  example: "복복서가"
+   *                publishedAt:
+   *                  description: 출판연월
+   *                  type: string
+   *                  nullable: true
+   *                  example: "20200505"
+   *                image:
+   *                  description: 표지이미지
+   *                  type: string
+   *                  nullable: true
+   *                  example: "https://bookthumb-phinf.pstatic.net/cover/223/538/22353804.jpg?type=m1&udate=20220608"
+   *                bookId:
+   *                  description: bookId
+   *                  type: integer
+   *                  nullable: false
+   *                  example: 1
+   *                callSign:
+   *                  description: 청구기호
+   *                  type: string
+   *                  nullable: true
+   *                  example: h1.18.v1.c1
+   *                status:
+   *                  description: 도서 상태
+   *                  type: integer
+   *                  nullable: false
+   *                  example: 0
+   *      responses:
+   *         '204':
+   *            description: 성공했을 때 http 상태코드 204(NO_CONTENT) 값을 반환.
+   *            content:
+   *             application:
+   *               schema:
+   *                 type:
+   *                 description: 성공했을 때 http 상태코드 204 값을 반환.
+   *         '실패 케이스 1':
+   *              description: 예상치 못한 에러로 책 정보 patch에 실패.
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 312 }
+   *         '실패 케이스 2':
+   *              description: 수정할 DATA가 적어도 한 개는 필요. 수정할 DATA가 없음"
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 313 }
+   *         '실패 케이스 3':
+   *              description: 입력한 publishedAt filed가 알맞은 형식이 아님. 기대하는 형식 "20220807"
+   *              content:
+   *                application/json:
+   *                  schema:
+   *                    type: json
+   *                    example : { errorCode: 311 }
+   */
+  .patch('/update', cudRateLimiter, authValidate(roleSet.librarian), updateBookInfo)
+  .patch('/donator', cudRateLimiter, authValidate(roleSet.librarian), updateBookDonator);

@@ -1,19 +1,12 @@
 import morgan from 'morgan';
 import path from 'path';
-import {
-  addColors,
-  createLogger,
-  format,
-  transports,
-} from 'winston';
+import { addColors, createLogger, format, transports } from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
 import { logFormatOption, logLevelOption } from '~/config';
 
 const { colors, levels } = logFormatOption;
 
-const {
-  combine, timestamp, printf, colorize, errors,
-} = format;
+const { combine, timestamp, printf, colorize, errors } = format;
 
 addColors(colors);
 
@@ -34,10 +27,7 @@ const logFormat = combine(
 const consoleOpts = {
   handleExceptions: true,
   level: logLevelOption.consoleLogLevel,
-  format: combine(
-    colorize({ all: true }),
-    timestamp({ format: logTimestampFormat }),
-  ),
+  format: combine(colorize({ all: true }), timestamp({ format: logTimestampFormat })),
 };
 
 const logger = createLogger({
@@ -65,14 +55,11 @@ const logger = createLogger({
   ],
 });
 
-const morganMiddleware = morgan(
-  ':method :url :status :res[content-length] - :response-time ms',
-  {
-    stream: {
-      // Use the http severity
-      write: (message: string) => logger.http(message),
-    },
+const morganMiddleware = morgan(':method :url :status :res[content-length] - :response-time ms', {
+  stream: {
+    // Use the http severity
+    write: (message: string) => logger.http(message),
   },
-);
+});
 
 export { logger, morganMiddleware };

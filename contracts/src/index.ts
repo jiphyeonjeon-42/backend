@@ -1,10 +1,9 @@
 import { initContract } from '@ts-rest/core';
 import { reviewsContract } from './reviews';
-import { historiesContract } from './histories';
+import { lendingsContract } from './lendings/mod';
 import { usersContract } from './users';
 import { likesContract } from './likes';
-import { stockContract } from './stock';
-import { tagContract } from './tags';
+import { booksContract } from './books';
 
 export * from './reviews';
 export * from './shared';
@@ -16,13 +15,10 @@ export const contract = c.router(
   {
     // likes: likesContract,
     reviews: reviewsContract,
-    histories: historiesContract,
-
-    stock: stockContract,
-    // TODO(@nyj001012): 태그 서비스 작성
-    // tags: tagContract,
+    lendings: lendingsContract,
+    // books: booksContract,
     // TODO(@scarf005): 유저 서비스 작성
-//     users: usersContract,
+    //     users: usersContract,
   },
   {
     pathPrefix: '/api/v2',

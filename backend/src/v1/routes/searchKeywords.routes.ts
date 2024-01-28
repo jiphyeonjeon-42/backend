@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { searchKeywordsAutocomplete, getPopularSearchKeywords } from '../search-keywords/searchKeywords.controller';
+import {
+  searchKeywordsAutocomplete,
+  getPopularSearchKeywords,
+} from '../search-keywords/searchKeywords.controller';
 
 export const path = '/search-keywords';
 export const router = Router();

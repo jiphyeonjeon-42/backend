@@ -1,30 +1,30 @@
-import { dateLike, metaSchema, positiveInt } from '../shared';
+import { dateLike, metaSchema, nonNegativeInt } from '../shared';
 import { z } from '../zodWithOpenapi';
 
 export const historiesGetMyQuerySchema = z.object({
   query: z.string().optional(),
-  page: z.number().int().nonnegative().default(0),
-  limit: z.number().int().nonnegative().default(10),
+  page: nonNegativeInt.default(0),
+  limit: nonNegativeInt.default(10),
 });
 
 export const historiesGetQuerySchema = z.object({
   query: z.string().optional(),
   type: z.enum(['user', 'title', 'callsign']).optional(),
-  page: z.number().int().nonnegative().default(0),
-  limit: z.number().int().nonnegative().default(10),
+  page: nonNegativeInt.default(0),
+  limit: nonNegativeInt.default(10),
 });
 
 export const historiesGetResponseSchema = z.object({
   items: z.array(
     z.object({
-      id: positiveInt,
+      id: nonNegativeInt,
       lendingCondition: z.string(),
       login: z.string(),
       returningCondition: z.string(),
-      penaltyDays: z.number().int().nonnegative(),
+      penaltyDays: nonNegativeInt,
       callSign: z.string(),
       title: z.string(),
-      bookInfoId: positiveInt,
+      bookInfoId: nonNegativeInt,
       image: z.string(),
       createdAt: dateLike,
       returnedAt: dateLike,

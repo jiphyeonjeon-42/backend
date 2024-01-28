@@ -22,21 +22,34 @@ export const create = async (
   try {
     await transaction.startTransaction();
     const [users, count] = await usersRepository.searchUserBy({ id: userId }, 0, 0);
-    if (!count) { throw new Error(errorCode.NO_USER_ID); }
-    if (users[0].role === 0) { throw new Error(errorCode.NO_PERMISSION); }
+    if (!count) {
+      throw new Error(errorCode.NO_USER_ID);
+    }
+    if (users[0].role === 0) {
+      throw new Error(errorCode.NO_PERMISSION);
+    }
     // user conditions
-    const numberOfLendings = await lendingRepo.searchLendingCount({
-      userId,
-    }, 0, 0);
-    if (numberOfLendings >= 2) { throw new Error(errorCode.LENDING_OVERLOAD); }
+    const numberOfLendings = await lendingRepo.searchLendingCount(
+      {
+        userId,
+      },
+      0,
+      0,
+    );
+    if (numberOfLendings >= 2) {
+      throw new Error(errorCode.LENDING_OVERLOAD);
+    }
     const penaltyEndDate = await lendingRepo.getUsersPenalty(userId);
     const overDueDay = await lendingRepo.getUsersOverDueDay(userId);
-    if (penaltyEndDate >= new Date()
-      || overDueDay !== undefined) { throw new Error(errorCode.LENDING_OVERDUE); }
+    if (penaltyEndDate >= new Date() || overDueDay !== undefined) {
+      throw new Error(errorCode.LENDING_OVERDUE);
+    }
 
     // book conditions
     const countOfBookInLending = await lendingRepo.getLendingCountByBookId(bookId);
-    if (countOfBookInLending !== 0) { throw new Error(errorCode.ON_LENDING); }
+    if (countOfBookInLending !== 0) {
+      throw new Error(errorCode.ON_LENDING);
+    }
 
     // 책이 분실, 파손이 아닌지
     const book = await lendingRepo.searchBookForLending(bookId);
@@ -54,10 +67,17 @@ export const create = async (
     // 책 대출 정보 insert
     await lendingRepo.createLending(userId, bookId, librarianId, condition);
     // 예약 대출 시 상태값 reservation status 0 -> 1 변경
-    if (reservationOfBook) { await lendingRepo.updateReservationToLended(reservationOfBook.id); }
+    if (reservationOfBook) {
+      await lendingRepo.updateReservationToLended(reservationOfBook.id);
+    }
     await transaction.commitTransaction();
     if (users[0].slack) {
-      await publishMessage(users[0].slack, `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${book?.info?.title}\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`);
+      await publishMessage(
+        users[0].slack,
+        `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${
+          book?.info?.title
+        }\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`,
+      );
     }
   } catch (e) {
     await transaction.rollbackTransaction();
@@ -67,14 +87,10 @@ export const create = async (
   } finally {
     await transaction.release();
   }
-  return ({ dueDate: formatDate(dueDate) });
+  return { dueDate: formatDate(dueDate) };
 };
 
-export const returnBook = async (
-  librarianId: number,
-  lendingId: number,
-  condition: string,
-) => {
+export const returnBook = async (librarianId: number, lendingId: number, condition: string) => {
   const transaction = jipDataSource.createQueryRunner();
   const lendingRepo = new LendingRepository(transaction);
   try {
@@ -91,7 +107,12 @@ export const returnBook = async (
     const today = new Date().setHours(0, 0, 0, 0);
     const createdDate = new Date(lendingInfo.createdAt);
     // eslint-disable-next-line max-len
-    const expecetReturnDate = new Date(createdDate.setDate(createdDate.getDate() + 14)).setHours(0, 0, 0, 0);
+    const expecetReturnDate = new Date(createdDate.setDate(createdDate.getDate() + 14)).setHours(
+      0,
+      0,
+      0,
+      0,
+    );
     if (today > expecetReturnDate) {
       const todayDate = new Date();
       const overDueDays = (today - expecetReturnDate) / 1000 / 60 / 60 / 24;
@@ -100,9 +121,15 @@ export const returnBook = async (
       // eslint-disable-next-line max-len
       const originPenaltyEndDate = new Date(penaltyEndDateInDB);
       if (today < originPenaltyEndDate.setHours(0, 0, 0, 0)) {
-        confirmedPenaltyEndDate = new Date(originPenaltyEndDate.setDate(originPenaltyEndDate.getDate() + overDueDays)).toISOString().split('T')[0];
+        confirmedPenaltyEndDate = new Date(
+          originPenaltyEndDate.setDate(originPenaltyEndDate.getDate() + overDueDays),
+        )
+          .toISOString()
+          .split('T')[0];
       } else {
-        confirmedPenaltyEndDate = new Date(todayDate.setDate(todayDate.getDate() + overDueDays)).toISOString().split('T')[0];
+        confirmedPenaltyEndDate = new Date(todayDate.setDate(todayDate.getDate() + overDueDays))
+          .toISOString()
+          .split('T')[0];
       }
       await lendingRepo.updateUserPenaltyEndDate(confirmedPenaltyEndDate, lendingInfo.userId);
     }
@@ -117,14 +144,19 @@ export const returnBook = async (
       if (updateResult && slackIdReservedUser) {
         // 예약자에게 슬랙메시지 보내기
         const bookTitle = reservationInfo.bookInfo.title;
-        if (slackIdReservedUser) { await publishMessage(slackIdReservedUser, `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`); }
+        if (slackIdReservedUser) {
+          await publishMessage(
+            slackIdReservedUser,
+            `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,
+          );
+        }
       }
     }
     await transaction.commitTransaction();
     if (reservationInfo) {
-      return ({ reservedBook: true });
+      return { reservedBook: true };
     }
-    return ({ reservedBook: false });
+    return { reservedBook: false };
   } catch (error) {
     await transaction.rollbackTransaction();
     if (error instanceof Error) {
@@ -139,7 +171,7 @@ export const search = async (
   query: string,
   page: number,
   limit: number,
-  sort:string,
+  sort: string,
   type: string,
 ) => {
   const lendingRepo = new LendingRepository();
@@ -165,12 +197,7 @@ export const search = async (
       ]);
   }
   const orderQuery = sort === 'new' ? { createdAt: 'DESC' } : { createdAt: 'ASC' };
-  const [items, count] = await lendingRepo.searchLending(
-    filterQuery,
-    limit,
-    page,
-    orderQuery,
-  );
+  const [items, count] = await lendingRepo.searchLending(filterQuery, limit, page, orderQuery);
   const meta: Meta = {
     totalItems: count,
     itemCount: items.length,
@@ -181,7 +208,7 @@ export const search = async (
   return { items, meta };
 };
 
-export const lendingId = async (id:number) => {
+export const lendingId = async (id: number) => {
   const lendingRepo = new LendingRepository();
   const data = (await lendingRepo.searchLending({ id }, 0, 0, {}))[0];
   return data[0];

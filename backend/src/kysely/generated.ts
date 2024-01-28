@@ -1,4 +1,4 @@
-import type { ColumnType, SqlBool } from "kysely";
+import type { ColumnType, SqlBool } from 'kysely';
 
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
@@ -22,7 +22,7 @@ export interface BookInfo {
   publisher: string;
   isbn: Generated<string | null>;
   image: Generated<string | null>;
-  publishedAt: Generated<Date | null>;
+  publishedAt: Generated<Date | string | null>;
   createdAt: Generated<Date>;
   updatedAt: Generated<Date>;
   categoryId: number;

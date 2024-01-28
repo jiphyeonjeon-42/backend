@@ -14,253 +14,254 @@ import {
 } from '~/v1/tags/tags.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
+import { cudRateLimiter, getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/tags';
 export const router = Router();
 
 router
-/**
- * @openapi
- * /api/tags/super:
- *    patch:
- *      description: 슈퍼 태그를 수정한다.
- *      tags:
- *      - tags
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  description: 수정할 태그의 id
- *                  type: integer
- *                  example: 1
- *                  required: true
- *                content:
- *                  description: 슈퍼 태그 내용
- *                  type: string
- *                  example: "수정할_내용_적기"
- *      responses:
- *        '200':
- *          description: 슈퍼 태그 수정 성공.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  id:
- *                    description: 수정된 슈퍼 태그의 id
- *                    type: integer
- *                    example: 1
- *        '900':
- *          description: 태그의 양식이 올바르지 않습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 900
- *        '902':
- *          description: 이미 존재하는 태그입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 902
- *        '906':
- *          description: 디폴트 태그입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 906
- *        '905':
- *          description: DB 에러로 인한 업데이트 실패
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    example: 500
- */
-  .patch('/super', authValidate(roleSet.librarian), updateSuperTags);
+  /**
+   * @openapi
+   * /api/tags/super:
+   *    patch:
+   *      description: 슈퍼 태그를 수정한다.
+   *      tags:
+   *      - tags
+   *      requestBody:
+   *        required: true
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                id:
+   *                  description: 수정할 태그의 id
+   *                  type: integer
+   *                  example: 1
+   *                  required: true
+   *                content:
+   *                  description: 슈퍼 태그 내용
+   *                  type: string
+   *                  example: "수정할_내용_적기"
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그 수정 성공.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  id:
+   *                    description: 수정된 슈퍼 태그의 id
+   *                    type: integer
+   *                    example: 1
+   *        '900':
+   *          description: 태그의 양식이 올바르지 않습니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 900
+   *        '902':
+   *          description: 이미 존재하는 태그입니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 902
+   *        '906':
+   *          description: 디폴트 태그입니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 906
+   *        '905':
+   *          description: DB 에러로 인한 업데이트 실패
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: number
+   *                    example: 500
+   */
+  .patch('/super', cudRateLimiter, authValidate(roleSet.librarian), updateSuperTags);
 
 router
-/**
- * @openapi
- * /api/tags/sub:
- *    patch:
- *      description: 서브 태그를 수정한다.
- *      tags:
- *      - tags
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  description: 수정할 태그의 id
- *                  type: integer
- *                  example: 1
- *                  required: true
- *                visibility:
- *                  description: 서브 태그의 공개 여부
- *                  type: string
- *                  example: public, private
- *      responses:
- *        '200':
- *          description: 서브 태그 수정 성공.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  id:
- *                    description: 수정된 서브 태그의 id
- *                    type: integer
- *                    example: 1
- *        '900':
- *          description: 태그의 양식이 올바르지 않습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 900
- *        '901':
- *          description: 권한이 없습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 902
- *        '905':
- *          description: DB 에러로 인한 업데이트 실패
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    example: 500
- */
-  .patch('/sub', authValidate(roleSet.librarian), updateSubTags);
+  /**
+   * @openapi
+   * /api/tags/sub:
+   *    patch:
+   *      description: 서브 태그를 수정한다.
+   *      tags:
+   *      - tags
+   *      requestBody:
+   *        required: true
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                id:
+   *                  description: 수정할 태그의 id
+   *                  type: integer
+   *                  example: 1
+   *                  required: true
+   *                visibility:
+   *                  description: 서브 태그의 공개 여부
+   *                  type: string
+   *                  example: public, private
+   *      responses:
+   *        '200':
+   *          description: 서브 태그 수정 성공.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  id:
+   *                    description: 수정된 서브 태그의 id
+   *                    type: integer
+   *                    example: 1
+   *        '900':
+   *          description: 태그의 양식이 올바르지 않습니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 900
+   *        '901':
+   *          description: 권한이 없습니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 902
+   *        '905':
+   *          description: DB 에러로 인한 업데이트 실패
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: number
+   *                    example: 500
+   */
+  .patch('/sub', cudRateLimiter, authValidate(roleSet.librarian), updateSubTags);
 
 router
-/**
- * @openapi
- * /api/tags/{bookInfoId}/merge:
- *    patch:
- *      description: 태그를 병합한다.
- *      tags:
- *      - tags
- *      parameters:
- *      - in: path
- *        name: bookInfoId
- *        description: 병합할 책 정보의 id
- *        required: true
- *        type: integer
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                subTagIds:
- *                  description: 병합될 서브 태그의 id 리스트
- *                  type: list
- *                  required: true
- *                  example: [1, 2, 3, 5, 10]
- *                superTagId:
- *                  description: 슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.
- *                  type: integer
- *                  required: true
- *                  example: 2
- *      responses:
- *        '200':
- *          description: 슈퍼 태그 수정 성공.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  id:
- *                    description: 슈퍼 태그의 id
- *                    type: integer
- *                    example: 1
- *        '900':
- *          description: 태그의 양식이 올바르지 않습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 900
- *        '902':
- *          description: 이미 존재하는 태그입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 902
- *        '906':
- *          description: 디폴트 태그에는 병합할 수 없습니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 906
- *        '910':
- *          description: 유효하지 않은 태그 id입니다.
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: integer
- *                    example: 910
- *        '905':
- *          description: DB 에러로 인한 업데이트 실패
- *          content:
- *            application/json:
- *              schema:
- *                type: object
- *                properties:
- *                  errorCode:
- *                    type: number
- *                    example: 500
- */
-  .patch('/:bookInfoId/merge', authValidate(roleSet.librarian), mergeTags);
+  /**
+   * @openapi
+   * /api/tags/{bookInfoId}/merge:
+   *    patch:
+   *      description: 태그를 병합한다.
+   *      tags:
+   *      - tags
+   *      parameters:
+   *      - in: path
+   *        name: bookInfoId
+   *        description: 병합할 책 정보의 id
+   *        required: true
+   *        type: integer
+   *      requestBody:
+   *        required: true
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                subTagIds:
+   *                  description: 병합될 서브 태그의 id 리스트
+   *                  type: list
+   *                  required: true
+   *                  example: [1, 2, 3, 5, 10]
+   *                superTagId:
+   *                  description: 슈퍼 태그의 id. null일 경우, 디폴트 태그로 병합됨을 의미한다.
+   *                  type: integer
+   *                  required: true
+   *                  example: 2
+   *      responses:
+   *        '200':
+   *          description: 슈퍼 태그 수정 성공.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  id:
+   *                    description: 슈퍼 태그의 id
+   *                    type: integer
+   *                    example: 1
+   *        '900':
+   *          description: 태그의 양식이 올바르지 않습니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 900
+   *        '902':
+   *          description: 이미 존재하는 태그입니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 902
+   *        '906':
+   *          description: 디폴트 태그에는 병합할 수 없습니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 906
+   *        '910':
+   *          description: 유효하지 않은 태그 id입니다.
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: integer
+   *                    example: 910
+   *        '905':
+   *          description: DB 에러로 인한 업데이트 실패
+   *          content:
+   *            application/json:
+   *              schema:
+   *                type: object
+   *                properties:
+   *                  errorCode:
+   *                    type: number
+   *                    example: 500
+   */
+  .patch('/:bookInfoId/merge', cudRateLimiter, authValidate(roleSet.librarian), mergeTags);
 
 router
   /**
@@ -326,7 +327,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/default', authValidate(roleSet.all), createDefaultTags);
+  .post('/default', cudRateLimiter, authValidate(roleSet.all), createDefaultTags);
 
 router
   /**
@@ -392,7 +393,7 @@ router
    *                    value :
    *                      errorCode: 109
    */
-  .post('/super', authValidate(roleSet.librarian), createSuperTags);
+  .post('/super', cudRateLimiter, authValidate(roleSet.librarian), createSuperTags);
 
 router
   /**
@@ -452,7 +453,7 @@ router
    *                    value:
    *                      errorCode: 903
    */
-  .delete('/sub/:tagId', authValidate(roleSet.all), deleteSubTags);
+  .delete('/sub/:tagId', cudRateLimiter, authValidate(roleSet.all), deleteSubTags);
 
 router
   /**
@@ -512,7 +513,7 @@ router
    *                    value:
    *                      errorCode: 903
    */
-  .delete('/super/:tagId', authValidate(roleSet.librarian), deleteSuperTags);
+  .delete('/super/:tagId', cudRateLimiter, authValidate(roleSet.librarian), deleteSuperTags);
 
 router
   /**
@@ -755,7 +756,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/:superTagId/sub', authValidate(roleSet.all), searchSubTags);
+  .get('/:superTagId/sub', getRateLimiter, authValidate(roleSet.all), searchSubTags);
 
 router
   /**
@@ -812,7 +813,7 @@ router
    *        '500':
    *          description: db 에러
    */
-  .get('/manage/:superTagId/sub', authValidate(roleSet.librarian), searchSubTags);
+  .get('/manage/:superTagId/sub', getRateLimiter, authValidate(roleSet.librarian), searchSubTags);
 
 router
   /**

@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import {
-  histories,
-} from '~/v1/histories/histories.controller';
+import { histories } from '~/v1/histories/histories.controller';
 import authValidate from '~/v1/auth/auth.validate';
 import { roleSet } from '~/v1/auth/auth.type';
+import { getRateLimiter } from "~/v1/utils/rateLimiter.ts";
 
 export const path = '/histories';
 export const router = Router();
@@ -155,4 +154,4 @@ router
    *                     type: integer
    *                     example: 700
    */
-  .get('/', authValidate(roleSet.all), histories);
+  .get('/', getRateLimiter, authValidate(roleSet.all), histories);

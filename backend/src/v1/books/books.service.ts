@@ -16,36 +16,69 @@ import {
 import * as models from './books.model';
 import BooksRepository from './books.repository';
 import {
-  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo,
-  categoryIds, UpdateBookDonator,
+  CreateBookInfo,
+  LendingBookList,
+  UpdateBook,
+  UpdateBookInfo,
+  categoryIds,
+  UpdateBookDonator,
 } from './books.type';
 import { categoryWithBookCount } from '../DTO/common.interface';
 import * as searchKeywordsService from '../search-keywords/searchKeywords.service';
 import BookInfoSearchKeywordRepository from '../search-keywords/booksInfoSearchKeywords.repository';
 
+/**
+ * 유효한 ISBN인지 정규식을 통해 검사한다.
+ * @param isbn 검사할 ISBN
+ * @return 유효한 ISBN이면 true, 아니면 false
+ */
+const isValidISBN = (isbn: string) => {
+  const isbnPattern = /^(?:ISBN(?:-1[03])?:? )?(?=[-0-9 ]{17}$|[-0-9X ]{13}$|[0-9X]{10}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?(?:[0-9]+[- ]?){2}[0-9X]$/;
+  return isbnPattern.test(isbn);
+}
+
 const getInfoInNationalLibrary = async (isbn: string) => {
   let book;
   let searchResult;
+
+  if (!isValidISBN(isbn)) {
+    throw new Error(errorCode.ISBN_SEARCH_FAILED);
+  }
   await axios
-    .get(`https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`)
+    .get(
+      `https://www.nl.go.kr/seoji/SearchApi.do?cert_key=${nationalIsbnApiKey}&result_style=json&page_no=1&page_size=10&isbn=${isbn}`,
+    )
     .then((res) => {
       searchResult = res.data.docs[0];
       const {
-        TITLE: title, SUBJECT: category, PUBLISHER: publisher, PUBLISH_PREDATE: pubdate,
+        TITLE: title,
+        SUBJECT: category,
+        PUBLISHER: publisher,
+        PUBLISH_PREDATE: pubdate,
       } = searchResult;
-      const image = `https://image.kyobobook.co.kr/images/book/xlarge/${isbn.slice(-3)}/x${isbn}.jpg`;
+      const image = `https://image.kyobobook.co.kr/images/book/xlarge/${isbn.slice(
+        -3,
+      )}/x${isbn}.jpg`;
       book = {
-        title, image, category, isbn, publisher, pubdate,
+        title,
+        image,
+        category,
+        isbn,
+        publisher,
+        pubdate,
       };
     })
     .catch(() => {
       throw new Error(errorCode.ISBN_SEARCH_FAILED);
     });
-  return (book);
+  return book;
 };
 
 const getAuthorInNaver = async (isbn: string) => {
   let author;
+  if (!isValidISBN(isbn)) {
+    return author;
+  }
   await axios
     .get(
       `
@@ -64,10 +97,10 @@ const getAuthorInNaver = async (isbn: string) => {
     .catch(() => {
       throw new Error(errorCode.ISBN_SEARCH_FAILED_IN_NAVER);
     });
-  return (author);
+  return author;
 };
 
-const getCategoryAlphabet = (categoryId : number): string => {
+const getCategoryAlphabet = (categoryId: number): string => {
   try {
     const category = Object.values(categoryIds) as string[];
     return category[categoryId - 1];
@@ -76,11 +109,7 @@ const getCategoryAlphabet = (categoryId : number): string => {
   }
 };
 
-export const search = async (
-  query: string,
-  page: number,
-  limit: number,
-) => {
+export const search = async (query: string, page: number, limit: number) => {
   const booksRepository = new BooksRepository();
   const bookList = await booksRepository.getBookList(query, limit, page);
   const totalItems = await booksRepository.getTotalItems(query);
@@ -110,7 +139,9 @@ export const createBook = async (book: CreateBookInfo) => {
     let recommendPrimaryNum;
 
     if (checkNickName > 1) {
-      logger.warn(`${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`);
+      logger.warn(
+        `${errorCode.SLACKID_OVERLAP}: nickname이 중복입니다. 최근에 가입한 user의 ID로 기부가 기록됩니다.`,
+      );
     }
 
     if (isbnInBookInfo === 0) {
@@ -128,10 +159,12 @@ export const createBook = async (book: CreateBookInfo) => {
       recommendPrimaryNum = nums.recommendPrimaryNum;
       recommendCopyNum = nums.recommendCopyNum * 1 + 1;
     }
-    const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(book.pubdate).slice(2, 4)}.v1.c${recommendCopyNum}`;
+    const recommendCallSign = `${categoryAlphabet}${recommendPrimaryNum}.${String(
+      book.pubdate,
+    ).slice(2, 4)}.v1.c${recommendCopyNum}`;
     await booksRepository.createBook({ ...book, callSign: recommendCallSign });
     await transactionQueryRunner.commitTransaction();
-    return ({ callsign: recommendCallSign });
+    return { callsign: recommendCallSign };
   } catch (error) {
     await transactionQueryRunner.rollbackTransaction();
     if (error instanceof Error) {
@@ -140,7 +173,7 @@ export const createBook = async (book: CreateBookInfo) => {
   } finally {
     await transactionQueryRunner.release();
   }
-  return (new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED));
+  return new Error(errorCode.FAIL_CREATE_BOOK_BY_UNEXPECTED);
 };
 
 export const createBookInfo = async (isbn: string) => {
@@ -149,10 +182,7 @@ export const createBookInfo = async (isbn: string) => {
   return { bookInfo };
 };
 
-export const sortInfo = async (
-  limit: number,
-  sort: string,
-) => {
+export const sortInfo = async (limit: number, sort: string) => {
   const booksRepository = new BooksRepository();
   const bookList: LendingBookList[] = await booksRepository.getLendingBookList(sort, limit);
   return { items: bookList };
@@ -336,10 +366,7 @@ export const searchInfoByTag = async (
     default:
       sortQuery = { createdAt: 'DESC' };
   }
-  const whereQuery: Array<object> = [
-    { superTagContent: query },
-    { subTagContent: query },
-  ];
+  const whereQuery: Array<object> = [{ superTagContent: query }, { subTagContent: query }];
   if (category) {
     whereQuery.push({ category });
   }
@@ -466,7 +493,10 @@ export const getInfo = async (id: string) => {
       }
       const { ...rest } = eachBook;
       return {
-        ...rest, dueDate, isLendable, isReserved,
+        ...rest,
+        dueDate,
+        isLendable,
+        isReserved,
       };
     }),
   );
@@ -490,9 +520,9 @@ export const updateBook = async (book: UpdateBook, bookInfo: UpdateBookInfo) => 
     await booksRepository.updateBook(book);
     if (bookInfo.id) {
       await booksRepository.updateBookInfo(bookInfo);
-      const keyword = await bookInfoSearchKeywordRepository.getBookInfoSearchKeyword(
-        { bookInfoId: bookInfo.id },
-      );
+      const keyword = await bookInfoSearchKeywordRepository.getBookInfoSearchKeyword({
+        bookInfoId: bookInfo.id,
+      });
       if (keyword?.id) {
         await bookInfoSearchKeywordRepository.updateBookInfoSearchKeyword(keyword.id, bookInfo);
       }

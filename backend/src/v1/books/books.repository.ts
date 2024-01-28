@@ -4,12 +4,14 @@ import * as errorCode from '~/v1/utils/error/errorCode';
 import ErrorResponse from '~/v1/utils/error/errorResponse';
 import jipDataSource from '~/app-data-source';
 import { VSearchBookByTag } from '~/entity/entities/VSearchBookByTag';
-import {
-  Book, BookInfo, User, Lending, Category, VSearchBook,
-} from '~/entity/entities';
+import { Book, BookInfo, User, Lending, Category, VSearchBook } from '~/entity/entities';
 import { number } from 'zod';
 import {
-  CreateBookInfo, LendingBookList, UpdateBook, UpdateBookInfo, UpdateBookDonator,
+  CreateBookInfo,
+  LendingBookList,
+  UpdateBook,
+  UpdateBookInfo,
+  UpdateBookDonator,
 } from './books.type';
 
 class BooksRepository extends Repository<Book> {
@@ -47,11 +49,7 @@ class BooksRepository extends Repository<Book> {
     return this.users.count({ where: { nickname } });
   }
 
-  async getBookList(
-    condition: string,
-    limit: number,
-    page: number,
-  ): Promise<VSearchBook[]> {
+  async getBookList(condition: string, limit: number, page: number): Promise<VSearchBook[]> {
     const searchBook = await this.searchBook.find({
       where: [
         { title: Like(`%${condition}%`) },
@@ -116,14 +114,10 @@ class BooksRepository extends Repository<Book> {
   }
 
   // TODO: refactact sort type
-  async getLendingBookList(
-    sort: string,
-    limit: number,
-  ): Promise<LendingBookList[]> {
+  async getLendingBookList(sort: string, limit: number): Promise<LendingBookList[]> {
     const order = sort === 'popular' ? 'lendingCnt' : 'createdAt';
-    const lendingCondition: string = sort === 'popular'
-      ? 'and lending.createdAt >= date_sub(now(), interval 42 day)'
-      : '';
+    const lendingCondition: string =
+      sort === 'popular' ? 'and lending.createdAt >= date_sub(now(), interval 42 day)' : '';
 
     const lendingBookList = this.bookInfo
       .createQueryBuilder('book_info')
@@ -139,11 +133,7 @@ class BooksRepository extends Repository<Book> {
       .addSelect('book_info.updatedAt', 'updatedAt')
       .addSelect('COUNT(lending.id)', 'lendingCnt')
       .leftJoin(Book, 'book', 'book.infoId = book_info.id')
-      .leftJoin(
-        Lending,
-        'lending',
-        `lending.bookId = book.id ${lendingCondition}`,
-      )
+      .leftJoin(Lending, 'lending', `lending.bookId = book.id ${lendingCondition}`)
       .leftJoin(Category, 'category', 'category.id = book_info.categoryId')
       .limit(limit)
       .groupBy('book_info.id')
@@ -154,22 +144,14 @@ class BooksRepository extends Repository<Book> {
   }
 
   async getNewCallsignPrimaryNum(categoryId: string | undefined): Promise<number> {
-    return (
-      (await this.bookInfo.countBy({ categoryId: Number(categoryId) })) + 1
-    );
+    return (await this.bookInfo.countBy({ categoryId: Number(categoryId) })) + 1;
   }
 
   async getOldCallsignNums(categoryAlphabet: string) {
     return this.books
       .createQueryBuilder()
-      .select(
-        "substring(SUBSTRING_INDEX(callSign, '.', 1),2)",
-        'recommendPrimaryNum',
-      )
-      .addSelect(
-        "substring(SUBSTRING_INDEX(callSign, '.', -1),2)",
-        'recommendCopyNum',
-      )
+      .select("substring(SUBSTRING_INDEX(callSign, '.', 1),2)", 'recommendPrimaryNum')
+      .addSelect("substring(SUBSTRING_INDEX(callSign, '.', -1),2)", 'recommendCopyNum')
       .where('callsign like :categoryAlphabet', {
         categoryAlphabet: `${categoryAlphabet}%`,
       })
@@ -191,9 +173,7 @@ class BooksRepository extends Repository<Book> {
     await this.books.update(bookDonator.id, bookDonator as Book);
   }
 
-  async createBookInfo(
-    target: CreateBookInfo,
-  ): Promise<BookInfo> {
+  async createBookInfo(target: CreateBookInfo): Promise<BookInfo> {
     const bookInfo: BookInfo = {
       title: target.title,
       author: target.author,
@@ -206,9 +186,7 @@ class BooksRepository extends Repository<Book> {
     return this.bookInfo.save(bookInfo);
   }
 
-  async createBook(
-    target: CreateBookInfo,
-  ): Promise<void> {
+  async createBook(target: CreateBookInfo): Promise<void> {
     const book: Book = {
       donator: target.donator,
       donatorId: target.donatorId,
@@ -220,7 +198,8 @@ class BooksRepository extends Repository<Book> {
   }
 
   async findBooksByIds(idList: number[]) {
-    const bookList = await this.bookInfo.createQueryBuilder('bi')
+    const bookList = await this.bookInfo
+      .createQueryBuilder('bi')
       .select('bi.id', 'id')
       .addSelect('bi.title', 'title')
       .addSelect('bi.author', 'author')

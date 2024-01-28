@@ -7,11 +7,7 @@ import {
   disassembleHangul,
   removeSpecialCharacters,
 } from '~/v1/utils/processKeywords';
-import {
-  AutocompleteKeyword,
-  PopularSearchKeyword,
-  SearchKeyword,
-} from './searchKeywords.type';
+import { AutocompleteKeyword, PopularSearchKeyword, SearchKeyword } from './searchKeywords.type';
 import SearchKeywordsRepository from './searchKeywords.repository';
 import SearchLogsRepository from './searchLogs.repository';
 
@@ -30,7 +26,7 @@ export const getPopularSearches = async (
       SELECT keyword
       FROM search_logs
       LEFT JOIN search_keywords ON search_logs.search_keyword_id = search_keywords.id
-      WHERE search_logs.timestamp BETWEEN NOW() - INTERVAL 1 DAY - INTERVAL ? DAY AND NOW() - INTERVAL ? DAY 
+      WHERE search_logs.timestamp BETWEEN NOW() - INTERVAL 1 DAY - INTERVAL ? DAY AND NOW() - INTERVAL ? DAY
       GROUP BY search_keywords.keyword
       HAVING COUNT(search_keywords.keyword) >= ?
       ORDER BY COUNT(search_keywords.keyword) DESC, MAX(search_logs.timestamp) DESC
@@ -41,7 +37,7 @@ export const getPopularSearches = async (
       SELECT keyword
       FROM search_logs
       LEFT JOIN search_keywords ON search_logs.search_keyword_id = search_keywords.id
-      WHERE search_logs.timestamp BETWEEN NOW() - INTERVAL 1 MONTH - INTERVAL ? DAY AND NOW() - INTERVAL ? DAY 
+      WHERE search_logs.timestamp BETWEEN NOW() - INTERVAL 1 MONTH - INTERVAL ? DAY AND NOW() - INTERVAL ? DAY
       GROUP BY search_keywords.keyword
       HAVING COUNT(search_keywords.keyword) >= ?
       ORDER BY COUNT(search_keywords.keyword) DESC, MAX(search_logs.timestamp) DESC
@@ -78,10 +74,7 @@ export const getPopularSearches = async (
 
 const updateLastPopular = (items: string[]) => {
   lastPopular = [...items];
-  logger.debug(
-    `(${new Date().toLocaleString()}) Popular Search Keywords `,
-    lastPopular,
-  );
+  logger.debug(`(${new Date().toLocaleString()}) Popular Search Keywords `, lastPopular);
 };
 
 export const renewLastPopular = async () => {
@@ -103,15 +96,13 @@ export const getPopularSearchKeywords = async () => {
   if (!lastPopular || lastPopular.length === 0) {
     updateLastPopular(popularSearchKeywords.map((item) => item.keyword));
   }
-  const items: PopularSearchKeyword[] = popularSearchKeywords.map(
-    (item, index: number) => {
-      const preRanking = lastPopular.indexOf(item.keyword);
-      return {
-        searchKeyword: item.keyword,
-        rankingChange: preRanking === -1 ? null : preRanking - index,
-      };
-    },
-  );
+  const items: PopularSearchKeyword[] = popularSearchKeywords.map((item, index: number) => {
+    const preRanking = lastPopular.indexOf(item.keyword);
+    return {
+      searchKeyword: item.keyword,
+      rankingChange: preRanking === -1 ? null : preRanking - index,
+    };
+  });
 
   return items;
 };
@@ -124,9 +115,7 @@ export const createSearchKeywordLog = async (
   if (!keyword) return;
 
   const transactionQueryRunner = jipDataSource.createQueryRunner();
-  const searchKeywordsRepository = new SearchKeywordsRepository(
-    transactionQueryRunner,
-  );
+  const searchKeywordsRepository = new SearchKeywordsRepository(transactionQueryRunner);
   const searchLogsRepository = new SearchLogsRepository(transactionQueryRunner);
 
   try {
