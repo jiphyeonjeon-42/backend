@@ -5,8 +5,8 @@ ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
 ENV PYTHONUNBUFFERED=1
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip setuptools
+RUN python3 -m venv .venv
+RUN . .venv/bin/activate && pip3 install --no-cache --upgrade pip setuptools
 RUN apk add --no-cache make
 RUN apk add build-base
 RUN npm install --global pnpm
@@ -29,4 +29,3 @@ RUN pnpm -r run build
 RUN rm -rf /app/.pnpm-store
 
 WORKDIR /app/backend
-
