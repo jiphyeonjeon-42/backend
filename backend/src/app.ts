@@ -40,7 +40,9 @@ app.use(morganMiddleware);
 app.use(cookieParser(
   secret,
 ));
-app.use(lusca.csrf());
+app.use(lusca({
+  csrf: true,
+}));
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
