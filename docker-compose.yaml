@@ -7,7 +7,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./build:/usr/share/nginx/html/
-      - ./scripts/letsencrypt.sh:/scripts/letsencrypt.sh
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - 80:80
       - 443:443
