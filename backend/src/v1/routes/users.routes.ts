@@ -407,7 +407,7 @@ export const router = Router();
  *                    example: []
  */
 router
-  .get('/search', getRateLimiter, authValidate(roleSet.librarian), search)
+  .get('/search', getRateLimiter, authValidate(roleSet.service), search)
   .post('/create', create)
   .patch('/update/:id', cudRateLimiter, authValidate(roleSet.librarian), update)
   .patch('/myupdate', cudRateLimiter, authValidate(roleSet.all), myupdate)

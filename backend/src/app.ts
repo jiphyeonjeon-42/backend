@@ -18,7 +18,6 @@ import { createExpressEndpoints } from '@ts-rest/express';
 
 import router from '~/v1/routes';
 import routerV2 from '~/v2/routes';
-import lusca from "lusca";
 import session from 'express-session';
 import * as crypto from "crypto";
 import { morganMiddleware } from './logger';
@@ -40,7 +39,6 @@ app.use(morganMiddleware);
 app.use(cookieParser(
   secret,
 ));
-app.use(lusca.csrf());
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
