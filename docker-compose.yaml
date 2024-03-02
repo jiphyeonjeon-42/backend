@@ -6,8 +6,11 @@ services:
     container_name: nginx
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./build:/usr/share/nginx/html/
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - 80:80
+      - 443:443
 
   database:
     platform: linux/x86_64
