@@ -257,7 +257,7 @@ const assignReservationToNextWaitingUser = (transactionExecuteQuery: Transaction
     `
     SELECT
       reservation.id AS id,
-      user.slack AS slack,
+      user.slack AS slack
     FROM
       reservation
     LEFT JOIN user ON
