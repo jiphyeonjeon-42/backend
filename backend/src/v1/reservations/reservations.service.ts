@@ -224,9 +224,9 @@ const handleReservationOverdue = async (transactionExecuteQuery: TransactionExec
     SET
       status = 3
     WHERE
-      reservation_id IN (
+      reservation.id IN (
         SELECT
-          reservation_id
+          reservation.id
         FROM
           reservation
         WHERE
