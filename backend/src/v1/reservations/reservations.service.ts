@@ -299,6 +299,7 @@ export const handleReservationOverdueAndAssignReservationToNextWaitingUser = asy
   try {
     const overDueReservations = await handleReservationOverdue(transactionExecuteQuery);
     const assignedReservations = await Promise.all(overDueReservations.map(assignReservationToNextWaitingUser(transactionExecuteQuery)));
+    await conn.commit();
     return { overDueReservations, assignedReservations };
   } catch (error) {
     await conn.rollback();
