@@ -220,6 +220,26 @@ const handleReservationOverdue = async (transactionExecuteQuery: TransactionExec
       IFNULL(DATEDIFF(CURDATE(), DATE(reservation.endAt)), 0) >= 1;
       
   `);
+  await transactionExecuteQuery(`
+    UPDATE
+      reservation
+    SET
+      reservation.status = 3
+    WHERE
+      reservation.id IN (
+        SELECT id
+          FROM (
+            SELECT
+              reservation.id
+            FROM
+              reservation
+            WHERE
+              reservation.status = 0 AND
+              reservation.bookId IS NOT NULL AND
+              IFNULL(DATEDIFF(CURDATE(), DATE(reservation.endAt)), 0) >= 1
+          ) AS expiredReservations
+      );
+  `);
   return overDueReservations;
 }
 
