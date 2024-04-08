@@ -217,23 +217,8 @@ const handleReservationOverdue = async (transactionExecuteQuery: TransactionExec
     WHERE
       reservation.status = 0 AND
       bookId IS NOT NULL AND
-      IFNULL(DATEDIFF(CURDATE(), DATE(reservation.endAt)), 0) >= 1
-    FOR UPDATE;
-    UPDATE
-      reservation
-    SET
-      status = 3
-    WHERE
-      reservation.id IN (
-        SELECT
-          reservation.id
-        FROM
-          reservation
-        WHERE
-          reservation.status = 0 AND
-          bookId IS NOT NULL AND
-          IFNULL(DATEDIFF(CURDATE(), DATE(reservation.endAt)), 0) >= 1
-      );
+      IFNULL(DATEDIFF(CURDATE(), DATE(reservation.endAt)), 0) >= 1;
+      
   `);
   return overDueReservations;
 }
@@ -291,7 +276,6 @@ export const handleReservationOverdueAndAssignReservationToNextWaitingUser = asy
   const conn = await pool.getConnection();
   const transactionExecuteQuery = makeExecuteQuery(conn);
   await conn.beginTransaction();
-  await transactionExecuteQuery('LOCK TABLES lending IN EXCLUSIVE MODE;')
   try {
     const overDueReservations = await handleReservationOverdue(transactionExecuteQuery);
     const assignedReservations = await Promise.all(overDueReservations.map(assignReservationToNextWaitingUser(transactionExecuteQuery)));
@@ -300,7 +284,6 @@ export const handleReservationOverdueAndAssignReservationToNextWaitingUser = asy
     await conn.rollback();
     throw error;
   } finally {
-    await transactionExecuteQuery('UNLOCK TABLES lending;')
     await conn.release();
   }
 }
