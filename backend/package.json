@@ -16,7 +16,7 @@
     "standalone": "npm run build && npm run start",
     "lint": "eslint --fix --ext .js,.ts src",
     "check": "tsc --project ./tsconfig.prod.json --noEmit",
-    "test": "jest",
+    "test": "jest --forceExit --runInBand --detectOpenHandles",
     "schema": ". ./.env && DATABASE_URL=mysql://$RDS_USERNAME:$RDS_PASSWORD@$RDS_HOSTNAME:3306/$RDS_DB_NAME kysely-codegen --dialect=mysql --out-file=src/kysely/generated.ts"
   },
   "devDependencies": {
