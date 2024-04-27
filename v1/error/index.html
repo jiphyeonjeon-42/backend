@@ -1,0 +1,1352 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../">
+      
+      
+      
+      <link rel="icon" href="../../image/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.1">
+    
+    
+      
+        <title>에러 코드 (Error code) - 집현전 개발 가이드</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#error-code" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../.." title="집현전 개발 가이드" class="md-header__button md-logo" aria-label="집현전 개발 가이드" data-md-component="logo">
+      
+  <img src="../../image/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            집현전 개발 가이드
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              에러 코드 (Error code)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jiphyeonjeon-42/backend" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jiphyeonjeon-42/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="집현전 개발 가이드" class="md-nav__button md-logo" aria-label="집현전 개발 가이드" data-md-component="logo">
+      
+  <img src="../../image/logo.png" alt="logo">
+
+    </a>
+    집현전 개발 가이드
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jiphyeonjeon-42/backend" title="저장소로 이동" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jiphyeonjeon-42/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    집현전 개발 가이드에 오신 것을 환영합니다
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    프로젝트 개요
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Convention
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Convention
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../convention/convention/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    개발 컨벤션
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../convention/gitflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Git Flow Strategy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../convention/issue_strategy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    이슈 전략
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../convention/umbrella/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    우산 이슈란
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/contract/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contract 작성법
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Mkdocs로 개발 문서 작성하기
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    개발 가이드
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    V1
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            V1
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    v1 개발 문서
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    에러 코드 (Error code)
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    에러 코드 (Error code)
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-error-code-0" class="md-nav__link">
+    Common Error Code (0번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth-error-code-100" class="md-nav__link">
+    Auth Error Code (100번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-error-code-200" class="md-nav__link">
+    User Error Code (200번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#books-error-code-300" class="md-nav__link">
+    Books Error Code (300번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lendings-error-code-400" class="md-nav__link">
+    Lendings Error Code (400번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reservation-error-code-500" class="md-nav__link">
+    Reservation Error Code (500번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#likes-600" class="md-nav__link">
+    Likes (600번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history-700" class="md-nav__link">
+    history (700번대)
+  </a>
+  
+    <nav class="md-nav" aria-label="history (700번대)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reviews-800" class="md-nav__link">
+    reviews (800번대)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tags-900" class="md-nav__link">
+    tags (900번대)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-error-code-0" class="md-nav__link">
+    Common Error Code (0번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth-error-code-100" class="md-nav__link">
+    Auth Error Code (100번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-error-code-200" class="md-nav__link">
+    User Error Code (200번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#books-error-code-300" class="md-nav__link">
+    Books Error Code (300번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lendings-error-code-400" class="md-nav__link">
+    Lendings Error Code (400번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reservation-error-code-500" class="md-nav__link">
+    Reservation Error Code (500번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#likes-600" class="md-nav__link">
+    Likes (600번대)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#history-700" class="md-nav__link">
+    history (700번대)
+  </a>
+  
+    <nav class="md-nav" aria-label="history (700번대)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reviews-800" class="md-nav__link">
+    reviews (800번대)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tags-900" class="md-nav__link">
+    tags (900번대)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/jiphyeonjeon-42/backend/edit/develop/docs/v1/error.md" title="이 페이지를 편집" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/jiphyeonjeon-42/backend/raw/develop/docs/v1/error.md" title="페이지소스 보기" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5Z"/></svg>
+    </a>
+  
+
+
+<h1 id="error-code">에러 코드 (Error code)</h1>
+<h2 id="common-error-code-0">Common Error Code (0번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: left;">UNKNOWN_ERROR</td>
+<td style="text-align: left;">unknown error</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">QUERY_EXECUTION_FAILED</td>
+<td style="text-align: left;">executeQuery SQL 에러</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">INVALID_INPUT</td>
+<td style="text-align: left;">유효하지 않은 인자 (req , param, body에 잘못된 인자가 들어왔을 때)</td>
+</tr>
+<tr>
+<td style="text-align: center;">42</td>
+<td style="text-align: left;">CLIENT_AUTH_FAILED</td>
+<td style="text-align: left;">Client authentication failed due to unknown client, no client authentication included, or unsupported authentication method.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auth-error-code-100">Auth Error Code (100번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">100</td>
+<td style="text-align: left;">NO_AUTHORIZATION</td>
+<td style="text-align: left;">권한이 없을때</td>
+</tr>
+<tr>
+<td style="text-align: center;">101</td>
+<td style="text-align: left;">NO_USER</td>
+<td style="text-align: left;">해당 토큰의 유저가 DB에 없을때</td>
+</tr>
+<tr>
+<td style="text-align: center;">102</td>
+<td style="text-align: left;">NO_TOKEN</td>
+<td style="text-align: left;">토큰이 발급되지 않았을때</td>
+</tr>
+<tr>
+<td style="text-align: center;">103</td>
+<td style="text-align: left;">NO_INPUT</td>
+<td style="text-align: left;">로그인시 ID, PW 파라미터가 없을때</td>
+</tr>
+<tr>
+<td style="text-align: center;">104</td>
+<td style="text-align: left;">WRONG_PASSWORD</td>
+<td style="text-align: left;">비밀번호가 일치하지 않을때(로그인 실패)</td>
+</tr>
+<tr>
+<td style="text-align: center;">105</td>
+<td style="text-align: left;">ALREADY_AUTHENTICATED</td>
+<td style="text-align: left;">이미 인증된 회원의 경우(또 인증할 경우)</td>
+</tr>
+<tr>
+<td style="text-align: center;">107</td>
+<td style="text-align: left;">NO_ID</td>
+<td style="text-align: left;">해당 ID가 존재하지 않을때(로그인 실패)</td>
+</tr>
+<tr>
+<td style="text-align: center;">108</td>
+<td style="text-align: left;">EXPIRATION_TOKEN</td>
+<td style="text-align: left;">토큰이 만료되었을 경우</td>
+</tr>
+<tr>
+<td style="text-align: center;">109</td>
+<td style="text-align: left;">TOKEN_NOT_VALID</td>
+<td style="text-align: left;">토큰이 유효하지 않을때</td>
+</tr>
+<tr>
+<td style="text-align: center;">110</td>
+<td style="text-align: left;">NON_AFFECTED</td>
+<td style="text-align: left;">UPDATE 실패</td>
+</tr>
+<tr>
+<td style="text-align: center;">111</td>
+<td style="text-align: left;">ANOTHER_ACCOUNT_AUTHENTICATED</td>
+<td style="text-align: left;">다른 계정에 이미 42 intra가 연동되어 있는 경우 <br/> (105번은 이미 인증된 회원인 경우이고 111번은 42 계정을 다른 계정에 또 연결하는 경우)</td>
+</tr>
+<tr>
+<td style="text-align: center;">112</td>
+<td style="text-align: left;">ACCESS_DENIED</td>
+<td style="text-align: left;">42 API 사용에 대해 동의를 하지 않았을 경우</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="user-error-code-200">User Error Code (200번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">203</td>
+<td style="text-align: left;">EMAIL_OVERLAP</td>
+<td style="text-align: left;">email 중복. (이미 있는 email 로 가입)</td>
+</tr>
+<tr>
+<td style="text-align: center;">204</td>
+<td style="text-align: left;">NICKNAME_OVERLAP</td>
+<td style="text-align: left;">nickname 중복. (이미 있는 nickname 입력)</td>
+</tr>
+<tr>
+<td style="text-align: center;">205</td>
+<td style="text-align: left;">INVALIDATE_PASSWORD</td>
+<td style="text-align: left;">잘못된 password 형식</td>
+</tr>
+<tr>
+<td style="text-align: center;">206</td>
+<td style="text-align: left;">INVALID_ROLE</td>
+<td style="text-align: left;">유효하지 않은 role 값입니다.</td>
+</tr>
+<tr>
+<td style="text-align: center;">207</td>
+<td style="text-align: left;">SLACK_OVERLAP</td>
+<td style="text-align: left;">슬랙 ID가 중복</td>
+</tr>
+<tr>
+<td style="text-align: center;">208</td>
+<td style="text-align: left;">INTRA_AUTHENTICATE_SUCCESS</td>
+<td style="text-align: left;">42 인증 완료 ( 에러 메세지는 아닌데, 인증 완료시 Front한테 상태값을 전달해서 메세지를 띄우기 위한 코드 입니다 )</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="books-error-code-300">Books Error Code (300번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">301</td>
+<td style="text-align: left;">SLACKID_OVERLAP</td>
+<td style="text-align: left;">슬랙 ID가 중복됨</td>
+</tr>
+<tr>
+<td style="text-align: center;">302</td>
+<td style="text-align: left;">NO_ISBN</td>
+<td style="text-align: left;">네이버 Open API에서 ISBN검색 결과가 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">303</td>
+<td style="text-align: left;">ISBN_SEARCH_FAILED</td>
+<td style="text-align: left;">국립중앙 도서관 API에서 ISBN 검색이 실패</td>
+</tr>
+<tr>
+<td style="text-align: center;">304</td>
+<td style="text-align: left;">NO_BOOK_INFO_ID</td>
+<td style="text-align: left;">book_info table에 존재하지 않는 ID를 조회하려고 함</td>
+</tr>
+<tr>
+<td style="text-align: center;">305</td>
+<td style="text-align: left;">CALL_SIGN_OVERLAP</td>
+<td style="text-align: left;">등록하려는 callSign는 이미 있는 callSign임</td>
+</tr>
+<tr>
+<td style="text-align: center;">306</td>
+<td style="text-align: left;">INVALID_CALL_SIGN</td>
+<td style="text-align: left;">유효하지 않는 callsign</td>
+</tr>
+<tr>
+<td style="text-align: center;">307</td>
+<td style="text-align: left;">NO_BOOK_ID</td>
+<td style="text-align: left;">없는 BOOK_ID를 조회하려고 함</td>
+</tr>
+<tr>
+<td style="text-align: center;">308</td>
+<td style="text-align: left;">FAIL_CREATE_BOOK_BY_UNEXPECTED</td>
+<td style="text-align: left;">예상치 못한 에러로 책 정보 insert에 실패함</td>
+</tr>
+<tr>
+<td style="text-align: center;">309</td>
+<td style="text-align: left;">INVALID_CATEGORY_ID</td>
+<td style="text-align: left;">보내준 카테고리 ID에 해당하는 callsign을 찾을 수 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">310</td>
+<td style="text-align: left;">ISBN_SEARCH_FAILED_IN_NAVER</td>
+<td style="text-align: left;">네이버 Open API에서 ISBN검색 자체가 실패함</td>
+</tr>
+<tr>
+<td style="text-align: center;">311</td>
+<td style="text-align: left;">INVALID_PUBDATE_FORNAT</td>
+<td style="text-align: left;">입력한 pubdate가 알맞은 형식이 아님. 기대하는 형식 "20220807"</td>
+</tr>
+<tr>
+<td style="text-align: center;">312</td>
+<td style="text-align: left;">FAIL_PATCH_BOOK_BY_UNEXPECTED</td>
+<td style="text-align: left;">예상치 못한 에러로 bookInfo patch 가 실패함</td>
+</tr>
+<tr>
+<td style="text-align: center;">313</td>
+<td style="text-align: left;">NO_BOOK_INFO_DATA</td>
+<td style="text-align: left;">입력한 data가 없음(적어도 하나의 데이터는 필수)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lendings-error-code-400">Lendings Error Code (400번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">401</td>
+<td style="text-align: left;">NO_USER_ID</td>
+<td style="text-align: left;"> 유저 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">402</td>
+<td style="text-align: left;">NO_PERMISSION</td>
+<td style="text-align: left;">권환 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">403</td>
+<td style="text-align: left;">LENDING_OVERLOAD</td>
+<td style="text-align: left;">2권 이상 대출</td>
+</tr>
+<tr>
+<td style="text-align: center;">404</td>
+<td style="text-align: left;">LENDING_OVERDUE</td>
+<td style="text-align: left;">연체 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">405</td>
+<td style="text-align: left;">ON_LENDING</td>
+<td style="text-align: left;">대출 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">406</td>
+<td style="text-align: left;">ON_RESERVATION</td>
+<td style="text-align: left;">예약된 책</td>
+</tr>
+<tr>
+<td style="text-align: center;">407</td>
+<td style="text-align: left;">LOST_BOOK</td>
+<td style="text-align: left;">분실된 책</td>
+</tr>
+<tr>
+<td style="text-align: center;">408</td>
+<td style="text-align: left;">DAMAGED_BOOK</td>
+<td style="text-align: left;">파손된 책</td>
+</tr>
+<tr>
+<td style="text-align: center;">410</td>
+<td style="text-align: left;">NONEXISTENT_LENDING</td>
+<td style="text-align: left;">존재하지 않는 대출</td>
+</tr>
+<tr>
+<td style="text-align: center;">411</td>
+<td style="text-align: left;">ALREADY_RETURNED</td>
+<td style="text-align: left;">이미 반납 처리된 대출</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="reservation-error-code-500">Reservation Error Code (500번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">501</td>
+<td style="text-align: left;">INVALID_INFO_ID</td>
+<td style="text-align: left;">book_info_id가 유효하지 않음</td>
+</tr>
+<tr>
+<td style="text-align: center;">502</td>
+<td style="text-align: left;">AT_PENALTY</td>
+<td style="text-align: left;">대출 제한 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">503</td>
+<td style="text-align: left;">NOT_LENDED</td>
+<td style="text-align: left;">대출 가능</td>
+</tr>
+<tr>
+<td style="text-align: center;">504</td>
+<td style="text-align: left;">ALREADY_RESERVED</td>
+<td style="text-align: left;">이미 예약 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">505</td>
+<td style="text-align: left;">ALREADY_LENDED</td>
+<td style="text-align: left;">이미 대출 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">506</td>
+<td style="text-align: left;">MORE_THAN_TWO_RESERVATIONS</td>
+<td style="text-align: left;">두 개 이상 예약 중</td>
+</tr>
+<tr>
+<td style="text-align: center;">507</td>
+<td style="text-align: left;">NO_MATCHING_USER</td>
+<td style="text-align: left;">해당 유저 아님</td>
+</tr>
+<tr>
+<td style="text-align: center;">508</td>
+<td style="text-align: left;">RESERVATION_NOT_EXIST</td>
+<td style="text-align: left;">예약 ID 존재하지 않음</td>
+</tr>
+<tr>
+<td style="text-align: center;">509</td>
+<td style="text-align: left;">NOT_RESERVED</td>
+<td style="text-align: left;">예약 상태가 아님</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="likes-600">Likes (600번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">601</td>
+<td style="text-align: left;">INVALID_INFO_ID_LIKES</td>
+<td style="text-align: left;">bookInfoId가 유효하지 않음</td>
+</tr>
+<tr>
+<td style="text-align: center;">602</td>
+<td style="text-align: left;">ALREADY_LIKES</td>
+<td style="text-align: left;">좋아요 데이터가 이미 존재함</td>
+</tr>
+<tr>
+<td style="text-align: center;">603</td>
+<td style="text-align: left;">NONEXISTENT_LIKES</td>
+<td style="text-align: left;">bookInfoId가 유효하지 않음</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="history-700">history (700번대)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">700</td>
+<td style="text-align: left;">UNAUTHORIZED</td>
+<td style="text-align: left;">사서권한이 없는 사람이 모든 대출/반납 기록을 조회하려고함</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="reviews-800">reviews (800번대)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">800</td>
+<td style="text-align: left;">INVALID_INPUT_REVIEWS</td>
+<td style="text-align: left;">유효하지 않은 양식의 reviews</td>
+</tr>
+<tr>
+<td style="text-align: center;">801</td>
+<td style="text-align: left;">UNAUTHORIZED_REVIEWS</td>
+<td style="text-align: left;">reviews를 수정/삭제할 권한이 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">804</td>
+<td style="text-align: left;">NOT_FOUND_REVIEWS</td>
+<td style="text-align: left;">존재하지 않는 reviewsId</td>
+</tr>
+<tr>
+<td style="text-align: center;">805</td>
+<td style="text-align: left;">DISABLED_REVIEWS</td>
+<td style="text-align: left;">Disabled 된 review</td>
+</tr>
+<tr>
+<td style="text-align: center;">810</td>
+<td style="text-align: left;">INVALID_INPUT_REVIEWS_ID</td>
+<td style="text-align: left;">유효하지 않은 양식의 reviewsId</td>
+</tr>
+<tr>
+<td style="text-align: center;">811</td>
+<td style="text-align: left;">INVALID_INPUT_REVIEWS_CONTENT</td>
+<td style="text-align: left;">유효하지 않은 양식의 reviews content</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tags-900">tags (900번대)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Error Code</th>
+<th style="text-align: left;">Constant Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">900</td>
+<td style="text-align: left;">INVALID_INPUT_TAGS</td>
+<td style="text-align: left;">유효하지 않은 양식의 tags</td>
+</tr>
+<tr>
+<td style="text-align: center;">901</td>
+<td style="text-align: left;">UNAUTHORIZED_TAGS</td>
+<td style="text-align: left;">tags를 수정/삭제할 권한이 없음</td>
+</tr>
+<tr>
+<td style="text-align: center;">902</td>
+<td style="text-align: left;">ALREADY_EXISTING_TAGS</td>
+<td style="text-align: left;">이미 존재하는 내용의 태그</td>
+</tr>
+<tr>
+<td style="text-align: center;">904</td>
+<td style="text-align: left;">NOT_FOUND_TAGS</td>
+<td style="text-align: left;">존재하지 않는 tagId</td>
+</tr>
+<tr>
+<td style="text-align: center;">910</td>
+<td style="text-align: left;">INVALID_INPUT_TAG_ID</td>
+<td style="text-align: left;">유효하지 않은 양식의 tagId</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="하단/푸터" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="이전: v1 개발 문서" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                이전
+              </span>
+              <div class="md-ellipsis">
+                v1 개발 문서
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["header.autohide", "navigation.sections", "navigation.footer", "content.action.edit", "content.action.view"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>
