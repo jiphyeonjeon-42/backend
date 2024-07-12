@@ -21,7 +21,7 @@ export const create = async (
   const usersRepository = new UsersRepository(transaction);
   try {
     await transaction.startTransaction();
-    const [ users, count ] = await usersRepository.searchUserBy({id: userId}, 0, 0);
+    const [users, count] = await usersRepository.searchUserBy({ id: userId }, 0, 0);
     if (!count) {
       throw new Error(errorCode.NO_USER_ID);
     }
@@ -37,7 +37,10 @@ export const create = async (
       0,
     );
     // 사서는 4권, 일반 사용자는 2권까지 대출 가능
-    if ((users[0].role === 2 && numberOfLendings >= 4) || (users[0].role !== 2 && numberOfLendings >= 2)) {
+    if (
+      (users[0].role === 2 && numberOfLendings >= 4) ||
+      (users[0].role !== 2 && numberOfLendings >= 2)
+    ) {
       throw new Error(errorCode.LENDING_OVERLOAD);
     }
     const penaltyEndDate = await lendingRepo.getUsersPenalty(userId);
@@ -77,7 +80,7 @@ export const create = async (
         users[0].slack,
         `:jiphyeonjeon: 대출 알림 :jiphyeonjeon: \n대출 하신 \`${
           book?.info?.title
-        }\`은(는) ${ formatDate(dueDate) }까지 반납해주세요.`,
+        }\`은(는) ${formatDate(dueDate)}까지 반납해주세요.`,
       );
     }
   } catch (e) {
@@ -88,7 +91,7 @@ export const create = async (
   } finally {
     await transaction.release();
   }
-  return {dueDate: formatDate(dueDate)};
+  return { dueDate: formatDate(dueDate) };
 };
 
 export const returnBook = async (librarianId: number, lendingId: number, condition: string) => {
@@ -96,7 +99,7 @@ export const returnBook = async (librarianId: number, lendingId: number, conditi
   const lendingRepo = new LendingRepository(transaction);
   try {
     await transaction.startTransaction();
-    const lendingInfo = await lendingRepo.findOneBy({id: lendingId});
+    const lendingInfo = await lendingRepo.findOneBy({ id: lendingId });
     if (!lendingInfo) {
       throw new Error(errorCode.NONEXISTENT_LENDING);
     } else if (lendingInfo.returnedAt) {
@@ -148,16 +151,16 @@ export const returnBook = async (librarianId: number, lendingId: number, conditi
         if (slackIdReservedUser) {
           await publishMessage(
             slackIdReservedUser,
-            `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${ bookTitle }\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,
+            `:jiphyeonjeon: 예약 알림 :jiphyeonjeon:\n예약하신 도서 \`${bookTitle}\`(이)가 대출 가능합니다. 3일 내로 집현전에 방문해 대출해주세요.`,
           );
         }
       }
     }
     await transaction.commitTransaction();
     if (reservationInfo) {
-      return {reservedBook: true};
+      return { reservedBook: true };
     }
-    return {reservedBook: false};
+    return { reservedBook: false };
   } catch (error) {
     await transaction.rollbackTransaction();
     if (error instanceof Error) {
@@ -179,26 +182,26 @@ export const search = async (
   const filterQuery: Array<object> = [];
   switch (type) {
     case 'user':
-      filterQuery.push({returnedAt: IsNull(), login: Like(`%${ query }%`)});
+      filterQuery.push({ returnedAt: IsNull(), login: Like(`%${query}%`) });
       break;
     case 'title':
-      filterQuery.push({returnedAt: IsNull(), title: Like(`%${ query }%`)});
+      filterQuery.push({ returnedAt: IsNull(), title: Like(`%${query}%`) });
       break;
     case 'callSign':
-      filterQuery.push({returnedAt: IsNull(), callSign: Like(`%${ query }%`)});
+      filterQuery.push({ returnedAt: IsNull(), callSign: Like(`%${query}%`) });
       break;
     case 'bookId':
-      filterQuery.push({returnedAt: IsNull(), bookId: query});
+      filterQuery.push({ returnedAt: IsNull(), bookId: query });
       break;
     default:
       filterQuery.push([
-        {returnedAt: IsNull(), login: Like(`%${ query }%`)},
-        {returnedAt: IsNull(), title: Like(`%${ query }%`)},
-        {returnedAt: IsNull(), callSign: Like(`%${ query }%`)},
+        { returnedAt: IsNull(), login: Like(`%${query}%`) },
+        { returnedAt: IsNull(), title: Like(`%${query}%`) },
+        { returnedAt: IsNull(), callSign: Like(`%${query}%`) },
       ]);
   }
-  const orderQuery = sort === 'new' ? {createdAt: 'DESC'} : {createdAt: 'ASC'};
-  const [ items, count ] = await lendingRepo.searchLending(filterQuery, limit, page, orderQuery);
+  const orderQuery = sort === 'new' ? { createdAt: 'DESC' } : { createdAt: 'ASC' };
+  const [items, count] = await lendingRepo.searchLending(filterQuery, limit, page, orderQuery);
   const meta: Meta = {
     totalItems: count,
     itemCount: items.length,
@@ -206,11 +209,11 @@ export const search = async (
     totalPages: Math.ceil(count / limit),
     currentPage: page + 1,
   };
-  return {items, meta};
+  return { items, meta };
 };
 
 export const lendingId = async (id: number) => {
   const lendingRepo = new LendingRepository();
-  const data = (await lendingRepo.searchLending({id}, 0, 0, {}))[0];
+  const data = (await lendingRepo.searchLending({ id }, 0, 0, {}))[0];
   return data[0];
 };
