@@ -36,7 +36,11 @@ export const create = async (
       0,
       0,
     );
-    if (numberOfLendings >= 2) {
+    // 사서는 4권, 일반 사용자는 2권까지 대출 가능
+    if (
+      (users[0].role === 2 && numberOfLendings >= 4) ||
+      (users[0].role !== 2 && numberOfLendings >= 2)
+    ) {
       throw new Error(errorCode.LENDING_OVERLOAD);
     }
     const penaltyEndDate = await lendingRepo.getUsersPenalty(userId);
