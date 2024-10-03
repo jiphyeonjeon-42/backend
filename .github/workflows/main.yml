@@ -10,7 +10,7 @@ on:
 # 리전, 버킷 이름, CodeDeploy 앱 이름, CodeDeploy 배포 그룹 이름
 env:
   AWS_REGION: ap-northeast-2
-  S3_BUCKET_NAME: jipbackdeploy
+  S3_BUCKET_NAME: 42library.kr
   CODE_DEPLOY_APPLICATION_NAME: newjiphyeonjeon
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: deploy
 
