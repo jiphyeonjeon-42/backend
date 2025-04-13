@@ -1,6 +1,7 @@
 {
   "scripts": {
     "dev": "pnpm -r --parallel dev",
+    "install": "pnpm install",
     "build": "pnpm -r --parallel build",
     "start": "pnpm -r --parallel start"
   },
