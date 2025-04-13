@@ -45,8 +45,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      'http://localhost:4242',
-      'https://localhost:4242',
+      'http://localhost:4173',
+      'https://localhost:4173',
       'http://42library.kr',
       'https://42library.kr',
       'http://42jip.com',
