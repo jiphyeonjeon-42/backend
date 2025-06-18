@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "dev": "pnpm -r --parallel dev"
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r --parallel build",
+    "start": "pnpm -r --parallel start"
   },
   "dependencies": {
     "typescript": "5.1.6",
