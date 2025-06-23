@@ -8,13 +8,13 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Book } from './Book';
-import { Category } from './Category';
-import { Likes } from './Likes';
-import { Reservation } from './Reservation';
-import { Reviews } from './Reviews';
-import { SuperTag } from './SuperTag';
-import { BookInfoSearchKeywords } from './BookInfoSearchKeywords';
+import type { Book } from './Book';
+import type { Category } from './Category';
+import type { Likes } from './Likes';
+import type { Reservation } from './Reservation';
+import type { Reviews } from './Reviews';
+import type { SuperTag } from './SuperTag';
+import type { BookInfoSearchKeywords } from './BookInfoSearchKeywords';
 
 @Index('categoryId', ['categoryId'], {})
 @Entity('book_info')
@@ -55,28 +55,28 @@ export class BookInfo {
   @Column('int', { name: 'categoryId' })
   categoryId?: number;
 
-  @OneToMany(() => Book, (book) => book.info)
+  @OneToMany("Book", (book: Book) => book.info)
   books?: Book[];
 
-  @ManyToOne(() => Category, (category) => category.bookInfos, {
+  @ManyToOne("Category", (category: Category) => category.bookInfos, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'categoryId', referencedColumnName: 'id' }])
   category?: Category;
 
-  @OneToMany(() => Likes, (likes) => likes.bookInfo)
+  @OneToMany("Likes", (likes: Likes) => likes.bookInfo)
   likes?: Likes[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.bookInfo)
+  @OneToMany("Reservation", (reservation: Reservation) => reservation.bookInfo)
   reservations?: Reservation[];
 
-  @OneToMany(() => Reviews, (reviews) => reviews.bookInfo)
+  @OneToMany("Reviews", (reviews: Reviews) => reviews.bookInfo)
   reviews?: Reviews[];
 
-  @OneToMany(() => SuperTag, (superTags) => superTags.userId)
+  @OneToMany("SuperTag", (superTags: SuperTag) => superTags.userId)
   superTags?: SuperTag[];
 
-  @OneToOne(() => BookInfoSearchKeywords, (bookInfoSearchKeyword) => bookInfoSearchKeyword.bookInfo)
+  @OneToOne("BookInfoSearchKeywords", (bookInfoSearchKeyword: BookInfoSearchKeywords) => bookInfoSearchKeyword.bookInfo)
   bookInfoSearchKeyword?: BookInfoSearchKeywords;
 }

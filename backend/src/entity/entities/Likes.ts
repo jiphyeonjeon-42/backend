@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User';
-import { BookInfo } from './BookInfo';
+import type { User } from './User';
+import type { BookInfo } from './BookInfo';
 
 @Index('FK_529dceb01ef681127fef04d755d4', ['userId'], {})
 @Index('FK_bookInfo3', ['bookInfoId'], {})
@@ -18,14 +18,14 @@ export class Likes {
   @Column('tinyint', { name: 'isDeleted', width: 1, default: () => "'0'" })
   isDeleted: boolean;
 
-  @ManyToOne(() => User, (user) => user.likes, {
+  @ManyToOne("User", (user: User) => user.likes, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.likes, {
+  @ManyToOne("BookInfo", (bookInfo: BookInfo) => bookInfo.likes, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

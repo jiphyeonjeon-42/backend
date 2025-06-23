@@ -7,9 +7,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { SubTag } from './SubTag';
-import { User } from './User';
-import { BookInfo } from './BookInfo';
+import type { SubTag } from './SubTag';
+import type { User } from './User';
+import type { BookInfo } from './BookInfo';
 
 @Index('userId', ['userId'], {})
 @Index('bookInfoId', ['bookInfoId'], {})
@@ -45,17 +45,17 @@ export class SuperTag {
   @Column('varchar', { name: 'content', length: 42 })
   content: string;
 
-  @OneToMany(() => SubTag, (subTag) => subTag.superTag)
+  @OneToMany("SubTag", (subTag: SubTag) => subTag.superTag)
   subTags: SubTag[];
 
-  @ManyToOne(() => User, (user) => user.superTags, {
+  @ManyToOne("User", (user: User) => user.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.superTags, {
+  @ManyToOne("BookInfo", (bookInfo: BookInfo) => bookInfo.superTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

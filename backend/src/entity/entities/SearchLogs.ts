@@ -1,5 +1,5 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { SearchKeywords } from './SearchKeywords';
+import type { SearchKeywords } from './SearchKeywords';
 
 @Index('FK_searchKeywordId', ['searchKeywordId'], {})
 @Entity('search_logs')
@@ -13,7 +13,7 @@ export class SearchLogs {
   @Column('varchar', { name: 'timestamp', length: 255 })
   timestamp?: string;
 
-  @ManyToOne(() => SearchKeywords, (SearchKeyword) => SearchKeyword.id, {
+  @ManyToOne("SearchKeywords", (searchKeyword: SearchKeywords) => searchKeyword.id, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

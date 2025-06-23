@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { SearchLogs } from './SearchLogs';
+import type { SearchLogs } from './SearchLogs';
 
 @Entity('search_keywords')
 export class SearchKeywords {
@@ -15,6 +15,6 @@ export class SearchKeywords {
   @Column('varchar', { name: 'initial_consonants', length: 255 })
   initialConsonants?: string;
 
-  @OneToMany(() => SearchLogs, (searchLogs) => searchLogs.searchKeyword)
+  @OneToMany("SearchLogs", (searchLogs: SearchLogs) => searchLogs.searchKeyword)
   searchLogs?: SearchLogs[];
 }

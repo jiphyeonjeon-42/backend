@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User';
-import { BookInfo } from './BookInfo';
+import type { User } from './User';
+import type { BookInfo } from './BookInfo';
 
 @Index('FK_529dceb01ef681127fef04d755d3', ['userId'], {})
 @Index('FK_bookInfo2', ['bookInfoId'], {})
@@ -45,14 +45,14 @@ export class Reviews {
   @Column('int', { name: 'disabledUserId', nullable: true })
   disabledUserId: number | null;
 
-  @ManyToOne(() => User, (user) => user.reviews, {
+  @ManyToOne("User", (user: User) => user.reviews, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.reviews, {
+  @ManyToOne("BookInfo", (bookInfo: BookInfo) => bookInfo.reviews, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

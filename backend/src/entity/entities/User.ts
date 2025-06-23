@@ -1,11 +1,11 @@
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Book } from './Book';
-import { Lending } from './Lending';
-import { Likes } from './Likes';
-import { Reservation } from './Reservation';
-import { Reviews } from './Reviews';
-import { SubTag } from './SubTag';
-import { SuperTag } from './SuperTag';
+import type { Book } from './Book';
+import type { Lending } from './Lending';
+import type { Likes } from './Likes';
+import type { Reservation } from './Reservation';
+import type { Reviews } from './Reviews';
+import type { SubTag } from './SubTag';
+import type { SuperTag } from './SuperTag';
 
 @Index('email', ['email'], { unique: true })
 @Index('intraId', ['intraId'], { unique: true })
@@ -56,30 +56,30 @@ export class User {
   })
   updatedAt: Date;
 
-  @OneToMany(() => Book, (book) => book.donator2)
+  @OneToMany("Book", (book: Book) => book.donator2)
   books: Book[];
 
-  @OneToMany(() => Lending, (lending) => lending.user)
+  @OneToMany("Lending", (lending: Lending) => lending.user)
   lendings: Lending[];
 
-  @OneToMany(() => Lending, (lending) => lending.lendingLibrarian)
+  @OneToMany("Lending", (lending: Lending) => lending.lendingLibrarian)
   lendings2: Lending[];
 
-  @OneToMany(() => Lending, (lending) => lending.returningLibrarian)
+  @OneToMany("Lending", (lending: Lending) => lending.returningLibrarian)
   lendings3: Lending[];
 
-  @OneToMany(() => Likes, (likes) => likes.user)
+  @OneToMany("Likes", (likes: Likes) => likes.user)
   likes: Likes[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.user)
+  @OneToMany("Reservation", (reservation: Reservation) => reservation.user)
   reservations: Reservation[];
 
-  @OneToMany(() => Reviews, (reviews) => reviews.user)
+  @OneToMany("Reviews", (reviews: Reviews) => reviews.user)
   reviews: Reviews[];
 
-  @OneToMany(() => SubTag, (subtag) => subtag.userId)
+  @OneToMany("SubTag", (subtag: SubTag) => subtag.userId)
   subTag: SubTag[];
 
-  @OneToMany(() => SuperTag, (superTags) => superTags.userId)
+  @OneToMany("SuperTag", (superTags: SuperTag) => superTags.userId)
   superTags: SuperTag[];
 }

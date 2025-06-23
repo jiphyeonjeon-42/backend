@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User';
-import { SuperTag } from './SuperTag';
+import type { User } from './User';
+import type { SuperTag } from './SuperTag';
 
 @Index('userId', ['userId'], {})
 @Index('superTagId', ['superTagId'], {})
@@ -39,14 +39,14 @@ export class SubTag {
   @Column('tinyint', { name: 'isPublic' })
   isPublic: number;
 
-  @ManyToOne(() => User, (user) => user.subTag, {
+  @ManyToOne("User", (user: User) => user.subTag, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @ManyToOne(() => SuperTag, (superTag) => superTag.subTags, {
+  @ManyToOne("SuperTag", (superTag: SuperTag) => superTag.subTags, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

@@ -1,7 +1,7 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './User';
-import { BookInfo } from './BookInfo';
-import { Book } from './Book';
+import type { User } from './User';
+import type { BookInfo } from './BookInfo';
+import type { Book } from './Book';
 
 @Index('FK_bookInfo', ['bookInfoId'], {})
 @Entity('reservation')
@@ -33,21 +33,21 @@ export class Reservation {
   @Column('int', { name: 'userId' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.reservations, {
+  @ManyToOne("User", (user: User) => user.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: User;
 
-  @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.reservations, {
+  @ManyToOne("BookInfo", (bookInfo: BookInfo) => bookInfo.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'bookInfoId', referencedColumnName: 'id' }])
   bookInfo: BookInfo;
 
-  @ManyToOne(() => Book, (book) => book.reservations, {
+  @ManyToOne("Book", (book: Book) => book.reservations, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })

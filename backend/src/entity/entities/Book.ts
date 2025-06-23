@@ -7,10 +7,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BookInfo } from './BookInfo';
-import { User } from './User';
-import { Lending } from './Lending';
-import { Reservation } from './Reservation';
+import type { BookInfo } from './BookInfo';
+import type { User } from './User';
+import type { Lending } from './Lending';
+import type { Reservation } from './Reservation';
 
 @Index('FK_donator_id_from_user', ['donatorId'], {})
 @Entity('book')
@@ -45,23 +45,23 @@ export class Book {
   @Column('int', { name: 'donatorId', nullable: true })
   donatorId: number | null;
 
-  @ManyToOne(() => BookInfo, (bookInfo) => bookInfo.books, {
+  @ManyToOne("BookInfo", (bookInfo: BookInfo) => bookInfo.books, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'infoId', referencedColumnName: 'id' }])
   info?: BookInfo;
 
-  @ManyToOne(() => User, (user) => user.books, {
+  @ManyToOne("User", (user: User) => user.books, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'donatorId', referencedColumnName: 'id' }])
   donator2?: User;
 
-  @OneToMany(() => Lending, (lending) => lending.book)
+  @OneToMany("Lending", (lending: Lending) => lending.book)
   lendings?: Lending[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.book)
+  @OneToMany("Reservation", (reservation: Reservation) => reservation.book)
   reservations?: Reservation[];
 }

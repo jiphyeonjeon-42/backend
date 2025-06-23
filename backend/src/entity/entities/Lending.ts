@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Book } from './Book';
-import { User } from './User';
+import type { Book } from './Book';
+import type { User } from './User';
 
 @Index('FK_f2adde8c7d298210c39c500d966', ['lendingLibrarianId'], {})
 @Index('FK_returningLibrarianId', ['returningLibrarianId'], {})
@@ -40,7 +40,7 @@ export class Lending {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => Book, (book) => book.lendings, {
+  @ManyToOne("Book", (book: Book) => book.lendings, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
@@ -50,7 +50,7 @@ export class Lending {
   @Column({ name: 'bookId', type: 'int' })
   bookId: number;
 
-  @ManyToOne(() => User, (user) => user.lendings, {
+  @ManyToOne("User", (user: User) => user.lendings, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
@@ -60,14 +60,14 @@ export class Lending {
   @Column({ name: 'userId', type: 'int' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.lendings2, {
+  @ManyToOne("User", (user: User) => user.lendings2, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinColumn([{ name: 'lendingLibrarianId', referencedColumnName: 'id' }])
   lendingLibrarian: User;
 
-  @ManyToOne(() => User, (user) => user.lendings3, {
+  @ManyToOne("User", (user: User) => user.lendings3, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
