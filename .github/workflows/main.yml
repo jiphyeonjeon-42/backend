@@ -1,4 +1,4 @@
-name: Deploy to Amazon LightSail
+name: Deploy to Amazon EC2
 
 on:
   workflow_dispatch:
