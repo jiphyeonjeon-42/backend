@@ -23,7 +23,7 @@ RUN pnpm fetch --prod
 FROM workspace as prod
 ADD . ./
 
-RUN pnpm -r install --frozen-lockfile --offline --prod
+RUN pnpm -r install --frozen-lockfile --prod
 RUN pnpm -r run build
 
 RUN rm -rf /app/.pnpm-store
