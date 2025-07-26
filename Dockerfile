@@ -8,7 +8,7 @@ RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m venv .venv
 RUN . .venv/bin/activate && pip3 install --no-cache --upgrade pip setuptools
 RUN apk add --no-cache make
-RUN apk add build-bASe
+RUN apk add build-base
 RUN npm install --global pnpm
 RUN pnpm config set store-dir .pnpm-store
 RUN pnpm install --global node-pre-gyp
